@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<!--
+	Jericho Encrypted Chat
+	Copyright (c) 2013 Joshua M. David
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software, design and associated documentation files (the "Software"), 
+	to deal in the Software including without limitation the rights to use, copy, 
+	modify, merge, publish, distribute, and to permit persons to whom the Software 
+	is furnished to do so, subject to the following conditions:
+
+	1) The above copyright notice and this permission notice shall be included in
+	   all copies of the Software and any other software that utilises part or all
+	   of the Software (the "Derived Software").
+	2) Neither the Software nor any Derived Software may be sold, published, 
+	   distributed or otherwise dealt with for financial gain without the express
+	   consent of the copyright holder.
+	3) Derived Software must not use the same name as the Software.
+	4) The Software and Derived Software must not be used for evil purposes.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+-->
+<html>
+	<head>
+		<title>Jericho Encrypted Chat - Generate pads</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<link rel="stylesheet" href="css/lib/normalize.css">
+		<link rel="stylesheet" href="css/lib/ui-lightness/jquery-ui.css">
+		<link rel="stylesheet" href="css/global.css">
+		
+		<script src="js/lib/jquery.js"></script>
+		<script src="js/lib/jquery-ui.js"></script>
+		<script src="js/lib/filesaver.js"></script>
+		<script src="js/database.js"></script>
+		<script src="js/common.js"></script>
+		<script src="js/generate-pads.js"></script>
+		<script src="js/tests-randomness.js"></script>
+	</head>
+	<body>
+		<div class="generatePadsPage">
+			<table class="pageNavigation">
+				<tr>
+					<td>
+						<a id="btnHome" href="index.html" class="blueButton">Home</a>
+					</td>
+					<td>
+						<input id="btnOpenEntropyCollectionSettings" class="blueButton" type="button" value="1. Set collection settings">
+						<input id="btnStartCollectingEntropy" class="blueButton" type="button" value="2. Start collecting" disabled="disabled">
+						<input id="btnStopCollectingEntropy" class="blueButton" type="button" value="3. End collecting" disabled="disabled">
+						<input id="btnProcessAllEntropy" class="blueButton" type="button" value="4. Process entropy" disabled="disabled">
+						<input id="btnOpenExportPadsSettings" class="blueButton" type="button" value="5. Export pads" disabled="disabled">
+					</td>
+					<td class="testingButtons">
+						<input id="btnShowRandomData" class="blueButton" type="button" value="4a. Show random data" disabled="disabled">
+						<input id="btnTestRandomData" class="blueButton" type="button" value="4b. Test random data" disabled="disabled">						
+						<input id="btnViewBitmap" class="blueButton" type="button" value="4c. View as bitmap" disabled="disabled">
+					</td>
+				</tr>				
+			</table>
+			
+			<!-- Current amount of entropy collected -->
+			<table class="collectionAmounts">
+				<tr>
+					<td><b>Raw entropy collected in Bytes:</b></td>
+					<td id="webCryptoApiEntropyLengthLabel" class="collectionLabel">Operating System:</td>
+					<td id="webCryptoApiEntropyLength">
+						<div class="collectionStatusBox">0</div>
+					</td>
+					<td class="collectionLabel">Mouse move:</td>
+					<td id="mouseMovementEntropyLength">
+						<div class="collectionStatusBox">0</div>
+					</td>
+					<td class="collectionLabel">Mouse click distance:</td>
+					<td id="mouseClickEntropyLength">
+						<div class="collectionStatusBox">0</div>
+					</td>
+					<td class="collectionLabel">Mouse click time:</td>
+					<td id="mouseClickTimeEntropyLength">
+						<div class="collectionStatusBox">0</div>
+					</td>
+					<td class="collectionLabel">Mouse scroll:</td>
+					<td id="mouseScrollEntropyLength">
+						<div class="collectionStatusBox">0</div>
+					</td>
+					<td class="collectionLabel">Keypress:</td>
+					<td id="keypressEntropyLength">
+						<div class="collectionStatusBox">0</div>
+					</td>
+					<td class="collectionLabel">Keypress time:</td>
+					<td id="keypressTimeEntropyLength">
+						<div class="collectionStatusBox">0</div>
+					</td>
+					<td class="collectionLabel totalsLabel">
+						<b>Totals:</b>
+					</td>
+					<td class="collectionLabel">
+						All entropy:
+					</td>
+					<td id="totalEntropyLength">
+						<div class="collectionStatusBox">0</div>
+					</td>
+					<td class="collectionLabel">
+						Messages:
+					</td>
+					<td id="totalNumOfMessages">
+						<div class="collectionStatusBox">0</div>
+					</td>
+				</tr>
+			</table>
+			
+			<!-- Program title and success/error messages -->
+			<div class="programTitle">Random number generator</div>
+			<div id="statusMessage" class="statusMessage"></div>
+			
+			<!-- Show bitmap of random data -->
+			<div class="randomDataBitmapContainer">
+				<canvas id="canvasRandomData" width="142" height="142"></canvas>
+			</div>
+			
+			<!-- Display of random data for testing purposes -->
+			<div class="collectedEntropyDisplay">
+				<h3>Mouse move:</h3>
+				<div id="mouseMoveEntropy"></div>
+
+				<h3>Mouse click distance:</h3>
+				<div id="mouseClickEntropy"></div>
+
+				<h3>Mouse click time:</h3>
+				<div id="mouseClickTimeEntropy"></div>
+
+				<h3>Mouse scroll entropy:</h3>
+				<div id="mouseScrollEntropy"></div>
+
+				<h3>Keypress:</h3>
+				<div id="keypressEntropy"></div>
+
+				<h3>Keypress Time Entropy:</h3>
+				<div id="keypressTimeEntropy"></div>
+
+				<h3>Web crypto:</h3>
+				<div id="webCryptoEntropy"></div>
+
+				<h3>All raw entropy shuffled:</h3>
+				<div id="combinedAndShuffledEntropy"></div>
+
+				<h3>All random data hashed and shuffled (hexadecimal):</h3>
+				<div id="hashedAndShuffledEntropy"></div>
+				
+				<h3>All pads (hexadecimal):</h3>
+				<div id="allPads"></div>
+			</div>
+
+			<!-- Dialog for entropy collection settings -->
+			<div id="entropyCollectionSettings" class="entropyCollectionSettings" title="Entropy collection settings">
+				<div class="helpExplanation">Collect from entropy sources according to sampling intervals:</div>
+				<table class="collectionSamplingSliders">
+					<tr>
+						<td>Operating System</td>
+						<td><div id="webCryptoApiIntervalSlider"></div></td>				
+						<td id="webCryptoApiIntervalSliderAmount"></td>
+						<td>
+							<input id="enableWebCryptoApiEntropyCollection" type="checkbox">
+							<label for="enableWebCryptoApiEntropyCollection">Enabled</label>
+						</td>
+					</tr>
+					<tr>
+						<td>Mouse movement</td>
+						<td><div id="mouseMovementIntervalSlider"></div></td>
+						<td id="mouseMovementIntervalSliderAmount"></td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td>Mouse scroll</td>
+						<td><div id="mouseScrollIntervalSlider"></div></td>
+						<td id="mouseScrollIntervalSliderAmount"></td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td>Key presses</td>
+						<td><div id="keypressIntervalSlider"></div></td>
+						<td id="keypressIntervalSliderAmount"></td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td colspan="4" class="otherSettings">
+							Number of times to shuffle the entropy pool when processing the entropy:
+						</td>
+					</tr>
+					<tr>
+						<td>Times to shuffle</td>
+						<td><div id="numTimesToShuffleEntropyPool"></div></td>
+						<td id="numTimesToShuffleEntropyPoolAmount"></td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td colspan="4" class="otherSettings">
+							Amount of raw entropy to feed into the 
+							<span title="The program uses a random order of the SHA2, SHA3 and Whirlpool 512 bit hashes each time.">512 bit hash</span> 
+							each time when processing the entropy:
+						</td>
+					</tr>
+					<tr>
+						<td>Raw entropy</td>
+						<td><div id="bytesToFeedIntoHashSlider"></div></td>
+						<td id="bytesToFeedIntoHashSliderAmount"></td>
+						<td>&nbsp;</td>
+					</tr>
+				</table>
+				<div class="buttons">
+					<input id="btnCloseEntropyCollectionSettings" class="blueButton" type="button" value="Close">			
+				</div>
+			</div>
+			
+			<!-- Dialog for exporting pads and testing the server connection -->
+			<div id="exportPadsSettings" class="exportPadsSettings" title="Export pads">
+				<div class="helpExplanation">Fill out all the details to make importing easier for the other user:</div>
+				<table>
+					<tr>
+						<td>Export for</td>
+						<td>
+							<label for="exportForUser1">
+								<input id="exportForUser1" class="exportForUser" type="radio" name="exportForUser" value="1" checked="checked"> User 1
+							</label>
+							<label for="exportForUser2">
+								<input id="exportForUser2" class="exportForUser" type="radio" name="exportForUser" value="2"> User 2
+							</label>
+						</td>
+					</tr>
+					<tr>
+						<td>Export to</td>
+						<td>
+							<label for="exportMethodClipboard">
+								<input id="exportMethodClipboard" class="exportMethod" type="radio" name="exportMethod" value="clipboard"> Clipboard
+							</label>
+							<label for="exportMethodTextFile">
+								<input id="exportMethodTextFile" class="exportMethod" type="radio" name="exportMethod" value="textFile" checked="checked"> Text file
+							</label>
+							<label for="exportMethodLocalDatabase">
+								<input id="exportMethodLocalDatabase" class="exportMethod" type="radio" name="exportMethod" value="localDatabase"> This browser's local database
+							</label>					
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="serverAddressAndPort">
+								Server address and port
+							</label>
+						</td>
+						<td>
+							<input id="serverAddressAndPort" class="serverInfoTextBox" type="text" placeholder="https://servername.tk/jericho/">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="serverUsername">
+								Server username
+							</label>
+						</td>
+						<td>
+							<input id="serverUsername" class="serverInfoTextBox" type="text">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="serverPassword">
+								Server password
+							</label>
+						</td>
+						<td>
+							<input id="serverPassword" class="serverInfoTextBox" type="text">
+						</td>
+					</tr>
+				</table>
+				<div class="buttons">
+					<input id="testServerConnection" class="blueButton" type="button" value="1. Test connection">
+					<input id="btnExportPads" class="blueButton" type="button" value="2. Export pads">					
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

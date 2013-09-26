@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--
+	Jericho Encrypted Chat
+	Copyright (c) 2013 Joshua M. David
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software, design and associated documentation files (the "Software"), 
+	to deal in the Software including without limitation the rights to use, copy, 
+	modify, merge, publish, distribute, and to permit persons to whom the Software 
+	is furnished to do so, subject to the following conditions:
+
+	1) The above copyright notice and this permission notice shall be included in
+	   all copies of the Software and any other software that utilises part or all
+	   of the Software (the "Derived Software").
+	2) Neither the Software nor any Derived Software may be sold, published, 
+	   distributed or otherwise dealt with for financial gain without the express
+	   consent of the copyright holder.
+	3) Derived Software must not use the same name as the Software.
+	4) The Software and Derived Software must not be used for evil purposes.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+-->
+<html>
+	<head>
+		<title>Jericho Encrypted Chat - Emergency auto nuke</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<link rel="stylesheet" href="css/lib/normalize.css">
+		<link rel="stylesheet" href="css/global.css">
+		
+		<script src="js/lib/jquery.js"></script>		
+		<script src="js/database.js"></script>
+		<script src="js/common.js"></script>
+		<script src="js/nuke.js"></script>
+		<script type="text/javascript">			
+			// On page load
+			$(document).ready(function()
+			{
+				nuke.initialiseAutoNuke();
+			});
+		</script>
+	</head>
+	<body>
+		<div class="page autoNukePage">
+			<table class="pageNavigation">
+				<tr>
+					<td><a href="index.html" class="blueButton">Home</a></td>
+					<td><div id="statusMessage" class="statusMessage"></div></td>
+				</tr>				
+			</table>
+			<div class="programTitle">
+				Emergency auto nuke
+			</div>
+			<div class="warningLabel">Warning:</div>
+			<div class="warningText">
+				This button will delete all the one-time pads from this device/computer's browser and all the messages from the server.<br>
+				<br>
+				The next time the other user connects to the server it will automatically delete their one-time pads as well. They will not have 
+				a chance to read the most recent messages you sent if they have not read them already.<br>
+				<br>
+				If your device/computer is about to be compromised and you need to clear all evidence of communications use the button below.
+			</div>
+			<div class="nukeButton">
+				<input id="btnInitiateAutoNuke" class="blueButton" type="button" value="Initiate auto nuke">				
+			</div>
+		</div>
+	</body>
+</html>

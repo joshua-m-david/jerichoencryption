@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+	Jericho Encrypted Chat
+	Copyright (c) 2013 Joshua M. David
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software, design and associated documentation files (the "Software"), 
+	to deal in the Software including without limitation the rights to use, copy, 
+	modify, merge, publish, distribute, and to permit persons to whom the Software 
+	is furnished to do so, subject to the following conditions:
+
+	1) The above copyright notice and this permission notice shall be included in
+	   all copies of the Software and any other software that utilises part or all
+	   of the Software (the "Derived Software").
+	2) Neither the Software nor any Derived Software may be sold, published, 
+	   distributed or otherwise dealt with for financial gain without the express
+	   consent of the copyright holder.
+	3) Derived Software must not use the same name as the Software.
+	4) The Software and Derived Software must not be used for evil purposes.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+-->
+<html>
+	<head>
+		<title>Jericho Encrypted Chat - Load pads</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
+		<link rel="stylesheet" href="css/lib/normalize.css">
+		<link rel="stylesheet" href="css/global.css">
+		
+		<script src="js/lib/jquery.js"></script>
+		<script src="js/database.js"></script>
+		<script src="js/common.js"></script>
+		<script>
+			// On page load
+			$(document).ready(function()
+			{				
+				// Upload the pads from text file into the database
+				$('#padFile').change(function(e)
+				{
+					common.loadPadsFromTextFile(e);
+					
+					// Show a link to the chat page now the pads are loaded
+					$('.chatButton').show();
+				});
+				
+				// Load pads into the database from the clipboard
+				$('#loadPadsFromClipboard').click(function()
+				{
+					var padDataJson = $('#padDataClipboardInput').val();					
+					if (padDataJson != '')
+					{
+						// Save to the database
+						common.preparePadDataForImport(padDataJson);
+						common.showStatus('success', 'Pads loaded successfully from clipboard.');
+						
+						// Show a link to the chat page now the pads are loaded
+						$('.chatButton').show();
+					}
+					else {
+						common.showStatus('error', 'No pad data to load.');
+					}
+				});
+			});			
+		</script>
+	</head>
+	<body>
+		<div class="page loadPadsPage">
+			<table class="pageNavigation">
+				<tr>
+					<td><a href="index.html" class="blueButton">Home</a></td>
+					<td><div id="statusMessage" class="statusMessage"></div></td>
+				</tr>				
+			</table>
+			<div class="programTitle">
+				Load pads
+			</div>
+			<div class="information">
+				This will load the one-time pads from the clipboard or text file into the local storage of this computer/device. Once 
+				the pads are loaded you can start chatting.
+			</div>
+			<div class="method">
+				<div class="methodTitle">Method 1: &nbsp;Paste from clipboard (Ctrl + V):</div>
+				<div>
+					<input id="padDataClipboardInput" class="padDataClipboardInput" type="text">
+					<input id="loadPadsFromClipboard" class="blueButton" type="button" value="Load">
+				</div>
+								
+			</div>
+			<div class="method">
+				<div class="methodTitle">Method 2: &nbsp;Load from text file:</div>
+				<input id="padFile" type="file" name="padFile">
+			</div>
+			<div class="chatButton">
+				<a href="chat.html" class="blueButton">Go to chat</a>
+			</div>
+		</div>
+	</body>
+</html>

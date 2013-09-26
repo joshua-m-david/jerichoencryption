@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+	Jericho Encrypted Chat
+	Copyright (c) 2013 Joshua M. David
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software, design and associated documentation files (the "Software"), 
+	to deal in the Software including without limitation the rights to use, copy, 
+	modify, merge, publish, distribute, and to permit persons to whom the Software 
+	is furnished to do so, subject to the following conditions:
+
+	1) The above copyright notice and this permission notice shall be included in
+	   all copies of the Software and any other software that utilises part or all
+	   of the Software (the "Derived Software").
+	2) Neither the Software nor any Derived Software may be sold, published, 
+	   distributed or otherwise dealt with for financial gain without the express
+	   consent of the copyright holder.
+	3) Derived Software must not use the same name as the Software.
+	4) The Software and Derived Software must not be used for evil purposes.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+-->
+<html>
+	<head>
+		<title>Jericho Encrypted Chat - Test server connection</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<link rel="stylesheet" href="css/lib/normalize.css">
+		<link rel="stylesheet" href="css/lib/ui-lightness/jquery-ui.css">
+		<link rel="stylesheet" href="css/global.css">
+		
+		<script src="js/lib/jquery.js"></script>
+		<script src="js/lib/jquery-ui.js"></script>
+		<script src="js/database.js"></script>
+		<script src="js/common.js"></script>
+		<script>
+			$(document).ready(function()
+			{
+				// Preload values into the text boxes if they already have connection settings in local storage
+				if (db.padData.info.serverAddressAndPort != null)
+				{
+					$('#serverAddressAndPort').val(db.padData.info.serverAddressAndPort);
+					$('#serverUsername').val(db.padData.info.serverUsername);
+					$('#serverPassword').val(db.padData.info.serverPassword);
+				}
+				
+				// Test server connection on button click
+				$('#testServerConnection').click(function()
+				{
+					var serverAddressAndPort = $('#serverAddressAndPort').val();
+					var serverUsername = $('#serverUsername').val();
+					var serverPassword = $('#serverPassword').val();
+
+					common.testServerConnection(serverAddressAndPort, serverUsername, serverPassword);
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div class="page testServerPage">
+			<table class="pageNavigation testServerPage">
+				<tr>
+					<td><a href="index.html" class="blueButton">Home</a></td>
+					<td><div id="statusMessage" class="statusMessage"></div></td>
+				</tr>				
+			</table>
+			<div class="programTitle">
+				Test server connection
+			</div>
+			<div class="information">
+				This will test the asynchronous connection to the server using the API. For HTTPS you should load/accept the server's self-signed 
+				certificate as trusted into your browser first or the connection will fail.
+			</div>
+			<div class="connectionDetails">
+				<label for="serverAddressAndPort">Server address and port</label>
+				<input id="serverAddressAndPort" class="serverInfoTextBox" type="text" placeholder="https://server-ip-address/jericho/"><br>
+				
+				<label for="serverUsername">Server username</label>
+				<input id="serverUsername" class="serverInfoTextBox" type="text"><br>
+				
+				<label for="serverPassword">Server password</label>
+				<input id="serverPassword" class="serverInfoTextBox" type="text">
+				<div class="buttons">
+					<input id="testServerConnection" class="blueButton" type="button" value="Test connection">
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

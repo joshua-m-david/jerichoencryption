@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!--
+	Jericho Encrypted Chat
+	Copyright (c) 2013 Joshua M. David
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software, design and associated documentation files (the "Software"), 
+	to deal in the Software including without limitation the rights to use, copy, 
+	modify, merge, publish, distribute, and to permit persons to whom the Software 
+	is furnished to do so, subject to the following conditions:
+
+	1) The above copyright notice and this permission notice shall be included in
+	   all copies of the Software and any other software that utilises part or all
+	   of the Software (the "Derived Software").
+	2) Neither the Software nor any Derived Software may be sold, published, 
+	   distributed or otherwise dealt with for financial gain without the express
+	   consent of the copyright holder.
+	3) Derived Software must not use the same name as the Software.
+	4) The Software and Derived Software must not be used for evil purposes.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+-->
+<html>
+	<head>
+		<title>Jericho Encrypted Chat - Chat session</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<link rel="stylesheet" href="css/lib/normalize.css">
+		<link rel="stylesheet" href="css/lib/ui-lightness/jquery-ui.css">
+		<link rel="stylesheet" href="css/global.css">
+		
+		<script src="js/lib/jquery.js"></script>
+		<script src="js/lib/jquery-ui.js"></script>
+		<script src="js/lib/jsdigest.js"></script>
+		<script src="js/lib/jscrypto-core.js"></script>
+		<script src="js/lib/jscrypto-x64core.js"></script>
+		<script src="js/lib/jscrypto-sha2-512.js"></script>
+		<script src="js/lib/jscrypto-sha3.js"></script>
+		<script src="js/lib/jscrypto-hmac.js"></script>
+		<script src="js/lib/whirlpool.js"></script>
+		<script src="js/lib/linker.js"></script>
+		
+		<script src="js/database.js"></script>
+		<script src="js/common.js"></script>
+		<script src="js/chat.js"></script>
+		<script type="text/javascript">
+			
+			// On page load
+			$(document).ready(function()
+			{
+				chat.scrollChatWindowToBottom();
+				chat.focusCursorIntoChatBox();
+				chat.initialiseSendMessageButton();				
+				chat.bindEnterKeyToSendMessage();
+				
+				chat.countNumOfPadsRemaining();
+				chat.startIntervalToReceiveMessages();
+				chat.showNumOfMessageCharactersRemaining();
+				chat.updateNumOfPadsRemaining(0, 0);
+				chat.initialiseToggleAudioButton();
+			});
+		</script>
+	</head>
+	<body>
+		<div class="page chatPage">
+			<table class="pageNavigation">
+				<tr>
+					<td><a href="index.html" class="blueButton">Home</a></td>
+					<td><div id="statusMessage" class="statusMessage"></div></td>
+				</tr>				
+			</table>
+			<div class="programTitle">
+				Chat
+				<span class="ui-icon enableDisableAudio"></span>
+			</div>			
+			<div class="mainChat">
+				<div class="templateMessage">
+					<div class="dateTime"></div>
+					<div class="messageText" title=""></div>
+					<div class="messageStatus"></div>
+				</div>
+			</div>			
+			<div class="chatEntry">
+				<textarea id="newChatMessage" class="chatInput" rows="2" maxlength="100" tabindex="1" placeholder="Type message here..."></textarea>
+				<table>
+					<tr>
+						<td class="messagesLastCheckedStatus"></td>
+						<td class="messageCharactersRemaining"><b>100/100</b> characters remaining</td>
+					</tr>
+					<tr>
+						<td class="messagesRemaining"></td>
+						<td>
+							<input id="btnSendMessage" class="blueButton btnSendMessage" type="button" value="Send message">
+						</td>
+					</tr>
+				</table>				
+			</div>
+		</div>
+	</body>
+</html>

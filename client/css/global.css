@@ -1,0 +1,493 @@
+/*
+	Jericho Encrypted Chat
+	Copyright (c) 2013 Joshua M. David
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software, design and associated documentation files (the "Software"), 
+	to deal in the Software including without limitation the rights to use, copy, 
+	modify, merge, publish, distribute, and to permit persons to whom the Software 
+	is furnished to do so, subject to the following conditions:
+
+	1) The above copyright notice and this permission notice shall be included in
+	   all copies of the Software and any other software that utilises part or all
+	   of the Software (the "Derived Software").
+	2) Neither the Software nor any Derived Software may be sold, published, 
+	   distributed or otherwise dealt with for financial gain without the express
+	   consent of the copyright holder.
+	3) Derived Software must not use the same name as the Software.
+	4) The Software and Derived Software must not be used for evil purposes.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+*/
+
+/* --------------------------------------- */
+/*	MAIN STYLESHEET CONTENTS
+/*
+/*	1. Common styles
+/*	2. Home page
+/*	3. Generate pads page
+/*	4. Load pads page
+/*	5. Chat page
+/*  6. Test server connection page
+/*  7. Auto-nuke page
+/*  8. Backup/move pads
+/* --------------------------------------- */
+
+/* --------------------------------------- */
+/*	1. COMMON STYLES
+/* --------------------------------------- */
+
+/* Set base font size */
+body {
+	font-size: 14px;
+}
+.ui-widget {
+	font-size: 14px;
+}
+
+/* Title of program or page */
+.programTitle {
+	text-align: center;
+	font-size: 12px;
+	font-weight: bold;
+	margin: 3px 0;
+}
+
+/* Centers the page */
+.page {
+	width: 314px;
+	margin: 0 auto;
+	padding: 3px;
+}
+
+/* Error and success status messages */
+.statusMessage {
+	font-size: 12px;
+    font-weight: bold;
+	text-align: center;
+	display: none;
+}
+.error {
+	color: #ff0000;
+}
+.success {
+	color: #00cc00;
+}
+
+/* Button styles */
+.blueButton {
+	background-color: #3bb3e0;
+	display: inline-block;
+	padding: 10px;
+	position: relative;
+	font-family: sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	text-decoration: none;
+	color: #fff;
+	border: solid 1px #186f8f;
+	background-image: -o-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -webkit-gradient(linear, left bottom,	left top, color-stop(0, rgb(44,160,202)), color-stop(1, rgb(62,184,229)));
+	background-image: linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	-webkit-box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	-moz-box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	-o-border-radius: 7px;
+	border-radius: 7px;
+}
+.blueButton:active {
+	top: 1px;
+	background-image: -o-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -webkit-gradient(linear, left bottom,	left top, color-stop(0, rgb(62,184,229)), color-stop(1, rgb(44,160,202)));
+	background-image: linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+}
+.blueButton:disabled {
+	opacity: 0.5;
+}
+
+/* --------------------------------------- */
+/*	2. HOME PAGE
+/* --------------------------------------- */
+
+.homePage {
+	text-align: center;
+}
+.homePage h1 {
+	text-align: center;
+	font-size: 14px;
+	margin: 14px 0 3px 0;
+}
+.homePage .version {
+	font-size: 12px;
+	margin-bottom: 14px;
+}
+.homePage .buttons {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+.homePage .buttons li {
+	padding: 3px 0 0 0;
+	margin: 0;
+}
+.homePage .buttons li.spacer {
+	padding-top: 21px;
+}
+.homePage a {
+	width: 125px;
+}
+
+/* --------------------------------------- */
+/*	3. GENERATE PADS PAGE
+/* --------------------------------------- */
+
+/* Buttons along the top */
+.generatePadsPage .pageNavigation {
+	width: 100%;
+	margin-top: 1px;
+}
+.generatePadsPage .pageNavigation td:first-child {
+	text-align: left;
+}
+.generatePadsPage .pageNavigation td:nth-child(2) {
+	text-align: center;
+}
+.generatePadsPage .pageNavigation td:last-child {
+	text-align: right;
+}
+.generatePadsPage .programTitle {
+	margin: 14px 0;
+}
+
+/* Display status of currently collected entropy */ 
+.collectionAmounts {
+	font-size: 11px;
+	margin: 3px auto;
+}
+.collectionLabel {
+	padding-left: 7px;
+}
+.totalsLabel {
+	padding-left: 14px;
+	font-weight: bold;
+}
+.collectionStatusBox {
+	min-width: 14px;
+	height: 14px;
+	color: #fff;
+	font-weight: bold;
+	text-align: center;
+	padding: 3px;
+	background-color: #00cc33;
+}
+
+/* Hide display for Web Crypto API collection status until enabled manually */
+#webCryptoApiEntropyLengthLabel, #webCryptoApiEntropyLength {
+	display: none;
+}
+
+/* Define the styles for the Entropy Collection Settings dialog */
+.entropyCollectionSettings .helpExplanation {
+	margin-top: 3px;
+	margin-bottom: 14px;
+	text-align: center;
+}
+.entropyCollectionSettings .collectionSamplingSliders .otherSettings {
+	padding: 21px 0 3px 0;
+	text-align: center;
+	font-weight: normal;
+}
+.collectionSamplingSliders td:first-child {
+	text-align: right;
+	font-weight: bold;
+	text-wrap: none;
+}
+.collectionSamplingSliders td {
+	padding: 3px 7px;
+	vertical-align: middle;
+}
+.collectionSamplingSliders div {
+	width: 300px;
+}
+.entropyCollectionSettings .buttons {
+	margin-top: 14px;
+	text-align: center;
+}
+
+/* Style the Export Pads and Server Settings dialog */
+.exportPadsSettings .helpExplanation {
+	margin-top: 3px;
+	margin-bottom: 14px;
+	text-align: center;
+}	
+.exportPadsSettings table td:first-child {
+	text-align: right;
+	font-weight: bold;
+	text-wrap: none;
+}
+.exportPadsSettings table td {
+	padding: 2px 4px;
+}
+.exportPadsSettings .buttons {
+	margin-top: 14px;
+	text-align: center;
+}
+.serverInfoTextBox {
+	width: 347px;
+}
+
+/* Test output */
+.randomDataBitmapContainer {
+	display: none;
+	text-align: center;
+	margin: 14px;
+}
+.collectedEntropyDisplay {
+	padding: 3px;
+	display: none;
+}
+.collectedEntropyDisplay h3 {
+	font-weight: bold;
+	font-size: inherit;
+	margin-top: 14px;
+	margin-bottom: 0;
+}
+.collectedEntropyDisplay div {
+	word-wrap: break-word;
+	font-family: monospace;
+}
+.collectedEntropyDisplay .pad {
+	margin-bottom: 14px;
+}
+
+/* --------------------------------------- */
+/*	4. LOAD PADS PAGE
+/* --------------------------------------- */
+
+.loadPadsPage {
+	font-size: 12px;
+}
+.loadPadsPage .pageNavigation .statusMessage {
+	text-align: left;
+	padding-left: 3px;
+}
+.loadPadsPage .method {
+	margin: 21px 0;
+	text-align: center;
+}
+.loadPadsPage .methodTitle {
+	font-weight: bold;
+	margin: 3px 0;
+}
+.loadPadsPage .padDataClipboardInput {
+	margin: 3px 0;
+	width: 200px;
+}
+.loadPadsPage .chatButton {
+	display: none;
+	text-align: center;
+}
+
+/* --------------------------------------- */
+/*	5. CHAT PAGE
+/* --------------------------------------- */
+
+/* Position the status message */
+.chatPage .statusMessage {
+	display: inline-block;
+	text-align: left;
+	padding: 0 3px;
+}
+.chatPage .enableDisableAudio {
+	vertical-align: middle;
+	display: inline-block;
+	cursor: pointer;
+}
+
+/* Container for chat input, send button and message checked status */
+.chatEntry {
+	margin: 3px 0;
+	padding: 0;
+}
+.chatEntry table {
+	width: 314px;
+}
+.chatEntry td {
+	vertical-align: top;
+	padding: 0;
+}
+.chatEntry td:first-child {
+	text-align: left;
+}
+.chatEntry td:last-child {
+	text-align: right;
+}
+.btnSendMessage {
+	margin-top: 3px;
+}
+/* Text area for chat input */
+.chatInput {
+	width: 312px;
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+}
+/* When the messages were last checked */
+.messagesLastCheckedStatus {
+	font-size: 10px;
+	color: #373737;
+}
+
+/* Main chat window */
+.mainChat {
+	border: 1px solid #e7d9e1;
+	padding: 7px;
+	height: 277px;
+	width: 297px;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+/* The template is copied and used by jQuery */
+.templateMessage {
+	display: none;
+}
+/* Style for the message container */
+.message {
+	padding: 7px;
+	border-radius: 7px;
+	width: 83%;
+	margin: 5px;
+	position: relative;
+	-webkit-box-shadow: 1px 1px 3px 0px rgba(0,0,0,0.7), 1px 1px 7px rgba(255,255,255, 0.77) inset;
+	box-shadow: 1px 1px 3px 0px rgba(0,0,0,0.7), 1px 1px 7px rgba(255,255,255, 0.77) inset;
+}
+/* Date time for the message */
+.message .dateTime {
+	font-size: 10px;
+	color: #373737;
+}
+/* Text style for the message */
+.message .messageText {
+	font-size: 12px;
+	padding-top: 3px;
+	font-weight: bold;
+	word-break: keep-all;
+	overflow: auto;
+}
+/* Message MAC authentication status */
+.message .messageStatus {
+	font-size: 10px;
+	font-weight: bold;
+	position: absolute;
+	top: 7px;
+	right: 7px;
+	color: #373737;
+}
+.message .messageStatus.messageValid {
+	color: green;
+}
+.message .messageStatus.messageInvalid {
+	color: red;
+}
+/* Styles for message receuved and sent. Colours from: http://www.colorzilla.com/gradient-editor/ */
+.messageReceived {
+	float: left;
+	background: #dcdcdc;
+}
+.messageSent {
+	float: right;
+	background: #8cbefd;
+}
+/* Clear float after the message container */
+.message:after {
+	content: '';
+	display: block;
+	clear: both;
+}
+
+/* How many messages/pads remaining in the database */
+.messagesRemaining {
+	font-size: 10px;
+	color: #373737;
+}
+/* How many characters remaining in current message to be sent */
+.messageCharactersRemaining {
+	font-size: 10px;
+	color: #373737;
+	text-align: right;
+}
+
+/* --------------------------------------- */
+/*	6. TEST SERVER CONNECTION PAGE
+/* --------------------------------------- */
+
+.testServerPage {
+	font-size: 12px;
+}
+.testServerPage .connectionDetails {
+	margin-top: 14px;
+}
+.testServerPage .connectionDetails label {
+	display: block;
+	margin: 7px 0 3px 0;
+	font-weight: bold;
+}
+.testServerPage input[type="text"] {
+	width: 300px;
+}
+
+/* --------------------------------------- */
+/*	7. AUTO NUKE PAGE
+/* --------------------------------------- */
+
+.autoNukePage {
+	font-size: 12px;
+}
+.autoNukePage .warningText {
+	margin-top: 7px;
+	margin-bottom: 14px;
+}
+.autoNukePage .warningLabel {
+	color: #ff0000;
+	font-weight: bold;
+	text-align: center;
+	margin-top: 14px;
+}
+.nukeButton {
+	text-align: center;
+}
+
+/* --------------------------------------- */
+/*	8. BACKUP/MOVE PADS PAGE
+/* --------------------------------------- */
+
+.backupPage {
+	font-size: 12px;
+}
+.instructions {
+	margin: 14px 0 21px 0;
+}
+.exportMethods {
+	margin: 7px auto;
+}
+.exportMethods label {
+	padding: 0 3px;
+}
+.buttons {
+	margin-top: 21px;
+	text-align: center;
+}
