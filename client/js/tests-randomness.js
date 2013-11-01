@@ -1,29 +1,18 @@
 /*
-	Jericho Encrypted Chat
-	Copyright (c) 2013 Joshua M. David
+	Jericho Chat - Information-theoretically secure communications.
+	Copyright (C) 2013  Joshua M. David
 
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software, design and associated documentation files (the "Software"), 
-	to deal in the Software including without limitation the rights to use, copy, 
-	modify, merge, publish, distribute, and to permit persons to whom the Software 
-	is furnished to do so, subject to the following conditions:
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation in version 3 of the License.
 
-	1) The above copyright notice and this permission notice shall be included in
-	   all copies of the Software and any other software that utilises part or all
-	   of the Software (the "Derived Software").
-	2) Neither the Software nor any Derived Software may be sold, published, 
-	   distributed or otherwise dealt with for financial gain without the express
-	   consent of the copyright holder.
-	3) Derived Software must not use the same name as the Software.
-	4) The Software and Derived Software must not be used for evil purposes.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	THE SOFTWARE.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see [http://www.gnu.org/licenses/].
 */
 
 /**
@@ -36,13 +25,16 @@ var randomTests = {
 	 * Test 1 - The Monobit Test
 	 * 1. Count the number of ones in the 20,000 bit stream. Denote this quantity by X.
 	 * 2. The test is passed if 9,654 < X < 10,346.
+	 * @param {string} randomBits The random bits to test
+	 * @param {int} numOfBits The number of random bits
+	 * @return {bool} Returns true if the test passed or false if not
 	 */
 	randomnessMonobitTest: function(randomBits, numOfBits)
 	{
 		var x = 0;
 		
 		// Count the bits
-		for (var i=0; i < randomBits.length; i++)
+		for (var i=0; i < numOfBits; i++)
 		{
 			var binaryDigit = randomBits.charAt(i);			
 			if (binaryDigit == '1')
@@ -51,8 +43,13 @@ var randomTests = {
 			}
 		}
 		
-		// The test is passed if 9,654 < X < 10,346
-		return ((9654 < x) && (x < 10346)) ? true : false;
+		// Evaluation
+		var testResult = ((9654 < x) && (x < 10346)) ? true : false;
+		
+		// Log output to screen
+		$('#monobitTestResults').html('The test is passed if 9654 < X < 10346. Test passed: ' + testResult + '. X = ' + x);
+		
+		return testResult;
 	},
 	
 	/**
@@ -61,12 +58,13 @@ var randomTests = {
 	 *    of each of the 16 possible 4 bit values. Denote f(i) as the number of each 4 bit value i where 0 <= i <= 15.
 	 * 2. Evaluate the following:
 	 *    X = (16/5000) * (SUM i=0 -> i=15 [f(i)]^2) - 5000
-	 * 3. The test is passed if 1.03 < X < 57.4.
+	 * 3. The test is passed if 1.03 < X < 57.4. 
+	 * @param {string} randomBits The random bits to test
+	 * @param {int} numOfBits The number of random bits
+	 * @return {bool} Returns true if the test passed or false if not
 	 */
 	randomnessPokerTest: function(randomBits, numOfBits)
-	{
-		var x = 0;
-		
+	{		
 		var possibleFourBits = {};
 		possibleFourBits['bits0000'] = { hex: '0', binary: '0000', count: 0 };
 		possibleFourBits['bits0001'] = { hex: '1', binary: '0001', count: 0 };
@@ -100,10 +98,13 @@ var randomTests = {
 		});
 		
 		// Evaluation
-		x = (16/5000) * sum - 5000;	
+		var x = (16/5000) * sum - 5000;
+		var testResult = ((1.03 < x) && (x < 57.4)) ? true : false;
 		
-		// Test
-		return ((1.03 < x) && (x < 57.4)) ? true : false;
+		// Log output to screen
+		$('#pokerTestResults').html('The test is passed if 1.03 < X < 57.4. Test passed: ' + testResult + '. X = ' + x.toFixed(2));
+		
+		return testResult;
 	},
 	
 	/**
@@ -123,11 +124,13 @@ var randomTests = {
 	 * 4	223-402
 	 * 5	90-223
 	 * 6+	90-223
+	 * @param {string} randomBits The random bits to test
+	 * @param {int} numOfBits The number of random bits
+	 * @return {bool} Returns true if the test passed or false if not
 	 */
 	randomnessRunsTest: function(randomBits, numOfBits)
 	{
-		var x = 0;
-		
+		// Initialize object to count the lengths of each run of bits
 		var numOfRuns = {
 			runlength0: 0,
 			runlength1: 0,
@@ -136,25 +139,28 @@ var randomTests = {
 			runlength4: 0,
 			runlength5: 0,
 			runlength6: 0
-		}
+		};
 		
 		var lastDigit = null;
 		var currentRun = 0;
 		
-		for (var i=0; i < randomBits.length; i++)
+		for (var i=0; i < numOfBits; i++)
 		{
 			var currentDigit = randomBits.charAt(i);
-						
+			
+			// Increment current run if the bit has not changed
 			if (lastDigit == currentDigit)
 			{
 				currentRun++;
 			}
 			else {
+				// A run of 6 or more bits is counted under the 6+ group
 				if (currentRun >= 6)
 				{
 					numOfRuns['runlength6'] += 1;
 				}
 				else {
+					// Otherwise count it under it's own group
 					numOfRuns['runlength' + currentRun] += 1;
 				}
 				
@@ -165,6 +171,7 @@ var randomTests = {
 			lastDigit = currentDigit;
 		}
 		
+		// Tally the counts to see if they are in correct range
 		var successCount = 0;		
 		if ((2267 < numOfRuns['runlength1']) && (numOfRuns['runlength1'] < 2733))
 		{
@@ -190,28 +197,44 @@ var randomTests = {
 		{
 			successCount += 1;
 		}
+				
+		// Evaluation
+		var testResult = (successCount == 6) ? true : false;
 		
-		// Check all tests pass
-		return (successCount == 6) ? true : false;		
+		// Log output to screen
+		$('#runsTestResults').html(
+			'The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.<br>' + 
+			'Run length 1: 2267-2733. Test result: ' + numOfRuns['runlength1'] + '<br>' +
+			'Run length 2: 1079-1421. Test result: ' + numOfRuns['runlength2'] + '<br>' +
+			'Run length 3: 502-748. Test result: ' + numOfRuns['runlength3'] + '<br>' +
+			'Run length 4: 223-402. Test result: ' + numOfRuns['runlength4'] + '<br>' +
+			'Run length 5: 90-223. Test result: ' + numOfRuns['runlength5'] + '<br>' +
+			'Run length 6+: 90-223. Test result: ' + numOfRuns['runlength6'] + '<br>' +
+			'Tests passed: ' + testResult + '.'
+		);
+		
+		return testResult;
 	},
 	
 	/**
 	 * Test 4 - The Long Run Test
 	 * 1. A long run is defined to be a run of length 34 or more (of either zeros or ones).
 	 * 2. On the sample of 20,000 bits, the test is passed if there are NO long runs.
+	 * @param {string} randomBits The random bits to test
+	 * @param {int} numOfBits The number of random bits
+	 * @return {bool} Returns true if the test passed or false if not
 	 */
 	randomnessLongRunsTest: function(randomBits, numOfBits)
 	{
-		var x = 0;
-				
 		var lastDigit = null;
 		var currentRun = 0;
 		var longestRun = 0;
 		
-		for (var i=0; i < randomBits.length; i++)
+		for (var i=0; i < numOfBits; i++)
 		{
 			var currentDigit = randomBits.charAt(i);
-						
+			
+			// If the bit hasn't changed increment the current run
 			if (lastDigit == currentDigit)
 			{
 				currentRun++;
@@ -228,8 +251,17 @@ var randomTests = {
 			}
 			
 			lastDigit = currentDigit;
-		}
+		}		
 		
-		return (longestRun >= 34) ? false : true;
+		// Evaluation
+		var testResult = (longestRun >= 34) ? false : true;
+		
+		// Log output to screen
+		$('#longRunsTestResults').html(
+			'The test is passed if there are no runs of length 34 or more (of either zeros or ones).<br>' +
+			'Length of longest run: ' + longestRun + '. Test passed: ' + testResult + '.'
+		);
+		
+		return testResult;
 	}
 };

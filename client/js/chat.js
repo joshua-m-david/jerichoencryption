@@ -1,29 +1,18 @@
 /*
-	Jericho Encrypted Chat
-	Copyright (c) 2013 Joshua M. David
+	Jericho Chat - Information-theoretically secure communications.
+	Copyright (C) 2013  Joshua M. David
 
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software, design and associated documentation files (the "Software"), 
-	to deal in the Software including without limitation the rights to use, copy, 
-	modify, merge, publish, distribute, and to permit persons to whom the Software 
-	is furnished to do so, subject to the following conditions:
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation in version 3 of the License.
 
-	1) The above copyright notice and this permission notice shall be included in
-	   all copies of the Software and any other software that utilises part or all
-	   of the Software (the "Derived Software").
-	2) Neither the Software nor any Derived Software may be sold, published, 
-	   distributed or otherwise dealt with for financial gain without the express
-	   consent of the copyright holder.
-	3) Derived Software must not use the same name as the Software.
-	4) The Software and Derived Software must not be used for evil purposes.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	THE SOFTWARE.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see [http://www.gnu.org/licenses/].
 */
 
 /**
@@ -138,8 +127,8 @@ var chat = {
 			// Copy the template message into a new message
 			var messageHtml = $('.templateMessage').clone().removeClass('templateMessage');
 			
-			// Escape the message for XSS before outputting it to screen
-			var plaintextMessageEscaped = common.htmlEncodeEntities(plaintextMessage);
+			// Convert links in text to URLs and escape the message for XSS before outputting it to screen
+			var plaintextMessageEscaped = chat.convertLinksAndEscapeForXSS(plaintextMessage);
 
 			// Set params on the template
 			messageHtml.addClass('message messageSent');											// Show style for sent message
@@ -246,7 +235,8 @@ var chat = {
 	},
 	
 	/**
-	 * Updates the number of pads remaining in the local database
+	 * Updates the number of pads remaining in the local database.
+	 * To intitialise the display to the current number of pads, 0 and 0 can be passed in.
 	 * @param {number} messagesSent To update pass in how many messages were just sent
 	 * @param {number} messagesReceived To update pass in how many messages were just received
 	 */
@@ -403,16 +393,16 @@ var chat = {
 		var messageValidity = (decryptedOutput.valid) ? 'messageValid' : 'messageInvalid';
 				
 		// Convert links in text to URLs and escape for XSS
-		var plaintext = chat.convertLinks(decryptedOutput.plaintext);	
+		var plaintext = chat.convertLinksAndEscapeForXSS(decryptedOutput.plaintext);	
 		var ciphertextEscaped = common.htmlEncodeEntities(ciphertext);
 					
 		// Set params on the template
-		messageHtml.addClass('message messageReceived');								// Show style for sent message
-		messageHtml.find('.dateTime').html(dateString);									// Show current local date time		
-		messageHtml.find('.messageText').html(plaintext);								// Show the sent message in chat
-		messageHtml.find('.messageText').attr('title', 'Ciphertext: ' + ciphertext);	// Show ciphertext on mouse hover
-		messageHtml.find('.messageStatus').html(messageStatus);							// Show current status
-		messageHtml.find('.messageStatus').addClass(messageValidity);					// Show green for valid, red for invalid
+		messageHtml.addClass('message messageReceived');										// Show style for sent message
+		messageHtml.find('.dateTime').html(dateString);											// Show current local date time		
+		messageHtml.find('.messageText').html(plaintext);										// Show the sent message in chat
+		messageHtml.find('.messageText').attr('title', 'Ciphertext: ' + ciphertextEscaped);		// Show ciphertext on mouse hover
+		messageHtml.find('.messageStatus').html(messageStatus);									// Show current status
+		messageHtml.find('.messageStatus').addClass(messageValidity);							// Show green for valid, red for invalid
 		
 		// Return the template
 		return messageHtml;
@@ -425,7 +415,7 @@ var chat = {
 	 * @param {string} text The text to escape
 	 * @returns {string}
 	 */
-	convertLinks: function(text)
+	convertLinksAndEscapeForXSS: function(text)
 	{
 		// Match any valid URL
 		var urlRegex = /(\b(https?|ftp|www):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
@@ -440,14 +430,17 @@ var chat = {
 			counter++;
 			
 			// Shorten the URL that the user sees into format http://jerichoencryption...
-			// then adds the link to an array of links. Finally sanitizes both URLS for XSS
-			var shortenedUrlText = url.substr(0, 30) + '...';
+			// If the original url was longer than the cutoff (30 chars) then ... will be added.
+			var shortenedUrlText = url.substr(0, 30);
+			shortenedUrlText += (url.length > 30) ? '...' : '';
+			
+			// Adds the link to an array of links. Finally sanitizes both URLs for XSS
 			urls.push('<a target="_blank" href="' + encodeURI(url) + '">' + common.htmlEncodeEntities(shortenedUrlText) + '</a>');
-						
+			
 			// Return text with link placeholders
 			return replacementText;
 		});
-				
+		
 		// Escape the whole text for XSS
 		text = common.htmlEncodeEntities(text);
 		

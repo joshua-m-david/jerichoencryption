@@ -1,29 +1,18 @@
 /*
-	Jericho Encrypted Chat
-	Copyright (c) 2013 Joshua M. David
+	Jericho Chat - Information-theoretically secure communications.
+	Copyright (C) 2013  Joshua M. David
 
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software, design and associated documentation files (the "Software"), 
-	to deal in the Software including without limitation the rights to use, copy, 
-	modify, merge, publish, distribute, and to permit persons to whom the Software 
-	is furnished to do so, subject to the following conditions:
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation in version 3 of the License.
 
-	1) The above copyright notice and this permission notice shall be included in
-	   all copies of the Software and any other software that utilises part or all
-	   of the Software (the "Derived Software").
-	2) Neither the Software nor any Derived Software may be sold, published, 
-	   distributed or otherwise dealt with for financial gain without the express
-	   consent of the copyright holder.
-	3) Derived Software must not use the same name as the Software.
-	4) The Software and Derived Software must not be used for evil purposes.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	THE SOFTWARE.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see [http://www.gnu.org/licenses/].
 */
 
 /**
@@ -63,7 +52,7 @@ var common = {
 	
 	// Set the possible hashing algorithms to use for hashing the entropy. Note: 
 	// these algorithms (and libraries) must be capable of working inside a Web Worker
-	hashAlgorithms: ['sha2-512', 'sha3-512', 'whirlpool-512'],
+	hashAlgorithms: ['sha3-512', 'whirlpool-512'],
 	
 	// MAC algorithms to be used
 	macAlgorithms: ['hmac-sha2-512', 'hmac-sha3-512', 'hmac-skein-512'],
@@ -296,7 +285,7 @@ var common = {
 
 		return dataArray;
 	},
-		
+	
 	/**
 	 * Gets the index of a random MAC algorithm to use to create and verify the MAC
 	 * @return {number} Returns a number (array index) referencing the algorithm in the macAlgorithms array
@@ -389,40 +378,6 @@ var common = {
 		// Recreate the MAC, if it matches the one sent, then message hasn't been altered
 		var macToTest = this.createMac(macAlgorithmIndex, pad, ciphertextMessage);
 		return (macToTest == mac) ? true : false;
-	},
-		
-	/**
-	 * Uses a Fisher-Yates Shuffle to mix up the order of the hash algorithms.
-	 * This method works better for arrays with few items than the Knuth shuffle above.
-	 * @param {array} hashAlgorithms The list of hash algorithms to shuffle
-	 * @return {array} The shuffled hash algorithms
-	 */
-	shuffleAlgorithms: function(hashAlgorithms)
-	{
-		// Initialisations
-		var counter = hashAlgorithms.length, temp, index, byteArray, randomNum;
-
-		// While there are elements in the array
-		while (counter > 0)
-		{
-			// Get a random number
-			byteArray = new Uint8Array(1);
-			window.crypto.getRandomValues(byteArray);
-			randomNum = '0.' + byteArray[0].toString();
-			
-			// Get random index		
-			index = Math.floor(randomNum * counter);
-
-			// Decrease counter by 1
-			counter--;
-
-			// And swap the last element with it
-			temp = hashAlgorithms[counter];
-			hashAlgorithms[counter] = hashAlgorithms[index];
-			hashAlgorithms[index] = temp;
-		}
-
-		return hashAlgorithms;
 	},
 	
 	/**
@@ -816,18 +771,18 @@ var common = {
 	},
 		
 	/**
-	 * Create the one-time pads from our collected entropy which has been hashed and shuffled
-	 * @param {string} hashedAndShuffledEntropyString
+	 * Create the one-time pads from the collected and extracted entropy
+	 * @param {string} entropyString
 	 */
-	createPads: function(hashedAndShuffledEntropyString)
+	createPads: function(entropyString)
 	{
-		var lengthOfEntropy = hashedAndShuffledEntropyString.length;
+		var lengthOfEntropy = entropyString.length;
 		
 		// Loop through all the entropy hexadecimal chars
 		for (var i=0, padNum=0;  i < lengthOfEntropy;  i += this.totalPadSizeHex, padNum++)
 		{
 			// Get the number of characters for the pad
-			var pad = hashedAndShuffledEntropyString.substr(i, this.totalPadSizeHex);
+			var pad = entropyString.substr(i, this.totalPadSizeHex);
 			
 			// If near the end of the string and we don't have enough for one more pad, don't use the remainder
 			if (pad.length < this.totalPadSizeHex)
@@ -1152,26 +1107,24 @@ var common = {
 		// Remove existing CSS classes and add the class depending on the type of message
 		$('#statusMessage').removeClass('success error').addClass(type);
 		
-		// Show the message for 5 seconds then fade it out
-		$('#statusMessage').html(message).show().delay(7000).fadeOut(300);
+		// Show the message for 10 seconds then fade it out
+		$('#statusMessage').html(message).show().delay(10000).fadeOut(300);
 	},
 		
 	/**
-	 * Wrapper around the various library hash functions, as some like Whirlpool produce uppercase hex, which needs to be lowercased to be consistent.
+	 * Wrapper around the various library hash functions and options to keep the output format consistent.
+	 * Some digests like Whirlpool produce uppercase hex, which needs to be lowercased to be consistent.
 	 * @param {string} algorithm The name of the algorithm to run
 	 * @param {string} message The string to be hashed
+	 * @return {string} The hashed message
 	 */
 	secureHash: function(algorithm, message)
 	{
 		switch (algorithm)
-		{
-			// SHA-2 (512 bit) - FIPS PUB 180-2 standard.
-			case 'sha2-512':
-				return CryptoJS.SHA512(message).toString();
-			
+		{			
 			// SHA-3 Keccak (512 bit) - Winner of the NIST hash function competition. Uses original Keccak algorithm.
 			case 'sha3-512':
-				return CryptoJS.SHA3(message, { outputLength: 512 });
+				return CryptoJS.SHA3(message, { outputLength: 512 }).toString();
 			
 			// Whirlpool (512 bit) - Part of ISO/IEC 10118-3 standard.
 			case 'whirlpool-512':

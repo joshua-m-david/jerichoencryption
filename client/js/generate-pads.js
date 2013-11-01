@@ -1,36 +1,25 @@
 /*
-	Jericho Encrypted Chat
-	Copyright (c) 2013 Joshua M. David
+	Jericho Chat - Information-theoretically secure communications.
+	Copyright (C) 2013  Joshua M. David
 
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software, design and associated documentation files (the "Software"), 
-	to deal in the Software including without limitation the rights to use, copy, 
-	modify, merge, publish, distribute, and to permit persons to whom the Software 
-	is furnished to do so, subject to the following conditions:
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation in version 3 of the License.
 
-	1) The above copyright notice and this permission notice shall be included in
-	   all copies of the Software and any other software that utilises part or all
-	   of the Software (the "Derived Software").
-	2) Neither the Software nor any Derived Software may be sold, published, 
-	   distributed or otherwise dealt with for financial gain without the express
-	   consent of the copyright holder.
-	3) Derived Software must not use the same name as the Software.
-	4) The Software and Derived Software must not be used for evil purposes.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	THE SOFTWARE.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see [http://www.gnu.org/licenses/].
 */
 
 /**
  * On DOM load
  */
 $(document).ready(function()
-{
+{	
 	// Start the database
 	db.initialiseLocalDatabase();
 
@@ -141,43 +130,24 @@ $(document).ready(function()
 			$("#keypressIntervalSliderAmount").html(ui.value + ' keypresses');
 		}
 	});
-
-	// Initialise number of times to shuffle the entropy pool slider
-	$("#numTimesToShuffleEntropyPoolAmount").html(rng.numTimesToShufflePool + ' time');
-	$('#numTimesToShuffleEntropyPool').slider(
-	{
-		min: 1,
-		max: 3,
-		step: 1,
-		value: rng.numTimesToShufflePool,
-		slide: function(event, ui)
-		{
-			// Set values
-			rng.numTimesToShufflePool = ui.value;
-			var wording = (rng.numTimesToShufflePool == 1) ? ' time' : ' times';			
-
-			// Update the text next to the slider with value
-			$("#numTimesToShuffleEntropyPoolAmount").html(rng.numTimesToShufflePool + wording);
-		}
-	});
 	
-	// Initialise bytes to feed into hash slider
-	$("#bytesToFeedIntoHashSliderAmount").html(rng.numBytesToFeedIntoHash + ' Bytes (' + (rng.numBytesToFeedIntoHash * 8) + ' bits)');
-	$('#bytesToFeedIntoHashSlider').slider(
+	// Initialise bits to feed into hash slider
+	$("#bitsToFeedIntoHashSliderAmount").html(rng.numBitsToFeedIntoHash + ' bits (' + (rng.numBitsToFeedIntoHash / 8) + ' Bytes)');
+	$('#bitsToFeedIntoHashSlider').slider(
 	{
-		min: 128,								// Min 128 Bytes
-		max: 256,								// Max 256 Bytes
-		step: 8,								// Increment in 32 Byte (256 bit) increments
-		value: rng.numBytesToFeedIntoHash,
+		min: 512,								// Minimum 64 Bytes
+		max: 4096,								// Maximum 512 Bytes
+		step: 8,								// Slider increments by 1 Byte
+		value: rng.numBitsToFeedIntoHash,		// Default slider value
 		slide: function(event, ui)
 		{
 			// Set values
-			rng.numBytesToFeedIntoHash = ui.value;
-			var numBytesSelected = ui.value;
-			var numBitsSelected = numBytesSelected * 8;
+			rng.numBitsToFeedIntoHash = ui.value;
+			var numBitsSelected = ui.value;
+			var numBytesSelected = numBitsSelected / 8;
 
 			// Update the text next to the slider with value
-			$("#bytesToFeedIntoHashSliderAmount").html(numBytesSelected + ' Bytes (' + numBitsSelected + ' bits)');
+			$("#bitsToFeedIntoHashSliderAmount").html(numBitsSelected + ' bits (' + numBytesSelected + ' Bytes)');
 		}
 	});
 
@@ -221,9 +191,8 @@ $(document).ready(function()
 		// Show in progress message
 		common.showStatus('success', 'Processing entropy...');
 
-		// This method kicks off a process to combine entropy, shuffle it, hash it, 
-		// shuffle it again, then split the data into separate one-time pads
-		rng.combineAllEntropyPools();
+		// This method kicks off a process to hash the entropy then split the data into separate one-time pads
+		rng.extractEntropy();
 
 		// Enable the export button
 		$('#btnOpenExportPadsSettings').attr('disabled', false);
@@ -250,8 +219,8 @@ $(document).ready(function()
 		var mouseScrollEntropy = rng.mouseScrollEntropy.join(' ');
 		var keypressEntropy = rng.keypressEntropy.join(' ');
 		var keypressTimeEntropy = rng.keypressTimeEntropy.join(' ');
-		var combinedAndShuffledEntropy = rng.combinedEntropyPool.join(' ');
-		var hashedAndShuffledEntropy = rng.hashedAndShuffledEntropyString;
+		var combinedEntropy = rng.combinedEntropyPool.join(' ');
+		var extractedEntropy = rng.extractedEntropyString;
 
 		// Display on the page
 		$('#webCryptoEntropy').html(webCryptoEntropy);
@@ -261,16 +230,18 @@ $(document).ready(function()
 		$('#mouseScrollEntropy').html(mouseScrollEntropy);
 		$('#keypressEntropy').html(keypressEntropy);
 		$('#keypressTimeEntropy').html(keypressTimeEntropy);
-		$('#combinedAndShuffledEntropy').html(combinedAndShuffledEntropy);
-		$('#hashedAndShuffledEntropy').html(hashedAndShuffledEntropy);
+		$('#combinedEntropy').html(combinedEntropy);
+		$('#extractedEntropy').html(extractedEntropy);
 
 		// Output pads to screen to view
 		var padHtml = '';
 		var totalPads = db.padData.pads.length;
+		
 		for (var i=0; i < totalPads; i++)
 		{
 			padHtml += '<div class="pad">' + db.padData.pads[i].pad + '</div>';
 		}
+		
 		padHtml += 'Total: ' + totalPads;
 		$('#allPads').html(padHtml);
 
@@ -281,7 +252,7 @@ $(document).ready(function()
 	// Create bitmap from random data collected
 	$('#btnViewBitmap').click(function()
 	{
-		rng.viewRandomDataAsBitmap();
+		rng.viewRandomDataAsBitmap();		
 	});
 
 	/* --------------------------------------- */
@@ -310,7 +281,7 @@ $(document).ready(function()
 		var serverUsername = $('#serverUsername').val();
 		var serverPassword = $('#serverPassword').val();
 
-		// Export to text, file or database
+		// Export to text, file or database depending on user selection
 		common.preparePadsForExport(exportMethod, user, serverAddressAndPort, serverUsername, serverPassword);
 	});
 
@@ -330,7 +301,7 @@ $(document).ready(function()
  */
 var rng = {
 	
-	// Stores what time the program started in milliseconds
+	// Stores what time the program started collecting entropy in milliseconds
 	entropyCollectionStartTime: null,
 		
 	// Flag to use random numbers from the Web Crypto API in the combined entropy pool.
@@ -349,16 +320,11 @@ var rng = {
 	mouseScrollEntropyCollectionInterval: 1000,			// Collect every x milliseconds (range 700 - 3000)
 	keypressEntropyCollectionInterval: 2,				// Collect every x number of key presses (range 1 - 10)
 	
-	// The number of bytes of raw entropy to feed into the hashing algorithm at a time as it is looping through all the entropy and processing it. 
-	// This basically functions as an entropy extractor. NIST Special Publication 800-90B Section 6.4.2 recommends several extractors, including the SHA 
-	// hash family and states that if the amount of entropy input is twice (or more) the number of bits output from them, that output can be considered 
-	// to have full entropy. The hash algorithms used are 512 bit, so at a minimum we would want to gather 128 bytes (1024 bits) of entropy at 
-	// a time and feed it into the hash, then the hash output would give us 512 bits we can use for a one-time pad. The amount of entropy to feed in 
-	// can be decided by the user and they can increase it using the slider if they really want to.
-	numBytesToFeedIntoHash: 128,
-	
-	// This sets the number of times the entropy pool will be shuffled. This is configurable by slider.
-	numTimesToShufflePool: 1,	
+	// The number of bits of entropy to feed into the hashing algorithm at a time as it is looping through all the entropy and processing it. 
+	// The hash algorithms used are 512 bit so at a minimum we would want to gather 512 bits of entropy at a time and feed it into the hash, 
+	// then the hash output would give us a uniformly distributed 512 bits we can use for a one-time pad. The amount of entropy to feed in will 
+	// be decided by the user and they can increase it using the slider if they want to.
+	numBitsToFeedIntoHash: 512,
 	
 	// Collection variables for mouse movement collection
 	prevMouseMoveCoordinates: { x: null, y: null },
@@ -379,7 +345,7 @@ var rng = {
 	prevKeypressTime: null,
 	prevKeypressTimeDifference: null,
 			
-	// Stores all random number entropy
+	// Stores all random number entropy in separate arrays so it can be viewed/verified separately
 	webCryptoApiEntropy: [],				// HTML5 Web Crypto API getRandomValues
 	mouseMovementEntropy: [],				// Random mouse movements
 	mouseClickEntropy: [],					// Area or distance between mouse clicks
@@ -387,10 +353,10 @@ var rng = {
 	mouseScrollEntropy: [],					// Difference between scroll movements
 	keypressEntropy: [],					// ASCII character codes from keypresses
 	keypressTimeEntropy: [],				// Time between keypresses
-	combinedEntropyPool: [],				// Combination of all entropy which is shuffled
+	combinedEntropyPool: [],				// Combination of all entropy as it is collected
 	
-	// Combination of all combined, hashed and shuffled entropy
-	hashedAndShuffledEntropyString: null,
+	// Combination of all combined and extracted entropy
+	extractedEntropyString: null,
 	
 	// Stores the length of the the entropy for quick display on the page
 	webCryptoApiEntropyLength: 0,
@@ -400,6 +366,7 @@ var rng = {
 	mouseScrollEntropyLength: 0,
 	keypressEntropyLength: 0,
 	keypressTimeEntropyLength: 0,
+	totalNumbersCollected: 0,
 	totalEntropyLength: 0,
 	
 		
@@ -449,37 +416,77 @@ var rng = {
 	},
 	
 	/**
-	 * Store the entropy in the correct pool and update the display at the same time
+	 * Stores the entropy and updates the display of how much entropy has been collected.
+	 * Entropy is kept in separate pools so the entropy from each source can be viewed/verified independently.
+	 * It is also stored in the overall entropy pool in the order that it arrived.
 	 * @param {string} entropyPoolName The name of the entropy pool
 	 * @param {string|number} value The value to add to the pool
 	 */
 	storeInPool: function(entropyPoolName, value)
 	{
-		// Convert to string for consistency and to determine the length
+		// Convert numbers to string for consistency and to determine the length
 		value = value.toString();
 		
-		// Calculate the new number of bytes in the entropy pool
-		var sizeOfEntropyInPool = rng[entropyPoolName + 'Length'] + value.length;
-		var totalEntropyLength = rng['totalEntropyLength'] + value.length;
-		
-		// Calculate how many messages could roughly be sent/received with this much entropy. If there isn't 
-		// enough entropy left to feed into the last hash at the end, the remainder raw entropy won't be used.
-		var hashAlgorithmOutputBytes = 64;															// SHA2, SHA3 & Whirlpool all output 512 bits
-		var extractedBytesPercentage = hashAlgorithmOutputBytes / this.numBytesToFeedIntoHash;
-		var totalNumOfMessages = ((totalEntropyLength * extractedBytesPercentage) / common.totalPadSize);
-		totalNumOfMessages = Math.floor(totalNumOfMessages);
+		// Get an estimate of bits that the entropy contains
+		var estimatedEntropyBits = rng.estimateEntropyBits(value);
 				
+		// Calculate the new number of bits in the entropy pool
+		var sizeOfEntropyInPool = rng[entropyPoolName + 'Length'] + estimatedEntropyBits;
+		var totalEntropyLength = rng['totalEntropyLength'] + estimatedEntropyBits;
+		var totalNumbersCollected = rng['totalNumbersCollected'] + value.length;
+		
+		// Calculate how many messages could roughly be sent/received with this much entropy
+		var hashAlgorithmOutputBits = 512;																	// Whirlpool & SHA3 both output 512 bits
+		var extractedBitsPercentage = hashAlgorithmOutputBits / this.numBitsToFeedIntoHash;
+		var extractedBits = totalEntropyLength * extractedBitsPercentage;
+		var totalNumOfMessages = Math.floor(extractedBits / common.totalPadSizeBinary);
+		
+		// Work out how much entropy there will actually be extracted. If there isn't enough entropy 
+		// left to feed into the last hash at the end, the remainder raw entropy won't be used.		
+		var numOfHashOutputs = Math.floor(extractedBits / hashAlgorithmOutputBits);
+		var actualExtractedBits = numOfHashOutputs * hashAlgorithmOutputBits;
+								
 		// Update the size of the pool and amount of entropy overall
 		rng[entropyPoolName + 'Length'] = sizeOfEntropyInPool;
 		rng['totalEntropyLength'] = totalEntropyLength;
+		rng['totalNumbersCollected'] = totalNumbersCollected;
 		
-		// Add the entropy to the relevant pool
+		// Add the entropy to the relevant pool and overall pool
 		rng[entropyPoolName].push(value);
+		rng['combinedEntropyPool'].push(value);
 		
 		// Update display boxes on page
 		$('#' + entropyPoolName + 'Length div').html(sizeOfEntropyInPool);
+		$('#totalNumbersCollected div').html(totalNumbersCollected);
 		$('#totalEntropyLength div').html(totalEntropyLength);
+		$('#totalExtractedBits div').html(actualExtractedBits);
 		$('#totalNumOfMessages div').html(totalNumOfMessages);
+		
+	},
+	
+	/**
+	 * Estimates the entropy in bits that were collected
+	 * @param {string} entropy The collected entropy as a number
+	 * @returns {number} Returns the estimated number of bits of entropy in this number
+	 */
+	estimateEntropyBits: function(entropy)
+	{
+		var entropyLength = entropy.length;
+		var estimatedEntropyBits = 0;
+		
+		// Get each individual number in the collected entropy
+		for (var i=0; i < entropyLength; i++)
+		{
+			var num = entropy.charAt(i);
+			
+			// If the number is 8 or 9 then don't count that entropy in the estimate
+			if ((num !== '8') && (num !== '9'))
+			{
+				estimatedEntropyBits += 3;
+			}
+		}
+		
+		return estimatedEntropyBits;
 	},
 	
 	/**
@@ -506,9 +513,8 @@ var rng = {
 				catch (e)
 				{
 					// Catch QuotaExceededError but don't do anything, the next interval collection should continue to get random numbers
-				}
-				
-				return true;
+					console.log('QuotaExceededError occurred on collecting random number from Web Crypto API.');
+				}				
 
 			}, this.webCryptoApiEntropyCollectionInterval);
 		}
@@ -744,78 +750,45 @@ var rng = {
 	},
 	
 	/**
-	 * Combines all the entropy from the various pools and then shuffles it.
-	 * Then starts a web worker process to hash all the entropy asynchronously.
+	 * Starts a web worker (asynchronous) process to extract the entropy
 	 */
-	combineAllEntropyPools: function()
+	extractEntropy: function()
 	{
 		// Clear existing padData otherwise new data generated will be appended to existing data
 		db.resetInMemoryPadData();
 		
-		// Combine all pools into one array
-		this.combinedEntropyPool = this.mouseMovementEntropy.concat(
-			this.mouseClickEntropy, this.mouseClickTimeEntropy, this.mouseScrollEntropy, 
-			this.keypressEntropy, this.keypressTimeEntropy,	this.webCryptoApiEntropy
-		);
-			
-		// If there's not at least 64 bytes of entropy show an error. If this check is removed, the browser will crash if there is no entropy
-		if (this.totalEntropyLength < rng.numBytesToFeedIntoHash)
+		// Combine the array into one string
+		var combinedEntropyString = this.combinedEntropyPool.join('');
+				
+		// If there's not at least x bits of entropy show an error. If this check is removed, the browser will crash if there is no entropy
+		if (rng['totalEntropyLength'] < rng.numBitsToFeedIntoHash)
 		{
-			common.showStatus('error', 'Not enough entropy generated, generate some more.');
+			common.showStatus('error', 'Not enough entropy collected, make some more.');
 			return false;
 		}
-				
-		// Shuffle all the values in the pool the number of times the user specifies
-		for (var i=0; i < this.numTimesToShufflePool; i++)
-		{
-			this.combinedEntropyPool = common.shuffleArray(this.combinedEntropyPool);
-		}
-		
-		// Combine the array into one string
-		var combinedEntropyPoolString = this.combinedEntropyPool.join('');
-				
-		// For the possible hashing algorithms, mix up the order that they are applied
-		hashAlgorithms = common.shuffleAlgorithms(common.hashAlgorithms);
 		
 		// Run HTML5 web worker thread to hash the entropy because it is CPU intensive and we don't want to block the UI
 		var worker = new Worker('js/hashing-worker.js');
 		var data = {
-			'combinedEntropyPoolString': combinedEntropyPoolString,
-			'hashAlgorithms': hashAlgorithms,
-			'numBytesToFeedIntoHash': rng.numBytesToFeedIntoHash
+			'combinedEntropyString': combinedEntropyString,
+			'numBitsToFeedIntoHash': rng.numBitsToFeedIntoHash
 		};
 		
 		// Send data to the worker
 		worker.postMessage(data);
 		
-		// When the worker is complete, get the hashed entropy back and continue processing
+		// When the worker is complete, get the hashed entropy back and split it up into separate one-time pads
 		worker.addEventListener('message', function(e)
 		{
-			rng.processHashedEntropy(e.data);
+			// Store the hashed entropy as it is used later for testing
+			rng.extractedEntropyString = e.data;
+			
+			// Create the one-time pads
+			common.createPads(rng.extractedEntropyString);
 
 		}, false);
 	},
 	
-	/**
-	 * Once the entropy has been combined, shuffled and hashed this method will shuffle the hashed entropy 
-	 * leaving a single random string. Then this data will be split into separate one-time pads.
-	 * @param {string} hashedEntropyPoolString Array of random entropy numbers
-	 */
-	processHashedEntropy: function(hashedEntropyPoolString)
-	{				
-		// Convert back to array of single hexadecimal symbols
-		var hashedEntropyPoolArray = hashedEntropyPoolString.split('');
-				
-		// Final shuffle of the entropy to mix up the outputs of the hashes to disguise any possible bias
-		var hashedAndShuffledEntropyArray = common.shuffleArray(hashedEntropyPoolArray);
-		
-		// Combine entropy back into string, store so we can use to test randomness later
-		this.hashedAndShuffledEntropyString = hashedAndShuffledEntropyArray.join('');
-		
-		// Create the one-time pads
-		common.createPads(this.hashedAndShuffledEntropyString);
-	},
-			
 	/**
 	 * View the random data as a bitmap image which lets a user do a simple visual analysis of the numbers produced.
 	 * Humans are really good at spotting patterns. Visualisation of the random data allows them to use their eyes 
@@ -827,27 +800,41 @@ var rng = {
 	viewRandomDataAsBitmap: function()
 	{
 		// If there is no random data then exit
-		if (this.hashedAndShuffledEntropyString == null)
+		if (rng.extractedEntropyString === null)
 		{
 			common.showStatus('error', 'No entropy generated, generate some first.');
 			return false;
 		}
 		
-		// First convert our random data to binary and dynamically work out the size of the square image (x & y axis)
-		var randomBits = common.convertHexadecimalToBinary(this.hashedAndShuffledEntropyString);		
+		// First convert the random data to binary
+		var hashedRandomBits = common.convertHexadecimalToBinary(rng.extractedEntropyString);
+		
+		// Create the random data bitmap on the page then display the canvas
+		this.fillCanvasWithData('canvasHashedRandomData', hashedRandomBits);
+		$('.randomDataBitmapContainer').show();
+	},
+	
+	/**
+	 * Fills the HTML5 canvas with random bits, 0 bits are coloured white, 1 bits are coloured black.
+	 * @param {string} canvasId The id to render the binary data into
+	 * @param {string} randomBits Random binary data
+	 */
+	fillCanvasWithData: function(canvasId, randomBits)
+	{
+		// Dynamically work out the size of the square image (x & y axis)
 		var numRandomBits = randomBits.length;
 		var squareRoot = Math.sqrt(numRandomBits);
 		var axisLength = Math.floor(squareRoot);
 		
 		// Set new canvas dimensions
-		$('#canvasRandomData').prop(
+		$('#' + canvasId).prop(
 		{
 			width: axisLength,
 			height: axisLength
 		});
 		
 		// Create the canvas
-		var ctx = document.getElementById('canvasRandomData').getContext('2d');
+		var ctx = document.getElementById(canvasId).getContext('2d');
 		
 		// Fill everything with white first
 		ctx.fillStyle = "#FFF";
@@ -867,9 +854,6 @@ var rng = {
 				}
 			}
 		}
-		
-		// Show it on the page
-		$('.randomDataBitmapContainer').show();
 	},
 	
 	/**
@@ -881,7 +865,7 @@ var rng = {
 	testRandomness: function()
 	{
 		// Make sure there is actually entropy
-		if (this.hashedAndShuffledEntropyString == null)
+		if (rng.extractedEntropyString == null)
 		{
 			common.showStatus('error', 'No entropy to test.');
 			return false;
@@ -889,14 +873,15 @@ var rng = {
 		
 		// Get the first 20,000 bits of random data to run the tests
 		var requiredNumOfBits = 20000;
-		var randomBits = common.convertHexadecimalToBinary(this.hashedAndShuffledEntropyString);
+		var randomBits = common.convertHexadecimalToBinary(rng.extractedEntropyString);
 		randomBits = randomBits.substr(0, requiredNumOfBits);
 		var numOfBits = randomBits.length;
 		
-		// If they haven't collected enough, show an error
+		// If they haven't collected enough, show an error. If a user chooses to feed in more than 512 bits of entropy 
+		// into the hash e.g. 1024 bits then there will be less output than the total collected entropy bits.
 		if (numOfBits < requiredNumOfBits)
 		{
-			common.showStatus('error', 'Not enough entropy generated for random tests: ' + numOfBits + ' bits out of ' + requiredNumOfBits + ' bits required.');
+			common.showStatus('error', 'Not enough entropy generated for random tests. Extracted entropy ' + numOfBits + ' bits out of ' + requiredNumOfBits + ' bits required.');
 			return false;
 		}
 		
@@ -909,13 +894,14 @@ var rng = {
 		// If all tests pass, show success message
 		if (monobitTest && pokerTest && runsTest && longRunsTest)
 		{
-			common.showStatus('success', 'Randomness tests passed.');
-			return true;
+			common.showStatus('success', 'Randomness tests passed.');			
 		}
 		else {
 			// Show error
 			common.showStatus('error', 'Randomness tests failed.');
-			return false;
 		}
+		
+		// Show test results
+		$('.randomnessTestResultsDisplay').show();
 	}
 };

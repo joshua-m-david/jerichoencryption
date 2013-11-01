@@ -1,29 +1,18 @@
 /*
-	Jericho Encrypted Chat
-	Copyright (c) 2013 Joshua M. David
+	Jericho Chat - Information-theoretically secure communications.
+	Copyright (C) 2013  Joshua M. David
 
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software, design and associated documentation files (the "Software"), 
-	to deal in the Software including without limitation the rights to use, copy, 
-	modify, merge, publish, distribute, and to permit persons to whom the Software 
-	is furnished to do so, subject to the following conditions:
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation in version 3 of the License.
 
-	1) The above copyright notice and this permission notice shall be included in
-	   all copies of the Software and any other software that utilises part or all
-	   of the Software (the "Derived Software").
-	2) Neither the Software nor any Derived Software may be sold, published, 
-	   distributed or otherwise dealt with for financial gain without the express
-	   consent of the copyright holder.
-	3) Derived Software must not use the same name as the Software.
-	4) The Software and Derived Software must not be used for evil purposes.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	THE SOFTWARE.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see [http://www.gnu.org/licenses/].
 */
 
 /**
@@ -36,7 +25,6 @@
 importScripts('common.js');
 importScripts('lib/jscrypto-core.js');
 importScripts('lib/jscrypto-x64core.js');
-importScripts('lib/jscrypto-sha2-512.js');
 importScripts('lib/jscrypto-sha3.js');
 importScripts('lib/whirlpool.js');
 
@@ -45,22 +33,22 @@ self.addEventListener('message', function(e)
 {
 	// Hash the entropy
 	var data = e.data;
-	var hashedEntropyPoolString = hasher.hashEntropy(data.combinedEntropyPoolString, data.hashAlgorithms, data.numBytesToFeedIntoHash);
+	var hashedEntropyStringHexadecimal = hasher.hashEntropy(data.combinedEntropyString, data.numBitsToFeedIntoHash);
 	
 	// Send the hashed entropy back to the main thread
-	self.postMessage(hashedEntropyPoolString);
+	self.postMessage(hashedEntropyStringHexadecimal);
 	
 }, false);
 
 
 /**
  * This will take the collected entropy and process them into a form fit for use as one-time pad key material. It uses 
- * the latest revisions of either SHA-2, SHA-3 Keccak or Whirlpool in case there is a bias, pattern or a pre-image attack 
- * becomes known later in one of the hashes. This program uses the 512 bit versions of these algorithms for security and 
- * for consistency with the other algorithms. For SHA-3 the original Keccak algorithm is used.
+ * the latest revisions of either Whirlpool and Keccak hash algorithms in case there is a bias or pattern that becomes 
+ * known later in one of the hashes. This program uses the 512 bit versions of these algorithms for security and 
+ * for consistency with the other algorithms. The original Keccak algorithm which won the SHA-3 competition is used 
+ * rather than the final SHA-3 standard which NIST has been modifying/weakening.
  * 
  * See these pages for more details:
- * http://en.wikipedia.org/wiki/Sha2
  * http://en.wikipedia.org/wiki/SHA-3
  * http://en.wikipedia.org/wiki/Whirlpool_%28cryptography%29
  */ 
@@ -68,41 +56,81 @@ var hasher = {
 	
 	/**
 	 * Hashes the entropy
-	 * @param {string} combinedEntropyPoolString All raw entropy that has been shuffled
-	 * @param {array} hashAlgorithms List of hash algorithms to use to hash the entropy
-	 * @param {number} numBytesToFeedIntoHash The number of raw entropy bytes to feed into the hash each time
+	 * @param {string} combinedEntropyString All raw entropy
+	 * @param {number} numBitsToFeedIntoHash The number of entropy bits to feed into the hash each time
 	 * @return {string} Returns a string containing the entropy hashed
 	 */
-	hashEntropy: function(combinedEntropyPoolString, hashAlgorithms, numBytesToFeedIntoHash)
+	hashEntropy: function(combinedEntropyString, numBitsToFeedIntoHash)
+	{
+		var hashedEntropyStringHexadecimal = '';
+		
+		// Get an array containing groups of entropy to feed into the hash
+		var allEntropyInputToHash = hasher.getBytesToHash(combinedEntropyString, numBitsToFeedIntoHash);
+				
+		// Loop through, grab x bytes of entropy then hash with one of the 512 bit hash functions
+		for (var i=0; i < allEntropyInputToHash.length; i++)
+		{
+			// Hash the entropy separately with Keccak and then hash the same entropy separately with Whirlpool
+			var firstHash = common.secureHash('sha3-512', allEntropyInputToHash[i]);			
+			var secondHash = common.secureHash('whirlpool-512', allEntropyInputToHash[i]);
+						
+			// Convert the hash outputs to binary
+			var firstHashBinary = common.convertHexadecimalToBinary(firstHash);
+			var secondHashBinary = common.convertHexadecimalToBinary(secondHash);
+						
+			// XOR the hash outputs together using the same XOR function used for encryption/decryption, then convert to hexadecimal
+			var xoredHash = common.encryptOrDecrypt(firstHashBinary, secondHashBinary);
+			var xoredHashHexadecimal = common.convertBinaryToHexadecimal(xoredHash);
+						
+			// Build up the hashed entropy to return
+			hashedEntropyStringHexadecimal += xoredHashHexadecimal;
+		}		
+		
+		return hashedEntropyStringHexadecimal;
+	},
+	
+	/**
+	 * Extracts the entropy into groups of approximately x bits worth of entropy to be hashed
+	 * @param {string} combinedEntropyString
+	 * @param {number} numBitsToFeedIntoHash
+	 * @returns {array}
+	 */
+	getBytesToHash: function(combinedEntropyString, numBitsToFeedIntoHash)
 	{
 		// Initialisations
-		var lastAlgorithmIndex = hashAlgorithms.length - 1;					// Index of last algorithm in array
-		var inputLength = numBytesToFeedIntoHash;							// Number of bytes to feed into the hash
-		var entropyLength = combinedEntropyPoolString.length;				// Length of combined entropy		
-		var hashedEntropyPoolString = '';
-		var currentAlgorithmIndex = 0;
+		var entropyLength = combinedEntropyString.length;		// Length of combined entropy
+		var allEntropyInputToHash = [];							// Array of separate groups of entropy to feed into the hash
+		var currentEntropyForHash = '';							// Current accumulation of entropy to input into the hash
+		var currentEntropyBitCount = 0;							// Current count of the entropy in bits
 		
-		// Loop through, grab x bytes of entropy then hash with one of the 512 bit hash functions
-		for (var startPosition=0; startPosition < entropyLength; startPosition += inputLength)
+		// Loop through the entropy one number/byte at a time
+		for (var i=0; i < entropyLength; i++)
 		{
-			// Reset counter back
-			currentAlgorithmIndex = (currentAlgorithmIndex > lastAlgorithmIndex) ? 0 : currentAlgorithmIndex;
-			
-			// Get x bytes of input to be hashed, if the input is less than x bytes i.e. near the 
-			// end of the entropy, then break out and don't hash any more entropy
-			var entropy = combinedEntropyPoolString.substr(startPosition, inputLength);			
-			if (entropy.length < inputLength)
+			// Get number at this index
+			var num = combinedEntropyString.charAt(i);
+						
+			// Each number from 0-7 in ASCII has 3 bits of entropy at the end. The last 3 binary 
+			// digits of 8 & 9 are a repeat of 0 and 1 in binary so we exclude them from the estimate
+			if ((num != '8') && (num != '9'))
 			{
-				break;
+				currentEntropyBitCount += 3;
 			}
 			
-			// Hash the entropy using an alternate algorithm each loop
-			hashedEntropyPoolString += common.secureHash(hashAlgorithms[currentAlgorithmIndex], entropy);
-			
-			// Increment to use next hash algorithm
-			currentAlgorithmIndex++;
+			// Append the number to the entropy to be input to the hash
+			currentEntropyForHash += num.toString();
+						
+			// If there is enough entropy for a hash store that group of entropy.
+			// If there is not enough entropy for another hash the remainder won't be used.
+			if (currentEntropyBitCount >= numBitsToFeedIntoHash)
+			{				
+				// Store that in an array and reset the counters
+				allEntropyInputToHash.push(currentEntropyForHash);
+				currentEntropyForHash = '';
+				currentEntropyBitCount = 0;
+			}
 		}
-		
-		return hashedEntropyPoolString;
+				
+		// Return the separate groups of entropy to feed into the hash
+		return allEntropyInputToHash;
 	}
-}
+};

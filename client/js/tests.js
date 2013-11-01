@@ -1,29 +1,18 @@
 /*
-	Jericho Encrypted Chat
-	Copyright (c) 2013 Joshua M. David
+	Jericho Chat - Information-theoretically secure communications.
+	Copyright (C) 2013  Joshua M. David
 
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software, design and associated documentation files (the "Software"), 
-	to deal in the Software including without limitation the rights to use, copy, 
-	modify, merge, publish, distribute, and to permit persons to whom the Software 
-	is furnished to do so, subject to the following conditions:
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation in version 3 of the License.
 
-	1) The above copyright notice and this permission notice shall be included in
-	   all copies of the Software and any other software that utilises part or all
-	   of the Software (the "Derived Software").
-	2) Neither the Software nor any Derived Software may be sold, published, 
-	   distributed or otherwise dealt with for financial gain without the express
-	   consent of the copyright holder.
-	3) Derived Software must not use the same name as the Software.
-	4) The Software and Derived Software must not be used for evil purposes.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	THE SOFTWARE.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see [http://www.gnu.org/licenses/].
 */
 
 // On page load run QUnit tests
@@ -364,28 +353,15 @@ $(document).ready(function()
 		ok(ciphertextHex == '7aadfc0a83b1ed9a6f4e423b9516b69581a77bc231b91d05abfa6be87d2f0f4b69138a28b7d4bedb58dce12cff46d7f3e9014c9c21deaaf20623c0b3bcf6335966809b770e4ca76f618683263380f93c4ee0078c80e6ad483025187e6a95e64d170393f5d3057876f3d404aa2de471d7944a6978c319e3333e');
 		ok(ciphertextHex.length == common.padIdentifierSizeHex + common.totalMessagePartsSizeHex);
 	});
-	
-	/**
-	 * ------------------------------------------------------------------
-	 * Test 512 bit hash using SHA-2
-	 * ------------------------------------------------------------------
-	 */
-	
-	// The quick brown fox jumps over the lazy dog.
-	var plaintextMessageComplete = plaintextMessage + '.';
-	
-	test("Test 512 bit hash using SHA-2 512", function()
-	{
-		ok(common.secureHash('sha2-512', '') == 'cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e', 'empty string');
-		ok(common.secureHash('sha2-512', plaintextMessage) == '07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb642e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6', plaintextMessage);
-		ok(common.secureHash('sha2-512', plaintextMessageComplete) == '91ea1245f20d46ae9a037a989f54f1f790f0a47607eeb8a14d12890cea77a1bbc6c7ed9cf205e67b7f2b8fd4c7dfd3a7a8617e45f3c463d481c7e586c39ac1ed', plaintextMessageComplete);
-	});
-		
+			
 	/**
 	 * ------------------------------------------------------------------
 	 * Test hashing with SHA-3 Keccak 512 bit
 	 * ------------------------------------------------------------------
 	 */
+	
+	// The quick brown fox jumps over the lazy dog.
+	var plaintextMessageComplete = plaintextMessage + '.';
 	
 	test("Test 512 bit hash using SHA-3 Keccak", function()
 	{
@@ -793,15 +769,17 @@ $(document).ready(function()
 	 * ------------------------------------------------------------------
 	 */
 	
-	var linkedTextA = chat.convertLinks('The one-time pad http://en.wikipedia.org/wiki/One-time_pad is a type of encryption that is impossible to crack if used correctly.');
-	var linkedTextB = chat.convertLinks('The one-time pad http://en.wikipedia.org/wiki/One-time_pad?test=<script>alert("xss);</script>');
-	var linkedTextC = chat.convertLinks('The one-time pad http://en.wikipedia.org/<script>alert("xss);</script>/wiki/One-time_pad is a type of encryption');
-		
+	var linkedTextA = chat.convertLinksAndEscapeForXSS('The one-time pad http://en.wikipedia.org/wiki/One-time_pad is a type of encryption that is impossible to crack if used correctly.');
+	var linkedTextB = chat.convertLinksAndEscapeForXSS('The one-time pad http://en.wikipedia.org/wiki/One-time_pad?test=<script>alert("xss);</script>');
+	var linkedTextC = chat.convertLinksAndEscapeForXSS('The one-time pad http://en.wikipedia.org/<script>alert("xss);</script>/wiki/One-time_pad is a type of encryption');
+	
+	console.log(linkedTextC);
+	
 	test("Test escaping of message for XSS and linkifying", function()
 	{
 		ok(linkedTextA == 'The one-time pad <a target="_blank" href="http://en.wikipedia.org/wiki/One-time_pad">http:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;O...</a> is a type of encryption that is impossible to crack if used correctly.', linkedTextA);
 		ok(linkedTextB == 'The one-time pad <a target="_blank" href="http://en.wikipedia.org/wiki/One-time_pad?test=">http:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;O...</a>&lt;script&gt;alert(&quot;xss);&lt;&#x2F;script&gt;', linkedTextB);
-		ok(linkedTextC == 'The one-time pad <a target="_blank" href="http://en.wikipedia.org/">http:&#x2F;&#x2F;en.wikipedia.org&#x2F;...</a>&lt;script&gt;alert(&quot;xss);&lt;&#x2F;script&gt;&#x2F;wiki&#x2F;One-time_pad is a type of encryption', linkedTextC);
+		ok(linkedTextC == 'The one-time pad <a target="_blank" href="http://en.wikipedia.org/">http:&#x2F;&#x2F;en.wikipedia.org&#x2F;</a>&lt;script&gt;alert(&quot;xss);&lt;&#x2F;script&gt;&#x2F;wiki&#x2F;One-time_pad is a type of encryption', linkedTextC);
 	});
 	
 	/**
