@@ -1,0 +1,9 @@
+
+Thanks to:
+
+Simon Frankenberger - Reported a bug in skein_hash_hex().
+
+Bryan Geragty - Suggested that the PHP extension really could use the
+recent optimizations made to the Skein suite.
+
+

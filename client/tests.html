@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-	Jericho Chat - Information-theoretically secure communications.
-	Copyright (C) 2013  Joshua M. David
+	Jericho Chat - Information-theoretically secure communications
+	Copyright (C) 2013-2014  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,22 +17,25 @@
 -->
 <html>
 	<head>
-		<title>Jericho Chat - Code Tests</title>
-		
+		<title>Jericho Chat - Code Tests</title>		
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+				
+		<link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
+		<link rel="icon" type="image/png" sizes="196x196" href="img/touch-icon-196x196.png">
+		
 		<link rel="stylesheet" href="css/lib/qunit.css">		
 	
 		<!-- Load source code to test -->
 		<script src="js/lib/jquery.js"></script>
-		<script src="js/lib/jsdigest.js"></script>
+		
 		<script src="js/lib/jscrypto-core.js"></script>
 		<script src="js/lib/jscrypto-x64core.js"></script>
-		<script src="js/lib/jscrypto-sha2-512.js"></script>
+		<script src="js/lib/jscrypto-enc-base64.js"></script>
 		<script src="js/lib/jscrypto-sha3.js"></script>
-		<script src="js/lib/jscrypto-hmac.js"></script>
-		<script src="js/lib/whirlpool.js"></script>
-		<script src="js/common.js"></script>
+		<script src="js/lib/skein.js"></script>
+		
 		<script src="js/database.js"></script>
+		<script src="js/common.js"></script>
 		<script src="js/chat.js"></script>
 				
 		<!-- Load test suite code -->

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-	Jericho Chat - Information-theoretically secure communications.
-	Copyright (C) 2013  Joshua M. David
+	Jericho Chat - Information-theoretically secure communications
+	Copyright (C) 2013-2014  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -15,14 +15,20 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see [http://www.gnu.org/licenses/].
 -->
-<html>
+<html class="backupPage">
 	<head>
 		<title>Jericho Chat - Backup pads</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
 		
+		<link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
+		<link rel="icon" type="image/png" sizes="196x196" href="img/touch-icon-196x196.png">
+				
 		<link rel="stylesheet" href="css/lib/normalize.css">
-		<link rel="stylesheet" href="css/lib/ui-lightness/jquery-ui.css">
-		<link rel="stylesheet" href="css/global.css">
+		<link rel="stylesheet" href="css/common.css">
+		<link rel="stylesheet" href="css/backup.css">
 		
 		<script src="js/lib/jquery.js"></script>
 		<script src="js/lib/filesaver.js"></script>
@@ -54,40 +60,37 @@
 		</script>
 	</head>
 	<body>
-		<div class="page backupPage">
-			<table class="pageNavigation">
-				<tr>
-					<td><a href="index.html" class="blueButton">Home</a></td>
-					<td><div id="statusMessage" class="statusMessage"></div></td>
-				</tr>				
-			</table>
-			<div class="programTitle">
-				Backup/move pads to another device
+		<div class="pageNavigation">
+			<div class="navItem">
+				<a href="index.html" class="blueButton">Home</a>
 			</div>
-			<div class="instructions">
-				This will let you save the current pads in this device or computer's local storage to another location.<br>
-				<br>
-				Once saved from here you must clear this device's storage so that you don't have the same pads on two 
-				different devices. Doing that could allow duplicate use of a pad and allow for cryptanalysis.
-			</div>
-			<table class="exportMethods">
-				<tr>
-					<td>Save to</td>
-					<td>
-						<label for="exportMethodClipboard">
-							<input id="exportMethodClipboard" class="exportMethod" type="radio" name="exportMethod" value="clipboard"> Clipboard
-						</label>
-						<label for="exportMethodTextFile">
-							<input id="exportMethodTextFile" class="exportMethod" type="radio" name="exportMethod" value="textFile" checked="checked"> Text file
-						</label>					
-					</td>
-				</tr>
-			</table>
-				
-			<div class="buttons">
-				<input id="btnBackup" class="blueButton" type="button" value="1. Create backup">
-				<input id="btnClearLocalDatabase" class="blueButton" type="button" value="2. Clear local database" disabled="disabled">
-			</div>
+			<div class="navItem statusMessage"></div>
+		</div>
+		<h2>Backup/move pads to another device</h2>
+			
+		<div class="instructions">
+			This will let you save the current pads in this device or computer's local storage to another location.<br>
+			<br>
+			Once saved from here you must clear this device's storage so that you don't have the same pads on two 
+			different devices. Doing that could allow duplicate use of a pad and allow for cryptanalysis.
+		</div>
+		<table class="exportMethods">
+			<tr>
+				<td>Save to</td>
+				<td>
+					<label for="exportMethodClipboard">
+						<input id="exportMethodClipboard" class="exportMethod" type="radio" name="exportMethod" value="clipboard"> Clipboard
+					</label>
+					<label for="exportMethodTextFile">
+						<input id="exportMethodTextFile" class="exportMethod" type="radio" name="exportMethod" value="textFile" checked="checked"> Text file
+					</label>					
+				</td>
+			</tr>
+		</table>
+
+		<div class="buttons">
+			<input id="btnBackup" class="blueButton" type="button" value="1. Create backup">
+			<input id="btnClearLocalDatabase" class="blueButton" type="button" value="2. Clear local database" disabled="disabled">
 		</div>
 	</body>
 </html>

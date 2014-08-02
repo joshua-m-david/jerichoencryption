@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-	Jericho Chat - Information-theoretically secure communications.
-	Copyright (C) 2013  Joshua M. David
+	Jericho Chat - Information-theoretically secure communications
+	Copyright (C) 2013-2014  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -15,43 +15,89 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see [http://www.gnu.org/licenses/].
 -->
-<html>
+<html class="homePage">
 	<head>
 		<title>Jericho Chat</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="height=device-height, width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
+		
+		<link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
+		<link rel="icon" type="image/png" sizes="196x196" href="img/touch-icon-196x196.png">
 		
 		<link rel="stylesheet" href="css/lib/normalize.css">
-		<link rel="stylesheet" href="css/global.css">
+		<link rel="stylesheet" href="css/common.css">
+		<link rel="stylesheet" href="css/index.css">
+		
+		<script src="js/lib/jquery.js"></script>
+		<script src="js/common.js"></script>
+		<script src="js/index.js"></script>
 	</head>
-	<body>
-		<div class="page homePage">
-			<h1>Jericho Chat</h1>
-			<div class="version">Version 1.2</div>
-			<ul class="buttons">
-				<li>
-					<a href="generate.html" class="blueButton">Generate pads</a>
-				</li>
-				<li>
-					<a href="load.html" class="blueButton">Load pads</a>
-				</li>
-				<li>
-					<a href="chat.html" class="blueButton">Chat</a>
-				</li>
-				
-				<li class="spacer">
-					<a href="connection.html" class="blueButton">Test connection</a>
-				</li>
-				<li>					
-					<a href="tests.html" class="blueButton">Code tests</a>
-				</li>
-				<li>					
-					<a href="backup.html" class="blueButton">Backup pads</a>
-				</li>
-				
-				<li class="spacer">
-					<a href="nuke.html" class="blueButton">Emergency auto nuke</a>
-				</li>
-			</ul>
+	<body>		
+		<div class="content">
+			<div class="mainMenu">			
+				<h1>
+					Jericho Chat <span class="programVersion"></span>
+				</h1>
+				<ul class="menu">
+					<li>
+						<a href="tests.html" class="blueButton">Code tests</a>
+					</li>					
+					<li>
+						<a class="blueButton btnOpenGeneratePadsMenu">Generate pads</a>
+					</li>
+
+					<li class="spacer">
+						<a href="load.html" class="blueButton">Load pads</a>
+					</li>
+					<li>
+						<a href="chat.html" class="blueButton">Chat</a>
+					</li>
+					
+					<li class="spacer">
+						<a href="connection.html" class="blueButton">Test connection</a>
+					</li>
+					<li>
+						<a href="backup.html" class="blueButton">Backup pads</a>
+					</li>
+					<li>
+						<a href="nuke.html" class="blueButton">Emergency nuke</a>
+					</li>
+				</ul>
+			</div>
+			
+			<div class="generatePadsSubMenu">
+				<div class="pageNavigation">
+					<div class="navItem">
+						<a href="index.html" class="blueButton">Home</a>
+					</div>
+					<div class="navItem statusMessage"></div>
+				</div>
+				<h2>Generate pads</h2>
+				<div class="information">
+					You need true random data for perfectly secure communication using one-time pads. This program provides a True 
+					Random Number Generator (TRNG).<br>
+					<br>
+					Entropy is extracted from a photograph that you provide. For high quality results, use a photo from a 
+					standalone digital camera or DSLR that has been captured in your camera's raw image format and converted to PNG or BMP. 
+					Avoid JPEG and other lossy compression algorithms if possible as they may affect the output in predictable ways.<br>
+					<br>
+					Take a photo of something that is generally random in nature. Photos taken in macro mode of sand at a beach, grass and 
+					gravel work best. Trees, rocks and ocean waves work reasonably well. Clouds tend not to work too well. The program will 
+					run randomness tests on the raw random data and also after the data has been run through the Von Neumann randomness 
+					extractor. Check that both sets of tests pass otherwise you may need to try a different photo. Be sure to delete the 
+					photo after the one-time pads have been created from it.<br>
+					<br>
+					This process should be run from a PC as it is very resource intensive and the page is not mobile optimised. The 
+					website has details about how it processes and extracts the photo data.
+				</div>
+				<ul class="menu">
+					<li>
+						<a href="trng-photo.html" class="blueButton">Launch photo TRNG</a>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</body>
 </html>

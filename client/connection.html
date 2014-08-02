@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-	Jericho Chat - Information-theoretically secure communications.
-	Copyright (C) 2013  Joshua M. David
+	Jericho Chat - Information-theoretically secure communications
+	Copyright (C) 2013-2014  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -15,69 +15,88 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see [http://www.gnu.org/licenses/].
 -->
-<html>
+<html class="testServerPage">
 	<head>
-		<title>Jericho Chat - Test server connection</title>
+		<title>Jericho Chat</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="height=device-height, width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
+		
+		<link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
+		<link rel="icon" type="image/png" sizes="196x196" href="img/touch-icon-196x196.png">
 		
 		<link rel="stylesheet" href="css/lib/normalize.css">
 		<link rel="stylesheet" href="css/lib/ui-lightness/jquery-ui.css">
-		<link rel="stylesheet" href="css/global.css">
+		<link rel="stylesheet" href="css/common.css">
+		<link rel="stylesheet" href="css/connection.css">
 		
 		<script src="js/lib/jquery.js"></script>
 		<script src="js/lib/jquery-ui.js"></script>
+		
+		<script src="js/lib/jscrypto-core.js"></script>
+		<script src="js/lib/jscrypto-x64core.js"></script>
+		<script src="js/lib/jscrypto-enc-base64.js"></script>
+		<script src="js/lib/jscrypto-sha3.js"></script>
+		<script src="js/lib/skein.js"></script>
+		
 		<script src="js/database.js"></script>
 		<script src="js/common.js"></script>
 		<script>
 			$(document).ready(function()
-			{
+			{				
 				// Preload values into the text boxes if they already have connection settings in local storage
-				if (db.padData.info.serverAddressAndPort != null)
+				if ((db.padData.info.serverAddressAndPort !== null) && (db.padData.info.serverKey !== null))
 				{
 					$('#serverAddressAndPort').val(db.padData.info.serverAddressAndPort);
-					$('#serverUsername').val(db.padData.info.serverUsername);
-					$('#serverPassword').val(db.padData.info.serverPassword);
+					$('#serverKey').val(db.padData.info.serverKey);
 				}
 				
 				// Test server connection on button click
 				$('#testServerConnection').click(function()
 				{
 					var serverAddressAndPort = $('#serverAddressAndPort').val();
-					var serverUsername = $('#serverUsername').val();
-					var serverPassword = $('#serverPassword').val();
+					var serverKey = $('#serverKey').val();
 
-					common.testServerConnection(serverAddressAndPort, serverUsername, serverPassword);
+					common.testServerConnection(serverAddressAndPort, serverKey);
+				});
+				
+				// Saves the server connection details to local storage
+				$('#saveConnectionDetails').click(function()
+				{
+					var serverAddressAndPort = $('#serverAddressAndPort').val();
+					var serverKey = $('#serverKey').val();
+										
+					// Save to local storage
+					common.saveServerConnectionDetails(serverAddressAndPort, serverKey);
 				});
 			});
 		</script>
 	</head>
 	<body>
-		<div class="page testServerPage">
-			<table class="pageNavigation testServerPage">
-				<tr>
-					<td><a href="index.html" class="blueButton">Home</a></td>
-					<td><div id="statusMessage" class="statusMessage"></div></td>
-				</tr>				
-			</table>
-			<div class="programTitle">
-				Test server connection
+		<div class="pageNavigation">
+			<div class="navItem">
+				<a href="index.html" class="blueButton">Home</a>
 			</div>
-			<div class="information">
-				This will test the asynchronous connection to the server using the API. For HTTPS you should load/accept the server's self-signed 
-				certificate as trusted into your browser first or the connection will fail.
-			</div>
-			<div class="connectionDetails">
-				<label for="serverAddressAndPort">Server address and port</label>
-				<input id="serverAddressAndPort" class="serverInfoTextBox" type="text" placeholder="https://server-ip-address/jericho/"><br>
-				
-				<label for="serverUsername">Server username</label>
-				<input id="serverUsername" class="serverInfoTextBox" type="text"><br>
-				
-				<label for="serverPassword">Server password</label>
-				<input id="serverPassword" class="serverInfoTextBox" type="text">
-				<div class="buttons">
-					<input id="testServerConnection" class="blueButton" type="button" value="Test connection">
-				</div>
+			<div class="navItem statusMessage"></div>
+		</div>
+		<h2>Test server connection</h2>
+		<div class="information">
+			This will test the connection from the client to the server using the API. Using HTTPS is not necessary as all data to and from the 
+			server is cryptographically signed with a MAC using the Skein 512 bit hash algorithm. However if you want to use self-signed 
+			certificates, remember to load/accept the server's certificate as trusted into your browser's certificate store first or the 
+			connection will fail.
+		</div>
+		<div class="connectionDetails">
+			<label for="serverAddressAndPort">Server address and port</label>
+			<input id="serverAddressAndPort" class="serverInfoTextBox" type="text" placeholder="http://ip-or-domain.com:8080/alpha-bravo/"><br>
+
+			<label for="serverKey">Server key</label>
+			<input id="serverKey" class="serverInfoTextBox" type="text">
+
+			<div class="buttons">
+				<input id="testServerConnection" class="blueButton" type="button" value="Test connection">
+				<input id="saveConnectionDetails" class="blueButton" type="button" value="Save settings">
 			</div>
 		</div>
 	</body>

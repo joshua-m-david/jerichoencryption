@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-	Jericho Chat - Information-theoretically secure communications.
-	Copyright (C) 2013  Joshua M. David
+	Jericho Chat - Information-theoretically secure communications
+	Copyright (C) 2013-2014  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -15,12 +15,20 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see [http://www.gnu.org/licenses/].
 -->
-<html>
+<html class="loadPadsPage">
 	<head>
 		<title>Jericho Chat - Load pads</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="height=device-height, width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
+		
+		<link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
+		<link rel="icon" type="image/png" sizes="196x196" href="img/touch-icon-196x196.png">
+		
 		<link rel="stylesheet" href="css/lib/normalize.css">
-		<link rel="stylesheet" href="css/global.css">
+		<link rel="stylesheet" href="css/common.css">
+		<link rel="stylesheet" href="css/load.css">
 		
 		<script src="js/lib/jquery.js"></script>
 		<script src="js/database.js"></script>
@@ -59,35 +67,32 @@
 		</script>
 	</head>
 	<body>
-		<div class="page loadPadsPage">
-			<table class="pageNavigation">
-				<tr>
-					<td><a href="index.html" class="blueButton">Home</a></td>
-					<td><div id="statusMessage" class="statusMessage"></div></td>
-				</tr>				
-			</table>
-			<div class="programTitle">
-				Load pads
+		<div class="pageNavigation">
+			<div class="navItem">
+				<a href="index.html" class="blueButton">Home</a>
 			</div>
-			<div class="information">
-				This will load the one-time pads from the clipboard or text file into the local storage of this computer/device. Once 
-				the pads are loaded you can start chatting.
+			<div class="navItem statusMessage"></div>
+		</div>
+		<h2>Load pads</h2>
+		
+		<div class="information">
+			This will load the one-time pads from the clipboard or text file into the local storage of this computer/device. Once 
+			the pads are loaded you can start chatting.
+		</div>
+		<div class="method">
+			<div class="methodTitle">Method 1: &nbsp;Load from text file:</div>
+			<input id="padFile" type="file" name="padFile">
+		</div>		
+		<div class="method">
+			<div class="methodTitle">Method 2: &nbsp;Open text file, select all text (Ctrl + A), copy (Ctrl + C) and paste (Ctrl + V):</div>
+			<div>
+				<input id="padDataClipboardInput" class="padDataClipboardInput" type="text">
+				<input id="loadPadsFromClipboard" class="blueButton" type="button" value="Load">
 			</div>
-			<div class="method">
-				<div class="methodTitle">Method 1: &nbsp;Paste from clipboard (Ctrl + V):</div>
-				<div>
-					<input id="padDataClipboardInput" class="padDataClipboardInput" type="text">
-					<input id="loadPadsFromClipboard" class="blueButton" type="button" value="Load">
-				</div>
-								
-			</div>
-			<div class="method">
-				<div class="methodTitle">Method 2: &nbsp;Load from text file:</div>
-				<input id="padFile" type="file" name="padFile">
-			</div>
-			<div class="chatButton">
-				<a href="chat.html" class="blueButton">Go to chat</a>
-			</div>
+		</div>
+		
+		<div class="chatButton">
+			<a href="chat.html" class="blueButton">Go to chat</a>
 		</div>
 	</body>
 </html>

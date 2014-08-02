@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-	Jericho Chat - Information-theoretically secure communications.
-	Copyright (C) 2013  Joshua M. David
+	Jericho Chat - Information-theoretically secure communications
+	Copyright (C) 2013-2014  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -15,25 +15,30 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see [http://www.gnu.org/licenses/].
 -->
-<html>
+<html class="chatPage">
 	<head>
 		<title>Jericho Chat - Chat session</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
 		
+		<link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
+		<link rel="icon" type="image/png" sizes="196x196" href="img/touch-icon-196x196.png">
+				
 		<link rel="stylesheet" href="css/lib/normalize.css">
 		<link rel="stylesheet" href="css/lib/ui-lightness/jquery-ui.css">
-		<link rel="stylesheet" href="css/global.css">
+		<link rel="stylesheet" href="css/common.css">
+		<link rel="stylesheet" href="css/chat.css">		
 		
 		<script src="js/lib/jquery.js"></script>
 		<script src="js/lib/jquery-ui.js"></script>
-		<script src="js/lib/jsdigest.js"></script>
+		
 		<script src="js/lib/jscrypto-core.js"></script>
 		<script src="js/lib/jscrypto-x64core.js"></script>
-		<script src="js/lib/jscrypto-sha2-512.js"></script>
+		<script src="js/lib/jscrypto-enc-base64.js"></script>
 		<script src="js/lib/jscrypto-sha3.js"></script>
-		<script src="js/lib/jscrypto-hmac.js"></script>
-		<script src="js/lib/whirlpool.js"></script>
-		<script src="js/lib/linker.js"></script>
+		<script src="js/lib/skein.js"></script>
 		
 		<script src="js/database.js"></script>
 		<script src="js/common.js"></script>
@@ -44,52 +49,52 @@
 			$(document).ready(function()
 			{
 				chat.scrollChatWindowToBottom();
-				chat.focusCursorIntoChatBox();
 				chat.initialiseSendMessageButton();				
 				chat.bindEnterKeyToSendMessage();
 				
 				chat.countNumOfPadsRemaining();
 				chat.startIntervalToReceiveMessages();
-				chat.showNumOfMessageCharactersRemaining();
-				chat.updateNumOfPadsRemaining(0, 0);
+				chat.initialiseDisplayForCharsRemaining();
+				chat.updateNumOfPadsRemaining();
 				chat.initialiseToggleAudioButton();
 			});
 		</script>
 	</head>
 	<body>
-		<div class="page chatPage">
-			<table class="pageNavigation">
-				<tr>
-					<td><a href="index.html" class="blueButton">Home</a></td>
-					<td><div id="statusMessage" class="statusMessage"></div></td>
-				</tr>				
-			</table>
-			<div class="programTitle">
-				Chat
-				<span class="ui-icon enableDisableAudio"></span>
-			</div>			
-			<div class="mainChat">
-				<div class="templateMessage">
-					<div class="dateTime"></div>
-					<div class="messageText" title=""></div>
-					<div class="messageStatus"></div>
-				</div>
-			</div>			
-			<div class="chatEntry">
-				<textarea id="newChatMessage" class="chatInput" rows="2" maxlength="100" tabindex="1" placeholder="Type message here..."></textarea>
-				<table>
-					<tr>
-						<td class="messagesLastCheckedStatus"></td>
-						<td class="messageCharactersRemaining"><b>100/100</b> characters remaining</td>
-					</tr>
-					<tr>
-						<td class="messagesRemaining"></td>
-						<td>
-							<input id="btnSendMessage" class="blueButton btnSendMessage" type="button" value="Send message">
-						</td>
-					</tr>
-				</table>				
+		<div class="pageNavigation">
+			<div class="navItem">
+				<a href="index.html" class="blueButton">Home</a>
 			</div>
+			<div class="navItem statusMessage"></div>
+		</div>
+		<h2>Chat <span class="ui-icon enableDisableAudio"></span></h2>
+				
+		<div class="mainChat">
+			<div class="templateMessage">
+				<div class="padIdentifier">
+					Message ID <span class="padIdentifierText"></span>
+				</div>
+				<div class="fromUserAndDateTime">
+					From <span class="fromUser"></span> on <span class="date"></span> at <span class="time"></span>
+				</div>
+				<div class="messageText" title=""></div>
+				<div class="messageStatus"></div>
+			</div>
+		</div>			
+		<div class="chatEntry">
+			<textarea id="newChatMessage" class="chatInput" placeholder="Type message here..." autocomplete="off" autofocus></textarea>
+			<table>
+				<tr>
+					<td class="messagesLastCheckedStatus"></td>
+					<td class="messageCharactersRemaining"></td>
+				</tr>
+				<tr>
+					<td class="messagesRemaining"></td>
+					<td>
+						<input id="btnSendMessage" class="blueButton btnSendMessage" type="button" value="Send message">
+					</td>
+				</tr>
+			</table>				
 		</div>
 	</body>
 </html>

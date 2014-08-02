@@ -1,0 +1,8 @@
+PHP extension by Frank Denis <j at pureftpd dot org> - public domain.
+
+The Skein hash was designed by Niels Ferguson - Stefan Lucks -
+Bruce Schneier - Doug Whiting - Mihir Bellare - Tadayoshi Kohno -
+Jon Callas and Jesse Walker
+
+This algorithm and source code is released to the public domain.
+

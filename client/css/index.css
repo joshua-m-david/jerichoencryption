@@ -1,0 +1,99 @@
+/**
+ * Jericho Chat - Information-theoretically secure communications
+ * Copyright (C) 2013-2014  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	HOME PAGE
+/* --------------------------------------- */
+
+.homePage body {
+	background-color: #eee;
+	display: flex;
+	flex-direction: column;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 100%;
+	margin: 0 auto;
+	max-width: 540px;
+	padding: 5px;
+}
+
+/* Explanation of functionality */
+.homePage .information {
+	text-align: left;
+}
+
+/* Heading and version */
+.homePage h1 {
+	font-size: 14px;
+	margin: 3px 0 10px 0;
+	text-align: center;
+}
+.homePage h1 .programVersion {
+	font-size: 12px;
+	font-weight: normal;
+	padding-left: 5px;
+}
+
+/* Container for all the buttons */
+.homePage .content {
+	flex: 1;
+}
+
+/* Menu list */
+.homePage .menu {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+}
+
+.homePage .menu li {
+	padding-bottom: 2px;
+}
+
+.homePage .menu li.spacer {
+	padding-top: 14px;
+}
+
+.homePage .menu li:last-child {
+	padding-bottom: 14px;
+}
+
+/* Buttons to same width */
+.homePage .menu a {
+	width: 170px;
+}
+
+/* Menu to show the TRNG sub menu */
+.generatePadsSubMenu {
+	display: none;
+}
+	
+/* Instructions */
+.generatePadsSubMenu p {
+	text-align: center;
+}
+
+/* Push the buttons down more */
+.generatePadsSubMenu .menu {
+	margin-top: 30px;
+}
+
+/* Make the link appear clickable */
+.btnOpenGeneratePadsMenu {
+	cursor: pointer;
+}

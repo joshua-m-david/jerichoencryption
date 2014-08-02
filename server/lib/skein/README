@@ -1,0 +1,79 @@
+
+                     .:. Skein hash functions for PHP .:.
+                        Documentation for version 1.1
+
+
+           ------------------------ BLURB ------------------------
+
+
+Skein is a new family of cryptographic hash functions. Its design combines
+speed, security, simplicity, and a great deal of flexibility in a modular
+package that is easy to analyze. 
+
+For more info about the Skein hash function, please have a look at:
+http://www.schneier.com/skein.html
+
+
+       ------------------------ INSTALLATION ------------------------
+       
+       
+Before all, if you are running Debian, install the php5-dev and the autoconf
+packages.
+
+Then, install and compile like any standard PHP extension:       
+
+phpize
+./configure --enable-skein
+make
+make install
+
+Then edit your php.ini file in order to add:
+
+extension=skein.so
+
+
+           ------------------------ USAGE ------------------------
+           
+           
+* Get the binary 512-bits hash of a random string:
+
+$hash = skein_hash($string);
+
+* Get the hexadecimal 512-bits hash of a random string:
+
+$hex_hash = skein_hash_hex($string);
+
+* Get the binary <SIZE>-bits hash of a random string:
+
+$hash = skein_hash($string, <SIZE>);
+
+ex:
+$hash = skein_hash($string, 64);
+
+* Get the hexadecimal <SIZE>-bits hash of a random string:
+
+$hex_hash = skein_hash_hex($string, <SIZE>);
+
+ex:
+$hash = skein_hash($string, 800);
+
+<SIZE> should be in the 1...1024 interval.
+
+
+       ------------------------ DISTRIBUTION ------------------------
+           
+
+Skein hash function by Doug Whiting.
+Skein hash function family home page: http://www.skein-hash.info/
+
+PHP extension by Frank Denis <j at pureftpd dot org>, 2008-2014.
+
+The PHP extension can be downloaded from:
+
+http://download.pureftpd.org/pure-ftpd/misc/php-skein-hash/
+
+Github:
+
+http://github.com/jedisct1/PHP-Skein-Hash
+
+LICENSE : Public domain.

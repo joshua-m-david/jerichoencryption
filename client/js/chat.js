@@ -1,19 +1,19 @@
-/*
-	Jericho Chat - Information-theoretically secure communications.
-	Copyright (C) 2013  Joshua M. David
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation in version 3 of the License.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see [http://www.gnu.org/licenses/].
-*/
+/*!
+ * Jericho Chat - Information-theoretically secure communications
+ * Copyright (C) 2013-2014  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
 
 /**
  * Functions for the chat page
@@ -29,7 +29,7 @@ var chat = {
 	oddPadsRemaining: 0,
 		
 	/**
-	 * Make the chat window always scroll to the bottom if there are lots of messages
+	 * Make the chat window always scroll to the bottom if there are lots of messages on page load
 	 */
 	scrollChatWindowToBottom: function()
 	{
@@ -39,29 +39,21 @@ var chat = {
 			this.scrollTop = scrollHeight - this.clientHeight;
 		});
 	},
-	
-	/**
-	 * Focuses the mouse cursor into the chat box so they can start typing immediately
-	 */
-	focusCursorIntoChatBox: function()
-	{
-		$('#newChatMessage').focus();
-	},
-	
+		
 	/**
 	 * Initialises the send message button, which when clicked will encrypt and send the message to the server
 	 */
 	initialiseSendMessageButton: function()
 	{
 		// If the send message function is clicked
-		$('#btnSendMessage').click(function()
-		{			
+		$('#btnSendMessage').click(function(event)
+		{
 			// Get plaintext message and remove invalid non ASCII characters from message
 			var plaintextMessage = $('#newChatMessage').val();
 			plaintextMessage = common.removeInvalidChars(plaintextMessage);
 			
 			// Make sure they've entered in some data
-			if (plaintextMessage == '')
+			if (plaintextMessage === '')
 			{
 				common.showStatus('error', 'Message empty, non ASCII printable characters are not supported and removed.');
 				return false;
@@ -76,65 +68,80 @@ var chat = {
 				return false;
 			}
 
-			// Encrypt the message and create the HMAC
-			var results = common.encryptAndAuthenticateMessage(plaintextMessage, pad);					
-			var padIdentifier = common.getPadIdentifierFromCiphertext(results.ciphertext);
+			// Encrypt the message and create the MAC
+			var ciphertextMessageAndMac = common.encryptAndAuthenticateMessage(plaintextMessage, pad);					
+			var padIdentifier = common.getPadIdentifierFromCiphertext(ciphertextMessageAndMac);
 
-			// If currently user 1 pads are loaded, then this message is being sent to user 2.
-			// Otherwise if user 2 pads are loaded, then this mesage is being sent to user 1.
-			var messageTo = (db.padData.info.user == 1) ? 2 : 1;
-
-			// Fix the url for any excess slashes
-			var serverAddress = common.standardiseUrl(db.padData.info.serverAddressAndPort, 'send-message.php');
+			// Get the server address and key
+			var serverAddressAndPort = db.padData.info.serverAddressAndPort;
+			var serverKey = db.padData.info.serverKey;
 			
-			// Create AJAX request to chat server
-			$.ajax(
+			// Package the data to be sent to the server
+			var data = {
+				'user': db.padData.info.user,
+				'apiAction': 'sendMessage',
+				'msg': ciphertextMessageAndMac
+			};
+			
+			// Send the message off to the server
+			common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseDataJson)
 			{
-				url: serverAddress,
-				type: 'POST',
-				dataType: 'json',
-				data: {
-					'username': db.padData.info.serverUsername,			// Username to connect to the server
-					'password': db.padData.info.serverPassword,			// Password to connect to the server
-					'to': messageTo,									// Who the message is going to
-					'msg': results.ciphertext,							// The message ciphertext
-					'mac': results.mac									// The MAC of the message
-				},
-				success: function(data)
+				// If the server response is authentic
+				if (validResponse)
 				{
+					// Convert from JSON to object
+					var responseData = JSON.parse(responseDataJson);
+					
 					// Get message back from server, and protect against XSS
-					var statusMessage = common.htmlEncodeEntities(data.statusMessage);
+					var statusMessage = common.htmlEncodeEntities(responseData.statusMessage);
 					
 					// If it saved to the database
-					if (data.success)
+					if (responseData.success)
 					{
-						// Find the message with that identifier and update the status to 'Sent'
-						$('.messageStatus[data-pad-identifier=' + padIdentifier + ']').html(statusMessage);
-						chat.updateNumOfPadsRemaining(1, 0);
+						// Find the message in the chat window with that identifier and update the status to 'Sent'
+						$('.messageStatus[data-pad-identifier=' + padIdentifier + ']').html(statusMessage).addClass('sendSuccess');
+						return true;
 					}
 					else {
 						// Otherwise show error from the server
 						common.showStatus('error', statusMessage);
 					}
-				},
-				error: function(jqXHR, textStatus, errorThrown)
-				{
-					// Display error
-					common.showStatus('error', 'Error contacting server, check you are connected to the internet and that server setup is correct.');
 				}
+				
+				// If response check failed it means there was probably interference from attacker altering data or MAC
+				else if (validResponse === false)
+				{
+					common.showStatus('error', 'Unauthentic response from server detected.');
+				}
+				
+				else {
+					// Most likely cause is user has incorrect server url or key entered.
+					// Another alternative is the attacker modified their request while en route to the server
+					common.showStatus('error', 'Error contacting server. Double check you are connected to the network and that the client and server configurations are correct. Another possibility is that the data was modified in transit by an attacker.');
+				}
+				
+				// Add send failure to the message status
+				$('.messageStatus[data-pad-identifier=' + padIdentifier + ']').html('Send failure').addClass('sendError');
 			});
-
+			
 			// Copy the template message into a new message
 			var messageHtml = $('.templateMessage').clone().removeClass('templateMessage');
 			
 			// Convert links in text to URLs and escape the message for XSS before outputting it to screen
 			var plaintextMessageEscaped = chat.convertLinksAndEscapeForXSS(plaintextMessage);
-
+			
+			// Get the user nickname and the current date time
+			var userNickname = chat.getUserNickname(db.padData.info.user);
+			var dateData = common.getCurrentLocalDateTime();
+			
 			// Set params on the template
 			messageHtml.addClass('message messageSent');											// Show style for sent message
-			messageHtml.find('.dateTime').html(common.getCurrentLocalDateTime());					// Show current local date time		
+			messageHtml.find('.padIdentifierText').html(padIdentifier);								// Show the id for the message
+			messageHtml.find('.fromUser').html(userNickname);										// Show who the message came from
+			messageHtml.find('.date').html(dateData.date);											// Show current local date
+			messageHtml.find('.time').html(dateData.time);											// Show current local time
 			messageHtml.find('.messageText').html(plaintextMessageEscaped);							// Show the sent message in chat
-			messageHtml.find('.messageText').attr('title', 'Ciphertext: ' + results.ciphertext);	// Show ciphertext on mouse hover
+			messageHtml.find('.messageText').attr('title', 'Pad identifier: ' + padIdentifier);		// Show pad id on mouse hover
 			messageHtml.find('.messageStatus').html('Sending...');									// Show current status
 			messageHtml.find('.messageStatus').attr('data-pad-identifier', padIdentifier);			// Attach identifier to the div, so the status can be updated after
 
@@ -144,8 +151,25 @@ var chat = {
 			// Remove the text from the text box and scroll to bottom of window to show new message
 			$('#newChatMessage').val('');
 			chat.scrollChatWindowToBottom();
-			return false;
+			event.preventDefault();
+			
+			// Update the number of pads remaining for the current user
+			chat.updateNumOfPadsRemaining(db.padData.info.user);
 		});
+	},
+	
+	/**
+	 * Gets the user's nickname from the local storage
+	 * @param {string} user The user e.g. 'alpha'
+	 * @returns {string} Returns the user's nickname/real name e.g. 'Joshua'
+	 */
+	getUserNickname: function(user)
+	{
+		// Get the user's nickname and escape it for XSS
+		var userNickname = db.padData.info.userNicknames[user];
+		    userNickname = common.htmlEncodeEntities(userNickname);
+			
+		return userNickname;
 	},
 	
 	/**
@@ -157,7 +181,7 @@ var chat = {
 		$('.chatEntry').bind('keypress', function(e)
 		{
 			// If the Enter key is pressed
-			if (e.keyCode == 13)
+			if (e.keyCode === 13)
 			{
 				// Activate the click event on the button
 				$(this).find('#btnSendMessage').click();
@@ -197,18 +221,34 @@ var chat = {
 	/**
 	 * Shows the number of characters remaining for the message
 	 */
-	showNumOfMessageCharactersRemaining: function()
+	initialiseDisplayForCharsRemaining: function()
 	{
-		$('#newChatMessage').keyup(function ()
+		// On page load show initial characters
+		chat.calculateNumOfMessageCharactersRemaining();
+		
+		// Set max length on the text field
+		var $messageInput = $('#newChatMessage');
+		$messageInput.attr('maxlength', common.messageSize);
+		
+		// After a key is entered
+		$messageInput.keyup(function()
 		{
-			// Get the current number of chars entered and the maximum message size
-			var len = $(this).val().length;
-			var max = common.messageSize;			
-			
-			// Calculate how many characters remaining
-			var charsRemaining = max - len;
-			$('.messageCharactersRemaining').html('<b>' + charsRemaining + '/' + max + '</b> characters remaining');
+			chat.calculateNumOfMessageCharactersRemaining();
 		});
+	},
+	
+	/**
+	 * Calculates how many characters are remaining in the message to send
+	 */
+	calculateNumOfMessageCharactersRemaining: function()
+	{
+		// Get the current number of chars entered and the maximum message size
+		var max = common.messageSize;
+		var length = $('#newChatMessage').val().length;		
+			
+		// Calculate how many characters remaining
+		var charsRemaining = max - length;
+		$('.messageCharactersRemaining').html('<b>' + charsRemaining + '/' + max + '</b> characters remaining');
 	},
 	
 	/**
@@ -217,59 +257,40 @@ var chat = {
 	 */
 	countNumOfPadsRemaining: function()
 	{
-		var length = db.padData.pads.length;			
+		var output = 'Remaining messages per user:<br>';
 		
-		// Loop through all pads	
-		for (var i=0; i < length; i++)
+		// Count the pads for each user
+		$.each(db.padData.pads, function(user, userPads)
 		{
-			// Count all even numbered pads left in database
-			if ((db.padData.pads[i].padNum % 2) == 0)
-			{
-				this.evenPadsRemaining++;
+			// The unit tests page will put some test pads in the local 
+			// database so don't show these on the chat screen
+			if (user !== 'test')
+			{			
+				// Build the output
+				output += db.padData.info.userNicknames[user] + ': <b><span class="' + user + '">' + userPads.length + '</span></b> ';
 			}
-			else {
-				// Count all odd numbered pads left in database
-				this.oddPadsRemaining++;
-			}
-		}
+		});
+		
+		// Display the count
+		$('.messagesRemaining').html(output);
 	},
 	
 	/**
 	 * Updates the number of pads remaining in the local database.
-	 * To intitialise the display to the current number of pads, 0 and 0 can be passed in.
-	 * @param {number} messagesSent To update pass in how many messages were just sent
-	 * @param {number} messagesReceived To update pass in how many messages were just received
+	 * @param {string} user Update the number of pads remaining for just the user passed in or 'allUsers' if passed in
 	 */
-	updateNumOfPadsRemaining: function(messagesSent, messagesReceived)
-	{
-		// Is user using even or odd numbered pads
-		var usingEvenNumberedPads = db.padData.info.usingEvenNumberedPads;
-		var output = '';
-		
-		// Format depending on user
-		if (usingEvenNumberedPads)
+	updateNumOfPadsRemaining: function(user)
+	{		
+		// Update the number of pads remaining for all users if no user passed in
+		if (user === undefined)
 		{
-			// Subtract from total
-			this.evenPadsRemaining -= messagesSent;
-			this.oddPadsRemaining -= messagesReceived;
-			
-			// User 1 using even numbered
-			output = 'Messages to send: <b>' + this.evenPadsRemaining + '</b><br>'
-			       + 'Messages to receive: <b>' + this.oddPadsRemaining + '</b><br>';
+			this.countNumOfPadsRemaining();
 		}
 		else {
-			// Subtract from total
-			this.oddPadsRemaining -= messagesSent;
-			this.evenPadsRemaining -= messagesReceived;			
-			
-			// User 2 using odd numbered
-			output = 'Messages to send: <b>' + this.oddPadsRemaining + '</b><br>'
-			       + 'Messages to receive: <b>' + this.evenPadsRemaining + '</b><br>';
+			// Otherwise update just for the specific user
+			var padsRemaining = db.padData.pads[user].length;
+			$('.messagesRemaining .' + user).text(padsRemaining);
 		}
-		
-		// Add total and display to screen
-		output += 'Total pads remaining: <b>' + (this.evenPadsRemaining + this.oddPadsRemaining) + '</b><br>';
-		$('.messagesRemaining').html(output);
 	},
 	
 	/**
@@ -278,44 +299,55 @@ var chat = {
 	checkForNewMessages: function()
 	{
 		// If there's no pad data loaded, stop trying to get messages from the server
-		if (db.padData.info.serverAddressAndPort == null)
+		if (db.padData.info.serverAddressAndPort === null)
 		{
 			common.showStatus('error', "No pads have been loaded into this device's database.");
 			chat.stopIntervalReceivingMessages();
 			return false;
 		}
 		
-		// Fix the url for any excess slashes
-		var serverAddress = common.standardiseUrl(db.padData.info.serverAddressAndPort, 'receive-messages.php');
+		// Get the server address and key
+		var serverAddressAndPort = db.padData.info.serverAddressAndPort;
+		var serverKey = db.padData.info.serverKey;
 
-		// Create AJAX request to chat server
-		$.ajax(
+		// Package the data to be sent to the server
+		var data = {
+			'user': db.padData.info.user,
+			'apiAction': 'receiveMessages'
+		};
+
+		// Check the server for messages
+		common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseDataJson)
 		{
-			url: serverAddress,
-			type: 'POST',
-			dataType: 'json',
-			data: {
-				'username': db.padData.info.serverUsername,			// Username to connect to the server
-				'password': db.padData.info.serverPassword,			// Password to connect to the server
-				'to': db.padData.info.user							// Get messages for this user
-			},
-			success: function(data)
+			// If the server response is authentic
+			if (validResponse)
 			{
+				// Convert from JSON to object
+				var responseData = JSON.parse(responseDataJson);
+				
 				// Get message back from server, and protect against XSS
-				var statusMessage = common.htmlEncodeEntities(data.statusMessage);
+				var status = responseData.success;
+				var statusMessage = common.htmlEncodeEntities(responseData.statusMessage);
 								
 				// If there are messages
-				if (data.success)
+				if (status)
 				{
 					// Decrypt and display them
-					chat.processReceivedMessages(data.messages);
+					chat.processReceivedMessages(responseData.messages);
 				}
-				else if ((data.success === false) && (data.statusMessage == 'Auto nuke initiated.'))
+				
+				// If another user initiated the auto nuke sequence
+				else if ((status === false) && (statusMessage === 'Auto nuke initiated'))
 				{
-					// Other user initiated the auto nuke sequence
-					chat.processAutoNuke();
+					// Clear the screen and database
+					chat.processAutoNuke(statusMessage, responseData.initiatedBy);
+					
+					// Stop automatic checking of messages
+					chat.stopIntervalReceivingMessages();
 				}
-				else if ((data.success === false) && (data.statusMessage != 'No messages in database.'))
+				
+				// If some other error occurred
+				else if ((status === false) && (responseData.statusMessage !== 'No messages in database.'))
 				{
 					// Otherwise show error from the server and update status
 					common.showStatus('error', statusMessage);
@@ -324,15 +356,25 @@ var chat = {
 					// Stop automatic checking of messages
 					chat.stopIntervalReceivingMessages();
 				}
+				
 				else {
-					// If there are no messages, just display status message
+					// Otherwise if there are no messages, just display last checked status message
 					$('.messagesLastCheckedStatus').html('No messages since: <b>' + common.getCurrentLocalTime() + '</b>');
 				}
-			},
-			error: function(jqXHR, textStatus, errorThrown)
+			}
+			
+			// If response check failed it means there was probably interference from attacker altering data or MAC
+			else if (validResponse === false)
 			{
-				// Display error and stop automatic checking of messages
-				common.showStatus('error', "Error contacting server, check you are connected to the internet and that server setup is correct.");
+				common.showStatus('error', 'Unauthentic response from server detected.');
+			}
+
+			else {
+				// Most likely cause is user has incorrect server url or key entered.
+				// Another alternative is the attacker modified their request while en route to the server
+				common.showStatus('error', 'Error contacting server. Double check you are connected to the network and that the client and server configurations are correct. Another possibility is that the data was modified in transit by an attacker.');
+				
+				// Stop automatic checking of messages
 				chat.stopIntervalReceivingMessages();
 			}
 		});
@@ -343,66 +385,195 @@ var chat = {
 	 * @param {array} messages An array of messages received from the server
 	 */
 	processReceivedMessages: function(messages)
-	{
+	{		
+		var decryptedMessages = [];
 		var htmlMessages = '';
+		var numOfMessages = messages.length;
+		var padIndexesToErase = [];
 					
 		// For each message returned
-		for (var i=0; i < messages.length; i++)
+		for (var i=0; i < numOfMessages; i++)
 		{
 			// Get details necessary to decrypt and verify
-			var ciphertext = messages[i].msg;
-			var mac = messages[i].mac;
-			var padData = common.getPadToDecryptMessage(ciphertext);
-			var padIdentifier = padData.padIdentifier;
-			var pad = padData.pad;
-
-			// Decrypt and verify the message
-			var decryptedOutput = common.decryptAndVerifyMessage(ciphertext, pad, mac);
+			var fromUser = messages[i].from;
+			var ciphertext = messages[i].msg;			
 			
-			// Get the html display for this message
-			var html = chat.prepareMessageForDisplay(ciphertext, decryptedOutput);
-
-			// Then get the whole message div (the outer HTML) and continue building output
-			htmlMessages += html.clone().wrap('<p>').parent().html();
+			// If the username who sent the message is not in the whitelist of users, then the message cannot 
+			// be decrypted because it's not known which pad to decrypt with (the pads are drawn from the pads assigned 
+			// to each specific user), also it could indicate attacker interference so show an error message
+			if (common.userList.indexOf(fromUser) === -1)
+			{
+				common.showStatus('error', "Warning: Received message from invalid username '" + fromUser + "'. An attacker may be interfering with messages on the server.");
+				continue;
+			}
+			
+			// Get the pad needed to decrypt the message and then remove it from the local database
+			var padData = common.getPadToDecryptMessage(ciphertext, fromUser);
+						
+			// If it couldn't find a pad to decrypt this message
+			if (padData.padIndex === null)
+			{
+				// Show an error message to appear in the chat
+				decryptedMessages.push({
+					'padIdentifier': padData.padIdentifier,
+					'fromUser': fromUser,					
+					'plaintext': 'Warning: could not find the one-time pad to decrypt this message. Reference the Message ID and ask them to send the contents of this message again.',
+					'timestamp': common.getCurrentUtcTimestamp(),
+					'valid': false
+				});
+								
+				// Try the next message
+				continue;
+			}
+			
+			// Decrypt and verify the message
+			var decryptedOutput = common.decryptAndVerifyMessage(ciphertext, padData.pad);
+			
+			// If it is an authentic message, queue up the padIndexes to remove from the local database. If it's invalid we 
+			// don't want an attacker (which has gained access to the server) able to send arbitrary messages with chosen 
+			// pad identifiers back to the client when they check for new messages which would deplete the user's list of valid pads.
+			if (decryptedOutput.valid)
+			{
+				padIndexesToErase.push({
+					'index': padData.padIndex,
+					'user': fromUser
+				});
+			}
+			
+			// Add a few more values to the object before it gets sorted
+			decryptedOutput['padIdentifier'] = padData.padIdentifier;
+			decryptedOutput['fromUser'] = fromUser;
+			
+			// Add to an array so each message can be sorted by timestamp
+			decryptedMessages.push(decryptedOutput);
 		}
-
+		
+		// If it couldn't find the pads for any messages in the database exit out
+		if (decryptedMessages.length === 0)
+		{
+			return false;
+		}
+		
+		// Delete one-time pads for messages that have been verified and decrypted
+		chat.deleteVerifiedMessagePads(padIndexesToErase);
+		
+		// Sort the messages by timestamp
+		decryptedMessages = chat.sortDecryptedMessagesByTimestamp(decryptedMessages);
+		
+		// Loop through the messages and build the HTML to be rendered
+		htmlMessages = chat.generateHtmlForReceivedMessages(decryptedMessages);
+		
 		// Add the html messages to the chat window and scroll to the end so the user can see the messages
 		$(htmlMessages).appendTo('.mainChat');
 		chat.scrollChatWindowToBottom();
 		
-		// Play a sound to signal new message/s received
-		chat.playSound('sounds/incoming-message.wav');
+		// Play a sound and vibrate the device to signal new message/s received
+		chat.playSound('incoming-message.wav');
+		chat.vibrateDevice();
 
 		// Update status
 		$('.messagesLastCheckedStatus').html('Messages received at: <b>' + common.getCurrentLocalTime() + '</b>');
-		chat.updateNumOfPadsRemaining(0, messages.length);
+		chat.updateNumOfPadsRemaining();
+	},
+		
+	/**
+	 * Remove from in memory database the one-time pads that have been used and verified.
+	 * Also update the local database so that pad can't be used again
+	 * @param {array} padIndexesToErase An array of objects containing keys 'user' (the user to erase the pad from) and 'index' (the array index of the pad to erase)
+	 */
+	deleteVerifiedMessagePads: function(padIndexesToErase)
+	{
+		// In case the original order of the messages is reordered on the server or received out of order, the
+		// indexes are sorted in descending order, so the last numeric index is deleted first (e.g. 7) and then 
+		// second last (e.g. 5) and so on as we iterate through the array below. Otherwise if not ordered, the 
+		// splice operation alters the array, so if you removed an item earlier in the array first then that 
+		// would alter the indexes so later removals would result in the wrong pads being removed.
+		padIndexesToErase.sort(function(padA, padB)
+		{
+			return padB.index - padA.index;
+		});
+		
+		// Loop through the indexes to be erased
+		for (var i=0, length = padIndexesToErase.length; i < length; i++)
+		{
+			// Get the pad to erase
+			var pad = padIndexesToErase[i];
+			var user = pad['user'];
+			var index = pad['index'];
+									
+			// Remove the pad from that user's group of pads in memory
+			db.padData.pads[user].splice(index, 1);
+		}
+		
+		// Replace the pad data in the database with the database in memory
+		db.savePadDataToDatabase();
+	},
+	
+	/**
+	 * Sort the messages by earliest timestamp first, in case messages were reordered by an attacker on the server
+	 * @param {object} decryptedMessages
+	 * @returns {object} Returns the messages sorted by earliest sent timestamp first
+	 */
+	sortDecryptedMessagesByTimestamp: function(decryptedMessages)
+	{
+		// Basic array sort
+		decryptedMessages.sort(function(messageA, messageB)
+		{
+			return messageA.timestamp - messageB.timestamp;
+		});
+		
+		return decryptedMessages;
+	},
+	
+	/**
+	 * Loop through the messages and build the HTML to be rendered
+	 * @param {array} decryptedMessages The array of message objects
+	 * @returns {string}
+	 */
+	generateHtmlForReceivedMessages: function(decryptedMessages)
+	{	
+		var htmlMessages = '';
+		
+		// For each message build the HTML to be rendered
+		for (var i=0, length = decryptedMessages.length; i < length; i++)
+		{
+			// Get the HTML display for this message
+			var html = chat.prepareMessageForDisplay(decryptedMessages[i]);
+
+			// Then get the whole message div (the outer HTML) and continue building output
+			htmlMessages += html.clone().wrap('<p>').parent().html();
+		}
+		
+		return htmlMessages;
 	},
 	
 	/**
 	 * Format the message for display to the chat window
-	 * @param {string} ciphertext The ciphertext string
-	 * @param {array} decryptedOutput The decrypted output containing the plaintext, sent timestamp and HMAC validation result
+	 * @param {object} message An object with the following keys 'ciphertext', 'plaintext', 'timestamp', 'valid', 'fromUser'
 	 * @return {string} The HTML to be displayed
 	 */
-	prepareMessageForDisplay: function(ciphertext, decryptedOutput)
+	prepareMessageForDisplay: function(message)
 	{
 		// Copy the template message into a new message
 		var messageHtml = $('.templateMessage').clone().removeClass('templateMessage');
-		var dateString = common.getCurrentLocalDateTimeFromUtcTimestamp(decryptedOutput.timestamp);
-		var messageStatus = (decryptedOutput.valid) ? 'Authenticated' : 'Tampering detected';
-		var messageValidity = (decryptedOutput.valid) ? 'messageValid' : 'messageInvalid';
-				
+		var dateData = common.getCurrentLocalDateTimeFromUtcTimestamp(message.timestamp);
+		var messageStatus = (message.valid) ? 'Authentic' : 'Unauthentic';
+		var messageValidity = (message.valid) ? 'messageValid' : 'messageInvalid';
+		var userNickname = chat.getUserNickname(message.fromUser);
+		
 		// Convert links in text to URLs and escape for XSS
-		var plaintext = chat.convertLinksAndEscapeForXSS(decryptedOutput.plaintext);	
-		var ciphertextEscaped = common.htmlEncodeEntities(ciphertext);
-					
+		var plaintextEscaped = chat.convertLinksAndEscapeForXSS(message.plaintext);	
+		var padIdentifierEscaped = common.htmlEncodeEntities(message.padIdentifier);
+									
 		// Set params on the template
-		messageHtml.addClass('message messageReceived');										// Show style for sent message
-		messageHtml.find('.dateTime').html(dateString);											// Show current local date time		
-		messageHtml.find('.messageText').html(plaintext);										// Show the sent message in chat
-		messageHtml.find('.messageText').attr('title', 'Ciphertext: ' + ciphertextEscaped);		// Show ciphertext on mouse hover
-		messageHtml.find('.messageStatus').html(messageStatus);									// Show current status
-		messageHtml.find('.messageStatus').addClass(messageValidity);							// Show green for valid, red for invalid
+		messageHtml.addClass('message messageReceived ' + message.fromUser);		// Show style for sent message
+		messageHtml.find('.padIdentifierText').html(padIdentifierEscaped);			// Show the id for the message
+		messageHtml.find('.fromUser').html(userNickname);							// Show who the message came from
+		messageHtml.find('.date').html(dateData.date);								// Show current local date
+		messageHtml.find('.time').html(dateData.time);								// Show current local time
+		messageHtml.find('.messageText').html(plaintextEscaped);					// Show the sent message in chat
+		messageHtml.find('.messageStatus').html(messageStatus);						// Show current status
+		messageHtml.find('.messageStatus').addClass(messageValidity);				// Show green for valid, red for invalid
 		
 		// Return the template
 		return messageHtml;
@@ -429,7 +600,7 @@ var chat = {
 			var replacementText = '|' + counter + '|';
 			counter++;
 			
-			// Shorten the URL that the user sees into format http://jerichoencryption...
+			// Shorten the URL that the user sees into format http://somedomain...
 			// If the original url was longer than the cutoff (30 chars) then ... will be added.
 			var shortenedUrlText = url.substr(0, 30);
 			shortenedUrlText += (url.length > 30) ? '...' : '';
@@ -456,9 +627,15 @@ var chat = {
 	
 	/**
 	 * Auto nuke was initiated by the other user, clear everything
+	 * @param {string} statusMessage The status from the server which will contain which user initiated the nuke
+	 * @param {string} initiatedBy The user that initiated the auto nuke
 	 */
-	processAutoNuke: function()
+	processAutoNuke: function(statusMessage, initiatedBy)
 	{
+		// Get the call sign of the user who initiated the nuke, this 
+		// can be helpful in knowing which member of the group is in trouble
+		var initiatedByCallSign = chat.getUserNickname(initiatedBy);
+		
 		// Clear the local in memory and local storage database
 		db.nukeDatabase();
 		
@@ -470,23 +647,37 @@ var chat = {
 		$('.messagesRemaining').html('');
 
 		// Show warning message
-		common.showStatus('error', 'Auto nuke was initiated by other user!');
+		common.showStatus('error', statusMessage + ' by ' + initiatedByCallSign + '!');
 	},
 	
 	/**
 	 * Plays a sound in the browser using the HTML5 audio element. 
 	 * Chrome, Firefox, Safari and Opera currently have common support using wav audio file format.
-	 * @param {string} url The path to the audio file
+	 * @param {string} filename The filename of the audio file in the /client/sounds/ directory
 	 */
-	playSound: function(url)
+	playSound: function(filename)
 	{
 		// Make sure the user has enabled sound
 		if (db.padData.custom.enableSounds)
 		{
 			// Play the sound
-			var sound = new Audio(url);
+			var sound = new Audio('sounds/' + filename);
 			sound.load();
 			sound.play();
+		}
+	},
+	
+	/**
+	 * Vibrates the device if supported
+	 */
+	vibrateDevice: function()
+	{
+		// Normalise the HTML5 vibration API between browser vendors
+		navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate;
+		
+		// If it's supported, vibrate the device for 700ms
+		if (navigator.vibrate) {
+			navigator.vibrate(700);
 		}
 	},
 	
@@ -496,7 +687,7 @@ var chat = {
 	initialiseToggleAudioButton: function()
 	{
 		// Show correct icon for whether sound is currently enabled or disabled
-		var onOrOff = (db.padData.custom.enableSounds == true) ? 'on' : 'off';		
+		var onOrOff = (db.padData.custom.enableSounds === true) ? 'on' : 'off';		
 		$('.enableDisableAudio').addClass('ui-icon-volume-' + onOrOff).prop('title', 'Audio currently ' + onOrOff);
 		
 		// Enable click event to toggle the audio on or off
@@ -512,7 +703,7 @@ var chat = {
 	enableOrDisableAudio: function()
 	{
 		// If sound is currently enabled, disable it
-		if (db.padData.custom.enableSounds == true)
+		if (db.padData.custom.enableSounds === true)
 		{
 			// Disable sound and save changes to database
 			db.padData.custom.enableSounds = false;

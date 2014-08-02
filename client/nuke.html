@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-	Jericho Chat - Information-theoretically secure communications.
-	Copyright (C) 2013  Joshua M. David
+	Jericho Chat - Information-theoretically secure communications
+	Copyright (C) 2013-2014  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -15,15 +15,29 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see [http://www.gnu.org/licenses/].
 -->
-<html>
+<html class="autoNukePage">
 	<head>
 		<title>Jericho Chat - Emergency auto nuke</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
+		
+		<link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
+		<link rel="icon" type="image/png" sizes="196x196" href="img/touch-icon-196x196.png">
 		
 		<link rel="stylesheet" href="css/lib/normalize.css">
-		<link rel="stylesheet" href="css/global.css">
+		<link rel="stylesheet" href="css/common.css">
+		<link rel="stylesheet" href="css/nuke.css">
 		
-		<script src="js/lib/jquery.js"></script>		
+		<script src="js/lib/jquery.js"></script>
+		
+		<script src="js/lib/jscrypto-core.js"></script>
+		<script src="js/lib/jscrypto-x64core.js"></script>
+		<script src="js/lib/jscrypto-enc-base64.js"></script>
+		<script src="js/lib/jscrypto-sha3.js"></script>
+		<script src="js/lib/skein.js"></script>
+				
 		<script src="js/database.js"></script>
 		<script src="js/common.js"></script>
 		<script src="js/nuke.js"></script>
@@ -36,28 +50,25 @@
 		</script>
 	</head>
 	<body>
-		<div class="page autoNukePage">
-			<table class="pageNavigation">
-				<tr>
-					<td><a href="index.html" class="blueButton">Home</a></td>
-					<td><div id="statusMessage" class="statusMessage"></div></td>
-				</tr>				
-			</table>
-			<div class="programTitle">
-				Emergency auto nuke
+		<div class="pageNavigation">
+			<div class="navItem">
+				<a href="index.html" class="blueButton">Home</a>
 			</div>
-			<div class="warningLabel">Warning:</div>
-			<div class="warningText">
-				This button will delete all the one-time pads from this device/computer's browser and all the messages from the server.<br>
-				<br>
-				The next time the other user connects to the server it will automatically delete their one-time pads as well. They will not have 
-				a chance to read the most recent messages you sent if they have not read them already.<br>
-				<br>
-				If your device/computer is about to be compromised and you need to clear all evidence of communications use the button below.
-			</div>
-			<div class="nukeButton">
-				<input id="btnInitiateAutoNuke" class="blueButton" type="button" value="Initiate auto nuke">				
-			</div>
+			<div class="navItem statusMessage"></div>
+		</div>
+		<h2>Emergency auto nuke</h2>
+		
+		<div class="warningLabel">Warning:</div>
+		<div class="warningText">
+			This button will delete all the one-time pads from this device/computer's browser and all the messages from the server.<br>
+			<br>
+			The next time the other user connects to the server it will automatically delete their one-time pads as well. They will not have 
+			a chance to read the most recent messages you sent if they have not read them already.<br>
+			<br>
+			If your device/computer is about to be compromised and you need to clear all evidence of communications use the button below.
+		</div>
+		<div class="nukeButton">
+			<input id="btnInitiateAutoNuke" class="blueButton" type="button" value="Initiate auto nuke">				
 		</div>
 	</body>
 </html>

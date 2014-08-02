@@ -1,19 +1,19 @@
-/*
-	Jericho Chat - Information-theoretically secure communications.
-	Copyright (C) 2013  Joshua M. David
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation in version 3 of the License.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see [http://www.gnu.org/licenses/].
-*/
+/*!
+ * Jericho Chat - Information-theoretically secure communications
+ * Copyright (C) 2013-2014  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
 
 /**
  * Function to delete everything from the local device storage and clear messages on the server
@@ -25,55 +25,61 @@ var nuke = {
 	 */
 	initialiseAutoNuke: function()
 	{
+		// On button click
 		$('#btnInitiateAutoNuke').click(function()
 		{
 			// Make sure there is data in the database
-			if (db.padData.info.serverAddressAndPort == null)
+			if (db.padData.info.serverAddressAndPort === null)
 			{
 				common.showStatus('error', 'No data in local database to delete');
 				return false;
 			}
 			
-			// Fix the url for any excess slashes
-			var serverAddress = common.standardiseUrl(db.padData.info.serverAddressAndPort, 'auto-nuke.php');
+			// Get the server address and key
+			var serverAddressAndPort = db.padData.info.serverAddressAndPort;
+			var serverKey = db.padData.info.serverKey;
+						
+			// Package the data to be sent to the server
+			var data = {
+				'user': db.padData.info.user,
+				'apiAction': 'autoNuke'
+			};
 			
-			// Create AJAX request to chat server
-			$.ajax(
+			// Deploy the nuke
+			common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseDataJson)
 			{
-				url: serverAddress,
-				type: 'POST',
-				dataType: 'json',
-				data: {
-					'username': db.padData.info.serverUsername,			// Username to connect to the server
-					'password': db.padData.info.serverPassword,			// Password to connect to the server
-					'autoNuke': true									// Tell the server to nuke everything
-				},
-				success: function(data)
+				// Always nuke the local database
+				db.nukeDatabase();
+				
+				// If the server response is authentic
+				if (validResponse)
 				{
-					// Get message back from server, and protect against XSS
-					var statusMessage = common.htmlEncodeEntities(data.statusMessage);
-					
-					// If it saved to the database
-					if (data.success)
+					// Convert from JSON to object
+					var responseData = JSON.parse(responseDataJson);
+										
+					// If it cleared the server
+					if (responseData.success)
 					{
-						// Delete everything in memory and the local database
-						db.nukeDatabase();
-						common.showStatus('success', 'Local database and server database nuked successfully.');
+						common.showStatus('success', 'Local database nuked successfully. ' + responseData.statusMessage);
 					}
 					else {
-						// Otherwise nuke local database anyway and show error from the server
-						db.nukeDatabase();
-						common.showStatus('error', statusMessage);
-					}
-				},
-				error: function(jqXHR, textStatus, errorThrown)
-				{
-					// Otherwise nuke local database anyway and display error
-					db.nukeDatabase();
-					common.showStatus('error', 'Error contacting server, check you are connected to the internet and that server setup is correct.');
+						// Failed to clear the server
+						common.showStatus('error', 'Local database nuked successfully. ' + responseData.statusMessage);
+					}					
+				}
+				
+				// If response check failed it means there was probably interference from attacker altering data or MAC
+				else if (validResponse === false)
+				{	
+					common.showStatus('error', 'Local database has been nuked successfully. However an unauthentic response from server was detected. The server may still contain data, try wiping it manually.');
+				}
+				
+				else {
+					// Most likely cause is user has incorrect server url or key entered.
+					// Another alternative is the attacker modified their request while en route to the server
+					common.showStatus('error', 'Local database has been nuked successfully. However there was an error contacting server or your data was modified by an attacker in transit. Double check you are connected to the network and that the client and server configurations are correct. The server may still contain data, try wiping it manually.');
 				}
 			});
-
 		});
 	}
 };

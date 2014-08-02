@@ -1,1 +1,11 @@
+# Don't show directory listing
 Options -Indexes
+
+# Deny access to all subdirectories and files
+Order Allow,Deny
+Deny From All
+
+# Allow access to the index file only
+<FilesMatch "index.php">
+	Allow from All
+</FilesMatch>

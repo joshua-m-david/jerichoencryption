@@ -1,20 +1,20 @@
 <?php
-/*
-	Jericho Chat - Information-theoretically secure communications.
-	Copyright (C) 2013  Joshua M. David
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation in version 3 of the License.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see [http://www.gnu.org/licenses/].
-*/
+/**
+ * Jericho Chat - Information-theoretically secure communications
+ * Copyright (C) 2013-2014  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
 
 /**
  * Database wrapper class using PHP Data Objects (PDO). Handles connections to the database,
@@ -22,6 +22,7 @@
  */
 class Database
 {
+	private $config;				# Database connection config
 	private $conn;					# Database connection handler
 	private $statement;				# Statement for prepared queries
 	private $numRows;				# Number of rows affected/returned
@@ -30,12 +31,11 @@ class Database
 
 	/**
 	 * Constructor
-	 * @param array $config Pass in the config array in config.php
+	 * @param array &$config Pass in the config array from config.php
 	 */
 	public function __construct(&$config)
 	{
-		$this->connect($config);					# Connect to corresponding database
-		$config = null;								# Clear config as no longer needed
+		$this->config = $config;
 	}
 
 	/**
@@ -49,22 +49,28 @@ class Database
 	/**
 	 * Connect to the database with persistent connection
 	 * @param array $config
+	 * @return boolean Whether the database connected successfully or not
 	 */
-	private function connect(&$config)
+	public function connect()
 	{
 		// If the socket is set, use that, otherwise use the hostname
-		$hostOrSocket = ($config['unix_socket'] != '') ? 'unix_socket=' . $config['unix_socket'] : 'host=' . $config['hostname'];		
-		$connectionString = 'mysql:' . $hostOrSocket . ';port=' . $config['port'] . ';dbname=' . $config['database'];
+		$hostOrSocket = ($this->config['unix_socket'] != '') ? 'unix_socket=' . $this->config['unix_socket'] : 'host=' . $this->config['hostname'];		
+		$connectionString = 'mysql:' . $hostOrSocket . ';port=' . $this->config['port'] . ';dbname=' . $this->config['database'];
 		
 		try {
-			$this->conn = new PDO($connectionString, $config['username'], $config['password'], array(PDO::ATTR_PERSISTENT => $config['persistent']));
-			$this->conn->setAttribute(PDO::ATTR_ERRMODE, $config['errorMode']);
+			// Connect to the database
+			$this->conn = new PDO($connectionString, $this->config['username'], $this->config['password'], array(PDO::ATTR_PERSISTENT => false));
+			$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		}
 		catch (PDOException $e)
 		{
-			$this->handleConnectionError('Unable to connect to the database.', $e);
-			exit;
+			// Store the error message and exception info in the class
+			$this->handleDatabaseError('Error connecting to database.', $e);
+			return false;
 		}
+		
+		// Connection success
+		return true;
 	}
 	
 	/**
@@ -130,6 +136,7 @@ class Database
 	public function update($query)
 	{
 		try {
+			// Run the query
 			$this->numRows = $this->conn->exec($query);
 			
 			// If there's an error return the error message otherwise return number of rows
@@ -329,7 +336,7 @@ class Database
 				if ($this->statement !== false)
 				{
 					// Bind params (not checked for false in case we need to run a query with no params)
-					$binding = $this->bindParams($transactionQuery->params);
+					$this->bindParams($transactionQuery->params);
 					
 					// Run statement
 					$result = $this->statement->execute();
@@ -420,7 +427,7 @@ class Database
 	 * @param string|bool|int|null $var Pass in a variable and it checks the variable's type
 	 * @return string PDO param type
 	 */
-	public function getConstantType($var)
+	private function getConstantType($var)
 	{
 		if (is_bool($var)) { return PDO::PARAM_BOOL; }
 		if (is_int($var)) {	return PDO::PARAM_INT; }
@@ -460,25 +467,6 @@ class Database
 	public function getNumRows()
 	{
 		return $this->numRows;
-	}
-	
-	/**
-	 * If database connection has failed show message to user and email admin
-	 * @param string $customErrorMessage
-	 * @param Exception $exception
-	 */
-	private function handleConnectionError($customErrorMessage, $exception)
-	{
-        // Log error
-		$this->errors[] = $customErrorMessage . $exception->getMessage() . '.<br>';
-		
-		// Output message
-		$jsonResult = array(
-			'success' => false,
-			'statusMessage' => 'Could not connect to the database, check details on server in config/config.php file. ' . $exception->getMessage()
-		);
-		echo json_encode($jsonResult);
-		exit;
 	}
 	
 	/**

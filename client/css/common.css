@@ -1,0 +1,176 @@
+/**
+ * Jericho Chat - Information-theoretically secure communications
+ * Copyright (C) 2013-2014  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	COMMON STYLES
+/* --------------------------------------- */
+
+/* Button styles */
+.blueButton {
+	background-color: #3bb3e0;
+	display: inline-block;
+	padding: 12px;
+	position: relative;
+	font-family: sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	text-decoration: none;
+	color: #fff;
+	border: solid 1px #186f8f;
+	background-image: -o-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -webkit-gradient(linear, left bottom,	left top, color-stop(0, rgb(44,160,202)), color-stop(1, rgb(62,184,229)));
+	background-image: linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	-webkit-box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	-moz-box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	border-radius: 7px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+.ui-widget-content a.blueButton {
+	color: #fff;
+}
+.ui-widget {
+	font-size: 13px;
+}
+.blueButton:active {
+	top: 1px;
+	background-image: -o-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	background-image: -webkit-gradient(linear, left bottom,	left top, color-stop(0, rgb(62,184,229)), color-stop(1, rgb(44,160,202)));
+	background-image: linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+}
+.blueButton:disabled {
+	opacity: 0.5;
+}
+
+/* Text and select box entry styles so is consistent on Firefox and Chrome */
+input[type="text"], select {
+	border: 1px solid #E7D9E1;
+}
+input[type="text"] {
+	padding-left: 5px;
+}
+input[type="text"]:focus {
+	outline: 0 none;
+}
+
+/* White background for consistency across browsers */
+select {
+	background-color: #fff;
+}
+
+/* Page navigation at top */
+.pageNavigation {
+	display: table;
+}
+.pageNavigation .navItem {
+	display: table-cell;
+}
+.pageNavigation .statusMessage {
+	padding-left: 10px;
+}
+
+/* Normal page heading */
+h2 {
+	color: #3399cc;
+	font-size: 12px;
+	font-weight: bold;
+	margin: 3px 0;
+	text-align: center;
+}
+
+/* Error and success status messages */
+.statusMessage {
+	display: none;
+	font-size: 12px;
+    font-weight: bold;
+	text-align: left;	
+	vertical-align: middle;
+}
+.error {
+	color: #ff0000;
+}
+.success {
+	color: green;
+}
+
+/* Style the Export Pads and Server Settings dialog */
+.exportPadsSettings .helpExplanation {
+	margin-top: 3px;
+	margin-bottom: 14px;
+	text-align: center;
+}
+.exportPadsSettings .statusMessage {
+	margin-bottom: 14px;
+	max-width: 423px;
+}
+.exportPadsSettings th {
+	text-align: right;
+	font-weight: bold;
+	text-wrap: none;
+	vertical-align: middle;
+}
+.exportPadsSettings th.nicknamesHeading {
+	padding-top: 4px;
+	vertical-align: top;
+}
+.exportPadsSettings table td {
+	padding: 2px 4px;
+}
+.exportPadsSettings .userSettings {
+	margin-top: 14px;
+}
+.exportPadsSettings .buttons {
+	margin-top: 14px;
+	text-align: center;
+}
+.exportPadsSettings select,
+.exportPadsSettings input[type="text"] {
+	width: 270px;
+}
+.exportPadsSettings .exportForUser {
+	text-transform: capitalize;
+}
+.exportPadsSettings .exportMethod optgroup:last-child {
+	padding-top: 5px;
+}
+.exportPadsSettings .nicknames label {
+	display: inline-block;
+	font-weight: bold;
+	margin-bottom: 4px;
+	width: 49px;
+}
+.exportPadsSettings .nicknames label:last-of-type {
+	margin-bottom: 0;
+}
+.exportPadsSettings .nicknames input {
+	display: inline-block;
+	margin-bottom: 4px;
+	width: 217px;
+}
+.exportPadsSettings .nicknames input:last-of-type {
+	margin-bottom: 0;
+}

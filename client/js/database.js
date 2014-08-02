@@ -1,19 +1,19 @@
-/*
-	Jericho Chat - Information-theoretically secure communications.
-	Copyright (C) 2013  Joshua M. David
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation in version 3 of the License.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see [http://www.gnu.org/licenses/].
-*/
+/*!
+ * Jericho Chat - Information-theoretically secure communications
+ * Copyright (C) 2013-2014  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
 
 /**
  * Stores the pad metadata and pads by serialising the data in HTML5 Local Storage.
@@ -37,11 +37,11 @@ var db = {
 	// Schema for the data to store all the pad information, pads and any custom user settings
 	padDataSchema: {
 		info: {
-			user: null,
-			usingEvenNumberedPads: null,
+			programVersion: null,
 			serverAddressAndPort: null,
-			serverUsername: null,
-			serverPassword: null
+			serverKey: null,
+			user: null,
+			userNicknames: {}
 		},
 		pads: [],
 		custom: {
@@ -88,6 +88,15 @@ var db = {
 	},
 	
 	/**
+	 * Saves the newly created pad information and pads into the local storage database
+	 * @param {array} padData Created pad data. Uses same structure as padDataSchema above
+	 */
+	saveNewPadDataToDatabase: function(padData)
+	{
+		localStorage.setObject(this.databaseName, padData);
+	},
+	
+	/**
 	 * Clear the database
 	 */
 	nukeDatabase: function()
@@ -108,35 +117,7 @@ var db = {
 	 */
 	clone: function(obj)
 	{
-		// Handle the 3 simple types, and null or undefined
-		if (null == obj || "object" != typeof obj) return obj;
-
-		// Handle Date
-		if (obj instanceof Date) {
-			var copy = new Date();
-			copy.setTime(obj.getTime());
-			return copy;
-		}
-
-		// Handle Array
-		if (obj instanceof Array) {
-			var copy = [];
-			for (var i = 0, len = obj.length; i < len; i++) {
-				copy[i] = this.clone(obj[i]);
-			}
-			return copy;
-		}
-
-		// Handle Object
-		if (obj instanceof Object) {
-			var copy = {};
-			for (var attr in obj) {
-				if (obj.hasOwnProperty(attr)) copy[attr] = this.clone(obj[attr]);
-			}
-			return copy;
-		}
-
-		throw new Error("Unable to copy obj! Its type isn't supported.");
+		return JSON.parse(JSON.stringify(obj));
 	}
 };
 
@@ -158,7 +139,7 @@ Storage.prototype.setObject = function(key, value)
  * @return {object} Gets the object
  */
 Storage.prototype.getObject = function(key)
-{	
+{
 	var storageItem = this.getItem(key);
 
 	// If it doesn't exist return null

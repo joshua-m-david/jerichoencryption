@@ -1,35 +1,188 @@
-/*
-	Jericho Chat - Information-theoretically secure communications.
-	Copyright (C) 2013  Joshua M. David
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation in version 3 of the License.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see [http://www.gnu.org/licenses/].
-*/
+/*!
+ * Jericho Chat - Information-theoretically secure communications
+ * Copyright (C) 2013-2014  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
 
 /**
- * Statistical random number generator tests from FIPS 140-1, Section 4.11, Self-Tests.
- * In future, add more tests from:  http://www.random.org/analysis/Analysis2005.pdf
+ * This program will take a large amount of binary data, fire up a web worker and test 
+ * each 20,000 bits of the binary string. Finally it will output the results to the page.
+ * Statistical random number generator tests from:
+ * FIPS 140-1, Section 4.11, Self-Tests, and 
+ * FIPS 140-2, Section 4.9.1, Power-Up Tests.
  */
 var randomTests = {
+	
+	/**
+	 * Initialise the randomness tests
+	 * @param {string} randomData A binary string to test
+	 * @param {string} overallResultOutputId Where the overall result will be rendered after the tests are complete
+	 * @param {string} overallResultLogOutputId Where the overall result logs will be rendered after the tests are complete
+	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
+	 */
+	init: function(randomData, overallResultOutputId, overallResultLogOutputId, testVersion)
+	{
+		// Run HTML5 web worker thread to process the entropy because it is CPU intensive and we don't want to block the UI
+		var worker = new Worker('js/tests-randomness-worker.js');
+		var data = {
+			randomData: randomData,
+			testVersion: testVersion
+		};
+		
+		// Send data to the worker
+		worker.postMessage(data);
+		
+		// When the worker is complete
+		worker.addEventListener('message', function(e)
+		{						
+			// Display the results (after web worker complete)
+			randomTests.displayTestResults(e.data.overallResults, e.data.testVersion, overallResultOutputId, overallResultLogOutputId);
+			
+		}, false);
+		
+		// Worker error handler
+		worker.addEventListener('error', function(e)
+		{
+			console.log('ERROR: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
+			
+		}, false);
+	},
+	
+	/**
+	 * Render the test results to the page
+	 * @param {object} overallResults
+	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
+	 * @param {string} overallResultOutputId
+	 * @param {string} overallResultLogOutputId
+	 */
+	displayTestResults: function(overallResults, testVersion, overallResultOutputId, overallResultLogOutputId)
+	{
+		// Update the overall results and display the logs on the page
+		$('#' + overallResultOutputId).html('<b>All ' + testVersion + ' tests passed: ' + this.colourCode(overallResults.overallResult) + '</b><br><br>');
+		$('#' + overallResultLogOutputId).html(overallResults.overallResultLog);
+		
+		// Determine the CSS class
+		var result = (overallResults.overallResult) ? 'passed' : 'failed';
+		
+		// Show the processed overall result in the header
+		if (overallResultOutputId === 'processedOverallResult')
+		{
+			$('#processedTestsPass .collectionStatusBox').addClass(result).html(result);
+		}
+		else {
+			// Show the extracted overall result in the header
+			$('#extractedTestsPass .collectionStatusBox').addClass(result).html(result);
+		}
+		
+		
+		
+		// Update status message on the page
+		common.showProcessingMessage('Processing and randomness tests complete.', true);
+	},
+	
+	/**
+	 * Starts the tests on every 20,000 bits of random data.
+	 * Returns the overall result of all the tests and a log for each test run.
+	 * @param {string} randomData All the bits to test
+	 * @returns {object} Returns object with keys: overallResult (boolean) and overallResultLog (string)
+	 */
+	runTests: function(randomData, testVersion)
+	{
+		// Get the first 20,000 bits of random data
+		var requiredNumOfBits = 20000;
+		var numOfBits = randomData.length;
+
+		// If not enough data has been collected
+		if (numOfBits < requiredNumOfBits)
+		{
+			return {
+				overallResult: false,
+				overallResultLog: 'Not enough entropy for random tests - ' + numOfBits + ' bits out of ' + requiredNumOfBits + ' bits required.'
+			};
+		}
+				
+		// Calculate how many sets of 20,000 bits there are
+		var numOfSets = Math.floor(numOfBits / requiredNumOfBits);
+				
+		// Variables to hold accumulated output
+		var overallResult = true;
+		var overallResultLog = '';
+			
+		// Test each set of 20,000 bits
+		for (var i=0, currentStart=0; i < numOfSets; i++, currentStart += requiredNumOfBits)
+		{
+			// Run the tests on each 20,000 bits
+			var randomBits = randomData.substr(currentStart, requiredNumOfBits);
+			var allResults = this.testRandomness(randomBits, requiredNumOfBits, testVersion);
+			
+			// Get an intermediary result for the current 20,000 bit block
+			var currentResult = allResults.monobitTest.testResult && allResults.pokerTest.testResult && 
+			                    allResults.runsTest.testResult && allResults.longRunsTest.testResult;
+			
+			// Get an overall result for all the tests so far
+			overallResult = (overallResult && currentResult);
+			
+			// Build output log for this 
+			overallResultLog += '<b>Test results ' + (currentStart + 1) + ' to ' + (currentStart + requiredNumOfBits) + ' bits. '
+			                 +  'Tests passed: ' + this.colourCode(currentResult) + '</b><br>'
+			                 +  allResults.monobitTest.testResultMsg
+			                 +  allResults.pokerTest.testResultMsg
+			                 +  allResults.runsTest.testResultMsg
+			                 +  allResults.longRunsTest.testResultMsg + '<br>';
+		}
+		
+		// Return results
+		return {
+			overallResult: overallResult,
+			overallResultLog: overallResultLog
+		};
+	},
+
+	/**
+	 * A single bit stream of 20,000 consecutive bits of output from the generator is subjected to each of the following tests. 
+	 * If any of the tests fail, then they haven't created good statistical randomness and should try again.	
+	 * To do: add more randomness tests e.g. from http://www.random.org/analysis/Analysis2005.pdf
+	 * @param {string} randomBits The 20,000 bits to test
+	 * @param {integer} numOfBits The number of bits e.g. 20000
+	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
+	 * @return {object} Returns an object with all the test results and keys 'monobitTest', 'pokerTest', 'runsTest', 'longRunsTest'
+	 */
+	testRandomness: function(randomBits, numOfBits, testVersion)
+	{		
+		// Run the tests
+		var monobitTestResults = randomTests.randomnessMonobitTest(randomBits, numOfBits, testVersion);
+		var pokerTestResults = randomTests.randomnessPokerTest(randomBits, numOfBits, testVersion);
+		var runsTestResults = randomTests.randomnessRunsTest(randomBits, numOfBits, testVersion);
+		var longRunsTestResults = randomTests.randomnessLongRunsTest(randomBits, numOfBits, testVersion);
+
+		return {
+			monobitTest: monobitTestResults,
+			pokerTest: pokerTestResults,
+			runsTest: runsTestResults,
+			longRunsTest: longRunsTestResults
+		};
+	},
 
 	/**
 	 * Test 1 - The Monobit Test
 	 * 1. Count the number of ones in the 20,000 bit stream. Denote this quantity by X.
-	 * 2. The test is passed if 9,654 < X < 10,346.
+	 * 2. The test is passed if X is between the threshold.
 	 * @param {string} randomBits The random bits to test
 	 * @param {int} numOfBits The number of random bits
 	 * @return {bool} Returns true if the test passed or false if not
 	 */
-	randomnessMonobitTest: function(randomBits, numOfBits)
+	randomnessMonobitTest: function(randomBits, numOfBits, testVersion)
 	{
 		var x = 0;
 		
@@ -43,13 +196,26 @@ var randomTests = {
 			}
 		}
 		
-		// Evaluation
-		var testResult = ((9654 < x) && (x < 10346)) ? true : false;
+		// Check which thresholds to test against
+		if (testVersion === 'FIPS-140-1')
+		{
+			// Evaluation for FIPS-140-1
+			var testResult = ((x > 9654) && (x < 10346)) ? true : false;
+			var testResultMsg = '<b>The Monobit Test:</b> The test is passed if 9654 < X < 10346. '
+			                  + 'Test passed: ' + this.colourCode(testResult) + '. X = ' + x + '<br>';
+		}
+		else {
+			// Evaluation for FIPS-140-2
+			var testResult = ((x > 9725) && (x < 10275)) ? true : false;
+			var testResultMsg = '<b>The Monobit Test:</b> The test is passed if 9725 < X < 10275. '
+			                  + 'Test passed: ' + this.colourCode(testResult) + '. X = ' + x + '<br>';
+		}
 		
-		// Log output to screen
-		$('#monobitTestResults').html('The test is passed if 9654 < X < 10346. Test passed: ' + testResult + '. X = ' + x);
-		
-		return testResult;
+		// Return result and log message to calling function
+		return {
+			testResult: testResult,
+			testResultMsg: testResultMsg
+		};
 	},
 	
 	/**
@@ -57,13 +223,13 @@ var randomTests = {
 	 * 1. Divide the 20,000 bit stream into 5,000 contiguous 4 bit segments. Count and store the number of occurrences 
 	 *    of each of the 16 possible 4 bit values. Denote f(i) as the number of each 4 bit value i where 0 <= i <= 15.
 	 * 2. Evaluate the following:
-	 *    X = (16/5000) * (SUM i=0 -> i=15 [f(i)]^2) - 5000
-	 * 3. The test is passed if 1.03 < X < 57.4. 
+	 *    X = (16/5000) * (Sum i=0 -> i=15 [f(i)]^2) - 5000
+	 * 3. The test is passed if X is between the threshold.
 	 * @param {string} randomBits The random bits to test
 	 * @param {int} numOfBits The number of random bits
 	 * @return {bool} Returns true if the test passed or false if not
 	 */
-	randomnessPokerTest: function(randomBits, numOfBits)
+	randomnessPokerTest: function(randomBits, numOfBits, testVersion)
 	{		
 		var possibleFourBits = {};
 		possibleFourBits['bits0000'] = { hex: '0', binary: '0000', count: 0 };
@@ -91,20 +257,36 @@ var randomTests = {
 		}
 		
 		// Square the count by 2 and add to total
-		var sum = 0;		
-		$.each(possibleFourBits, function(index, value)
-		{			
-			sum += Math.pow(value.count, 2);
-		});
+		var sum = 0;
+		for (var key in possibleFourBits)
+		{		
+			sum += Math.pow(possibleFourBits[key].count, 2);
+		}
 		
-		// Evaluation
+		// Result
 		var x = (16/5000) * sum - 5000;
-		var testResult = ((1.03 < x) && (x < 57.4)) ? true : false;
 		
-		// Log output to screen
-		$('#pokerTestResults').html('The test is passed if 1.03 < X < 57.4. Test passed: ' + testResult + '. X = ' + x.toFixed(2));
+		// Check which thresholds to test against
+		if (testVersion === 'FIPS-140-1')
+		{
+			// Evaluation for FIPS-140-1
+			var testResult = ((x > 1.03) && (x < 57.4)) ? true : false;
+			var testResultMsg = '<b>The Poker Test:</b> The test is passed if 1.03 < X < 57.4. '
+							  + 'Test passed: ' + this.colourCode(testResult) + '. X = ' + x.toFixed(2) + '<br>';
+		}
+		else {
+			// Evaluation for FIPS-140-2
+			var testResult = ((x > 2.16) && (x < 46.17)) ? true : false;
+			var testResultMsg = '<b>The Poker Test:</b> The test is passed if 2.16 < X < 46.17. '
+							  + 'Test passed: ' + this.colourCode(testResult) + '. X = ' + x.toFixed(2) + '<br>';
+		}
 		
-		return testResult;
+		
+		// Return result and log message to calling function
+		return {
+			testResult: testResult,
+			testResultMsg: testResultMsg
+		};
 	},
 	
 	/**
@@ -117,18 +299,11 @@ var randomTests = {
 	 * within the corresponding interval specified below. This must hold for both the zeros
 	 * and ones; that is, all 12 counts must lie in the specified interval. For the purpose of this
 	 * test, runs of greater than 6 are considered to be of length 6.
-	 * Length of Run  Required Interval
-	 * 1	2267-2733
-	 * 2	1079-1421
-	 * 3	502-748
-	 * 4	223-402
-	 * 5	90-223
-	 * 6+	90-223
 	 * @param {string} randomBits The random bits to test
 	 * @param {int} numOfBits The number of random bits
 	 * @return {bool} Returns true if the test passed or false if not
 	 */
-	randomnessRunsTest: function(randomBits, numOfBits)
+	randomnessRunsTest: function(randomBits, numOfBits, testVersion)
 	{
 		// Initialize object to count the lengths of each run of bits
 		var numOfRuns = {
@@ -171,60 +346,105 @@ var randomTests = {
 			lastDigit = currentDigit;
 		}
 		
-		// Tally the counts to see if they are in correct range
-		var successCount = 0;		
-		if ((2267 < numOfRuns['runlength1']) && (numOfRuns['runlength1'] < 2733))
+		// Check which thresholds to test against
+		if (testVersion === 'FIPS-140-1')
 		{
-			successCount += 1;
+			// Evaluation for FIPS-140-1
+			var successCount = 0;
+			if ((numOfRuns['runlength1'] >= 2267) && (numOfRuns['runlength1'] <= 2733))
+			{
+				successCount += 1;
+			}
+			if ((numOfRuns['runlength2'] >= 1079) && (numOfRuns['runlength2'] <= 1421))
+			{
+				successCount += 1;
+			}
+			if ((numOfRuns['runlength3'] >= 502) && (numOfRuns['runlength3'] <= 748))
+			{
+				successCount += 1;
+			}
+			if ((numOfRuns['runlength4'] >= 223) && (numOfRuns['runlength4'] <= 402))
+			{
+				successCount += 1;
+			}
+			if ((numOfRuns['runlength5'] >= 90) && (numOfRuns['runlength5'] <= 223))
+			{
+				successCount += 1;
+			}
+			if ((numOfRuns['runlength6'] >= 90) && (numOfRuns['runlength6'] <= 223))
+			{
+				successCount += 1;
+			}
+
+			// Tally the counts to see if they are in correct range
+			var testResult = (successCount == 6) ? true : false;
+			var testResultMsg = '<b>The Runs Test:</b> The test is passed if the number of runs that occur (consecutive zeros or ones for lengths ' +
+								'1 through 6) is each within the specified interval.<br>' + 
+								'Run length 1: 2267-2733. Test result: ' + numOfRuns['runlength1'] + '<br>' +
+								'Run length 2: 1079-1421. Test result: ' + numOfRuns['runlength2'] + '<br>' +
+								'Run length 3: 502-748. Test result: ' + numOfRuns['runlength3'] + '<br>' +
+								'Run length 4: 223-402. Test result: ' + numOfRuns['runlength4'] + '<br>' +
+								'Run length 5: 90-223. Test result: ' + numOfRuns['runlength5'] + '<br>' +
+								'Run length 6+: 90-223. Test result: ' + numOfRuns['runlength6'] + '<br>' +
+								'Tests passed: ' + this.colourCode(testResult) + '.' + '<br>';
 		}
-		if ((1079 < numOfRuns['runlength2']) && (numOfRuns['runlength2'] < 1421))
-		{
-			successCount += 1;
+		else {
+			// Evaluation for FIPS-140-2 (see Change Notice 1, Page 62)
+			var successCount = 0;
+			if ((numOfRuns['runlength1'] >= 2315) && (numOfRuns['runlength1'] <= 2685))
+			{
+				successCount += 1;
+			}
+			if ((numOfRuns['runlength2'] >= 1114) && (numOfRuns['runlength2'] <= 1386))
+			{
+				successCount += 1;
+			}
+			if ((numOfRuns['runlength3'] >= 527) && (numOfRuns['runlength3'] <= 723))
+			{
+				successCount += 1;
+			}
+			if ((numOfRuns['runlength4'] >= 240) && (numOfRuns['runlength4'] <= 384))
+			{
+				successCount += 1;
+			}
+			if ((numOfRuns['runlength5'] >= 103) && (numOfRuns['runlength5'] <= 209))
+			{
+				successCount += 1;
+			}
+			if ((numOfRuns['runlength6'] >= 103) && (numOfRuns['runlength6'] <= 209))
+			{
+				successCount += 1;
+			}
+
+			// Tally the counts to see if they are in correct range
+			var testResult = (successCount == 6) ? true : false;
+			var testResultMsg = '<b>The Runs Test:</b> The test is passed if the number of runs that occur (consecutive zeros or ones for lengths ' +
+								'1 through 6) is each within the specified interval.<br>' + 
+								'Run length 1: 2315-2685. Test result: ' + numOfRuns['runlength1'] + '<br>' +
+								'Run length 2: 1114-1386. Test result: ' + numOfRuns['runlength2'] + '<br>' +
+								'Run length 3: 527-723. Test result: ' + numOfRuns['runlength3'] + '<br>' +
+								'Run length 4: 240-384. Test result: ' + numOfRuns['runlength4'] + '<br>' +
+								'Run length 5: 103-209. Test result: ' + numOfRuns['runlength5'] + '<br>' +
+								'Run length 6+: 103-209. Test result: ' + numOfRuns['runlength6'] + '<br>' +
+								'Tests passed: ' + this.colourCode(testResult) + '.' + '<br>';
 		}
-		if ((502 < numOfRuns['runlength3']) && (numOfRuns['runlength3'] < 748))
-		{
-			successCount += 1;
-		}
-		if ((223 < numOfRuns['runlength4']) && (numOfRuns['runlength4'] < 402))
-		{
-			successCount += 1;
-		}
-		if ((90 < numOfRuns['runlength5']) && (numOfRuns['runlength5'] < 223))
-		{
-			successCount += 1;
-		}
-		if ((90 < numOfRuns['runlength6']) && (numOfRuns['runlength6'] < 223))
-		{
-			successCount += 1;
-		}
-				
-		// Evaluation
-		var testResult = (successCount == 6) ? true : false;
 		
-		// Log output to screen
-		$('#runsTestResults').html(
-			'The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.<br>' + 
-			'Run length 1: 2267-2733. Test result: ' + numOfRuns['runlength1'] + '<br>' +
-			'Run length 2: 1079-1421. Test result: ' + numOfRuns['runlength2'] + '<br>' +
-			'Run length 3: 502-748. Test result: ' + numOfRuns['runlength3'] + '<br>' +
-			'Run length 4: 223-402. Test result: ' + numOfRuns['runlength4'] + '<br>' +
-			'Run length 5: 90-223. Test result: ' + numOfRuns['runlength5'] + '<br>' +
-			'Run length 6+: 90-223. Test result: ' + numOfRuns['runlength6'] + '<br>' +
-			'Tests passed: ' + testResult + '.'
-		);
-		
-		return testResult;
+		// Return result and log message to calling function
+		return {
+			testResult: testResult,
+			testResultMsg: testResultMsg
+		};
 	},
 	
 	/**
 	 * Test 4 - The Long Run Test
-	 * 1. A long run is defined to be a run of length 34 or more (of either zeros or ones).
+	 * 1. A long run is defined to be a run of length x bits or more (of either zeros or ones).
 	 * 2. On the sample of 20,000 bits, the test is passed if there are NO long runs.
 	 * @param {string} randomBits The random bits to test
 	 * @param {int} numOfBits The number of random bits
 	 * @return {bool} Returns true if the test passed or false if not
 	 */
-	randomnessLongRunsTest: function(randomBits, numOfBits)
+	randomnessLongRunsTest: function(randomBits, numOfBits, testVersion)
 	{
 		var lastDigit = null;
 		var currentRun = 0;
@@ -253,15 +473,80 @@ var randomTests = {
 			lastDigit = currentDigit;
 		}		
 		
-		// Evaluation
-		var testResult = (longestRun >= 34) ? false : true;
+		// Check which thresholds to test against
+		if (testVersion === 'FIPS-140-1')
+		{
+			// Evaluation for FIPS-140-1
+			var testResult = (longestRun < 34) ? true : false;
+			var testResultMsg = '<b>The Long Runs Test:</b> The test is passed if there are no runs of length 34 or more (of either zeros or ones).<br>'
+			                  + 'Length of longest run: ' + longestRun + '. Test passed: ' + this.colourCode(testResult) + '.<br>';
+		}
+		else {
+			// Evaluation for FIPS-140-2
+			var testResult = (longestRun < 26) ? true : false;
+			var testResultMsg = '<b>The Long Runs Test:</b> The test is passed if there are no runs of length 26 or more (of either zeros or ones).<br>'
+			                  + 'Length of longest run: ' + longestRun + '. Test passed: ' + this.colourCode(testResult) + '.<br>';
+		}
 		
-		// Log output to screen
-		$('#longRunsTestResults').html(
-			'The test is passed if there are no runs of length 34 or more (of either zeros or ones).<br>' +
-			'Length of longest run: ' + longestRun + '. Test passed: ' + testResult + '.'
-		);
+		// Return result and log message to calling function
+		return {
+			testResult: testResult,
+			testResultMsg: testResultMsg
+		};
+	},
+	
+	/**
+	 * Set the colour of the test result depending on success or failure
+	 * @param {Boolean} testResult
+	 * @returns {String}
+	 */
+	colourCode: function(testResult)
+	{
+		// Set the CSS class
+		var colourClass = (testResult) ? 'testSuccess' : 'testFailure';
 		
-		return testResult;
+		// Return the colour coded text
+		return '<span class="' + colourClass + '">' + testResult + '</span>';
+	},
+	
+	/**
+	 * Testing function to count the number of ones and zeros in the processed and extracted data
+	 */
+	countZerosAndOnesInFullImage: function()
+	{
+		var countZeros = 0;
+		var countOnes = 0;		
+		
+		// Count the number of zeros and ones in the processed bits
+		for (var i=0, length = trngImg.fullBinaryDataProcessed.length; i < length; i++)
+		{
+			if (trngImg.fullBinaryDataProcessed.charAt(i) === '0')
+			{
+				countZeros++;
+			}
+			else {
+				countOnes++;
+			}
+		}
+		
+		console.log('Number of zeros in processed image: ' + countZeros);
+		console.log('Number of ones in processed image: ' + countOnes);
+		
+		var countZeros = 0;
+		var countOnes = 0;		
+		
+		for (var i=0, length = trngImg.fullBinaryDataExtracted.length; i < length; i++)
+		{
+			if (trngImg.fullBinaryDataExtracted.charAt(i) === '0')
+			{
+				countZeros++;
+			}
+			else {
+				countOnes++;
+			}
+		}
+		
+		console.log('Number of zeros in extracted image: ' + countZeros);
+		console.log('Number of ones in extracted image: ' + countOnes);
 	}
 };
