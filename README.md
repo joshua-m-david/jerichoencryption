@@ -1,6 +1,6 @@
-Jericho Chat - Information-theoretically secure communications
-Copyright (C) 2013-2014  Joshua M. David
-==============================================================
+# Jericho Chat - Information-theoretically secure communications
+## Copyright (C) 2013-2014  Joshua M. David
+
 
 Jericho Chat is an encrypted communications program built on the principles of information-theoretic security using true random number generation and one-time pads. The goal is to deliver a free, open source, encrypted communications program for journalists, lawyers, activists and citizens of the world that need high assurances that their communications are free of censorship, control, oppression, totalitarian governments and eavesdropping from the world's most powerful intelligence agencies. To defeat the world's best intelligence agencies, you need to lift your game to their level. That means using encryption that they can never, ever break, regardless of advances in mathematics, quantum physics, cryptanalysis or technology.
 
