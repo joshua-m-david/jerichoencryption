@@ -35,6 +35,7 @@ Road map / To do list:
 - Convert to single page app. (v1.4)
 - Tablet and mobile phone support (Firefox and Chrome on Android). (v1.4)
 - Optimise code so all CPU intensive processing is done inside HTML5 web workers (1.4)
+- Shorten message length to 50 bytes and allow long messages to be automatically split into multiple OTPs
 - UTF-8 support to support multiple languages. (v1.5)
 - Mobile phone support (Firefox OS). (v1.5)
 - Build into Firefox and/or Chromium extension. (future)
