@@ -30,24 +30,34 @@ var randomTests = {
 	 * @param {string} overallResultOutputId Where the overall result will be rendered after the tests are complete
 	 * @param {string} overallResultLogOutputId Where the overall result logs will be rendered after the tests are complete
 	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
+	 * @param {function} callbackFunction Function to run when the tests have completed
 	 */
-	init: function(randomData, overallResultOutputId, overallResultLogOutputId, testVersion)
+	init: function(randomData, overallResultOutputId, overallResultLogOutputId, testVersion, callbackFunction)
 	{
-		// Run HTML5 web worker thread to process the entropy because it is CPU intensive and we don't want to block the UI
-		var worker = new Worker('js/tests-randomness-worker.js');
-		var data = {
+		// Convert the base URL so the web worker can import the common.js script
+		// Also load the JavaScript code on the HTML page which is what the worker will run
+		var baseUrl = window.location.href.replace(/\\/g, '/').replace(/\/[^\/]*$/, '');
+        var array = ['var baseUrl = "' + baseUrl + '";' + $('#randomness-tests-worker').html()];
+		
+		// Create a Blob to hold the JavaScript code and send it to the inline worker
+        var blob = new Blob(array, { type: "text/javascript" });
+		var blobUrl = window.URL.createObjectURL(blob);
+		var worker = new Worker(blobUrl);
+				
+		// Send data to the worker
+		worker.postMessage({
 			randomData: randomData,
 			testVersion: testVersion
-		};
-		
-		// Send data to the worker
-		worker.postMessage(data);
+		});
 		
 		// When the worker is complete
 		worker.addEventListener('message', function(e)
 		{						
 			// Display the results (after web worker complete)
 			randomTests.displayTestResults(e.data.overallResults, e.data.testVersion, overallResultOutputId, overallResultLogOutputId);
+			
+			// Run the callback function
+			callbackFunction();
 			
 		}, false);
 		
@@ -85,8 +95,6 @@ var randomTests = {
 			$('#extractedTestsPass .collectionStatusBox').addClass(result).html(result);
 		}
 		
-		
-		
 		// Update status message on the page
 		common.showProcessingMessage('Processing and randomness tests complete.', true);
 	},
@@ -95,6 +103,7 @@ var randomTests = {
 	 * Starts the tests on every 20,000 bits of random data.
 	 * Returns the overall result of all the tests and a log for each test run.
 	 * @param {string} randomData All the bits to test
+	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
 	 * @returns {object} Returns object with keys: overallResult (boolean) and overallResultLog (string)
 	 */
 	runTests: function(randomData, testVersion)
@@ -180,6 +189,7 @@ var randomTests = {
 	 * 2. The test is passed if X is between the threshold.
 	 * @param {string} randomBits The random bits to test
 	 * @param {int} numOfBits The number of random bits
+	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
 	 * @return {bool} Returns true if the test passed or false if not
 	 */
 	randomnessMonobitTest: function(randomBits, numOfBits, testVersion)
@@ -190,7 +200,7 @@ var randomTests = {
 		for (var i=0; i < numOfBits; i++)
 		{
 			var binaryDigit = randomBits.charAt(i);			
-			if (binaryDigit == '1')
+			if (binaryDigit === '1')
 			{
 				x += 1;
 			}
@@ -227,6 +237,7 @@ var randomTests = {
 	 * 3. The test is passed if X is between the threshold.
 	 * @param {string} randomBits The random bits to test
 	 * @param {int} numOfBits The number of random bits
+	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
 	 * @return {bool} Returns true if the test passed or false if not
 	 */
 	randomnessPokerTest: function(randomBits, numOfBits, testVersion)
@@ -301,6 +312,7 @@ var randomTests = {
 	 * test, runs of greater than 6 are considered to be of length 6.
 	 * @param {string} randomBits The random bits to test
 	 * @param {int} numOfBits The number of random bits
+	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
 	 * @return {bool} Returns true if the test passed or false if not
 	 */
 	randomnessRunsTest: function(randomBits, numOfBits, testVersion)
@@ -442,6 +454,7 @@ var randomTests = {
 	 * 2. On the sample of 20,000 bits, the test is passed if there are NO long runs.
 	 * @param {string} randomBits The random bits to test
 	 * @param {int} numOfBits The number of random bits
+	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
 	 * @return {bool} Returns true if the test passed or false if not
 	 */
 	randomnessLongRunsTest: function(randomBits, numOfBits, testVersion)

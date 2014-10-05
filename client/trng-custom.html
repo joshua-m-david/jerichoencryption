@@ -17,7 +17,7 @@
 -->
 <html>
 	<head>
-		<title>Jericho Chat - TRNG Photo</title>
+		<title>Jericho Chat - TRNG Custom data upload</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		
 		<link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
@@ -26,7 +26,7 @@
 		<link rel="stylesheet" href="css/lib/normalize.css">
 		<link rel="stylesheet" href="css/lib/ui-lightness/jquery-ui.css">
 		<link rel="stylesheet" href="css/common.css">
-		<link rel="stylesheet" href="css/trng-photo.css">
+		<link rel="stylesheet" href="css/trng-custom.css">
 		
 		<script src="js/lib/jquery.js"></script>
 		<script src="js/lib/jquery-ui.js"></script>
@@ -37,35 +37,14 @@
 				
 		<script src="js/database.js"></script>
 		<script src="js/common.js"></script>
-		<script src="js/trng-photo.js"></script>
+		<script src="js/trng-custom.js"></script>
 		<script src="js/tests-randomness.js"></script>		
 		<script type="text/javascript">
 			$(function()
 			{				
-				trngImg.init();
+				trngCustom.init();
 			});	
 		</script>		
-		<script id="trng-extraction-worker" type="javascript/worker">
-			
-			// Import scripts to be used
-			importScripts(baseUrl + '/js/common.js');
-			importScripts(baseUrl + '/js/trng-photo-worker.js');
-			importScripts(baseUrl + '/js/lib/jscrypto-core.js');
-			importScripts(baseUrl + '/js/lib/jscrypto-x64core.js');
-			importScripts(baseUrl + '/js/lib/jscrypto-sha3.js');
-			importScripts(baseUrl + '/js/lib/skein.js');
-
-			// Get data from the process which started the worker thread
-			this.addEventListener('message', function(event)
-			{
-				// Run the Hash Extractor on the entropy (inside web worker)
-				var randomData = trngImgWorker.init(event.data.hashAlgorithm, event.data.entropyInputEstimatePerPixel, event.data.dataset);
-				
-				// Send it back to the main thread
-				this.postMessage(randomData);
-				
-			}, false);
-		</script>
 		<script id="randomness-tests-worker" type="javascript/worker">
 						
 			// Import scripts to be used
@@ -86,7 +65,7 @@
 			}, false);			
 		</script>
 	</head>
-	<body class="trngImagePage">
+	<body class="trngCustomPage">
 		<div class="header">
 			<table class="pageNavigation">
 				<tr>
@@ -94,20 +73,19 @@
 						<a id="btnHome" href="index.html" class="blueButton">Home</a>
 					</td>
 					<td>
-						<input id="btnOpenExtractionSettings" class="blueButton" type="button" value="Settings"><br>
+						<input id="btnOpenUploadSettings" class="blueButton" type="button" value="Settings"><br>
 						<input id="btnStartOver" class="blueButton bottomButton" type="button" value="Restart" disabled="disabled">
 					</td>
 					<td>
-						<label>1. Select photo to load</label><br>
-						<input id="imageLoader" class="imageLoader" type="file" name="imageLoader">
+						<label>1. <span id="fileUploadInstructions"></span></label><br>
+						<input id="fileLoader" class="fileLoader" type="file" name="fileLoader">
 					</td>
 					<td>
-						<input id="processImage" class="blueButton" type="button" value="2. Process" disabled="disabled"><br>
-						<input id="btnOpenExportPadsSettings" class="blueButton bottomButton" type="button" value="3. Export" disabled="disabled">
+						<input id="btnOpenExportPadsSettings" class="blueButton" type="button" value="2. Export" disabled="disabled">
 					</td>
 					<td class="testingButtons">
-						<a class="blueButton" href="#extractedImageAnchor">View extracted image</a><br>
-						<a class="blueButton bottomButton" href="#extractedOverallResultAnchor">View extracted tests</a>
+						<a class="blueButton" href="#imageCanvasAnchor">View bitmap image</a><br>
+						<a class="blueButton bottomButton" href="#testsOverallResultAnchor">View test results</a>
 					</td>
 				</tr>				
 			</table>
@@ -119,21 +97,9 @@
 						<b>Totals:</b>
 					</td>
 					<td class="collectionLabel">
-						Photo pixels:
+						Random bits:
 					</td>
-					<td id="totalPhotoPixels">
-						<div class="collectionStatusBox">0</div>
-					</td>
-					<td class="collectionLabel">
-						Input entropy bits:
-					</td>
-					<td id="totalEntropyInputBits">
-						<div class="collectionStatusBox">0</div>
-					</td>
-					<td class="collectionLabel">
-						Extracted bits:
-					</td>
-					<td id="totalExtractedBits">
+					<td id="totalRandomBits">
 						<div class="collectionStatusBox">0</div>
 					</td>
 					<td class="collectionLabel">
@@ -143,7 +109,7 @@
 						<div class="collectionStatusBox">0</div>
 					</td>
 					<td class="collectionLabel">
-						Extracted tests:
+						Tests:
 					</td>
 					<td id="extractedTestsPass">
 						<div class="collectionStatusBox">N/A</div>
@@ -157,27 +123,24 @@
 		
 		<!-- Headings hidden and shown with JavaScript -->
 		<div class="outputAndResults">
-			<h3 class="originalHeading"><span id="imageCanvasAnchor"></span>Original image</h3>
+			<h3 class="originalHeading"><span id="imageCanvasAnchor"></span>Random data bitmap</h3>
 			<canvas id="imageCanvas"></canvas>
-
-			<h3 class="processedHeading"><span id="extractedImageAnchor"></span>Extracted image</h3>
-			<canvas id="extractedImage"></canvas>
 			
-			<h3 class="processedHeading"><span id="extractedOverallResultAnchor"></span>Extracted test results</h3>
-			<div id="extractedOverallResult"></div>
-			<div id="extractedOverallResultLog"></div>
+			<h3 class="processedHeading"><span id="testsOverallResultAnchor"></span>Test results</h3>
+			<div id="testsOverallResult"></div>
+			<div id="testsOverallResultLog"></div>
 		</div>
 		
 		<!-- Dialog for the randomness extractor settings -->
-		<div id="extractionSettings" class="extractionSettings" title="Extraction settings">
-			<div class="helpExplanation">Set the parameters for the randomness extractor</div>
-			
-			<label>Estimate of input entropy into the hash function</label>
-			<div id="inputEntropyBitsPerPixelSlider" class="slider"></div>	
-			<div id="inputEntropyBitsPerPixelAmount" class="sliderAmount"></div>
-			
-			<label>Hash function to use for extraction</label>
-			<select id="hashAlgorithmSelect"></select>
+		<div id="uploadSettings" class="uploadSettings" title="Import settings">
+			<div class="helpExplanation">Set the parameters for the random data import</div>
+						
+			<label>Format of random data for file upload</label>
+			<select id="fileUploadType">
+				<option value="binary">binary file containing random data encoded in binary</option>
+				<option value="hexadecimal">plain text file containing random data encoded in hexadecimal e.g. 7af4cb3</option>
+				<option value="base64">plain text file containing random data encoded in Base64 e.g. c3VyS74=</option>				
+			</select>
 		</div>
 		
 		<!-- Dialog for exporting pads and testing the server connection -->

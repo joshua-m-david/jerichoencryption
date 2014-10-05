@@ -15,18 +15,104 @@
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
 
-// Import scripts to be used
-importScripts('common.js');
-importScripts('trng-photo.js');
+var trngImgWorker = {
 
-// Get data from the process which started the worker thread
-self.addEventListener('message', function(e)
-{
-	// Send the processed data back to the main thread
-	self.postMessage({
-		'threadId': e.data.threadId,
-		'datasetId': e.data.datasetId,
-		'datasetBinaryData': trngImg.convertFromImageData(e.data.dataset)
-	});
+	hashAlgorithm: null,
+	entropyInputEstimatePerPixel: null,
+	dataset: null,
+	currentDatasetStartIndex: 0,
+	
+	/**
+	 * Hashes the entropy in the photo
+	 * @param {string} hashAlgorithm
+	 * @param {integer} entropyInputEstimatePerPixel
+	 * @param {array} dataset
+	 * @returns {string}
+	 */
+	init: function(hashAlgorithm, entropyInputEstimatePerPixel, dataset)
+	{
+		// Store so only one copy of the large array
+		trngImgWorker.hashAlgorithm = hashAlgorithm;
+		trngImgWorker.entropyInputEstimatePerPixel = entropyInputEstimatePerPixel;
+		trngImgWorker.dataset = dataset;
+				
+		// Get 512 bits worth of input entropy and hash it to get 512 bits for the initial seed
+		var inputEntropy = trngImgWorker.getRandomBits();	
+		var seed = common.secureHash(trngImgWorker.hashAlgorithm, inputEntropy);
 		
-}, false);
+		// Loop initialisations
+		var moreEntropyToHash = true;
+		var extractedRandomDataHexadecimal = '';
+		
+		// Loop through and process the entropy in the photo
+		while (moreEntropyToHash)
+		{
+			// Get 512 bits worth of entropy
+			inputEntropy = trngImgWorker.getRandomBits();
+									
+			// Break the loop if there is not enough entropy left
+			if (inputEntropy === false)
+			{
+				moreEntropyToHash = false;
+			}
+			else {
+				// Hash the previous seed and new input entropy to get a random output of 512 bits (128 hexadecimal symbols)
+				var hashedEntropy = common.secureHash(trngImgWorker.hashAlgorithm, seed + inputEntropy);
+				
+				// Append the first 256 bits of hash output to the overall output (256 bits = 64 hexadecimal symbols)
+				extractedRandomDataHexadecimal += hashedEntropy.substr(0, 64);
+				
+				// Update the seed to be the last 256 bits of the hash output
+				seed = hashedEntropy.substr(64);
+			}			
+		}
+		
+		// Convert the hexadecimal to binary which is later used in the randomness tests and display output
+		var extractedRandomDataBinary = common.convertHexadecimalToBinary(extractedRandomDataHexadecimal);
+		
+		// Return the binary and hexadecimal representations of the data
+		return {
+			extractedRandomDataBinary: extractedRandomDataBinary,
+			extractedRandomDataHexadecimal: extractedRandomDataHexadecimal			
+		};
+	},
+	
+	/**
+	 * Get random bits from the photo's RGB values
+	 * @returns {String|false} Return the random bits as a hexadecimal string or false if not enough
+	 */
+	getRandomBits: function()
+	{
+		// The total of RGB values required to make x bits of entropy
+		var rgbValuesPerPixel = 3;
+		var bitsRequired = 512;
+		var numOfPixelsRequired = bitsRequired / trngImgWorker.entropyInputEstimatePerPixel;
+		var totalRequiredRgbValues = Math.round(numOfPixelsRequired * rgbValuesPerPixel);
+
+		// Get the RGB values required to make up x bits of entropy
+		var start = trngImgWorker.currentDatasetStartIndex;
+		var end = trngImgWorker.currentDatasetStartIndex + totalRequiredRgbValues;
+		var rgbValues = trngImgWorker.dataset.slice(start, end);
+		var rgbValuesLength = rgbValues.length;
+				
+		// Check to make sure enough length has been retrieved
+		if (rgbValuesLength < totalRequiredRgbValues)
+		{
+			return false;
+		}
+		
+		var entropyHexadecimal = '';
+
+		// Build up the x bits of entropy
+		for (var i=0; i < rgbValuesLength; i++)
+		{
+			// Convert each integer value to hexadecimal and concatenate to the seed
+			entropyHexadecimal += common.convertIntegerToHexadecimal(rgbValues[i]);						
+		}
+		
+		// Update the new start index to the start of new entropy, so next call to this function will get new entropy
+		trngImgWorker.currentDatasetStartIndex = end;
+
+		return entropyHexadecimal;
+	}
+};

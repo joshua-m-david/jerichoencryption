@@ -93,6 +93,10 @@
 	margin-top: 30px;
 }
 
+.generatePadsSubMenu .menu a {
+	width: 207px;
+}
+
 /* Make the link appear clickable */
 .btnOpenGeneratePadsMenu {
 	cursor: pointer;

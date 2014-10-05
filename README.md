@@ -11,7 +11,7 @@ Constructive feedback from anyone is welcome and you are free to contribute to t
 
 Suggestions and source code contributions are welcome if you are not trying to undermine the security of the software. All commits will be heavily scrutinized for weaknesses and security flaws. Introducing security flaws or insecure ideas (intentional or otherwise) will result in you being blacklisted from further contributions.
 
-If you are working on this project, it is preferred that you stay anonymous. Do not mention you are working on the project to anyone using your real identity unless you want to be added to various watch lists, no-fly lists and made a target for surveillance. As a developer, gaining a trusted reputation within the project team and then later on receiving a National Security Letter (or equivalent) which forces you to subtly compromise your code also affects the project. For your safety and the project's, connect to the website and GitHub only via internet cafes, WiFi hotspots and libraries. Ideally use anonymous methods as well such as Tor or your own proxy servers.
+If you are working on this project, it is preferred that you stay anonymous. Do not mention you are working on the project to anyone using your real identity unless you want to be added to various watch lists, no-fly lists and made a target for surveillance. As a developer, gaining a trusted reputation within the project team and then later on receiving a National Security Letter (or equivalent) which forces you to subtly compromise your code also affects the project. For your safety and the project's, connect to the website and GitHub only via internet cafes, WiFi hotspots, libraries, Tor or your own proxy servers.
 
 Other ways to help:
 - Maintaining the main website, design and documentation.
@@ -30,14 +30,13 @@ Some tips for developers:
 - All existing unit tests must still pass and the program must still be fully functional.
 
 Road map / To do list:
-- Encrypt the one-time pad storage text file before exporting for transit and at all times inside the local database. (v1.4)
-- Allow users to include their own entropy from their own trusted TRNG. (v1.4)
-- Convert to single page app. (v1.4)
-- Tablet and mobile phone support (Firefox and Chrome on Android). (v1.4)
-- Optimise code so all CPU intensive processing is done inside HTML5 web workers (1.4)
-- Shorten message length to 50 bytes and allow long messages to be automatically split into multiple OTPs
-- UTF-8 support to support multiple languages. (v1.5)
-- Mobile phone support (Firefox OS). (v1.5)
+- Encrypt the one-time pad storage text file before exporting for transit and at all times inside the local database. (v1.5)
+- Convert to single page app. (v1.5)
+- Tablet and mobile phone support (Firefox and Chrome on Android). (v1.5)
+- Optimise code so all CPU intensive processing is done inside HTML5 web workers (1.5)
+- Shorten message length to 50 bytes and allow long messages to be automatically split into multiple OTPs (future)
+- UTF-8 support to support multiple languages. (future)
+- Mobile phone support (Firefox OS). (future)
 - Build into Firefox and/or Chromium extension. (future)
 
 Setting up the development environment:

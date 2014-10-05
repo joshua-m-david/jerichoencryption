@@ -40,5 +40,5 @@ $databaseConfig = array(
 
 // Application config - some settings specific to testing
 $applicationConfig = array(
-	'testResponseHeaders' => false		# Enables messages in the HTTP 403 error responses for debug purposes - make sure this is false for a live server!
+	'testResponseHeaders' => true		# Enables messages in the HTTP 403 error responses for debug purposes - make sure this is false for a live server!
 );

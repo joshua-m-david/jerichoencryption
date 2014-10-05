@@ -21,7 +21,7 @@
 var common = {
 	
 	// Current program version to help with importing from old versions later
-	programVersion: '1.3',
+	programVersion: '1.4',
 	
 	// Define lengths of message attributes in bytes
 	padIdentifierSize: 7,		// Size of the pad identifier in bytes. The first 7 bytes of pad are used only to identify which pad was used
@@ -50,7 +50,7 @@ var common = {
 	totalMessagePartsSizeBinary: 968,
 	totalPadSizeBinary: 1536,
 	
-	// MAC algorithms to be used
+	// Hash and MAC algorithms to be used
 	macAlgorithms: ['skein-512', 'keccak-512'],
 	
 	// Allowed printable ASCII chars from hexadecimal 21 - 7E (decimal 32 - 126)
@@ -66,6 +66,10 @@ var common = {
 	
 	// Start timer
 	startTime: null,
+			
+	// Random data collected or loaded from TRNG
+	randomDataBinary: '',
+	randomDataHexadecimal: '',
 		
 	/**
 	 * Calculates the length of the plaintext message without any padding
@@ -571,6 +575,20 @@ var common = {
 	
 		return numberWithPaddingBinary;
 	},
+	
+	/**
+	 * Converts a small number (0-255) to its hexadecimal representation
+	 * @param {integer} number The number to be converted
+	 * @returns {string} Returns the hexadecimal representation of the number
+	 */
+	convertIntegerToHexadecimal: function(number)
+	{
+		// Convert to hexadecimal and left pad it with 0s if it is not a full byte (numbers 0-9)
+		var numberHex = number.toString(16);
+		var numberWithPaddingBinary = common.leftPadding(numberHex, '0', 2);
+		
+		return numberWithPaddingBinary;
+	},
 
 	/**
 	 * Converts binary code to hexadecimal string. All hexadecimal is lowercase for consistency with the hash functions
@@ -805,10 +823,10 @@ var common = {
 	/**
 	 * Create the one-time pads from the collected and extracted entropy
 	 * @param {integer} numOfUsers The number of users in the group ie. 2, 3, 4, 5, 6, 7
-	 * @param {string} hexEntropyString A string of hexadecimal random data
+	 * @param {string} randomDataHexadecimal A string of hexadecimal random data
 	 * @return {array} Returns an array of pad objects. Each object contains keys 'padIdentifier' and 'pad'
 	 */
-	createPads: function(numOfUsers, hexEntropyString)
+	createPads: function(numOfUsers, randomDataHexadecimal)
 	{
 		var pads = {};
 		
@@ -826,10 +844,10 @@ var common = {
 		var currentUser = 'alpha';
 		
 		// Loop through all the entropy hexadecimal chars
-		for (var i=0, length = hexEntropyString.length; i < length; i += this.totalPadSizeHex)
+		for (var i=0, length = randomDataHexadecimal.length; i < length; i += this.totalPadSizeHex)
 		{
 			// Get the number of characters for the pad
-			var pad = hexEntropyString.substr(i, this.totalPadSizeHex);
+			var pad = randomDataHexadecimal.substr(i, this.totalPadSizeHex);
 			
 			// If near the end of the string and we don't have enough for one more pad, don't use the remainder
 			if (pad.length < this.totalPadSizeHex)
@@ -865,62 +883,48 @@ var common = {
 	/**
 	 * Exports the random data to the clipboard in various formats or to a binary file
 	 * @param {string} exportMethod How to export the data e.g. 'testExportBase64', 'testExportHexadecimal', 'testExportBinaryFile' or 'testExportBinaryString'
-	 * @param {string} processedBinaryRandomData The raw entropy bits
-	 * @param {string} extractedBinaryRandomData The extracted entropy bits
+	 * @param {string} extractedRandomDataBinary The extracted entropy bits in binary
+	 * @param {string} extractedRandomDataHexadecimal The extracted entropy bits in hexadecimal
 	 */
-	prepareRandomDataForExternalTesting: function(exportMethod, processedBinaryRandomData, extractedBinaryRandomData)
+	prepareRandomDataForExternalTesting: function(exportMethod, extractedRandomDataBinary, extractedRandomDataHexadecimal)
 	{
 		// Instructions for the popup prompt
-		var instructions = 'Copy to clipboard (Ctrl + C) then paste into text file';
-		var binaryRandomData = '';
+		var instructions = 'Copy to clipboard (Ctrl + C) then paste into a plain text file';
 
-		// Determine whether to export the processed or extracted data
-		if (exportMethod.indexOf('RawEntropy') !== -1)
-		{
-			binaryRandomData = processedBinaryRandomData;
-		}
-		else {
-			binaryRandomData = extractedBinaryRandomData;
-		}
-
-		// Check what export method
+		// Export to Base 64
 		if (exportMethod.indexOf('Base64') !== -1)
 		{
-			// Convert to hexadecimal then WordArray objects for CryptoJS to use
-			var hexRandomData = common.convertBinaryToHexadecimal(binaryRandomData);
-			var words = CryptoJS.enc.Hex.parse(hexRandomData);
+			// Convert to WordArray objects for CryptoJS to use
+			var words = CryptoJS.enc.Hex.parse(extractedRandomDataHexadecimal);
 			var output = CryptoJS.enc.Base64.stringify(words);
 			
-			// Export to a dialog which lets the user copy from there to a text file
+			// Export the Base64 to a dialog which lets the user copy from there to a text file
 			window.prompt(instructions, output);
 		}
+		
+		// Export to hexadecimal string
 		else if (exportMethod.indexOf('Hexadecimal') !== -1)
-		{
-			// Export to hexadecimal string
-			var output = common.convertBinaryToHexadecimal(binaryRandomData);
-			window.prompt(instructions, output);
+		{			
+			window.prompt(instructions, extractedRandomDataHexadecimal);
 		}
+		
+		// Export to binary file
 		else if (exportMethod.indexOf('BinaryFile') !== -1)
 		{
 			// Convert to hexadecimal then WordArray objects for CryptoJS to use
-			var hexRandomData = common.convertBinaryToHexadecimal(binaryRandomData);
-			var words = CryptoJS.enc.Hex.parse(hexRandomData);
+			var words = CryptoJS.enc.Hex.parse(extractedRandomDataHexadecimal);
 			var output = CryptoJS.enc.Base64.stringify(words);
 			
 			// Output the binary file for the user to save
 			location.href = 'data:application/octet-stream;base64,' + output;
 		}
-		else {
-			// Export to binary string
-			window.prompt(instructions, binaryRandomData);
-		}
 	},
 	
 	/**
 	 * Export the pads to either clipboard, textfile or to the local machine database for each user.
-	 * User 1 is sending messages using odd numbered pads, user 2 will send using even numbered pads. This 
-	 * prevents each user from using each other's pads which could cause them to use a pad more than once.
-	 * If a pad is used more than once cryptanalysis is possible e.g. http://www.cryptosmith.com/archives/70
+	 * Each user gets allocated their own one-time pads for sending. This prevents each user from using 
+	 * each other's pads which could cause them to use a pad more than once. If a one-time pad is used more 
+	 * than once then cryptanalysis is possible.
 	 * 
 	 * @param {integer} numOfUsers The number of users in the group ie. 2, 3, 4, 5, 6, 7
 	 * @param {string} exportForUser Who the pads are being exported for, e.g. alpha, bravo, charlie
@@ -928,13 +932,12 @@ var common = {
 	 * @param {string} exportMethod How the pads will be exported. Pass in 'clipboard', 'textFile' or 'localDatabase'
 	 * @param {string} serverAddressAndPort The server address to send/receive messages
 	 * @param {string} serverKey The key to connect to the server and send/receive messages
-	 * @param {string } binaryRandomData The random binary data
+	 * @param {string } extractedRandomDataHexadecimal The random data as a hexadecimal string
 	 */
-	preparePadsForExport: function(numOfUsers, userNicknames, exportForUser, exportMethod, serverAddressAndPort, serverKey, binaryRandomData)
+	preparePadsForExport: function(numOfUsers, userNicknames, exportForUser, exportMethod, serverAddressAndPort, serverKey, extractedRandomDataHexadecimal)
 	{
-		// Convert the binary data to hexadecimal and split up the random data into separate pads
-		var hexRandomData = common.convertBinaryToHexadecimal(binaryRandomData);
-		var pads = common.createPads(numOfUsers, hexRandomData);
+		// Ssplit up the random data into separate pads
+		var pads = common.createPads(numOfUsers, extractedRandomDataHexadecimal);
 				
 		// Clone the object storage schema
 		var padData = db.clone(db.padDataSchema);
@@ -951,16 +954,16 @@ var common = {
 		var padDataJson = JSON.stringify(padData);	
 		
 		// Export to a dialog which lets the user copy from there to a text file
-		if (exportMethod == 'clipboard')
+		if (exportMethod === 'clipboard')
 		{							
 			window.prompt('Copy to clipboard (Ctrl + C) then paste into text file', padDataJson);
 		}
-		else if (exportMethod == 'textFile')
+		else if (exportMethod === 'textFile')
 		{
 			// Check for the various File API support
-			if ((window.File && window.FileReader && window.FileList && window.Blob) == false)
+			if ((window.File && window.FileReader && window.FileList && window.Blob) === false)
 			{
-				alert('The File APIs are not fully supported in this browser, try exporting to clipboard then pasting to a new text file.');
+				alert('The File APIs are not fully supported in this browser, try exporting to clipboard then pasting to a new plain text file.');
 			}
 			else {
 				// Set parameters
@@ -1532,34 +1535,7 @@ var common = {
 		// Show status on page
 		$('.processingStatus').html(message + timeElapsedMessage);
 	},
-	
-	/**
-	 * Runs the Von Nuemann randomness extractor on the binary data
-	 * https://en.wikipedia.org/wiki/Randomness_extractor#Von_Neumann_extractor
-	 * @param {string} rawBits The raw binary data to extract from
-	 * @return {string} Returns the whitened binary data
-	 */
-	vonNeumannExtractor: function(rawBits)
-	{
-		var output = '';
-
-		// Loop through the bits and compare two bits at a time
-		for (var i=0, numOfBits = rawBits.length; i < numOfBits; i += 2)
-		{
-			var bitA = rawBits.charAt(i);
-			var bitB = rawBits.charAt(i + 1);
-
-			// No output if bits are the same
-			if (bitA !== bitB)
-			{
-				// If bits are different, output the first bit
-				output += bitA;
-			}
-		}
-
-		return output;
-	},
-	
+		
 	/**
 	 * Formats the number with thousands separator
 	 * @param {integer} num Pass in number e.g. 2000000
@@ -1578,5 +1554,200 @@ var common = {
 	capitaliseFirstLetter: function(text)
 	{
 		return text.charAt(0).toUpperCase() + text.slice(1);
+	},
+	
+	/**
+	 * Configure the Export Pads dialog to open and all functionality within
+	 */
+	initExportPadsDialog: function()
+	{
+		// Configure button to open entropy collection settings dialog
+		$('#btnOpenExportPadsSettings').click(function()
+		{					
+			$('#exportPadsSettings').dialog('open');
+		});
+
+		// Configure entropy collection settings dialog
+		$('#exportPadsSettings').dialog(
+		{
+			autoOpen: false,
+			create: function (event)
+			{
+				// Set the dialog position as fixed before opening the dialog. See: http://stackoverflow.com/a/6500385
+				$(event.target).parent().css('position', 'fixed');
+			},
+			resizable: false,
+			width: 'auto'
+		});
+		
+		// Initialise other functionality within the dialog
+		common.dynamicallySetNicknameTextEntry();
+		common.hideOptionsDependingOnExportMethod();
+		common.initCreateServerKeyButton();
+		common.initExportPadsButton();
+		common.preloadServerConnectionDetails();
+		common.initTestServerConnectionButton();
+	},
+	
+	/**
+	 * When the number of users changes, enable/disable options in the Export for user 
+	 * select box and dynamically alter the number of user nicknames they can enter
+	 */
+	dynamicallySetNicknameTextEntry: function()
+	{		
+		$('#numOfUsers').change(function()
+		{
+			// Get the number of users
+			var numOfUsers = parseInt($(this).val());
+			var options = '';
+			var nicknames = '';
+
+			// Build the dropdown options dynamically
+			for (var i=0; i < numOfUsers; i++)
+			{
+				options += '<option value="' + common.userList[i] + '">' + common.userList[i] + '</option>';
+			}
+
+			// Build list of users so the user can edit the user nicknames
+			for (var i=0; i < numOfUsers; i++)
+			{
+				// Build the HTML to be rendered inside the dialog
+				var nicknameCapitalised = common.capitaliseFirstLetter(common.userList[i]);
+				nicknames += '<label>' + nicknameCapitalised + '</label> '
+						  +  '<input id="nickname-' + common.userList[i] + '" type="text" maxlength="12" value="' + nicknameCapitalised + '"><br>';
+			}
+
+			// Display the options
+			$('#exportForUser').html(options);
+			$('.nicknames').html(nicknames);
+		});
+	},
+	
+	/**
+	 * Hide or show the last option in the dialog if the export method is changed
+	 */
+	hideOptionsDependingOnExportMethod: function()
+	{		
+		$('#exportMethod').change(function()
+		{
+			var exportMethod = $(this).val();
+
+			// If the pads will be exported for actual use show the Export for User option
+			if ((exportMethod === 'textFile') || (exportMethod === 'clipboard') || (exportMethod === 'localDatabase'))
+			{
+				$('.exportForUserRow').show();
+			}
+			else {
+				// Otherwise export for testing so hide the Export for User option
+				$('.exportForUserRow').hide();
+			}					
+		});
+	},
+	
+	/**
+	 * Creates a 512 bit server key from the random, extracted 
+	 * data and puts it in the export dialog's text field
+	 */
+	initCreateServerKeyButton: function()
+	{
+		$('#btnCreateServerKey').click(function()
+		{
+			// Check there is enough data to create a 512 bit key (128 hexadecimal symbols)
+			if (common.randomDataHexadecimal.length < 128)
+			{
+				common.showStatus('error', 'Not enough bits remaining to create a full 512 bit key.');
+			}
+			else {
+				// Take the first 512 bits of the extracted data and convert it to hexadecimal
+				var serverKeyHex = common.randomDataHexadecimal.slice(0, 128);
+
+				// After removing the first 512 bits, use the remainder of the bits for the one-time pads
+				common.randomDataHexadecimal = common.randomDataHexadecimal.slice(128);
+
+				// Put it in the text field
+				$('#serverKey').val(serverKeyHex);
+			}
+		});
+	},
+	
+	/**
+	 * Initialise the button to export the one-time pads or random data for external testing
+	 */
+	initExportPadsButton: function()
+	{
+		// Export the pads
+		$('#btnExportPads').click(function()
+		{
+			// Get the selected export method
+			var exportMethod = $('#exportMethod').val();
+
+			// Export to text, file or database depending on user selection
+			if ((exportMethod === 'textFile') || (exportMethod === 'clipboard') || (exportMethod === 'localDatabase'))
+			{
+				var numOfUsers = parseInt($('#numOfUsers').val());
+				var exportForUser = $('#exportForUser').val();
+				var serverAddressAndPort = $('#serverAddressAndPort').val();
+				var serverKey = $('#serverKey').val();						
+				var userNicknames = {};
+
+				// Loop through the number of users
+				for (var i=0; i < numOfUsers; i++)
+				{
+					// Get the user, nickname, then filter the nickname field so only A-z and 0-9 characters allowed
+					var user = common.userList[i];
+					var nickname = $('#nickname-' + common.userList[i]).val();
+						nickname = nickname.replace(/[^A-Za-z0-9]/g, '');
+
+					// If the nickname field has nothing, then use the default user name e.g. Alpha, Bravo
+					if (nickname === '')
+					{
+						// Capitalise the default user
+						nickname = common.userList[i];
+						nickname = common.capitaliseFirstLetter(nickname);
+					}
+
+					// Store the nickname as a key next to the user
+					userNicknames[user] = nickname;
+				}
+
+				// Export the pads
+				common.preparePadsForExport(numOfUsers, userNicknames, exportForUser, exportMethod, serverAddressAndPort, serverKey, common.randomDataHexadecimal);
+			}
+			else {
+				// Otherwise export the random data for testing using external methods
+				common.prepareRandomDataForExternalTesting(exportMethod, common.randomDataBinary, common.randomDataHexadecimal);
+			}
+		});
+	},
+	
+	/**
+	 * Preload values into the text boxes if they already have connection settings in local storage
+	 */
+	preloadServerConnectionDetails: function()
+	{
+		// If they already have connection settings in local storage
+		if (db.padData.info.serverAddressAndPort !== null)
+		{
+			// Load from local storage into the text fields
+			$('#serverAddressAndPort').val(db.padData.info.serverAddressAndPort);
+			$('#serverUsername').val(db.padData.info.serverUsername);
+			$('#serverKey').val(db.padData.info.serverKey);
+		}
+	},
+	
+	/**
+	 * Test the server connection when the button is clicked
+	 */
+	initTestServerConnectionButton: function()
+	{						
+		$('#testServerConnection').click(function()
+		{
+			// Get values from text inputs
+			var serverAddressAndPort = $('#serverAddressAndPort').val();
+			var serverKey = $('#serverKey').val();
+
+			// Check connection and show success or failure message on screen
+			common.testServerConnection(serverAddressAndPort, serverKey);
+		});
 	}
 };

@@ -76,25 +76,39 @@
 				</div>
 				<h2>Generate pads</h2>
 				<div class="information">
-					You need true random data for perfectly secure communication using one-time pads. This program provides a True 
+					You need truly random data for perfectly secure communication using one-time pads. This program provides a True 
 					Random Number Generator (TRNG).<br>
 					<br>
 					Entropy is extracted from a photograph that you provide. For high quality results, use a photo from a 
-					standalone digital camera or DSLR that has been captured in your camera's raw image format and converted to PNG or BMP. 
-					Avoid JPEG and other lossy compression algorithms if possible as they may affect the output in predictable ways.<br>
+					standalone digital camera that has been captured in your camera's raw image format, transferred to 
+					your computer by USB cable (or SD card), then losslessly converted to PNG (or BMP) file format. Avoid JPEG 
+					and other lossy compression algorithms where possible as they may affect the output in predictable ways. 
+					Avoid using your mobile phone as they generally have poor security and the contents can be secretly 
+					collected from them at any time due to the closed baseband processor.<br>
 					<br>
-					Take a photo of something that is generally random in nature. Photos taken in macro mode of sand at a beach, grass and 
-					gravel work best. Trees, rocks and ocean waves work reasonably well. Clouds tend not to work too well. The program will 
-					run randomness tests on the raw random data and also after the data has been run through the Von Neumann randomness 
-					extractor. Check that both sets of tests pass otherwise you may need to try a different photo. Be sure to delete the 
-					photo after the one-time pads have been created from it.<br>
+					Take a photo of something that is generally random in nature. Photos taken in macro mode of sand at a 
+					beach, grass and gravel work best. Trees, rocks and ocean waves also work reasonably well. Avoid clouds 
+					and studio photography with plain backgrounds.<br>
 					<br>
-					This process should be run from a PC as it is very resource intensive and the page is not mobile optimised. The 
-					website has details about how it processes and extracts the photo data.
+					The program will run randomness tests on the data after it has been run through the randomness extractor. 
+					Check that all of the tests pass otherwise you may need to try a different photo. Be sure to delete 
+					the original photo after the one-time pads have been created from it. To be extra safe, run this program 
+					from a non-networked (air gapped) computer.<br>
+					<br>
+					This process should be run from a PC as it is very resource intensive and the page is not mobile optimised. 
+					The website has details about how the algorithm processes and extracts the random data from the photo.<br>
+					<br>
+					Alternatively you may import your own truly random data (at your own risk) which will be split it into 
+					separate one-time pads for use with the program. Do not use data generated from a PRNG or even a 
+					CSPRNG as it will not be strong enough for one-time pads and will reduce the security to that of a 
+					stream cipher.
 				</div>
 				<ul class="menu">
 					<li>
 						<a href="trng-photo.html" class="blueButton">Launch photo TRNG</a>
+					</li>
+					<li>
+						<a href="trng-custom.html" class="blueButton">Load custom random data</a>
 					</li>
 				</ul>
 			</div>

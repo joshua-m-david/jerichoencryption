@@ -98,6 +98,20 @@ $(document).ready(function()
 	
 	/**
 	 * ------------------------------------------------------------------
+	 * Test conversion of small integer to hexadecimal
+	 * ------------------------------------------------------------------
+	 */
+	
+	test("Test conversion of small integer to hexadecimal", function()
+	{
+		ok(common.convertIntegerToHexadecimal(0) === '00');
+		ok(common.convertIntegerToHexadecimal(3) === '03');
+		ok(common.convertIntegerToHexadecimal(7) === '07');
+		ok(common.convertIntegerToHexadecimal(10) === '0a');
+	});
+	
+	/**
+	 * ------------------------------------------------------------------
 	 * Get the original plaintext length
 	 * ------------------------------------------------------------------
 	 */

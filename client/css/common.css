@@ -126,6 +126,7 @@ h2 {
 .exportPadsSettings .statusMessage {
 	margin-bottom: 14px;
 	max-width: 423px;
+	text-align: center;
 }
 .exportPadsSettings th {
 	text-align: right;
