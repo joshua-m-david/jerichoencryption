@@ -21,7 +21,7 @@
 var common = {
 	
 	// Current program version to help with importing from old versions later
-	programVersion: '1.4',
+	programVersion: '1.41',
 	
 	// Define lengths of message attributes in bytes
 	padIdentifierSize: 7,		// Size of the pad identifier in bytes. The first 7 bytes of pad are used only to identify which pad was used
