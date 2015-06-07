@@ -1,0 +1,395 @@
+/**
+ * Jericho Chat - Information-theoretically secure communications
+ * Copyright (C) 2013-2014  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	CONTENTS
+/*
+/*	1. HEADER
+/*	2. GENERAL CONTENT
+/*	3. HOME PAGE SPECIFIC
+/*	4. TECHNICAL INFORMATION PAGE SPECIFIC
+/*  5. DOWNLOAD PAGE SPECIFIC
+/*	6. INSTALLATION PAGE SPECIFIC
+/*  7. HOW TO USE PAGE SPECIFIC
+/*  8. FAQ PAGE SPECIFIC
+/*	9. FOOTER
+/* --------------------------------------- */
+
+
+/* --------------------------------------- */
+/*	1. HEADER
+/* --------------------------------------- */
+
+body {
+	font: 13px/20px Arial, Helvetica, sans-serif;
+	margin: 0 auto;
+	width: 970px;
+	background: url('../img/background-pattern.png') repeat top left;
+}
+.topSection {
+	position: relative;
+}
+.logo {
+	display: block;
+	width: 352px;
+	height: 38px;	
+	position: absolute;
+	top: 15px;
+	left: 17px;
+	background: url('../img/logo.png') no-repeat top left;
+}
+.topBanner {
+	width: 970px;
+	height: 70px;
+	margin: 0 auto;
+	position: relative;
+	background-color: #000;
+	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* This is the main navigation at the very top of the page */	
+.mainNav {
+	position: absolute;
+	top: 24px;
+	left: 277px;
+	font-size: 13px;
+}
+.mainNav ul {
+	margin: 0 auto;
+	list-style: none;
+}
+.mainNav ul li {
+	display: inline-block;
+	padding: 0 14px;
+}
+.mainNav a {
+	color: #ccc;	
+	text-decoration: none;
+	font-weight: bold;
+}
+.mainNav a:hover {
+	color: #fff;
+}
+
+/* --------------------------------------- */
+/*	2. GENERAL CONTENT
+/* --------------------------------------- */
+
+.content {
+	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+	background-color: #fff;
+	font-size: 14px;
+	color: #333;	
+	border-bottom-left-radius: 7px;
+	border-bottom-right-radius: 7px;
+}
+.content a {
+	color: #0067FF;
+	text-decoration: none;
+}
+.content a:hover {
+	text-decoration: underline;
+}
+.content a[name]:hover {
+	text-decoration: none;
+}
+.contentPage {
+	padding: 21px 28px 28px 28px;
+}
+.alignMiddle {
+	vertical-align: middle;
+}
+.clear {
+	clear: both;
+}
+h1 {
+	font-weight: bold;
+	font-size: 21px;
+	color: #00378E;
+	padding-bottom: 28px;
+}
+h2 {
+	text-align: left;
+	font-weight: bold;
+	font-size: 17px;
+	color: #0059DE;	
+}
+h3 {
+	font-weight: bold;
+	font-size: 16px;
+	margin: 0;
+	margin-bottom: 7px;
+}
+h3.important {
+	color: #ff0f00;
+}
+h4 {
+	font-weight: bold;
+	margin-top: 21px;
+	margin-bottom: 7px;
+}
+p {
+	margin-bottom: 14px;
+}
+code, pre {
+	font-family: monospace;
+	font-weight: bold;
+	background-color: #ecebeb;
+	padding: 3px;
+}
+.page .information {
+	font-size: 14px;
+	padding: 28px 77px 14px 28px;
+	width: 637px;
+	float: left;
+}
+.page .information h2 {
+	margin-bottom: 7px;
+	margin-top: 42px;
+}
+.page .information h2:first-child {
+	margin-top: 0;
+}
+.page .information ul {
+	margin: 0 0 14px 17px;
+}
+.page .information ol li {
+	list-style-type: decimal;
+	margin-bottom: 14px;
+	margin-left: 21px;
+}
+.page .information ol.roman li {
+	list-style-type: lower-roman;
+}
+.page .information li:first-child {
+	margin-top: 7px;
+}
+.page .information ul li {
+	list-style-type: disc;
+	margin-bottom: 14px;
+}
+.page .information p {
+	margin-bottom: 14px;
+}
+.page .information a {
+	color: #0067FF;
+	text-decoration: none;
+}
+.page .information a:hover {
+	text-decoration: underline;
+}
+.page .listImage {
+	padding-top: 14px;
+	padding-bottom: 7px;
+}
+sup {
+	vertical-align: super;
+	font-size: 70%;
+}
+sub {
+	vertical-align: sub;
+	font-size: 70%;
+}
+.page .information .tableOfContents li {
+	margin-bottom: 7px;
+}
+
+.page .diagram {
+	text-align: center;
+}
+
+/* --------------------------------------- */
+/*	3. HOME PAGE SPECIFIC
+/* --------------------------------------- */
+
+.homePage .news {
+	padding: 28px 28px 28px 0;
+	width: 200px;
+	float: left;
+	font-size: 12px;
+}
+.homePage .news h3 {
+	text-align: left;
+	font-weight: bold;
+	color: #0059DE;
+	font-size: 14px;
+	margin-bottom: 5px;
+}
+.homePage .news li {
+	border-top: 1px solid #ACC0D5;
+	padding: 7px 7px 7px 0;
+}
+.homePage .news li:last-child {
+	border-bottom: 1px solid #ACC0D5;
+}
+.homePage .news li:hover {
+	background-color: #EFF3F8;
+}
+.homePage .news b {
+	color: #0067FF;
+}
+.homePage .news a {
+	text-decoration: none;
+	color: #333;
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+.homePage .news .date {
+	font-size: 11px;
+	font-weight: bold;
+	text-align: right;
+}
+.homePage .news h3 {
+	position: relative;
+}
+.homePage .news .rssIcon {
+	text-align: right;
+	position: absolute;
+	right: 0;
+	top: -7px;
+}
+
+/* --------------------------------------- */
+/*	4. TECHNICAL INFORMATION PAGE SPECIFIC
+/* --------------------------------------- */
+
+.infoPage .information {
+	width: 907px;
+	padding: 28px 30px 14px 28px;
+}
+.infoPage .diagramHeading {
+	text-align: center;
+}
+.infoPage .testOutput {
+	margin-bottom: 14px;
+	text-align: center;
+}
+.infoPage .testOutput h4 {
+	font-size: inherit;
+	font-weight: bold;
+	text-align: center;
+}
+.infoPage .testOutput .results {
+	text-align: center;
+}
+.infoPage .testOutput .pass {
+	color: green;
+	font-weight: bold;
+}
+.infoPage .testOutput .fail {
+	color: red;
+	font-weight: bold;
+}
+
+/* --------------------------------------- */
+/*	5. DOWNLOAD PAGE SPECIFIC
+/* --------------------------------------- */
+
+.downloadPage .information {
+	width: 907px;
+	padding: 28px 30px 14px 28px;
+}
+.downloadPage .information ul.changeLog li {
+	margin-bottom: 7px;
+}
+.downloadPage .downloadLinks {
+	margin-top: 14px;
+}
+.downloadPage .downloadLinks th {
+	padding: 3px 14px 3px 0;
+	font-weight: bold;
+}
+.downloadPage .downloadLinks td {
+	padding: 3px 14px 3px 0;
+}
+.downloadPage .downloadLinks .hash {
+	font-size: 10px;
+}
+
+/* --------------------------------------- */
+/*	6. INSTALLATION PAGE SPECIFIC
+/* --------------------------------------- */
+
+.installPage .information {
+	width: 907px;
+	padding: 28px 30px 14px 28px;
+}
+
+/* --------------------------------------- */
+/*	7. HOW TO USE PAGE SPECIFIC
+/* --------------------------------------- */
+
+.usagePage .information {
+	width: 907px;
+	padding: 28px 30px 14px 28px;
+}
+
+/* --------------------------------------- */
+/*	8. FAQ PAGE SPECIFIC
+/* --------------------------------------- */
+
+.faqPage .information {
+	width: 907px;
+	padding: 28px 30px 14px 28px;
+}
+
+/* --------------------------------------- */
+/*	9. FOOTER
+/* --------------------------------------- */
+.footer {
+	font-size: 13px;
+	font-weight: bold;
+	color: #000;	
+}
+.footer ul {
+	text-align: center;	
+}
+.footer ul:first-child {
+	padding-top: 12px;
+	padding-bottom: 2px;
+}
+.footer ul:last-child {
+	padding-top: 2px;
+	padding-bottom: 12px;
+}
+.footer li {
+	display: inline-block;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+.footer a {
+	color: #000;
+	text-decoration: none;
+}
+.footer a:visited {
+	color: #000;
+}
+.footer a:hover {
+	color: #000;
+	text-decoration: underline;
+}
+.footer .donate {
+	text-align: center;
+	font-size: 11px;
+	margin-top: 7px;
+}
+.footer .copyright {
+	text-align: center;
+	font-size: 11px;
+	margin-top: 7px;
+}

@@ -1,0 +1,255 @@
+Extracted test results
+All FIPS-140-2 tests passed: true
+
+Test results 1 to 20000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 10072
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 13.06
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2534
+Run length 2: 1114-1386. Test result: 1201
+Run length 3: 527-723. Test result: 643
+Run length 4: 240-384. Test result: 309
+Run length 5: 103-209. Test result: 163
+Run length 6+: 103-209. Test result: 152
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 17. Test passed: true.
+
+Test results 20001 to 40000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 9990
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 11.50
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2542
+Run length 2: 1114-1386. Test result: 1307
+Run length 3: 527-723. Test result: 611
+Run length 4: 240-384. Test result: 293
+Run length 5: 103-209. Test result: 150
+Run length 6+: 103-209. Test result: 141
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 14. Test passed: true.
+
+Test results 40001 to 60000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 9989
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 12.49
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2554
+Run length 2: 1114-1386. Test result: 1281
+Run length 3: 527-723. Test result: 633
+Run length 4: 240-384. Test result: 317
+Run length 5: 103-209. Test result: 146
+Run length 6+: 103-209. Test result: 132
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 15. Test passed: true.
+
+Test results 60001 to 80000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 10157
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 13.64
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2519
+Run length 2: 1114-1386. Test result: 1291
+Run length 3: 527-723. Test result: 591
+Run length 4: 240-384. Test result: 308
+Run length 5: 103-209. Test result: 171
+Run length 6+: 103-209. Test result: 155
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 13. Test passed: true.
+
+Test results 80001 to 100000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 10182
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 19.78
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2499
+Run length 2: 1114-1386. Test result: 1272
+Run length 3: 527-723. Test result: 593
+Run length 4: 240-384. Test result: 355
+Run length 5: 103-209. Test result: 170
+Run length 6+: 103-209. Test result: 137
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 18. Test passed: true.
+
+Test results 100001 to 120000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 9952
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 16.75
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2621
+Run length 2: 1114-1386. Test result: 1231
+Run length 3: 527-723. Test result: 610
+Run length 4: 240-384. Test result: 326
+Run length 5: 103-209. Test result: 160
+Run length 6+: 103-209. Test result: 136
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 16. Test passed: true.
+
+Test results 120001 to 140000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 9954
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 14.14
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2482
+Run length 2: 1114-1386. Test result: 1266
+Run length 3: 527-723. Test result: 633
+Run length 4: 240-384. Test result: 304
+Run length 5: 103-209. Test result: 153
+Run length 6+: 103-209. Test result: 154
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 12. Test passed: true.
+
+Test results 140001 to 160000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 10041
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 12.15
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2524
+Run length 2: 1114-1386. Test result: 1279
+Run length 3: 527-723. Test result: 576
+Run length 4: 240-384. Test result: 320
+Run length 5: 103-209. Test result: 141
+Run length 6+: 103-209. Test result: 168
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 13. Test passed: true.
+
+Test results 160001 to 180000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 10008
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 5.30
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2416
+Run length 2: 1114-1386. Test result: 1283
+Run length 3: 527-723. Test result: 631
+Run length 4: 240-384. Test result: 313
+Run length 5: 103-209. Test result: 176
+Run length 6+: 103-209. Test result: 145
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 12. Test passed: true.
+
+Test results 180001 to 200000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 9948
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 20.83
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2492
+Run length 2: 1114-1386. Test result: 1304
+Run length 3: 527-723. Test result: 613
+Run length 4: 240-384. Test result: 295
+Run length 5: 103-209. Test result: 137
+Run length 6+: 103-209. Test result: 159
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 13. Test passed: true.
+
+Test results 200001 to 220000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 9957
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 25.88
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2550
+Run length 2: 1114-1386. Test result: 1227
+Run length 3: 527-723. Test result: 656
+Run length 4: 240-384. Test result: 299
+Run length 5: 103-209. Test result: 158
+Run length 6+: 103-209. Test result: 142
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 13. Test passed: true.
+
+Test results 220001 to 240000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 10022
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 10.04
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2512
+Run length 2: 1114-1386. Test result: 1286
+Run length 3: 527-723. Test result: 608
+Run length 4: 240-384. Test result: 326
+Run length 5: 103-209. Test result: 149
+Run length 6+: 103-209. Test result: 143
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 13. Test passed: true.
+
+Test results 240001 to 260000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 9952
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 12.16
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2477
+Run length 2: 1114-1386. Test result: 1303
+Run length 3: 527-723. Test result: 601
+Run length 4: 240-384. Test result: 314
+Run length 5: 103-209. Test result: 158
+Run length 6+: 103-209. Test result: 139
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 13. Test passed: true.
+
+Test results 260001 to 280000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 10004
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 13.38
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2517
+Run length 2: 1114-1386. Test result: 1255
+Run length 3: 527-723. Test result: 619
+Run length 4: 240-384. Test result: 354
+Run length 5: 103-209. Test result: 150
+Run length 6+: 103-209. Test result: 134
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 13. Test passed: true.
+
+Test results 280001 to 300000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 10083
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 10.16
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2527
+Run length 2: 1114-1386. Test result: 1274
+Run length 3: 527-723. Test result: 599
+Run length 4: 240-384. Test result: 312
+Run length 5: 103-209. Test result: 150
+Run length 6+: 103-209. Test result: 161
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 11. Test passed: true.
+
+Test results 300001 to 320000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 9838
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 26.72
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2531
+Run length 2: 1114-1386. Test result: 1239
+Run length 3: 527-723. Test result: 627
+Run length 4: 240-384. Test result: 290
+Run length 5: 103-209. Test result: 140
+Run length 6+: 103-209. Test result: 157
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 14. Test passed: true.
+
+Test results 320001 to 340000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 10119
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 23.65
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2413
+Run length 2: 1114-1386. Test result: 1255
+Run length 3: 527-723. Test result: 692
+Run length 4: 240-384. Test result: 336
+Run length 5: 103-209. Test result: 131
+Run length 6+: 103-209. Test result: 164
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 13. Test passed: true.
+
+Test results 340001 to 360000 bits. Tests passed: true
+The Monobit Test: The test is passed if 9725 < X < 10275. Test passed: true. X = 10088
+The Poker Test: The test is passed if 2.16 < X < 46.17. Test passed: true. X = 8.99
+The Runs Test: The test is passed if the number of runs that occur (consecutive zeros or ones for lengths 1 through 6) is each within the specified interval.
+Run length 1: 2315-2685. Test result: 2529
+Run length 2: 1114-1386. Test result: 1268
+Run length 3: 527-723. Test result: 610
+Run length 4: 240-384. Test result: 296
+Run length 5: 103-209. Test result: 182
+Run length 6+: 103-209. Test result: 143
+Tests passed: true.
+The Long Runs Test: The test is passed if there are no runs of length 26 or more (of either zeros or ones).
+Length of longest run: 16. Test passed: true.
+

@@ -1,0 +1,195 @@
+<!doctype html>
+<!--
+	Jericho Chat - Information-theoretically secure communications
+	Copyright (C) 2013-2014  Joshua M. David
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation in version 3 of the License.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see [http://www.gnu.org/licenses/].
+-->
+<html lang="en">
+	<head>
+		<title>Jericho Chat - Client Installation</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
+		<meta name="description" content="Jericho Chat is a secure program using one-time pads.">
+		<meta name="viewport" content="width=720, maximum-scale=1.0, user-scalable=yes">
+
+		<link rel="stylesheet" href="css/reset.css" type="text/css">
+		<link rel="stylesheet" href="css/global.css" type="text/css">
+		<link rel="stylesheet" href="css/print.css" type="text/css" media="print">
+		
+		<!--[if IE]>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<![endif]-->		
+		<!--[if IE 7]>
+			<link rel="stylesheet" href="css/ie7.css" type="text/css">
+		<![endif]-->
+		<!--[if IE 8]>
+			<link rel="stylesheet" href="css/ie8.css" type="text/css">
+		<![endif]-->
+	</head>
+	<body>
+		<div class="topSection">
+			<div class="topBanner">
+				<a class="logo" href="index.html" title="Homepage"></a>			
+				<div class="mainNav">
+					<ul>						
+						<li><a href="information.html">Technical information</a></li>
+						<li><a href="download.html">Download</a></li>
+						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
+						<li><a href="installation.html">How to install</a></li>
+						<li><a href="usage.html">How to use</a></li>
+						<li><a href="faq.html">FAQ</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<div class="page installPage">
+				<div class="information">
+					<h1>Client Installation Guide</h1>
+					<p>
+						There's the easy way and there's the normal way. If your chat partner who set up the server was nice enough, 
+						they might have done all the hard work for you and you can follow the easy method, otherwise just follow 
+						the normal process.
+					</p>
+					
+					<h2>Easy setup</h2>
+					<p>
+						Your chat partner should have set up the following for you:
+					</p>
+					<ul>
+						<li>
+							Installed a copy of <a href="http://portableapps.com/apps/internet/firefox_portable">Firefox Portable</a> on a USB drive 
+							and <a href="installation-server.html#securing-new-profile">secured it</a>
+						</li>
+						<li>Copied the client files and your one-time pads to a directory on the USB drive.</li>
+					</ul>
+					<p>						
+						If these steps have been done then all you need to do is run the <b>firefox.exe</b> application and open 
+						the <b>index.html</b> which will open Jericho Chat inside the browser. From there you can 
+						<a href="usage.html#loading-pads">load the one-time pads</a> from the text file into the application 
+						and start chatting. The <a href="usage.html">Usage guide</a> has more information if 
+						you need it. Remember to erase the text file containing the one-time pads after you have loaded them into 
+						the program. The program will automatically erase the corresponding one-time pad after each message has 
+						been sent and received.						
+					</p>
+					
+					<h2>Normal setup</h2>
+					<ul>
+						<li>
+							Install prerequisite software first which is the latest version of 
+							<a href="https://www.mozilla.org/en-US/firefox/fx/#desktop">Firefox</a> or 
+							<a href="http://www.chromium.org/Home">Chromium</a>. One of these browsers are needed as most other 
+							browsers do not have native support for some of the 
+							<a href="http://www.html5rocks.com/en/">HTML5 technologies</a> this program uses. The other advantage 
+							is they are open source. Do not use the closed source Google Chrome, Opera or Internet Explorer. You 
+							cannot trusted closed source software in today's world given the recent NSA leaks.
+						</li>
+						<li>
+							Follow the steps listed for <a href="installation-server.html#setup-secure-profile">setting up a new browser profile</a> 
+							and <a href="installation-server.html#securing-new-profile">securing the profile</a>. 
+						</li>
+						<li>
+							You should have a copy of the server's self-signed TLS certificate file. Follow 
+							<a href="installation-server.html#importing-certificate">these steps</a> to install it into the browser. Alternatively you 
+							can verify the certificate's MD5 and SHA1 hashes in the browser when you attempt to connect to the server address. The 
+							person who generated the certificate on the server should be able to tell you the correct hashes.
+						</li>
+						<li>Download the files from one of the mirrors listed on the <a href="download.html">download page</a>.</li>
+						<li>
+							Verify the file hashes and signature from the <a href="download.html">download page</a>. It is absolutely critical to 
+							verify the downloaded file with one of the hashes or signatures. This is to prevent the NSA or other 3 letter agencies 
+							from modifying the source code which could weaken/break the encryption and then distributing those copies around the 
+							internet pretending to be the real thing. You can verify the hashes with standalone  
+							<a href="http://www.mydigitallife.info/hash-calculator-to-get-compute-and-calculate-md5-and-sha1-file-checksum-or-hash-value/">tools for Windows</a> or
+							<a href="installation-server.html#verify-signature">basic Linux console commands</a>.
+						</li>
+						<li>
+							Extract the files from the archive to your desired location. Windows users can use the free 
+							<a href="http://www.7-zip.org/">7-Zip</a> program for this. Linux users can run the following command 
+							to extract the files to the current directory which you can then copy to wherever you want:<br>
+							<code>tar -zxvf jericho-v1.41.tar.gz</code><br>
+							<br>
+							Or alternatively use this to extract to a pre-existing directory of your choice:<br>
+							<code>tar -zxvf jericho-v1.41.tar.gz -C /path/to/directory</code>
+						</li>
+						<li>
+							Open the <b>client</b> directory then open <b>index.html</b> in your web browser (Firefox or Chromium). 
+							You can continue with the <a href="usage.html">How to use</a> guide from now on.
+						</li>
+					</ul>
+					<h3>Extra precautions</h3>
+					<ul>
+						<li>
+							Ideally you should <a href="http://www.truecrypt.org/docs/tutorial">create a TrueCrypt container</a> (using all 3 encryption 
+							algorithms) and extract the files directly into there first if you are intending on running the client locally on the machine.
+							This slows down the process of recovering the pads from the hard drive by 
+							<a href="https://en.wikipedia.org/wiki/Computer_forensics">forensic analysis</a>.
+						</li>
+						<li>
+							Also a portable copy of <a href="http://portableapps.com/apps/internet/firefox_portable">Firefox</a> or 
+							<a href="http://portableapps.com/apps/internet/google_chrome_portable">Chrome</a> should be put inside the container and 
+							the client program run from inside there. This means that the SQLite database used by the browser which stores the 
+							one-time pads is always encrypted.
+						</li>
+						<li>
+							Use a MicroSD, SD card or USB memory stick and put the Truecrypt volume containing the client files and portable browser 
+							on it. This means you can hide or destroy the memory/device easily in an emergency. It also means you can chat from any 
+							computer, so you could take it to work or other places.
+						</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		
+		<div class="footer">
+			<ul class="links">
+				<li>
+					<a href="index.html">Home</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="information.html">Technical information</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="download.html">Download</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a>
+				</li>				
+				<li>-</li>
+				<li>
+					<a href="installation.html">How to install</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="usage.html">How to use</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="faq.html">FAQ</a>
+				</li>
+			</ul>
+			<div class="donate">
+				Want to support the project?<br>
+				Bitcoin: <code>16h8K8sXCobL5u7wKRPG95F8XAc735P8TM</code><br>
+				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
+			</div>
+			<div class="copyright">
+				Copyright &copy; 2013 -2014 Joshua M. David
+			</div>
+		</div>
+	</body>
+</html>

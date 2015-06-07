@@ -1,0 +1,354 @@
+<!doctype html>
+<!--
+	Jericho Chat - Information-theoretically secure communications
+	Copyright (C) 2013-2014  Joshua M. David
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation in version 3 of the License.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see [http://www.gnu.org/licenses/].
+-->
+<html lang="en">
+	<head>
+		<title>Jericho Chat - One-time pad chat app</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
+		<meta name="description" content="Jericho Chat is a secure program using one-time pads.">
+		<meta name="viewport" content="width=720, maximum-scale=1.0, user-scalable=yes">
+
+		<link rel="stylesheet" href="css/reset.css" type="text/css">
+		<link rel="stylesheet" href="css/global.css" type="text/css">
+		<link rel="stylesheet" href="css/print.css" type="text/css" media="print">
+		
+		<!--[if IE]>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<![endif]-->		
+		<!--[if IE 7]>
+			<link rel="stylesheet" href="css/ie7.css" type="text/css">
+		<![endif]-->
+		<!--[if IE 8]>
+			<link rel="stylesheet" href="css/ie8.css" type="text/css">
+		<![endif]-->
+	</head>
+	<body>
+		<div class="topSection">
+			<div class="topBanner">
+				<a class="logo" href="index.html" title="Homepage"></a>			
+				<div class="mainNav">
+					<ul>						
+						<li><a href="information.html">Technical information</a></li>
+						<li><a href="download.html">Download</a></li>
+						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
+						<li><a href="installation.html">How to install</a></li>
+						<li><a href="usage.html">How to use</a></li>
+						<li><a href="faq.html">FAQ</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<div class="page homePage">
+				<div class="information">
+					<h2>Enforce your right to privacy</h2>
+					<p>
+						In the wake of the <a href="https://www.eff.org/nsa-spying">NSA spying revelations</a> it is clear that 
+						<u>none</u> of our communications are secure any longer. The <a href="http://en.wikipedia.org/wiki/Nsa">NSA</a> 
+						is actively monitoring, collecting, 
+						<a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">decrypting</a> and 
+						<a href="http://www.wired.com/threatlevel/2012/03/ff_nsadatacenter/">indefinitely storing</a> 
+						the whole world's communications as it transits their networks. Any traffic passing through 
+						any of the <a href="http://en.wikipedia.org/wiki/UKUSA_Agreement">Five Eyes</a> countries (US, UK, Canada, 
+						Australia and NZ) is monitored, collected and stored indefinitely. Any and all of your internet 
+						traffic, phone calls, email, chat messages and anything else are vulnerable to the Five Eyes spy 
+						agencies. This is no longer conspiracy theory, it is actually happening.
+					</p>
+					<p>
+						This is a massive breach of international human rights and it is an attack on the liberty, freedom and 
+						privacy of every person on the planet. It has huge implications for our democracy, freedom of the press, 
+						attorney-client privilege and freedom of speech. The 
+						<a href="http://www.un.org/en/documents/udhr/">Universal Declaration of Human Rights</a> states clearly:
+					</p>
+					<ul>
+						<li>
+							<b>Article 3:</b> Everyone has the right to life, <i>liberty</i> and security of person.
+						</li>
+						<li>
+							<b>Article 12:</b> <u>No one</u> shall be subjected to arbitrary interference with his <i>privacy</i>, 
+							family, home or <i>correspondence</i>, nor to attacks upon his honour and reputation. Everyone has the 
+							right to the protection of the law against such interference or attacks.
+						</li>
+					</ul>
+					
+					
+					<h2 id="introducing-jericho-encryption">Introducing Jericho Chat</h2>
+					<p>
+						Jericho Chat is an encrypted communications program built on the principles of information-theoretic 
+						security using true random number generation, one-time message authentication codes and mathematically 
+						proven security of the <a href="http://en.wikipedia.org/wiki/One_time_pad">one-time pad</a> cipher. The 
+						goal is to deliver a free, open source, plausibly deniable, encrypted communications program 
+						for journalists, lawyers, activists and citizens of the world that need <i>high</i> assurances that their 
+						communications are free of censorship, control, oppression, totalitarian governments and eavesdropping 
+						from the world's most powerful intelligence agencies. To defeat the world's top intelligence agencies, 
+						you need to lift your game to their level. That means using encryption that they can <i>never</i> break, 
+						regardless of advances in mathematics, quantum physics, cryptanalysis or computing power.
+					</p>
+					<p>
+						The software makes the whole process very simple from generating truly random one-time pads, key management 
+						and chatting securely. After a message is sent, the one-time pad used is automatically deleted from the computer. 
+						Once received it is also deleted from the server and receiving computers. This prevents the message being 
+						decrypted in the future if one of the computers is compromised. If a user thinks their computer is about 
+						to become compromised they can also initiate the "Auto Nuke" feature which will delete the one-time pads 
+						from the local database, encrypted messages from the server and the one-time pads from the chat partner's 
+						local database. These features combined provide a form of "off the record" encrypted chat. The full 
+						technical design and implementation information can be found on the 
+						<a href="information.html">Technical information</a> page and full source code is available on the 
+						<a href="download.html">download page</a> or 
+						<a href="https://github.com/joshua-m-david/jerichoencryption">on Github</a>. 
+					</p>
+					<p>
+						The main reason why one-time pads are infrequently used outside of government and military networks is 
+						that you need truly random data, the key must be at least as long as the message and the one-time pads 
+						must be sent through a secure channel e.g. delivered in person. This makes them somewhat inconvenient to 
+						use but these are <i>not</i> insurmountable problems. This software aims to solve most of the issues that 
+						make using one-time pads difficult. The only minor issue would be delivering the one-time pads to 
+						the other user, but <a href="information.html#how-it-works">there are ways</a> to do that easily enough. 
+						In today's world of complete surveillance it is necessary to have a shared secret to authenticate the 
+						correspondents and have complete assurance you are actually communicating with the right people and not an
+						<a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">active man in the middle attacker</a>. 
+						Obviously this software is not a solution for all cryptography problems. It does however solve a specific 
+						problem and allows you to communicate securely with your family, friends, colleagues or associates in the 
+						future if you have met them at least once and exchanged one-time pads with them.
+					</p>
+					
+					
+					<h2>What about other types of encryption?</h2>
+					<p>
+						Most companies and organisations worldwide are using 
+						<a href="https://en.wikipedia.org/wiki/NSA_Suite_B_Cryptography">Suite B Cryptography</a> algorithms 
+						which have been publically published by the <a href="http://en.wikipedia.org/wiki/Nist">NIST</a> for security of 
+						<a href="http://itlaw.wikia.com/wiki/1989_NIST/NSA_Memorandum_of_Understanding">unclassified, non-military government networks</a>. 
+						This has led most other governments, companies and individuals worldwide to adopt these standards thinking 
+						that if they are secure for the government then they must be secure for them too. In 
+						<a href="http://www.nytimes.com/interactive/2013/09/05/us/documents-reveal-nsa-campaign-against-encryption.html?ref=us">this NSA leak</a> 
+						we see privileged, top secret information that the NSA's real plan has <i>actually</i> been to covertly influence 
+						these encryption policies, designs, standards and specifications to make them amenable to advanced 
+						cryptanalytic capabilities of the NSA and exploitable through their signals intelligence collection network 
+						with prior knowledge of the modification. The aim being that everyone in the world believes their systems' 
+						are secure, but in reality, and only known to the NSA, their systems are exploitable. A lot of software 
+						projects and companies <i>still</i> do not understand this and continue to use standards from the NIST. 
+						This gives them and their users a false sense of security that their systems are secure from the NSA. 
+					</p>
+					<p>
+						There has been evidence of <a href="http://www-cs-faculty.stanford.edu/~eroberts/cs201/projects/ethics-of-surveillance/tech_encryptionbackdoors.html">one</a> 
+						encryption standard that was found to contain an NSA backdoor. It is absolutely naïve to assume 
+						this was the only standard that was compromised in the 25 years that the Memorandum of Understanding between 
+						NIST and NSA has existed. Some reputable cryptographers 
+						<a href="http://safecurves.cr.yp.to">have already found problems</a> with the NIST's elliptic curve standards. 
+						The truth is, any NIST/NSA standard could be subtly compromised in ways unbeknownst to the public cryptography 
+						community. 
+						<a href="https://en.wikipedia.org/wiki/Data_Encryption_Standard#NSA.27s_involvement_in_the_design">In the 1970s</a> 
+						the NSA made tweaks to S-Boxes to help strengthen the DES standard, but no-one at the time understood why. 
+						It took public cryptographers another <i>two decades</i> to discover differential cryptanalysis. It is highly 
+						likely the NSA are still years ahead of the public cryptography community in the area of cryptanalysis. What 
+						we think is secure today may not actually be secure at all when trying to protect communications from  
+						the NSA.
+					</p>
+					<p>
+						Finally, <u>none</u> of the cryptography algorithms being generally used today 
+						(<a href="http://en.wikipedia.org/wiki/RSA_%28algorithm%29">RSA</a>, 
+						<a href="https://en.wikipedia.org/wiki/Diffie-Hellman_key_exchange">DH</a>, 
+						<a href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard">AES</a>, 
+						<a href="https://en.wikipedia.org/wiki/Sha2">SHA2</a> etc) are actually <i>mathematically proven</i> 
+						to be unbreakable and the ciphers are not 
+						<a href="http://en.wikipedia.org/wiki/Information_theoretic_security">information-theoretically secure</a>. 
+						They are thought to be secure because they involve methods that assume solving a particular problem e.g. 
+						<a href="https://en.wikipedia.org/wiki/Integer_factorization">integer factorization</a> or 
+						<a href="https://en.wikipedia.org/wiki/Discrete_logarithm">discrete logarithms</a> is hard and would 
+						require long periods of time and/or large amounts of computing power to crack the encryption. When people 
+						say that an algorithm like AES is secure, it is usually followed by the reasoning that a lot of smart 
+						people have tried to break AES and have not succeeded. This is the naïve logic that leads the public to 
+						use weak ciphers and allow the NSA/GCHQ to monitor all of the world's communications. Have we forgotten 
+						that the <a href="http://www.math.uh.edu/~tomforde/Web/Jobs.html">NSA employs</a> the <i>smartest</i> 
+						mathematicians and cryptographers? Have we forgotten that those smart mathematicians are <i>not</i> 
+						obligated to publish their results in cryptanalysis due to non-disclosure 
+						agreements with the NSA as a condition of their employment? Have we forgotten the yearly 
+						<a href="http://apps.washingtonpost.com/g/page/national/inside-the-2013-us-intelligence-black-budget/420/#document/p16/a117323">multi-billion dollar black budgets</a> 
+						they devote to breaking cryptography including 
+						<a href="http://www.washingtonpost.com/world/national-security/nsa-seeks-to-build-quantum-computer-that-could-crack-most-types-of-encryption/2014/01/02/8fff297e-7195-11e3-8def-a33011492df2_story.html">developing a quantum computer</a>? 
+						Have we forgotten about the standards themselves 
+						<a href="http://www.nytimes.com/interactive/2013/09/05/us/documents-reveal-nsa-campaign-against-encryption.html?ref=us">being deliberately weakened</a>? 
+						Have we forgotten 
+						that the <a href="http://arstechnica.com/security/2012/06/flame-crypto-breakthrough/">NSA is <i>years</i> ahead in cryptanalysis</a>? 
+						How then is the qualification that the "world's best" <i>public</i> cryptographers cannot break a particular 
+						algorithm <i>any</i> assurance of security against the NSA?						
+					</p>
+					<p>
+						Why would you naïvely trust the US government's encryption standards that they want you to use, especially 
+						when they have shown their duplicity and their only interest is to spy on your private communications?
+					</p>
+					
+					
+					<h2>Project status</h2>
+					<p>
+						Currently the project can be considered as fully-functional and its hoped that users, developers, security 
+						researchers and cryptographers will provide additional ideas and security analysis so the software can be 
+						improved and made useful for everyone.
+					</p>
+					<p>
+						We hope that with the concepts and designs used in this software, we can prove that using one-time pads 
+						<i>is</i> actually a viable option outside of classified government and military networks. We hope that 
+						this project enlightens other developers to create other solutions using one-time pads. We hope to 
+						discourage users from using the US government's compromised encryption standards that everyone else is 
+						using. We hope to encourage users to use well written, peer reviewed, open source software and hardware.
+					</p>
+					<p>
+						As with any security software you should verify the software yourself and read the code to make sure it 
+						does not contain any problems. With this software you can run it live in the browser and step through the 
+						code line by line with Firebug or any of the tools built into your web browser. As you will see it should 
+						work exactly as described <a href="information.html">in the documentation</a>. A lot of the heavy lifting 
+						e.g. cryptographic hashing has been done in a few trusted external libraries, the outputs of which have 
+						been verified against the specification documents. The aim is not to "roll-your-own" cryptography, but use 
+						algorithms from trusted authors and proven unbreakable ciphers like the one-time pad to bring a secure 
+						solution together. One-time pads are one of the simplest ciphers to implement compared to modern encryption 
+						standards (elliptic curves, RSA, AES or block ciphers), which often requires a lot of knowledge in 
+						mathematics. This means it is less likely to get the implementation wrong, compromising security through 
+						timing and other side channel attacks.
+					</p>
+					<p>						
+						Feedback can be discussed <a href="https://github.com/joshua-m-david/jerichoencryption">on Github</a>. 
+						You are free to discuss the program, possible features, installation issues, security issues, encryption, 
+						privacy and anti-surveillance techniques there.
+					</p>					
+					<p>
+						A road map of future improvements can be found <a href="https://github.com/joshua-m-david/jerichoencryption">on Github</a>. 
+						For the next phase of the project we will be adding a responsive version for mobile devices. After that we 
+						have some other ideas and we can potentially look into securing file transfers, phone calls and other 
+						communications.
+					</p>
+					
+					
+					<h2>Supporting the project</h2>
+					<p>
+						The whole code base is open source and free for anyone to use or modify for their own use. Each download 
+						contains the full source code neccessary to run the program.
+					</p>
+					<p>
+						Constructive feedback from anyone is welcome and you are free to contribute to the project with ideas, bug reports or source code 
+						<a href="https://github.com/joshua-m-david/jerichoencryption">on GitHub</a>. Source code contributions will be strictly managed 
+						via a <a href="https://help.github.com/articles/creating-a-pull-request">Pull Request</a> from Github and heavily scrutinized 
+						for any security weaknesses. It will be important to remain vigilant against the NSA or other governments who may try to corrupt 
+						the code base, <a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">introduce weaknesses</a> or 
+						attempt to "water down" the security of the program. Contributions are welcome if you truly believe in the 
+						mission and are not trying to undermine the security of the software.
+					</p>
+					<p>
+						You can also make donations via Bitcoins or Litecoins to help us with domain renewals, hosting costs, 
+						security reviews and ongoing improvements to the software. The sending addresses are listed at the 
+						bottom of the page.
+					</p>
+				</div>
+				<div class="news">
+					<h3>
+						Latest news 
+						<a class="rssIcon" href="news.rss" title="Add our news feed to your RSS reader for release updates">
+							<img alt="Latest news RSS feed" src="img/rss.png">
+						</a>
+					</h3>
+					<ol>
+						<li>
+							<a href="download.html#release1.41">
+								<b>Version 1.41 released</b><br>								
+								Jericho Chat version 1.41 released with a small bug fix to the user interface.
+								<div class="date">19 Oct 2014</div>
+							</a>
+						</li>
+						<li>
+							<a href="download.html#release1.4">
+								<b>Version 1.4 released</b><br>								
+								Jericho Chat version 1.4 released with modifed TRNG algorithm after a review, also the 
+								ability to use your own custom random data with the program.
+								<div class="date">5 Oct 2014</div>
+							</a>
+						</li>
+						<li>
+							<a href="download.html#release1.3">
+								<b>Version 1.3 released</b><br>								
+								Jericho Chat version 1.3 released with group chat between 2-7 users, a new secure server protocol 
+								and new true random number generator.
+								<div class="date">3 Aug 2014</div>
+							</a>
+						</li>
+						<li>
+							<a href="download.html#release1.2">
+								<b>Version 1.2 released</b><br>								
+								Version 1.2 released with improved entropy collector and randomness extraction process.
+								<div class="date">1 Nov 2013</div>
+							</a>
+						</li>
+						<li>
+							<a href="download.html#release1.1">
+								<b>Version 1.1 released</b><br>								
+								Version 1.1 released with a few minor improvements also new server and client installation guides.
+								<div class="date">28 Sep 2013</div>
+							</a>
+						</li>
+						<li>
+							<a href="download.html#release1.0">
+								<b>Jericho Chat Launched</b><br>															
+								Jericho Encrypted Chat v1.0 with unbreakable one-time pad encryption is now freely available for everyone.
+								<div class="date">28 Aug 2013</div>
+							</a>
+						</li>
+					</ol>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		
+		<div class="footer">
+			<ul class="links">
+				<li>
+					<a href="index.html">Home</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="information.html">Technical information</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="download.html">Download</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a>
+				</li>				
+				<li>-</li>
+				<li>
+					<a href="installation.html">How to install</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="usage.html">How to use</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="faq.html">FAQ</a>
+				</li>
+			</ul>
+			<div class="donate">
+				Want to support the project?<br>
+				Bitcoin: <code>16h8K8sXCobL5u7wKRPG95F8XAc735P8TM</code><br>
+				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
+			</div>
+			<div class="copyright">
+				Copyright &copy; 2013 -2014 Joshua M. David
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,981 @@
+<!doctype html>
+<!--
+	Jericho Chat - Information-theoretically secure communications
+	Copyright (C) 2013-2014  Joshua M. David
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation in version 3 of the License.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see [http://www.gnu.org/licenses/].
+-->
+<html lang="en">
+	<head>
+		<title>Jericho Chat - Frequently Asked Questions</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
+		<meta name="description" content="Jericho Chat is a secure program using one-time pads.">
+		<meta name="viewport" content="width=720, maximum-scale=1.0, user-scalable=yes">
+
+		<link rel="stylesheet" href="css/reset.css" type="text/css">
+		<link rel="stylesheet" href="css/global.css" type="text/css">
+		<link rel="stylesheet" href="css/print.css" type="text/css" media="print">
+		
+		<!--[if IE]>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<![endif]-->		
+		<!--[if IE 7]>
+			<link rel="stylesheet" href="css/ie7.css" type="text/css">
+		<![endif]-->
+		<!--[if IE 8]>
+			<link rel="stylesheet" href="css/ie8.css" type="text/css">
+		<![endif]-->
+	</head>
+	<body>
+		<div class="topSection">
+			<div class="topBanner">
+				<a class="logo" href="index.html" title="Homepage"></a>			
+				<div class="mainNav">
+					<ul>						
+						<li><a href="information.html">Technical information</a></li>
+						<li><a href="download.html">Download</a></li>
+						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
+						<li><a href="installation.html">How to install</a></li>
+						<li><a href="usage.html">How to use</a></li>
+						<li><a href="faq.html">FAQ</a></li>				
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<div class="page faqPage">
+				<div class="information">					
+					<h1>Frequently Asked Questions</h1>
+					<p>
+						Here is a list of potential questions that may be asked and other miscellaneous information.
+					</p>
+					
+					<h2>Questions</h2>
+					<ol class="tableOfContents">
+						<li><a href="#nsa-proof">Is this software NSA-proof?</a></li>
+						<li><a href="#one-time-pads-not-difficult">Are one-time pads too impractical to do properly?</a></li>
+						<li><a href="#independently-verified">Has the software been independently verified?</a></li>
+						<li><a href="#who-are-you">Who are you and what credentials do you have?</a></li>
+						<li><a href="#warrant-canary">Has this software been compromised by the government?</a></li>
+						<li><a href="#not-helping-terrorists">Aren't you helping terrorists?</a></li>
+						<li><a href="#extra-security-considerations">What are some extra security considerations for using the software?</a></li>
+						<li><a href="#shannons-perfect-secrecy">Explain Shannon's Perfect Secrecy?</a></li>
+						<li><a href="#export-regulations">Does this break US Export Regulations?</a></li>
+						<li><a href="#multiple-groups-same-server">Is it possible to use the same server for multiple separate groups communicating?</a></li>
+						<li><a href="#software-limitations">What are some of the limitations of the software?</a></li>
+						<li><a href="#meaning-behind-name">What's the meaning behind the name?</a></li>
+						<li><a href="#nsa-capabilities">What are the capabilities of the NSA?</a></li>
+						<li><a href="#matasano-article-discussion">What about Matasano Security's claims that JavaScript cryptography is insecure?</a></li>
+					</ol>
+					
+					<h2 id="nsa-proof">Is this software NSA-proof?</h2>
+					<p>
+						Encrypted messages sent with this software will be completely secure from NSA/GCHQ's 
+						"<a href="http://www.washingtonpost.com/business/economy/the-nsa-slide-you-havent-seen/2013/07/10/32801426-e8e6-11e2-aa9f-c03a72e2d342_story.html">Upstream</a>" 
+						collection from <a href="http://www.theguardian.com/uk/2013/jun/21/gchq-cables-secret-world-communications-nsa">taps on the fibre-optic lines</a> 
+						connecting countries. If a message is passively intercepted at any point from when it leaves the user's 
+						computer, through their ISP to the other users on the other side of the world, this will be impossible to 
+						crack even with unlimited time and computing power. Trying every possible key would simply reveal every 
+						possible plausible plaintext, and NSA/GCHQ would have no idea what the real message was. Defeating this 
+						mass collection of data from all over the world is the main aim of the software.
+					</p>
+					<p>
+						The second aim for the program is the security of the connection to the server API to store encrypted 
+						messages until they can be retrieved by the other users. This connection should be secure against quantum 
+						computers, active MITM attacks, forgery, replay and timing attacks due to the 512-bit MAC and 
+						the pre-shared key that exists on the clients and server.
+					</p>
+					<p>
+						A better question would be: "Is this software 
+						<a href="https://en.wikipedia.org/wiki/Tailored_Access_Operations">TAO</a>-proof?" Nothing currently may 
+						be truly safe from the Tailored Access Operations unit, which is NSA's cyber-warfare division. This is 
+						the same group that developed the <a href="https://en.wikipedia.org/wiki/Stuxnet">Stuxnet worm</a>, 
+						which jumped to an air-gapped system and ruined many of Iran's nuclear centrifuges. They have at least a 
+						thousand of the world's best hackers and engineers developing 
+						<a href="https://en.wikipedia.org/wiki/Zero-Day_Attack">zero-day exploits</a> against commonly used software 
+						every day. The NSA even infiltrates companies and open source projects with developers from their TAO unit 
+						to subtly add backdoors and weaknesses to the code. For any companies operating in the US they can also 
+						force them to include the backdoors by using a National Security Letter.
+					</p>
+					<p>
+						Perfectly defending against the TAO unit is not a reasonable expectation for this software to accomplish 
+						on its own. There are too many layers of systems and programs that can be compromised which could 
+						affect the security of this software. For example, for the server and the client computers, unless you 
+						have a truly open hardware and software stack then the whole system is likely vulnerable to the TAO unit. 
+						Unfortunately the computing industry has been running on closed hardware systems for a long time. If you 
+						are running Windows, MacOS or other closed source programs, it is highly likely that they are 
+						compromised or backdoored. It is best to use open source solutions that have been peer reviewed by 
+						trustworthy and competent people. The world does not even have confidence in the hardware stack. Many of 
+						the chips and firmware in your computer, tablet, phone, router or modem are closed design and closed source. 
+						Nobody in the public really has any idea what is running on them. As Brill says in 
+						<a href="https://en.wikipedia.org/wiki/Enemy_of_the_State_%28film%29">Enemy of the State</a>: <i>"They've 
+						infected everything."</i>
+						It is known that this is <i>exactly</i> what they have been doing in the recent NSA leaks, by rerouting 
+						shipments of computer equipment and planting backdoors, to weakening security and encryption standards, 
+						and even forcing companies to plant backdoors in their systems through National Security Letters. It may 
+						be that nothing is truly secure until we have an openly designed and manufactured hardware platform. 
+						Even then you still have to be careful and fully secure all the software running on it. This is no 
+						different to regular cryptography programs running on a computer because they also need the whole 
+						environment to be secure.
+					</p>
+					<p>
+						If you follow the <a href="installation.html">installation guides</a>, 
+						<a href="faq.html#extra-security-considerations">extra security considerations</a> and read through these 
+						frequently asked questions then you should be reasonably secure unless the TAO unit decides to target you 
+						specifically. These guides cover securing the server, the two endpoint devices and the browsers they are running. 
+					</p>
+					
+					
+					<h2 id="one-time-pads-not-difficult">Are one-time pads too impractical to do properly?</h2>					
+					<p>
+						The main problem with using one-time pads is getting a quality randomness source, key distribution and key 
+						management. The first problem should be solved by the true random number generator included with the program 
+						which should be strong enough to not allow even a powerful attacker to predict outputs from it. Run it through 
+						an external test suite if you do not trust the output and ensure it has proper uniform distribution. The next 
+						version will allow for including your own random data into the program. For the second problem of key 
+						distribution, all you need to do is get out from behind the computer and visit your friends, family, 
+						colleagues or associates and deliver the one-time pads to them in person. It is highly unlikely you are 
+						going to have your keys stolen or copied as you are going about your daily life. For the final problem of 
+						key management, this is a simple engineering problem. The program pre-allocates one-time pads to each user 
+						for sending so that no-one uses each other's one-time pads. The program detects which one-time pad was used 
+						to encrypt each message and decrypts it accordingly. After each message is encrypted, the one-time pad is 
+						removed from the sender's local database. After the message is received and decrypted it is also removed from the 
+						receiver's local database. 
+					</p>
+					<p>
+						There are plenty of "<a href="https://firstlook.org/theintercept/2014/02/24/jtrig-manipulation/">security experts</a>" 
+						that say that one-time pads are unnecessary, impractical or impossible. A few of the common counterarguments 
+						are covered here in the FAQ. Bear in mind you have to follow the installation guides and be aware of the 
+						security pitfalls listed on the site otherwise you are no better off than using standard cryptography. There 
+						is a <i>lot</i> of disinformation, fear, uncertainty and doubt on the internet about one-time pads and how 
+						they are apparently impractical. This proof of concept software proves them wrong. The design, source code 
+						and documentation speaks for itself. Do not forget the fact that the world's intelligence agencies, militaries 
+						and governments use one-time pads in their critical networks. 
+						<a href="https://en.wikipedia.org/wiki/NSA_encryption_systems">Command and control systems for nuclear forces</a> 
+						are <u>not</u> protected by <i>commercial</i> grade AES encryption. There is a concerted effort by spy agencies and 
+						<a href="https://firstlook.org/theintercept/2014/02/24/jtrig-manipulation/">JTRIG</a> 
+						to discourage the use of unbreakable cryptography with plausible deniablity. It is 
+						clear that they would prefer everyone uses the same cryptosystems, which they have weakened through 
+						<a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">influencing and setting the cryptography</a> 
+						standards. If everyone used one-time pads, their mass surveillance network would be rendered useless. 
+						<a href="http://www.theguardian.com/commentisfree/2013/sep/05/government-betrayed-internet-nsa-spying">Some reputable cryptographers</a> 
+						think we need to make mass surveillance expensive again. This is not enough. We need to make it <i>impossible</i> 
+						so they give up entirely. <a href="http://www.un.org/en/documents/udhr/">Privacy is a fundamental human right</a>, 
+						and they should <i>never</i> be able to decrypt our personal communications even if they spend billions of 
+						dollars trying to do so.
+					</p>
+					<p>
+						There may be some that complain about the programming languages or environment used. We have specific responses to 
+						complaints about browser based cryptography <a href="faq.html#matasano-article-discussion">in the FAQ</a> and the 
+						<a href="installation.html">setup guides</a> cover securing the browser, client machines and server. If they are 
+						complaining about any particular language e.g. PHP, MySQL, realise that the design is portable to other platforms too with some 
+						extra development. JavaScript, PHP and MySQL were chosen because they were the fastest to develop in and get 
+						a solution working. There may be some purists that claim cryptography should only be done in C or C++. Don't 
+						forget that these are not memory safe languages. Also do not forget the issue of whether there is a 
+						<a href="http://unix.stackexchange.com/questions/89897/how-to-compile-the-c-compiler-from-scratch-then-compile-unix-linux-from-scratch">backdoor or trojan in the compiler</a>. 
+						Did you compile your own compiler or use a trusted compiler? Did you compile the whole tool chain from scratch? 
+						Or are you just using a precompiled binary distribution that everyone else is using? These issues are just 
+						as important in an open source C++ cryptography program. Small weaknesses introduced over time into the 
+						open source stack can be very difficult to detect. Cryptography and security in <i>any</i> platform is not 
+						without its risks.
+					</p>					
+					<p>
+						From what we have seen from the recent leaks and the NSA's long term goals of mass surveillance, backdooring 
+						encryption technology and weakening encryption standards, you can be absolutely sure they have not benevolently 
+						gifted the public with unbreakable cryptography that they themselves can't break. Be realistic, 
+						<a href="https://en.wikipedia.org/wiki/NSA_Suite_B_Cryptography">Suite B</a> is great for keeping other 
+						companies from reading your emails and communications because they clearly lack the 
+						computing power to break the encryption. It was <i>never</i> designed to stop the government itself from 
+						decrypting your data. Especially when that government has secret knowledge of all the weaknesses of the 
+						algorithms before the approve them. None of the ciphers they recommend are 
+						<a href="http://en.wikipedia.org/wiki/Information-theoretically_secure">information-theoretically secure</a>. 
+						They want to retain the ability to break your encryption for "national security" reasons. Therefore you 
+						cannot use their recommended "secure" encryption standards if you want <u>any</u> assurance of privacy.
+					</p>										
+					<p>
+						Remember that this program is designed to solve a specific solution, that is, for helping two or more people 
+						who need to communicate in absolute secrecy, who do not want their communication decrypted now or 
+						anytime in the future due to advances in computing, mathematics or cryptanalysis and are prepared to deal 
+						with the minor hassles of setting it up and exchanging encryption keys in person. It is not trying to solve 
+						all the world's cryptography problems at once, there are other algorithms and protocols for that. You can 
+						rest assured that everything possible has been done to make this software secure and there are no 
+						intentional weaknesses. If there are legitimate security concerns or fixes that can be made then let us 
+						know and they will be taken seriously and fixed as soon as possible.
+					</p>
+					<p>
+						The program mainly uses specifications and libraries that have provable security such as strong cryptographic 
+						hash algorithms and the one-time pad cipher. The program brings together these strong algorithms and principles 
+						into a single strong solution. The aim was also to avoid using a CSPRNG algorithm as "stretching" entropy 
+						is not conducive to quality randomness required for a one-time pad. The generator took many months to develop and 
+						properly test. There's no pseudorandom generation going on to "stretch" the entropy and produce large 
+						amounts of data based on a single seed. It is entirely possible NSA can deduce a pattern or the original 
+						seed from most CSPRNGs. This program's approach is much more secure for a one-time pad and ensures each 
+						bit of entropy collected is only used once. Of course you would be well advised to export the raw hexadecimal 
+						output from the random number generator into any number of testing programs to make sure it holds up to proper 
+						statistical analysis. There are also basic statistical self tests built into the program you can run. The 
+						next version will include an option to load user provided entropy directly into the program. Then the user 
+						can use their own trusted true random number generator and this program will just split the random data into 
+						the separate one-time pads and handle the chat/communications side of things.
+					</p>
+					
+										
+					<h2 id="independently-verified">Has the software been independently verified?</h2>
+					<p>
+						The software has not been independently verified yet as it has just been released. Anyone is welcome to 
+						do so if you are going to provide an honest, constructive and unbiased review. Any feedback or suggestions 
+						will be appreciated and changes made where necessary. Please contact us with your review beforehand so 
+						we have a chance to fix any problems before the review is made public. The author will also sponsor an
+						independent professional review after the majority of development is complete.
+					</p>
+					<p>
+						Cryptography with one-time pads is very simple, but also very secure if all reasonable precautions 
+						are taken. It does not require a PhD in mathematics or cryptography and it is simple to implement, meaning 
+						there is much less chance of making mistakes with the implementation compared to complex cryptography involving 
+						Diffie-Hellman key exchanges, RSA, AES or elliptic curves. It also means it is easier to review and you do not 
+						have to understand complex mathematics and try figure out whether the code is implemented properly and 
+						avoids side channel attacks. Anyone can run the source code live in the browser with a tool like Firebug 
+						and step through the code line-by-line to verify exactly what it is doing. The source code is well commented 
+						and there is no ambiguous or obfuscated code anywhere. Most web or software developers should be able to 
+						follow what is going on.
+					</p>
+					<p>
+						It is important to note that a lot of the security will be obtained by properly configuring the server and 
+						securing the client endpoints. The <a href="installation.html">new implementation guides</a> cover off all the neccessary security 
+						precautions. If you're running Windows with no firewall and antivirus then you can't really rely on this 
+						software to protect you alone. If other people have physical or network access to your PC or device then 
+						there won't be much stopping them from retrieving your one-time pads.
+					</p>
+					
+					
+					<h2 id="who-are-you">Who are you and what credentials do you have?</h2>
+					<p>
+						The author has experience in designing datacenter network and security architectures for large corporates, 
+						senior level commercial web application development experience, then in recent years has moved into 
+						cryptography and security research. That is all the information that will be provided without compromising 
+						the author's true identity as it is preferred to remain anonymous so as not to invite interrogation or 
+						detainment by authorities for developing this software. That has 
+						<a href="https://en.wikipedia.org/wiki/Nadim_Kobeissi#Detention_and_entrapment_attempt">already happened</a> 
+						with <a href="http://en.wikipedia.org/wiki/Phil_Zimmermann#Criminal_investigation">other</a> 
+						<a href="https://en.wikipedia.org/wiki/Jacob_Appelbaum">developers</a> of cryptographic software. Revealing 
+						your real identity and saying you work on cryptography software to avoid government surveillance is a 
+						one-way trip onto a 
+						<a href="https://firstlook.org/theintercept/article/2014/07/23/blacklisted/">terrorist watchlist</a> 
+						and restricted air travel for the remainder of your life.
+					</p>
+					<p>
+						 The author has no affiliations with any government and no interest at all in supporting them with their 
+						 mass surveillance and human rights violations. For other developers contributing to this software, please 
+						 do not base yourself in the US. The reason for this is that if you develop a trusted reputation within 
+						 the project team, then you are given a National Security Letter, we will not know and it could compromise 
+						 the security of the project. 
+					</p>
+					
+					
+					<h2 id="warrant-canary">Has this software been compromised by the government?</h2>
+					<p>
+						Like all critical cryptography software 
+						<a href="https://threatpost.com/of-truecrypt-and-warrant-canaries">these days</a>, we provide a 
+						<a href="https://en.wikipedia.org/wiki/Warrant_canary">warrant canary</a>. This is a text file signed by 
+						the author's GPG key which will be updated <i>after</i> every release to say that we have <u>not</u> received 
+						a warrant, National Security Letter, subpoena, been captured, blackmailed or forced into weakening or 
+						inserting a backdoor into the software. It is a passive way to tell you if future versions of the 
+						software are compromised and may be our only way of telling you without violating the secret court order 
+						or being tortured. The private GPG key is also stored offline, in secret location and encrypted so no-one 
+						else can use it. At the first sign of trouble the author will destroy the private GPG key to prevent future 
+						releases being compromised.
+					</p>
+					<p>
+						This means any software released prior to the date in the warrant canary text file is verified to be from 
+						us and we are not under duress of any kind. Should a release appear <i>after</i> the date specified in the 
+						warrant canary, then this would indicate we are under duress and you should not use any software 
+						released after the last valid warrant canary. Likewise if the warrant canary text file is unavailable, or 
+						does not match the GPG signature then that also indicates that something is wrong. At that point your 
+						option is to fork the last valid version of the project which was made before the last valid signed warrant 
+						canary, or use some other software. Also remember to validate each release using the GPG key to ensure it 
+						is legitimate.
+					</p>
+					<p>
+						<a href="warrant-canary.txt">Current warrant canary</a><br>
+						<a href="warrant-canary.txt.asc">Current warrant canary file signature</a>
+					</p>
+					
+					
+					<h2 id="not-helping-terrorists">Aren't you helping terrorists?</h2>
+					<ul>
+						<li>
+							It is not the intention of this software to help actual terrorists i.e. people who want to harm innocent 
+							people. However the term "potential terrorist" is now being applied by the US government for a very wide 
+							<a href="http://investmentwatchblog.com/72-types-of-americans-that-are-considered-potential-terrorists-in-official-government-documents/">variety of people</a> 
+							these days. If you are on that list you're a potential terrorist in the eyes of the US government. See 
+							also the <a href="https://firstlook.org/theintercept/article/2014/07/23/blacklisted/">secret government rulebook</a> 
+							for putting you on a watchlist. The net is so wide it would practically include anyone.
+						</li>
+						<li>
+							The intention of this software is for everyone on the planet to have private communications and avert 
+							<a href="https://en.wikipedia.org/wiki/Orwellian">Orwellian government</a> control. No government can 
+							arbitrarily decide they can spy on everyone's communications. Our right to privacy is a 
+							<a href="http://www.un.org/en/documents/udhr/">fundamental human right</a> and that is what this software 
+							provides. It appears some US citizens do not really care that their government had been spying on citizens 
+							of other nations and 
+							<a href="http://www.theguardian.com/world/2013/sep/09/nsa-spying-brazil-oil-petrobras">conducting economic espionage</a> 
+							to steal trade secrets and company information to benefit US military and industry. They seem to be 
+							only concerned that their government had turned the system on them and has been breaching their Fourth 
+							Amendment rights. Well actually, the rest of the world do not deserve the NSA spying on them either. 
+							The US and UK governments are running an Orwellian, oppressive, undemocratic and undiplomatic regime 
+							designed to destroy everyone's privacy. The US government has no right to steal ideas and trade secrets 
+							from other nations for the benefit of US corporations or government. The US government is in breach of 
+							our human rights, not just the Constitution of the United States.
+						</li>
+						<li>
+							The hope is that activists and citizens of the US can unite by using this software and organise plans and protests to  
+							restore democracy back to their government without fear of the government trying to arrest them. With this software, 
+							freedom of the press can be maintained, whistleblowers can leak information securely, anything you say to your family, 
+							friends, colleagues or associates remains completely confidential. If you use this software the government can not ever 
+							decrypt your communications when they are intercepted. This software is not just for the US, the rest of 
+							the world needs protection as well until the NSA and <a href="http://en.wikipedia.org/wiki/Five_Eyes">Five Eyes</a> 
+							surveillance networks and systems have been completely dismantled.
+						</li>								
+						<li>
+							Knowledge of the one-time pad has been around for decades. It is nothing new. The "terrorists" could 
+							have been using this technology for a long time if they were smart. People just thought it too 
+							difficult to use and there are JTRIG agents on most cryptography/security forums discouraging its 
+							use due to "insurmountable" practical issues and telling people to use 
+							<a href="https://en.wikipedia.org/wiki/NSA_Suite_B_Cryptography">government sanctioned cryptography</a> 
+							instead. That way the government stays in control and can secretly decrypt the world's communications by 
+							backdooring and weakening the very standards they claim are safe. In reality with a program like this 
+							the only minor inconvenience is the intial setup and exchanging one-time pads with your chat partner 
+							every so often.
+						</li>
+						<li>
+							The software currently only uses the 
+							<a href="http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters">ASCII printable character set</a> 
+							so that limits its use to English speaking users. Languages like Arabic won't be able to be used so 
+							that limits the use from real terrorist groups that don't speak English for now. This 
+							limitation was mainly just for ease of development in early versions of the project. UTF-8 support will 
+							be coming soon however as all citizens in every country deserve to have strong cryptography and avoid 
+							oppressive global surveillance networks. The price of freedom and privacy for the good people, is 
+							that sometimes the bad people will also use that to evade justice. This is considered a worthy 
+							sacrifice, in that the 	benefit to the majority of good people far exceeds the danger "terrorists" 
+							may pose.
+						</li>
+						<li>
+							Note that use of the software, design or source code means you agree to not use it for evil. That 
+							generally means if you intend on harming innocent people then you are not permitted to use this 
+							software, its design or source code to help with that.
+						</li>
+					</ul>
+					
+					
+					<h2 id="extra-security-considerations">What are some extra security considerations for using the software?</h2>
+					<p>
+						There are a number of potential attacks which are more around 
+						<a href="http://en.wikipedia.org/wiki/Social_engineering_%28computer_security%29">social engineering</a>, side channel attacks, 
+						retrieving the one-time pads by other means and attacks on the server. There are ways to mitigate these issues as well.
+					</p>
+					<ul>
+						<li>
+							Keyloggers, trojans or spyware on the PC could compromise the one-time pads or chat messages. To mitigate, generate the 
+							one-time pads on a clean install of an <u>open source</u> Operating System and a clean browser install. By clean browser 
+							install this means removing all the inbuilt proprietary extensions like Java and Flash. When creating the one-time pads, use a PC that is 
+							physically unplugged from any network and any wireless/bluetooth adaptors are disabled. Save the pads to removable media 
+							such as MicroSD card, SD card or USB drive. Secure wipe the Operating System from the hard drive after you are finished. 
+							Booting into a <a href="https://www.linux.com/learn/tutorials/377416:the-five-best-linux-live-cds">Linux Live CD</a> could be 
+							useful for this. For running the chat program, ideally you want to be using Linux and the browser software compiled from 
+							source. Firewalls, antivirus and antispyware tools must be installed and activated. Do not use a shared 
+							computer in a library or cafe.
+						</li>
+						<li>
+							An attacker could steal/copy your one-time pads as they are being delivered to the other person. Keep the 
+							MicroSD card, SD card or USB drive with you at all times. Secure it on you in a zipped up pocket to prevent pickpocketers. 
+							Make sure the one-time pads are stored inside an encrypted volume with Truecrypt or other software. If you have misplaced the 
+							one-time pads or they have not been in your possession for a certain amount of time, assume they are compromised and 
+							recreate them. Once loaded into each device, delete the text file containing the one-time pads from the removable media. 
+							This leaves only one copy of the pads in your posession, which is being used by the software. The software will automatically 
+							remove one-time pads as a message is received or sent.
+						</li>
+						<li>
+							The server could be attacked or communications interfered with. Encrypted messages stay on the server for a short period of time until the other person 
+							retrieves them from the server which is similar to email. But the requests to the server are frequent enough that if both 
+							users are connected at the same time then it behaves as real-time chat. There is potential for a serious attacker to intercept 
+							communications and interfere with the transmission of encrypted messages. They will not be able to decrypt any of the messages, 
+							nor will they be able to forge or alter a message without detection due to the strong MAC. 
+							However they could block messages being received, or delete messages from the server, or perform a <a href="http://en.wikipedia.org/wiki/Denial_of_service">DOS</a> type attack 
+							on your communications. If an attacker like the NSA has already targetted your server there's not much you can do about it. 
+							The best option would be to set up a new server somewhere else that they do not know about and tell your chat partner the 
+							new server address. In the meantime the standard precautions for server installs should be used, install a certificate on 
+							the server so TLS is used to secure the session. Set up a firewall, block all ports except for 443 
+							(<a href="https://en.wikipedia.org/wiki/HTTPS">TLS</a>) which will be used by the client to connect to the server and port 
+							22 (<a href="https://en.wikipedia.org/wiki/Secure_Shell">SSH</a>) so you can still log in and administer the server.
+						</li>
+						<li>
+							You won't be completely anonymous when communicating with the server. Potentially a government may intercept the highly 
+							encrypted communications going from your IP to the server, and also from the server to the other user's IP. They may be 
+							suspicious at being unable to decrypt the messages and try trace your IP back to its source so they can arrest you for 
+							suspected "terrorism". If everyone was using this software it would be considered normal communications so they would be 
+							less likely to target a particular individual. If you a truly concerned 
+							about this some sensible precautions may be to use a VPN or <a href="https://en.wikipedia.org/wiki/SOCKS">SOCKS proxy</a> 
+							with your browser to tunnel your connections through a server somewhere else. For added protection you could always have 
+							your chat conversations in a public place, e.g. cafe, library, WiFi hotspot or buy a cheap pre-pay smartphone which will 
+							allow you to tether the internet connection to your laptop. 
+							If using a mobile phone, remember to go somewhere different each time and then connect to the cellular network. Be sure to 
+							disable the GPS on the phone so it is harder to triangulate your position. Also physically remove the battery when you are 
+							done and use a Faraday bag to <a href="http://security.stackexchange.com/questions/65382/is-it-possible-for-a-phone-to-be-transmitting-even-while-turned-off-and-the-batt/65455#65455">block any remote activation attempts</a>. 
+							The software does not currently work with the <a href="https://www.torproject.org/">Tor Browser Bundle</a> 
+							because they block access to the local disk, so that rules out HTML5 Local Storage use. You can however always configure 
+							the separate Tor application Vidalia manually and use that as a SOCKS5 proxy with a newer version of Firefox.
+						</li>
+						<li>
+							You could be forced to hand over your one-time pads with 
+							<a href="http://en.wikipedia.org/wiki/Rubber-hose_cryptanalysis">rubber-hose cryptanalysis</a> or 
+							<a href="https://xkcd.com/538/">beaten with a wrench</a>. While quite unlikely it could be possible. 
+							The software makes sure that after a message is sent the one-time pad is deleted from the device, 
+							then when the other user retrieves the message from the server the encrypted message is deleted from 
+							the server, also when it has been decrypted on the other user's device it is deleted from their local 
+							database as well. This leaves no way to decrypt past messages. It also gives you plausible deniability 
+							that you can decrypt past messages again or remember exactly what was said. To clear messages from the 
+							screen you simply need to refresh the page (F5 key). To clear everything in an emergency, initiate the 
+							auto nuke. This option is available from the main menu. It will delete the one-time pads from all connected 
+							devices and encrypted messages from the server. It will also clear sent messages on the screen of each 
+							device. Reserve this for an actual emergency because it is time consuming to recreate and deliver new one-time pads.
+						</li>
+					</ul>
+							
+					
+					<h2 id="shannons-perfect-secrecy">Explain Shannon's Perfect Secrecy?</h2>
+					<p>
+						Claude Shannon's <a href="https://en.wikipedia.org/wiki/Communication_Theory_of_Secrecy_Systems">"Communication Theory of Secrecy Systems"</a> 
+						is a proof that all theoretically unbreakable ciphers must have the same requirements as the one-time pad. It states that if the 
+						rules are applied correctly, the one-time pad can be proven unbreakable. Even infinite computational power and infinite time 
+						cannot break one-time pad encryption, simply because it is mathematically impossible. Without the correct key, trying every key 
+						simply reveals all possible plaintexts but there's no way of knowing if that plaintext was actually what was sent. However, 
+						if only one of these rules is disregarded, the cipher is no longer unbreakable. Jericho Chat was designed in accordance with 
+						these rules. The rules are as follows:
+					</p>
+					<ul>
+						<li>The key is at least as long as the message or data that must be encrypted.</li>
+						<li>The key is truly random (not generated by a simple computer function or such).</li>
+						<li>Key and plaintext are calculated modulo 10 (digits), modulo 26 (letters) or modulo 2 (binary).</li>
+						<li>Each key is used only once, and both sender and receiver must destroy their key after use.</li>
+						<li>There should only be two copies of the key: one for the sender and one for the receiver (some exceptions exist for multiple receivers).</li>
+					</ul>
+					<p>
+						In reality even if you used a well seeded CSPRNG the randomness will be extremely difficult to predict however that would make 
+						the system a <a href="http://en.wikipedia.org/wiki/Stream_cipher">stream cipher</a>, not a one-time pad. With this software we 
+						have ensured that the program only collects and uses true random data. The software uses a solid TRNG and 
+						<a href="http://en.wikipedia.org/wiki/Randomness_extractor">randomness extraction</a> process described on the information page. 
+						The output from the extractor is then used solely for the one-time pad. The generator <b>does not</b> use this 
+						output to seed a CSPRNG and produce more random data that was originally generated. So this software is not a CSPRNG. 
+						Users can even use entropy from their own sources e.g. hardware random generators at their own risk.
+					</p>
+
+					
+					<h2 id="export-regulations">Does this break US Export Regulations?</h2>
+					<p>
+						<a href="https://en.wikipedia.org/wiki/Export_of_cryptography_in_the_United_States">US Export Regulations on cryptogaphy</a> and 
+						related products are <u>not</u> applicable to this software as this software 
+						has been developed outside of the US. There are no laws against importing or exporting cryptography here. Nor are US patents 
+						applicable. In fact the very idea of export or import laws against cryptography 
+						<a href="http://www.un.org/en/documents/udhr/">undermines our basic human rights</a> to liberty and privacy. 
+						If this software were created in the US, this website and the program's source code can be considered free speech so 
+						it would still be protected under the <a href="https://en.wikipedia.org/wiki/First_Amendment_to_the_United_States_Constitution">First Amendment</a> 
+						to the US Constitution. You can also read about how 
+						<a href="http://davebrownjournal.com/2014/04/13/tales-from-the-crypt-phil-zimmermann-and-the-fight-to-keep-your-secrets-secret/">PGP was distributed in book form</a> 
+						to bypass US Export Regulations.
+					</p>
+					<p>
+						If you have fear about downloading this software in your country then take a few measures to protect yourself. Download it 
+						using Freenet, Tor, a VPN or proxy hosted in another country. Download it from an internet cafe or library. That way it can't 
+						be tracked back to you. Strong cryptography should never be illegal. It is necessary for a free society, freedom of speech and 
+						freedom from totalitarian governments. Privacy is not achieved by politely asking those in power to not 
+						violate your privacy. Privacy is achieved by using unbreakable cryptography and <i>enforcing</i> your right to privacy. The 
+						<a href="http://www.un.org/en/documents/udhr/">Universal Declaration of Human Rights</a> states clearly that:<br>
+						<br>
+						<b>"No one shall be subjected to arbitrary interference with his privacy, family, home or correspondence, nor to attacks 
+						upon his honour and reputation. Everyone has the right to the protection of the law against such interference or attacks."</b><br>
+						<br>
+						Cryptography laws forcing you to use weak encryption and thus allow the government to interfere with your privacy or 
+						correspondence are against this fundamental human right.
+					</p>
+					
+					
+					<h2 id="multiple-groups-same-server">Is it possible to use the same server for multiple separate groups communicating?</h2>
+					<p>
+						Yes it is possible, though it's not specifically designed for that at the moment, but it can be done easily enough. In a 
+						future release this will be made a lot easier and the process may be automated.
+					</p>
+					<ol>
+						<li>
+							Edit the <code>createtables.sql</code> script with a different database name. Edit the lines with 
+							<code>CREATE DATABASE</code> and <code>USE</code> so the database name <code>jericho</code> now has a new database name 
+							e.g. <code>jericho-bob-alice-carol</code>. Each group communicating should have their own database. Run the database 
+							script on the server database. You probably want to avoid using real names so use nicknames or codenames.
+						</li>
+						<li>Copy the server files to a different directory on your web server. For example <code>/var/www/html/jericho-bob-alice-carol/</code>.</li>
+						<li>
+							Edit the config file <code>/var/www/html/jericho-bob-alice-carol/config/config.php</code> with a different server API key. Change 
+							the database name as well e.g. <code>jericho-bob-alice-carol</code>.</li>
+						<li>
+							Copy the client files to a different directory on your laptop/PC. This means that there will be separate local storage in 
+							the browser for each group you want to communicate with. For example <code>C:/jericho/client-bob-alice-carol/</code> and 
+							<code>C:/jericho/client-dave-mike-bob-jacob/</code>. The browser allocates separate local storage per unique file path.
+						</li>
+						<li>
+							When connecting, use the new server URL path e.g. <code>http://yoursite.com/jericho-bob-alice-carol/</code> 
+							and the new server API key.
+						</li>
+					</ol>
+					
+					
+					<h2 id="software-limitations">What are some of the limitations of the software?</h2>
+					<ul>
+						<li>
+							Local storage size is <a href="http://arty.name/localstorage.html">limited in the browsers</a>. Chromium has a limit of 
+							2.5MB and Firefox has a limit of 5MB. This can be increased in Firefox by typing <code>about:config</code> in the address bar 
+							and searching for the <code>dom.storage.default_quota</code> option. Its value is in kilobytes. To be on the safe side it 
+							may be best to generate a maximum of 2.5MB worth of one-time pads (approximately 9000 one-time pads) so it 
+							will work in most browsers and operate at a fast speed. If you need ability to communicate with a person for 
+							more messages than that or over longer periods of time, create separate sets of 9000 one-time pads and 
+							both users can load the next set when you run out. In future revisions we may use the IndexedDB database 
+							so that larger, more reliable storage is available.
+						</li>
+						<li>
+							Chatting is limited to desktops, laptops and tablet devices at the moment. The one-time pads should definitely be generated 
+							on a desktop/laptop as the TRNG is resource intensive. The software is not optimized for mobile phones 
+							just yet. Also there may need to be some creative methods developed to get the one-time pads onto the 
+							device. Android devices generally accept MicroSD cards or the USB cable which is very useful for this, 
+							however you have to load up the one-time pads in a plain text editor on the device, then copy/paste them 
+							into the load screen.
+						</li>
+						<li>
+							Browser limitations limit use to Firefox and Chromium currently. This is due to a few of the other 
+							browsers not supporting a few of the HTML5 features. It may work in Safari but it has not been tested 
+							on that yet. Do not use Google Chrome as it is closed source and not secure.
+						</li>
+					</ul>
+							
+					
+					<h2 id="meaning-behind-name">What's the meaning behind the name?</h2>
+					<p>
+						The name is based on the well known 
+						<a href="http://www.answersingenesis.org/articles/cm/v21/n2/the-walls-of-jericho">story of Jericho</a>. 
+						The city of Jericho in ancient times was an impenetrable fortress with walls surrounding the city. The Israelites 
+						were instructed to march around the city for 6 days and on the 7th day march around it 7 times. After 
+						this they loudly blew their trumpets all at once. The walls of the city collapsed. Then the Israelite 
+						army charged in and captured the city.
+					</p>
+					<p>
+						Using this as an analogy, this software uses the mathematically unbreakable encryption of the 
+						one-time pad for information-theoretically secure communication. Like the city of Jericho, which 
+						essentially required an act of God to destroy the city walls so the Israelites could take the city, 
+						an act of God would also be required to break the encryption used in this software.
+					</p>
+															
+					
+					<h2 id="nsa-capabilities">What are the capabilities of the NSA?</h2>
+					<p>
+						It's a well known fact that the NSA has massive datacenters and <a href="https://en.wikipedia.org/wiki/TOP500">supercomputers 
+						all over the US</a>. Any of these are theoretically capable of breaking encryption regardless of their official use. The 
+						<a href="https://en.wikipedia.org/wiki/Titan_%28supercomputer%29">Titan supercomputer</a> for example which uses CPUs and GPUs 
+						has a peak performance of 27 <a href="http://www.webopedia.com/TERM/P/petaflop.html">petaFLOPS</a>. There is plans to replace that 
+						with a machine capable of 200 petaFLOPS in 2016. These are just the supercomputers that are public knowledge.
+					</p>
+					<p>
+						<a href="http://www.wired.com/threatlevel/2012/03/ff_nsadatacenter/">Recent leaks</a> in 
+						2012 by a senior intelligence official involved with the NSA program has said they made "an enormous breakthrough" years ago in 
+						their ability to break complex encryption systems used by governments, companies and people around the world. This can clearly 
+						only mean a few things, either they've made <a href="http://en.wikipedia.org/wiki/P%3Dnp">mathematical advancements</a> 
+						or they have <a href="https://en.wikipedia.org/wiki/Quantum_computer">quantum supercomputers</a>. At any rate everyone should 
+						be <u>highly</u> concerned.
+					</p>
+					<p>
+						If quantum supercomputers are a reality they could use 
+						<a href="http://en.wikipedia.org/wiki/Shor%27s_algorithm">Shor's algorithm</a> for integer factorization and 
+						<a href="http://en.wikipedia.org/wiki/Grover%27s_algorithm">Grover's algorithm</a> for brute force cracking of encryption. 
+						Coupled with weak or <a href="http://en.wikipedia.org/wiki/Dual_EC_DRBG">backdoored psuedo-random number generators</a> in 
+						the operating system this makes cracking of most encryption currently in use entirely feasible for the NSA. Currently 
+						D-Wave's 512-qubit quantum computer 
+						<a href="http://arstechnica.com/science/2013/08/d-waves-black-box-starts-to-open-up/">has been installed</a> at the University 
+						of Southern California (USC). It is confirmed that <a href="http://mind-computer.com/tag/qubit-chip/">this quantum computer</a> 
+						<a href="http://www.gizmag.com/d-wave-quantum-computer-supercomputer-ranking/27476/">performs equivalent</a> to the 10th ranked 
+						supercomputer in the world at about 5 petaFLOPS. This single machine is faster than a datacenter full of servers which ordinary 
+						supercomputers are made up of. What if the NSA figures out a way to build a cluster of these for cracking encryption? It has 
+						been speculated that <a href="http://www.wired.com/threatlevel/2012/03/ff_nsadatacenter/">NSA's new Utah datacenter</a> will be 
+						comprised of quantum computers.
+					</p>
+					<p>
+						Because everything on the internet is being collected and stored indefinitely, anything you say today using standard encryption 
+						that can't be cracked today, can likely be cracked in the near future with more supercomputing power due to 
+						<a href="http://en.wikipedia.org/wiki/Moore%27s_Law">Moore's Law</a>. They will simply save your secret messages away and have 
+						another try at cracking it in a few years time when they've got more processing power. Anything said previously could be used 
+						against you in the near future. It is a pointless game to keep ever increasing your encryption key sizes to try and stay ahead 
+						of the government and future advances in computing. At some point you want encryption that can never be cracked, ever, even with 
+						unlimited computing power.
+					</p>
+					<p>
+						In the NSA leaks we have seen the methods used by NSA to bypass or get around encryption by installing 
+						backdoors, weakening encryption standards and hacking computers to retrieve keys. There is also a secret 
+						laboratory at Oak Ridge where all the NSA's top cryptanalysts and code breakers are. We do not know 
+						<i>anything</i> about NSA's cryptanalytic capabality from the leaks. It is classed as 
+						<a href="http://en.wikipedia.org/wiki/Exceptionally_Controlled_Information">Sensitive Compartmented Information</a> (SCI), 
+						which only very few people have access to within the NSA. Unfortunately Edward Snowden did not have this 
+						clearance level so we do not know what the NSA's true code breaking abilities are and which ciphers they 
+						can break. Edward Snowden famously stated: 
+						<a href="https://pressfreedomfoundation.org/encryption-works">"Encryption works. Properly implemented 
+						strong crypto systems are one of the few things that you can rely on."</a> 
+						However he cannot actually qualify that statement to say <i>which</i> encryption is actually strong and 
+						which is not. He never had access to the SCI information about this at the NSA in the first place. We 
+						would need another leaker with this top secret SCI information to come forward.
+					</p>
+					<p>
+						Have you ever wondered why the UK or US militaries do not use public encryption standards like 
+						<a href="http://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</a> or 
+						<a href="http://en.wikipedia.org/wiki/Block_cipher">block ciphers</a> for their secure military 
+						communications? One would have to ask why the classified 
+						<a href="https://en.wikipedia.org/wiki/NSA_Suite_A_Cryptography">NSA Suite A Cryptography</a> algorithms 
+						exist. What types of encryption do they use or what key sizes are they using for that? Why have they used
+						and are currently using systems like 
+						<a href="http://en.wikipedia.org/wiki/BATCO#See_also">BATCO</a> or 
+						<a href="http://en.wikipedia.org/wiki/DRYAD">DRYAD</a> which are basically paper based 
+						<a href="http://en.wikipedia.org/wiki/One_time_pad">one-time pads</a>. If only one-time pads are good 
+						enough for the military, why are we using anything less and allowing 
+						<a href="http://en.wikipedia.org/wiki/Orwellian">Orwellian</a> governments to read our communications? 
+						In other words, why use <a href="https://en.wikipedia.org/wiki/NSA_Suite_B_Cryptography">B grade</a> 
+						cryptography when you could be using something that is actually mathematically <i>proven</i> to be unbreakable? 
+					</p>
+					<p>						
+						With so many unknowns about what cryptography is or is not broken and so much disinformation out there, 
+						maybe it is wiser to just use the safest option, the only cipher proven to be unbreakable, the one-time pad.
+					</p>
+					
+					
+					<h2 id="matasano-article-discussion">What about Matasano Security's claims that JavaScript cryptography is insecure?</h2>
+					<p>
+						<a href="http://www.matasano.com/articles/javascript-cryptography/">Matasano Security wrote an article</a> back in 2011 regarding 
+						cryptography in JavaScript which is well known in security circles. Most claims are now largely out of date and there are 
+						sensible measures that can be taken to ensure cryptography can be done securely in JavaScript. A few other people have made 
+						comments on the article and have a number of counter points which you can read 
+						<a href="http://blog.meadhbh.org/2013/08/in-defense-of-javascript-cryptography.html">here</a> and 
+						<a href="http://log.nadim.cc/?p=33">here</a>. Outlined below are some of the statements made by Matasano Security in the article,  
+						counter arguments for each and how this software is still secure regardless.
+					</p>
+					<h4>"Secure delivery of Javascript to browsers is a chicken-egg problem."</h4>
+					<p>
+						This is a problem when executable JavaScript code is delivered to a browser from the web server. It needs to be secured by 
+						HTTPS/TLS otherwise you can't trust that the JavaScript code being sent hasn't been modified. If it was modified by an attacker 
+						then the JavaScript cryptography code could be rendered insecure. Even if using TLS and web server delivered JavaScript, the 
+						security of the application would only be as secure as the cryptography used in the TLS protocol.
+					</p>
+					<p>There are two ways around this:</p>
+					<ol>
+						<li>Deliver the code as a signed extension for the browser.</li>
+						<li>
+							Download the code separately in a compressed archive, validate the hashes and signatures of the archive file, then run 
+							the code in its entirety from the local machine inside the web browser.
+						</li>
+					</ol>
+					<p>
+						Jericho Chat currently uses the second method. All code is self-contained and run locally on the user's machine 
+						from the file:/// path in the browser. No executable code is retrieved from the server as the program is running at all. 
+						Only JSON requests are made to/from the server to send/receive one-time pad encrypted messages. Any response sent from the 
+						server is escaped for <a href="https://www.owasp.org/index.php/Cross-site_Scripting_%28XSS%29">XSS attacks</a>. Therefore 
+						the program's code cannot be modified by an attacker.
+					</p>
+
+					<h4>"... having established a secure channel with SSL, you no longer need Javascript cryptography; you have "real" cryptography."</h4>
+					<p>
+						There are some major problems with this statement.
+					</p>
+					<ol>
+						<li>
+							The first problem is that SSL/TLS encryption is between the client and the server. Once it's on the server it's in 
+							cleartext. For true end-to-end security you need another layer of encryption which encrypts the message from one browser 
+							all the way through to the other person's browser and is never decrypted in transit. SSL/TLS does not provide that. You 
+							may think your email with GMail or Hotmail is secure because you're connecting to them with HTTPS. In reality only your 
+							browser session with them is secure. The actual email data and your information is sitting on their servers in cleartext. 
+							Even if they were encrypting it serverside you have to trust them that they're not keeping the cleartext version before 
+							they've encrypted it serverside. Not to mention when you send an email it's sent over the internet through any number of 
+							servers along the way in cleartext as well. Anyone can read it, and the NSA can most certainly intercept it. With the 
+							PRISM program the NSA can also access GMail or Hotmail's servers and pull all your emails from them in plaintext anyway.
+						</li>
+						<li>
+							The second problem is the complete reliance on SSL/TLS for securing the messages. TLS/HTTPS is not without its 
+							<a href="https://freedom-to-tinker.com/blog/felten/mozilla-debates-whether-trust-chinese-ca/">security issues</a> and 
+							there are <a href="http://breachattack.com/">plenty of attacks</a> on it. Can you safely assume the NSA cannot crack 
+							standard SSL/TLS with their supercomputers or quantum computers? There is also 
+							<a href="http://www.nytimes.com/2013/09/06/us/nsa-foils-much-internet-encryption.html">new news</a> 
+							that the government has cracked most encryption used on the internet. Because of the FISA laws and Patriot Act, the US government 
+							can literally force <a href="http://en.wikipedia.org/wiki/Certificate_authority">Certificate Authorities</a> to give them 
+							their root signing certificate and put a gag order on them. This would 
+							<a href="http://security.stackexchange.com/questions/42409/are-self-signed-certificates-actually-more-secure-than-ca-signed-certificates-no">allow the government</a> 
+							to perform MITM attacks on all communications transiting their networks and retrieve the symmetric keys sent in the 
+							<a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange">Diffie-Hellman key exchange</a> which are used 
+							for the actual encryption.
+						</li>
+						<li>
+							Finally there is the definition of "real" cryptography. Is "real" cryptography good enough to stop an Orwellian government 
+							with huge amounts of computing power? Is the cryptography good enough to secure your messages for 5, 10, 50 or 100 years in the 
+							future so your secret stays safe even after death? Or will future computing advances allow them to decrypt your past 
+							messages? Could you be thrown in prison for something you said 5 years ago when they finally manage to decrypt your 
+							message? Could your future political campaign be ruined by the messages decrypted in the future? If you can't take these 
+							chances then you can't take chances using <a href="https://en.wikipedia.org/wiki/NSA_Suite_B_Cryptography">B Grade cryptography</a> 
+							recommended by the government to secure your messages. The only "real" cryptography is the one-time pad because it's mathematically 
+							proven to be unbreakable. Every ciphertext can reveal every plausible plaintext of the same length. If you want "real" privacy 
+							you better be prepared to deal with the minor inconveniences that come with it. Jericho Chat solves most of the major 
+							inconveniences in using one-time pad cryptography.
+						</li>
+					</ol>
+					
+					<h4>
+						"The problem with running crypto code in Javascript is that practically any function that the crypto depends on could be 
+						overridden silently by any piece of content used to build the hosting page."
+					</h4>
+					<p>
+						Again none of this is possible because we are not accepting server delivered executable code. Any data that is received from the 
+						server is JSON encoded and escaped for XSS attacks. All code is run from the user's machine locally in the browser. The code 
+						cannot be modified by an attacker as it is running on the machine without some kind of outside attack e.g. a trojan installed 
+						on the machine.
+					</p>
+					
+					<h4>"... 99.99999 percent of the crypto needed by web applications would be entirely served by a simple, well-specified cryptosystem: PGP."</h4>
+					<p>
+						The problem with public key cryptography like RSA and PGP is that it is based on a theory that factorizing integers is a hard 
+						problem to solve. It's not <a href="http://en.wikipedia.org/wiki/Information_theoretic_security">information-theoretically secure</a>. 
+						There's no proof that PGP is truly secure in reality. Mathematical advances can make finding factorizations much faster and 
+						possible to break cryptography with standard supercomputers.
+					</p>
+					<p>
+						<a href="http://en.wikipedia.org/wiki/Moore%27s_law">Moore's law</a> means the number of transistors on integrated circuits doubles 
+						approximately every 2 years. This has been suprisingly accurate. It may not translate directly to an increase in single-threaded raw 
+						computing power but can mean significant increases in parallel processing power due to more cores. If the NSA built a new 
+						supercomputer every 2 to 4 years they would get the increase in power from each chip, multiplied by the thousands of 
+						chips that go into each supercomputer. For example, the <a href="http://en.wikipedia.org/wiki/Titan_supercomputer">Titan supercomputer</a> 
+						has 18,688 CPUs paired with an equal number of GPUs, giving a total of 299,008 processor cores. This gives a peak of 
+						<a href="https://en.wikipedia.org/wiki/FLOPS">27 petaFLOPS</a> which is a phenomenal amount of processing power. Are you increasing your 
+						PGP key size every year to keep up? Unfortunately as the key sizes increase the time to create the key and decrypt data with it
+						starts to scale up quickly.
+					</p>
+					<p>
+						Let's assume the government actually has <a href="http://mind-computer.com/tag/qubit-chip/">working quantum computers now</a>. 
+						If this can be used for integer factorization then all bets are off. 
+						<a href="http://en.wikipedia.org/wiki/Shor%27s_algorithm">Shor's algorithm</a> 
+						demonstrates that the integer factorization problem can be efficiently solved on a quantum computer. Sure you can increase the 
+						key size up to really long lengths e.g. 16,384 bits or more to try and stay ahead of the NSA, but this is a never ending race. 
+						It's also extremely slow to generate and use keys of that length.
+					</p>
+					<p>
+						Remember the government will never tell you they already have quantum supercomputers. All research and knowledge about it is 
+						classified. Does anyone outside of the highest levels of security clearance know what DARPA are working on at any given time? 
+						It's been said that the commercial world or academic community is 15+ years or more behind the US government, especially 
+						in the realms of cryptography. 
+						<a href="http://en.wikipedia.org/wiki/Data_Encryption_Standard#NSA.27s_involvement_in_the_design">See the DES story</a>. If 
+						a quantum computer <a href="http://www.aip.org/pnu/2001/split/570-4.html">factored the number 15 in 2001</a> and we're now in 
+						2013, what advances have been made in the past <b>12 years</b> towards quantum computers and integer factorization? 12 years is 
+						a long time with the pace of advancements in the field of information technology. What do the government have if they are another 
+						10 years more advanced than the commercial world? The truth is PGP and related RSA based cryptography are no longer a viable option.
+					</p>
+
+					<h4>"What systems programming functionality does Javascript lack? ... a secure random number generator."</h4>
+					<p>
+						That was correct, back in 2011, when this article was written. Even two years is a long time in the field of information 
+						technology. Now with the <a href="https://dvcs.w3.org/hg/webcrypto-api/raw-file/tip/spec/Overview.html">Web Crypto API</a> available 
+						in HTML5 and implemented in Firefox and Chromium the browser can access the 
+						<a href="https://dvcs.w3.org/hg/webcrypto-api/raw-file/tip/spec/Overview.html#RandomSource-method-getRandomValues">getRandomValues()</a> 
+						method. This draws on the Operating System's entropy source e.g. /dev/urandom. Of course Jericho Chat 
+						does not blindly assume this entropy source is completely trustworthy so it's not used as a sole source of entropy for generating 
+						the one-time pads. Only user generated entropy is included in the key material. Users can manually include entropy from the Web 
+						Crypto API into the entropy pool and key material if they have a trusted hardware random number generator connected and feeding 
+						into /dev/urandom. Otherwise this API is used only to help "stir" or shuffle the entropy pool, randomizing which order hashing 
+						algorithms are applied, or picking a random MAC algorithm to use in authenticating each message being sent.
+					</p>
+					
+					<h4>"But how easy is it to attack an insecure random generator, really?"</h4>
+					<p>
+						Most <a href="http://en.wikipedia.org/wiki/Pseudo-random_number_generator">psuedo-random</a> and 
+						<a href="http://en.wikipedia.org/wiki/CSPRNG">cryptographically secure</a> psuedo-random number generators "stretch" the 
+						available entropy by gathering an initial amount of entropy to "seed" an algorithm. This algorithm then generates as much 
+						random data as needed far beyond the initial amount of entropy. For a one-time pad we absolutely can't rely on the output from 
+						any of these generators being included in the key material. It must be assumed that the NSA can and will find a pattern or bias 
+						with their supercomputers and be able to discover the seed used for the generator or predict future output, thus allowing them to 
+						decrypt future messages. With the one-time pad each bit of key material must be unpredictable. This software aims to do just that.
+					</p>
+					
+					<h4>"What else is the Javascript runtime lacking for crypto implementors?"</h4>
+					<p>
+						Matasano Security mentions secure erase and timing attacks. Timing attacks have been mitigated in the code. Secure erase is potentially a 
+						problem as it is hard to conclusively erase data from memory or hard drives after it is no longer needed. If the pads are being 
+						stored anywhere they must be inside an <a href="http://www.truecrypt.org/docs/truecrypt-portable">encrypted storage container</a>. 
+						Some of the lingering data in memory 
+						can be removed with a reboot and there may be special programs to overwrite the free RAM after you have finished a chat session. 
+						The major threat however is not these issues. You've already got major issues if you need secure erase to protect your data. That 
+						means you should have encrypted your data <i>before</i> putting it on any storage medium.
+					</p>
+					<p>						
+						The real threat is having your communications collected, decrypted, read and stored 
+						indefinitely as it is sent over the internet. Not having secure erase are essentially problems if the government 
+						have physical access to your data. In reality this is not an issue unless the government does a raid on your house or has planted 
+						malware on them. If you're performing activities that lead them to require a raid on your house then you've got bigger problems to 
+						worry about and all bets are off anyway. It's also recommended to have the one-time pad data stored on a USB drive and using 
+						<a href="http://portableapps.com/apps/internet/firefox_portable">Firefox portable</a> within a Truecrypt container. This means 
+						your important data is mobile and ready to go at a moments notice. If the one-time pads are about to be compromised you can 
+						also initiate the <i>auto nuke</i> which will wipe the local pad database, server database and notify the other user's client to 
+						remove their pads as well.
+					</p>
+
+					<h4>
+						"Wait, can't I generate a key and use it to secure things in HTML5 local storage?"
+					</h4>
+					<p>
+						Matasano Security says you can't because that scheme is, at best, only as secure as the server that fed you the code you used to secure the 
+						key. That's true if you're depending on server delivered code from the web server. Not true if you're using a locally run, self-contained 
+						JavaScript program inside the browser. Why? Because each website or URL can only access local storage for that particular website. 
+						If a user went to google.com and the site stored something in local storage and then the user visited amazon.com, Amazon cannot 
+						access the data stored in local storage by google.com. The browser's security rules prevent it. Similarly if a user accessed Jericho 
+						Encrypted Chat by the file:/// URL which is a reference to the file path on the local disk and the program stored the one-time 
+						pads in the local storage, that local storage is unique to that address and only the locally run website from that file path 
+						can access it. It's also recommended to run the chat program from its own dedicated browser or browser profile to avoid malicious 
+						websites or extensions from stealing private data inside your browser. The 
+						<a href="installation-server.html#setup-secure-profile">installation guides</a> cover doing just that.
+					</p>
+
+					<h4>"You can't outsource random number generation in a cryptosystem; doing so outsources the security of the system."</h4>
+					<p>
+						Matasano Security mentions using random numbers delivered over the internet from random.org or a web server that is sending you random 
+						numbers from its <a href="http://en.wikipedia.org/wiki/CSPRNG">CSPRNG</a>. They mention this is insecure even if the numbers are 
+						delivered by TLS and they're absolutely right. The site random.org could be storing that random data at their end and then you're 
+						trusting them with your one-time pad keys. Also the NSA can intercept that traffic and possibly decrypt it. Terrible idea. This 
+						advice has been recommended by particular people on cryptography forums with reputation in the 10k range. It's likely they work 
+						for the NSA giving terrible advice like that. Also on 
+						<a href="http://en.wikipedia.org/wiki/Ivy_Bridge_%28microarchitecture%29">Ivy Bridge</a> CPUs, Intel added a 
+						<a href="http://spectrum.ieee.org/computing/hardware/behind-intels-new-randomnumber-generator">new hardware random number</a> and 
+						<a href="http://cryptome.org/2013/07/intel-bed-nsa.htm">possibly colluded with the NSA</a> while developing it. 
+						<a href="http://people.umass.edu/gbecker/BeckerChes13.pdf">This paper</a> (PDF) discusses how it could be compromised. There is some 
+						confusion around whether Linux now actually uses that entropy source 
+						<a href="http://nakedsecurity.sophos.com/2013/09/11/rudest-man-in-linuxdom-rants-about-randomness-we-actually-know-what-we-are-doing-you-dont/">without mixing it</a> 
+						into the pool <a href="http://pastebin.com/A07q3nL3">with dev/random</a>. That's why Jericho Chat includes a true random 
+						number generator. Therefore the user is incentivised to create quality entropy if 
+						their security is on the line.
+					</p>
+
+					<h4>"Check back in 10 years when the majority of people aren't running browsers from 2008."</h4>
+					<p>
+						You can't wait around for slow corporations and users still in last decade to upgrade their web browser. HTML5 is ready to go now. 
+						If you want real privacy you better be prepared to install the latest version of Firefox or Chromium so you can use this program. 
+						Also it's a good idea to keep it up-to-date regularly for security fixes and new web technologies. That's the prerequisite for 
+						using this software. Current versions of Opera and Internet Explorer don't have support for the getRandomValues() Web Crypto API. 
+						Also IE 10 doesn't have support for <a href="http://www.html5rocks.com/en/tutorials/workers/basics/">HTML5 Web Workers</a>.
+					</p>
+					<p>
+						You don't want to use a closed source browser for cryptography anyway. There's no telling what the code is doing behind the scenes. 
+						A modification and background update could allow them to send your chat messages off to the NSA in clear text. Along that line, 
+						don't use Windows too if you can help it. It could also potentially contain a backdoor for the US government. We've already seen 
+						companies like Microsoft being coerced into assisting the NSA with 
+						<a href="https://en.wikipedia.org/wiki/PRISM_%28surveillance_program%29">PRISM</a>. It's not difficult for the government to 
+						force any US company to include a backdoor for law enforcement. In fact, it's possible they already have. So use an open source 
+						operating system as well.
+					</p>
+
+					<h4>"The "view-source" transparency of Javascript is illusory."</h4>
+					<p>
+						It's true that cryptography software implementations should be independently reviewed by cryptography and security professionals. 
+						This is no different for any other programs written in any other software language. You can't single JavaScript out for that. The 
+						view-source functionality benefit is not however illusory. You can debug and step through the code line-by-line as it is running 
+						in real-time with the brower's native debugger or an extension like <a href="https://getfirebug.com/">Firebug</a>. Try doing that 
+						with a compiled application. You'll be trying to read assembly code which is a much more difficult task. Also you have to have 
+						assurance that a backdoored compiler hasn't injected some nefarious code, or the cryptography software creator hasn't maliciously 
+						included a backdoor in the compiled version. It would be prudent to always compile the code yourself from the source code. However 
+						that takes time and is an extra step. With JavaScript, it's running the raw source code live in the browser. There's no need to 
+						compile anything to get it running. Any half-decent web developer can read, understand and debug the program as it's running to 
+						make sure it's doing what it's supposed to be doing. We have made sure the program is extremely well commented and documented 
+						so there is no doubt about what it is doing. With compiled programs there's even less people that would know how to debug the 
+						program from a binary compiled file. Contrary to Matasano Security's claims, the ability to view the source code as it is executing is 
+						actually a security benefit.
+					</p>
+					
+					<h4>
+						"... attackers have many hundreds of opportunities to break web app crypto, where they might only have one or two opportunities 
+						to break a native application."
+					</h4>
+					<p>
+						Matasano Security talks about how "nobody installs hundreds of applications every day and that nobody re-installs each application 
+						every time they run it. But that's what people are doing, without even realizing it, with web apps." However the way Jericho Chat 
+						works is that a source code archive file is downloaded once, the user verifies it, and then runs the web application locally 
+						inside the browser. It's not being downloaded at all from the web server when it is opened.
+					</p>
+
+					<h4>"SJCL is also practically the only example of a trustworthy crypto library written in Javascript..."</h4>
+					<p>
+						Back when Matasano Security wrote their article in 2011, the <a href="https://crypto.stanford.edu/sjcl/">Stanford JavaScript Crypto Library</a> 
+						may have been one of the few libraries available. As we know, two years is a long time in information technology. There are now a 
+						number of excellent JavaScript libraries around such as <a href="https://code.google.com/p/crypto-js/">CryptoJS</a> that can 
+						perform various cryptographic functions. There's also the 
+						<a href="https://dvcs.w3.org/hg/webcrypto-api/raw-file/tip/spec/Overview.html">HTML5 Web Crypto API</a> which is still in 
+						development. This aims to natively implement cryptographic functions inside the browser. For now Jericho Chat uses 
+						some of the more secure digest (hash) and HMAC functionality available in the <a href="https://code.google.com/p/crypto-js/">CryptoJS</a> 
+						library. The hash outputs have been verified to be correct 
+						from the test suites and comparing the outputs to the specification test vectors.
+					</p>
+					
+					<h4>Summary</h4>
+					<p>
+						In summary, none of the claims of Matasano security about JavaScript are true for Jericho Chat. Their claims are 
+						only valid for web browsers delivering executable JavaScript code from the web server and in that scenario you're 
+						totally reliant on the security of the TLS connection. Reasonable measures have been taken to ensure the integrity of this
+						software against possible attacks and concerns listed by Matasano Security. With Jericho Chat you have end-to-end encrypted 
+						and authenticated messages using the perfect secrecy of the one-time pad.
+					</p>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		
+		<div class="footer">
+			<ul class="links">
+				<li>
+					<a href="index.html">Home</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="information.html">Technical information</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="download.html">Download</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a>
+				</li>				
+				<li>-</li>
+				<li>
+					<a href="installation.html">How to install</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="usage.html">How to use</a>
+				</li>
+				<li>-</li>
+				<li>
+					<a href="faq.html">FAQ</a>
+				</li>		
+			</ul>
+			<div class="donate">
+				Want to support the project?<br>
+				Bitcoin: <code>16h8K8sXCobL5u7wKRPG95F8XAc735P8TM</code><br>
+				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
+			</div>
+			<div class="copyright">
+				Copyright &copy; 2013 - 2014 Joshua M. David
+			</div>
+		</div>
+	</body>
+</html>
