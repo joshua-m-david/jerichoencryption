@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
-	Jericho Chat - Information-theoretically secure communications
-	Copyright (C) 2013-2014  Joshua M. David
+	Jericho Comms - Information-theoretically secure communications
+	Copyright (c) 2013-2015  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
 -->
 <html lang="en">
 	<head>
-		<title>Jericho Chat - Server Installation</title>
+		<title>Jericho Comms&trade; - Server Installation</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
-		<meta name="description" content="Jericho Chat is a secure program using one-time pads.">
+		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
 		<meta name="viewport" content="width=720, maximum-scale=1.0, user-scalable=yes">
 
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
@@ -59,7 +59,7 @@
 					<p>
 						This page explains in an easy step by step guide how to fully setup your 
 						<a href="https://en.wikipedia.org/wiki/Virtual_private_server">VPS</a> or server and get the software running for 
-						Jericho Chat on <a href="releases.ubuntu.com/12.04/">Ubuntu Server 14.04</a> Long Term Support (LTS). Open source 
+						Jericho Comms on <a href="releases.ubuntu.com/12.04/">Ubuntu Server 14.04</a> Long Term Support (LTS). Open source 
 						is the best way as it's auditable and less likely to contain backdoors. Compiling your own from source code 
 						is even safer if you know how to do that. If you do not like Ubuntu, you can use whatever Linux or 
 						Unix distribution you want, it is really just setting up a Linux, MySQL, Apache & PHP (LAMP) stack 
@@ -208,10 +208,10 @@
 					<p>
 						Now that Linux, Apache, MySQL and PHP are running it's time to install get the server code running. The easiest way to get it 
 						onto the server would be to use the command line:<br>
-						<code>wget http://jerichoencryption.tk/files/jericho-v1.41.tar.gz</code><br>
+						<code>wget http://jerichoencryption.tk/files/jericho-v1.5.tar.gz</code><br>
 						<br>
 						You also need to download the signature file to verify that the download is authentic:<br>
-						<code>wget http://jerichoencryption.tk/files/jericho-v1.41.tar.gz.asc</code><br>
+						<code>wget http://jerichoencryption.tk/files/jericho-v1.5.tar.gz.asc</code><br>
 						<br>
 						This will download the two files and put them inside your current working directory. You can list them with <code>ls -l</code>. 
 						If the files are there you can skip to the next step.<br>
@@ -223,7 +223,7 @@
 						earlier with PuTTY. Then it's a basic drag and drop operation.<br>
 						<br>
 						If wanting to transfer the files from your Linux machine to the server you can use the following command:<br>
-						<code>scp /path/on/local/machine/jericho-v1.41.tar.gz username@ipaddress:~</code><br>
+						<code>scp /path/on/local/machine/jericho-v1.5.tar.gz username@ipaddress:~</code><br>
 						<br>
 						Be sure to swap out <code>username</code> for the username on the server and swap out <code>ipaddress</code> for the IP address 
 						of the server. It should prompt you for the password. The <code>~</code> character will put the file in the home directory for 
@@ -240,10 +240,10 @@
 					<h3>Verifying by file hashes</h3>
 					<p>
 						First verify that the file was downloaded correctly using the hashes found on the <a href="download.html">download page</a>:<br>
-						<code>sha256sum jericho-v1.41.tar.gz | grep "ea83cda016f78a1b8dce9962bd25f1e2d27b5e1e5ad754fc408a6702e19dae64"</code><br>
+						<code>sha384sum jericho-v1.5.tar.gz | grep "73c5899cd37af0369f9b0afd31b37c84724ed1d51a3e45e4f5ae7cc365c5d1ed88987835ccc2dd719b004de1a7c92c2d"</code><br>
 						<br>
 						If the checksum matches it will display the matching hash output on a line on the command line, for example:<br>
-						<code>ea83cda016f78a1b8dce9962bd25f1e2d27b5e1e5ad754fc408a6702e19dae64 &nbsp;jericho-v1.41.tar.gz</code><br>
+						<code>73c5899cd37af0369f9b0afd31b37c84724ed1d51a3e45e4f5ae7cc365c5d1ed88987835ccc2dd719b004de1a7c92c2d &nbsp;jericho-v1.5.tar.gz</code><br>
 						<br>
 						You can also verify using the more secure <a href="https://en.wikipedia.org/wiki/SHA-2">SHA-2 512</a> and 
 						<a href="https://en.wikipedia.org/wiki/Whirlpool_%28cryptography%29">Whirlpool</a> hashes on the download page by using 
@@ -270,7 +270,7 @@
 							sub &nbsp;&nbsp;4096R/BE456DA7 2013-09-25 [expires: 2016-09-24]
 						</code><br>
 						<br>
-						Then run <code>gpg --verify jericho-v1.41.tar.gz.asc jericho-v1.41.tar.gz</code> to verify the signature. This should give you a 
+						Then run <code>gpg --verify jericho-v1.5.tar.gz.asc jericho-v1.5.tar.gz</code> to verify the signature. This should give you a 
 						message saying <b>Good signature</b> similar to the following:<br>
 						<br>
 						<code>
@@ -289,8 +289,8 @@
 					
 					<h2 id="extracting-server-files">Extracting the server files</h2>
 					<p>
-						Now you need to extract files from inside the jericho-v1.41.tar.gz archive file. This can be done using:<br>
-						<code>tar -zxvf jericho-v1.41.tar.gz</code><br>
+						Now you need to extract files from inside the jericho-v1.5.tar.gz archive file. This can be done using:<br>
+						<code>tar -zxvf jericho-v1.5.tar.gz</code><br>
 						<br>
 						That will extract the files inside your current working directory. Now we need to copy the server files 
 						to the web directory <code>/var/www/html/</code> so that Apache can serve the files. The server files are 
@@ -397,7 +397,7 @@
 						works, then Connect.<br>
 						<br>
 						Once inside the main program you can go to <b>File</b> -> <b>Open...</b> then select the <code>createtables.sql</code> file on 
-						your hard drive. If you have extracted the files from <code>jericho-v1.41.tar.gz</code> using <a href="http://www.7-zip.org/">7-Zip</a> it 
+						your hard drive. If you have extracted the files from <code>jericho-v1.5.tar.gz</code> using <a href="http://www.7-zip.org/">7-Zip</a> it 
 						should be in the <code>jericho/server/</code> directory.<br>
 						<br>
 						Now select all the SQL querry text with the mouse or <code>Ctrl</code> + <code>A</code>. Then you can click the <b>Execute Current Query</b> 
@@ -425,37 +425,33 @@
 						do this with the text editor Nano which will be installed by default.<br>
 						Type <code>nano /var/www/html/config/config.php</code> and it should open.<br>
 						<br>
-						<img src="img/nano-edit-config.png" alt="Edit program server config"><br>
+						<img src="img/nano-edit-config.png" alt="Edit program server config" style="width: 100%"><br>
 						<br>
 						First you need to decide how many users will be in your chat group. You can have 2 - 7 chat users per 
-						group. The valid user names are alpha, bravo, charlie, delta, echo, foxtrot and golf. To add additional users 
-						for this chat group, edit the <code>$userConfig</code> array and add additional users. You can customise 
-						the call signs later in the client program.<br>
+						group. Simply change the <i>$numberOfUsers</i> variable to have the number of users you want. 
+						For example here is a chat group of 5 users: <code>$numberOfUsers = 5;</code><br>
 						<br>
-						For example here is a group of 5 users:<br>
-						<code>$userConfig = array('alpha', 'bravo', 'charlie', 'delta', 'echo');</code><br>
+						The <i>$serverKey</i> variable is used to sign all data going to or from the server using the 
+						Skein-512 hash. This key will be entered into the client application as well and exported for 
+						each user with their one-time pads so they can connect to the server to send/receive messages.<br>
 						<br>
-						The $serverKey variable is used to sign all data going to or from the server using the skein-512 hash. This key 
-						will be entered into the client application as well and exported for each user with their one-time pads 
-						so they can connect to the server to send/receive messages.<br>
-						<br>
-						You <i>could</i> actually create the 512 bit key by typing on the keyboard randomly to get 128 hexadecimal 
+						You could actually create the 512 bit key by typing on the keyboard randomly to get 128 hexadecimal 
 						symbols from the lowercase letters a-f and numbers 0-9. However that will not be the most secure option. 
 						The client program can generate a truly random 512 bit server key for you. This can be done using the 
-						TRNG. Open the Jericho Chat <code>client</code> directory, then open <code>index.html</code> with Firefox. 
+						TRNG. Open the Jericho Comms <code>client</code> directory, then open <code>index.html</code> with Firefox. 
 						Click the Generate Pads button from the main menu which starts the TRNG. Load up a photo of something random 
 						in nature then click Process. Once processed, click the Export button which opens up a dialog.<br>
 						<br>
-						<img src="img/export-pads-full-settings.png" alt="Export pads"><br>
+						<img src="img/export-pads-server-key-settings.png" alt="Export pads"><br>
 						<br>						
 						Here you can click Create server key which will extract 512 bits of the random data from the photo. Copy 
 						paste this into the config file like so:
-						<code>$serverKey = '68f7d8675928635867086720617a56174101b...9449769e717638e17341e67df0efc5d9b851ec5a72';</code><br>
+						<code>$serverKey = '89975057bac787e526aba890440dd89f95f2ea14a1779dc...2f636ba8eb3ac4bb823086da8541798f67c3a1055d2e';</code><br>
 						<br>
 						Remember not to remove the quotation marks around the strings or PHP won't run the code. Copy this key down 
 						as you will need it later to connect from the client.<br>
 						<br>
-						Next you need to edit <code>$databaseConfig</code> array. The <b>root</b> username 
+						Next you need to edit <i>$databaseConfig</i> array. The <b>root</b> username 
 						is there already so you don't need to edit that. Replace the password by editing the string next to 
 						it which says <code>covert</code> and put in the password you created for MySQL earlier.<br>
 						<br>
@@ -623,7 +619,7 @@
 					
 					<h2 id="summary">Summary</h2>
 					<p>
-						To sum up we configured Linux, Apache, PHP, MySQL and the server side of Jericho Chat. We setup a separate 
+						To sum up we configured Linux, Apache, PHP, MySQL and the server side of Jericho Comms. We setup a separate 
 						secure browser profile, then we configured a firewall to protect the server.<br>
 						<br>
 						If Firefox portable was used to setup a secure browser profile, you can copy that installation directory to a removable storage 
@@ -688,7 +684,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 -2014 Joshua M. David
+				Copyright &copy; 2013 - 2015 Joshua M. David
 			</div>
 		</div>
 	</body>

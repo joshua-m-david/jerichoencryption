@@ -1,6 +1,6 @@
 /**
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,10 +63,10 @@ body {
 
 /* This is the main navigation at the very top of the page */	
 .mainNav {
-	position: absolute;
-	top: 24px;
-	left: 277px;
-	font-size: 13px;
+    font-size: 13px;
+    left: 285px;
+    position: absolute;
+    top: 24px;
 }
 .mainNav ul {
 	margin: 0 auto;
@@ -149,7 +149,7 @@ code, pre {
 	font-family: monospace;
 	font-weight: bold;
 	background-color: #ecebeb;
-	padding: 3px;
+	padding: 1px;
 }
 .page .information {
 	font-size: 14px;
@@ -161,7 +161,7 @@ code, pre {
 	margin-bottom: 7px;
 	margin-top: 42px;
 }
-.page .information h2:first-child {
+.page .information h2:first-of-type {
 	margin-top: 0;
 }
 .page .information ul {
@@ -279,6 +279,12 @@ sub {
 	margin-bottom: 14px;
 	text-align: center;
 }
+.page.infoPage .information h2:first-of-type {
+	margin-top: 30px;
+}
+.infoPage h3 {
+	margin-top: 28px;
+}
 .infoPage .testOutput h4 {
 	font-size: inherit;
 	font-weight: bold;
@@ -295,6 +301,58 @@ sub {
 	color: red;
 	font-weight: bold;
 }
+.infoPage .formulas {
+	margin-bottom: 14px;
+}
+.infoPage .formulas b {
+	font-family: 'Times New Roman', Times, serif;
+	font-size: 16px;
+	font-style: italic;
+}
+.infoPage .formulas i {
+	font-family: 'Times New Roman', Times, serif;
+	font-size: 16px;
+}
+.infoPage .formulas sub {
+	font-style: normal;
+}
+.infoPage .formulas.notation b {
+    font-size: 17px;
+    font-style: normal;
+}
+.infoPage .formulas.notation li {
+    list-style-type: none;
+}
+.infoPage .printable {
+	display: none;
+}
+.infoPage .printableHeader {
+	font-family: Georgia, serif;
+	text-align: center;
+}
+.infoPage .printableHeader .title {
+	font-size: 30px;
+}
+.infoPage .printableHeader .version {
+	font-size: 16px;
+	margin-top: 28px;
+}
+.infoPage .printableHeader .date {
+	font-size: 16px;
+	margin-top: 5px;
+}
+.infoPage .printableHeader .author {
+	font-size: 16px;
+	margin-top: 22px;
+}
+.infoPage .printableHeader .email {
+	font-size: 16px;
+	margin-top: 5px;
+}
+.infoPage .printableAbstract {
+	margin-top: 40px;
+}
+
 
 /* --------------------------------------- */
 /*	5. DOWNLOAD PAGE SPECIFIC

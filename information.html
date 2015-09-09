@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
-	Jericho Chat - Information-theoretically secure communications
-	Copyright (C) 2013-2014  Joshua M. David
+	Jericho Comms - Information-theoretically secure communications
+	Copyright (c) 2013-2015  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
 -->
 <html lang="en">
 	<head>
-		<title>Jericho Chat - Technical Information</title>
+		<title>Jericho Comms&trade; - Technical Information</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
-		<meta name="description" content="Jericho Chat is a secure program using one-time pads.">
+		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
 		<meta name="viewport" content="width=720, maximum-scale=1.0, user-scalable=yes">
 
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
@@ -55,19 +55,106 @@
 		<div class="content">
 			<div class="page infoPage">
 				<div class="information">
-					<h1>Technical information</h1>					
+					<div class="printableHeader printable">
+						<div class="title">Jericho Comms&trade;</div>
+						<div class="version">Version 1.5</div>
+						<div class="date">9 September 2015</div>
+						<div class="author">Joshua M. David</div>
+                        <div class="email">joshua.m.david [at] tutanota.de</div>
+					</div>
+					<div class="printableAbstract printable">
+						<h2 id="abstract">Abstract</h2>
+						<p>
+							In the wake of the <a href="https://www.eff.org/nsa-spying">NSA spying revelations</a> it is clear that 
+							<u>none</u> of our communications are secure any longer. The <a href="http://en.wikipedia.org/wiki/Nsa">NSA</a> 
+							is actively monitoring, collecting, 
+							<a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">decrypting</a> and 
+							<a href="http://www.wired.com/threatlevel/2012/03/ff_nsadatacenter/">indefinitely storing</a> 
+							the whole world's communications as it transits their networks. Any traffic passing through 
+							any of the <a href="http://en.wikipedia.org/wiki/UKUSA_Agreement">Five Eyes</a> countries (US, UK, Canada, 
+							Australia and NZ) is monitored, collected and stored indefinitely. Any and all of your internet 
+							traffic, phone calls, email, chat messages and anything else are vulnerable to the Five Eyes spy 
+							agencies. This is no longer conspiracy theory, it is actually happening.
+						</p>
+						<p>
+							This is a massive breach of international human rights and it is an attack on the liberty, freedom and 
+							privacy of every person on the planet. It has huge implications for our democracy, freedom of the press, 
+							attorney-client privilege and freedom of speech. The 
+							<a href="http://www.un.org/en/documents/udhr/">Universal Declaration of Human Rights</a> states clearly:
+						</p>
+						<ul>
+							<li>
+								<b>Article 3:</b> Everyone has the right to life, <i>liberty</i> and security of person.
+							</li>
+							<li>
+								<b>Article 12:</b> <u>No one</u> shall be subjected to arbitrary interference with his <i>privacy</i>, 
+								family, home or <i>correspondence</i>, nor to attacks upon his honour and reputation. Everyone has the 
+								right to the protection of the law against such interference or attacks.
+							</li>
+						</ul>
+						<p>
+							Jericho Comms is an encrypted group communications program built on the principles of information-theoretic 
+							security using true random number generation, one-time message authentication codes and mathematically 
+							proven security of the <a href="http://en.wikipedia.org/wiki/One_time_pad">one-time pad</a> cipher. The 
+							goal is to deliver a free, open source, plausibly deniable, encrypted communications program 
+							for journalists, lawyers, activists and citizens of the world that need <i>high</i> assurances that their 
+							communications are free of censorship, control, oppression, totalitarian governments and eavesdropping 
+							from the world's most powerful intelligence agencies. To defeat the world's top intelligence agencies, 
+							you need to lift your game to their level. That means using encryption that they can <i>never</i> break, 
+							regardless of advances in mathematics, quantum physics, cryptanalysis or computing power.
+						</p>
+						<p>
+							The software makes the whole process very simple from generating truly random one-time pads, key management 
+							and chatting securely. After a message is sent, the one-time pad used is automatically deleted from the computer. 
+							Once received it is also deleted from the server and receiving computers. This prevents the message being 
+							decrypted in the future if one of the computers is compromised. If a user thinks their computer is about 
+							to become compromised they can also initiate the Auto Nuke feature which will delete the one-time pads 
+							from the local database, encrypted messages from the server and the one-time pads from the chat partner's 
+							local database. These features combined provide a form of Off The Record encrypted chat. The full 
+							source code is available on GitHub at https://github.com/joshua-m-david/jerichoencryption.
+						</p>
+						<p>
+							The main reason why one-time pads are infrequently used outside of government and military networks is 
+							that you need truly random data, the key must be at least as long as the message and the one-time pads 
+							must be sent through a secure channel e.g. delivered in person. This makes them somewhat inconvenient to 
+							use but these are <i>not</i> insurmountable problems. This software aims to solve most of the issues that 
+							make using one-time pads difficult. The only minor issue would be delivering the one-time pads to 
+							the other user, but <a href="information.html#how-it-works">there are ways</a> to do that easily enough. 
+							In today's world of complete surveillance it is necessary to have a shared secret to authenticate the 
+							correspondents and have complete assurance you are actually communicating with the right people and not an
+							<a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">active Man in the Middle (MITM) attacker</a>. 
+							Obviously this software is not a solution for all cryptography problems. It does however solve a specific 
+							problem and allows you to communicate securely with your family, friends, colleagues or associates in the 
+							future if you have met them at least once and exchanged one-time pads with them.
+						</p>						
+					</div>
+					
+					<h1 class="nonPrintable">Technical information</h1>
+					<p class="nonPrintable">
+						This page is printable and can be downloaded as a signed 
+						<a href="files/jericho-v1.5.pdf">PDF white paper</a><sup><a href="files/jericho-v1.5.pdf.asc">[sig]</a></sup>. 
+						<i>Note:</i> The links on this page are not currently visible in the document and will be added 
+						as references to an appendix at a later date. Image quality in the PDF may also appear 
+                        distorted.
+					</p>
+					
+					<h2 id="table-of-contents">Contents</h2>
 					<ol class="tableOfContents">
+                        <li><a href="#notation">Formulas and notation</a></li>
 						<li><a href="#overall-network-architecture">Overall network architecture</a></li>
 						<li><a href="#how-it-works">How it works</a></li>
-						<li><a href="#using-html5">Using HTML5</a></li>
-						<li><a href="#configuring-own-server">Configuring the server</a></li>
+						<li><a href="#configuring-own-server">Server configuration</a></li>
 						<li><a href="#server-authentication-protocol">Server authentication protocol</a></li>
+						<li><a href="#frustrating-traffic-analysis">Preventing information leakage and traffic analysis</a></li>
 						<li><a href="#using-tls">Using TLS/HTTPS</a></li>
 						<li><a href="#trng-photo">True Random Number Generator (TRNG)</a></li>
 						<li><a href="#output-testing">Testing the TRNG random output</a></li>
 						<li><a href="#trng-test-analysis">TRNG tests and analysis</a></li>
 						<li><a href="#trng-custom">Custom random data loading</a></li>
+						<li><a href="#database-encryption">One-time pad database encryption and authentication</a></li>
+						<li><a href="#database-key-wrapping">Protection of database encryption and authentication keys</a></li>
 						<li><a href="#pad-storage-export">Pad storage and exporting data</a></li>						
+						<li><a href="#using-html5">Using HTML5</a></li>
 						<li><a href="#json-rest-api">REST API using JSON</a></li>
 						<li><a href="#message-encoding">Message encoding</a></li>
 						<li><a href="#encryption-process">Encryption process</a></li>
@@ -76,23 +163,73 @@
 						<li><a href="#auto-nuke-process">Auto nuke process</a></li>
 					</ol>
 					
+					
+                    <h2 id="notation">Formulas and notation</h2>
+					<p>
+						The notation used in this document will use very limited mathematical and cryptographic 
+                        formulas and will tend towards explaining the design in plain English rather than mathematical 
+                        formulas so that the content is more accessible and understandable by a wider audience.
+					</p>
+                    <ul class="formulas notation">
+                        <li>
+                            <b>&oplus;</b> = Bitwise <a href="https://en.wikipedia.org/wiki/Exclusive_disjunction">Exclusive OR</a> 
+                            (XOR) operator e.g. 0 &oplus; 1 = 1.
+                        </li>
+                        <li>
+                            <b>||</b> = Concatenation. Usually variables will be converted to the same type and format 
+                            before being concatenated together, e.g. for input into a hash function all variables will 
+                            be in hexadecimal format.
+                        </li>
+                        <li>
+                            <b>&#215;</b> = Regular multiplication.
+                        </li>
+                    </ul>
+                    
+                    
 					<h2 id="overall-network-architecture">Overall network architecture</h2>
 					<p>
-						The following will outline the entire design of the application and how it works. Exact implementation details can be 
-						found in the source code which is provided with every download.
-					</p>
+						The following will outline the entire design of the application and how it works. Exact 
+						implementation details can be found in the source code which is provided with every download.
+					</p>					
 					<p class="diagram">
 						<a href="img/network-architecture.png">
 							<img alt="Network architecture diagram" src="img/network-architecture.png" style="width: 100%">
 						</a>
 					</p>
+					<ul>
+						<li>
+							One particular point about this client-server architecture is that the clients are the only 
+							devices which have the one-time pads (encryption keys). The server effectively only contains 
+							encrypted data. The clients operate on a request, response basis. For this reason the clients 
+							which have the sensitive encryption keys should have their firewalls configured to block <b>all</b> 
+							incoming traffic by default and only receive incoming data as responses to outgoing requests 
+							that they have specifically made to the server. The responses from the server are always 
+							authenticated using a shared API Key and any malformed or unauthentic responses are immediately 
+							discarded. This makes the client machines a lot more resilient to attack and exfiltration of 
+							encryption keys. Assuming the client machines are single purpose and are not used for 
+							untrusted web browsing or other activities this is a very small attack surface.
+						</li>
+						<li>
+							The server should have a firewall as well which only allows incoming application data on one 
+							port and optionally on an SSH port for management. The server application expects a correctly 
+							authenticated packet from the client or it discards the request and responds with a 
+                            <code>HTTP/1.1 404 Not Found</code> error. Of course there is the potential for a 
+                            <a href="https://www.eff.org/cases/eff-v-nsa-odni-vulnerabilities-foia">0-day vulnerability</a> 
+                            in the server application layers but compromising the server will not 
+							compromise confidentiality or authenticity of messages as they are encrypted end-to-end. If 
+							an attacker gained access to the server they could only interfere with the server's operations 
+							to block messages from being sent or received at all.
+						</li>
+					</ul>
+					
+					
 					<h2 id="how-it-works">How it works</h2>
 					<ul>
 						<li>
 							The first user will run a True Random Number Generator included with the software. This is explained 
 							further on. This random data is then broken up into separate 
 							<a href="http://en.wikipedia.org/wiki/One-time_pad">one-time pads</a>. It is possible to generate 
-							enough data for 1900+ messages in under a minutes.
+							enough data for 1900+ messages in under a minute.
 						</li>
 						<li>
 							Each user will be assigned pads for sending messages. This prevents re-use of a pad by another user. 
@@ -178,90 +315,11 @@
 							<a href="http://portableapps.com/apps/internet/firefox_portable">Firefox</a> can be used for this. 
 						</li>
 					</ul>
+										
 					
-					<h2 id="using-html5">Using HTML5</h2>
+					<h2 id="configuring-own-server">Server configuration</h2>
 					<p>
-						<a href="http://www.matasano.com/articles/javascript-cryptography/">Matasano Security raises some points</a> 
-						about JavaScript cryptography and how JavaScript being delivered by the web server is insecure. 
-						There are <a href="http://blog.meadhbh.org/2013/08/in-defense-of-javascript-cryptography.html">definite sensible</a> 
-						and <a href="http://log.nadim.cc/?p=33">secure solutions</a> to the problems they raised. Also if you read 
-						the FAQ, <a href="faq.html#matasano-article-discussion">all of their other concerns have been mitigated</a> 
-						one by one.
-					</p>
-					<p>
-						Most points they made are not applicable for this software due to the fact that the source code is 
-						downloaded as a <a href="http://en.wikipedia.org/wiki/Tar_%28computing%29">tar.gz</a> archive 
-						file and users are expected to verify the file's GPG signature with the one from this website to 
-						ensure its authenticity. From there the code can be run <i>locally</i> from the machine by going to 
-						the directory and running index.html which will load the website and code into the browser. This means all 
-						code is always running locally from the local hard drive and the web address will be similar to 
-						<code>file:///media/truecrypt1/jericho/client/index.html</code>. All the executable code is self 
-						contained and does not rely on any server delivered JavaScript at all. This itself mitigates 
-						the majority of the problems the Matasano Security article raised.
-					</p>
-					<p>
-						HTML5 has more advantages than disadvantages. It's easier and faster to develop with. New APIs allow for 
-						<a href="http://www.w3.org/TR/WebCryptoAPI/">cryptography</a>, 
-						<a href="http://www.w3.org/TR/webstorage/">persistent database storage</a>, 
-						<a href="http://dev.w3.org/html5/postmsg/">messaging</a> and 
-						<a href="http://www.w3.org/TR/FileAPI/">file management</a>. Browsers are first in line for security 
-						updates and the best ones are open source and trustworthy. People rely on browsers to have good security 
-						to do their internet banking and shopping online. The source code does not need to be compiled. 
-						You can verify the source code being run live in the browser using Chromium or Firefox built-in Web 
-						Development tools or with addons like <a href="http://getfirebug.com">Firebug</a>. This allows you to 
-						verify the code is doing exactly what it should be. HTML5 is cross platform, one code base can literally 
-						run on Windows, Linux, Mac, phones and tablets simply with the latest web browser. One of the goals of 
-						the project is to get a truly secure chat program functioning on 
-						an open hardware platform and an open operating system like 
-						<a href="http://en.wikipedia.org/wiki/Firefox_OS">Firefox OS</a>. This is a true open source OS for 
-						smartphones and tablets from a reputable organisation that believes that 
-						<a href="http://www.mozilla.org/en-US/about/manifesto/">individual's security and privacy on the internet 
-						is fundamental</a>.
-					</p>
-					<p>
-						Currently this software has been tested to work in 
-						<a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a>, 
-						<a href="http://www.chromium.org">Chromium</a> and <a href="http://www.google.com/chrome/‎">Google Chrome</a>. 
-						Some of the other browsers have not implemented the <a href="http://www.w3.org/TR/WebCryptoAPI/">Web Crypto API</a> 
-						yet. From version 1.4 onwards, the layout will be responsive and will work on desktops, tablets and mobiles. 
-						Some more work and testing is still required to get it working nicely on mobile. In particular a method to 
-						load the one-time pads into the program using later versions of Android. Using Firefox is recommended as 
-						they are open source and are not involved in the spy scandal with 
-						<a href="https://en.wikipedia.org/wiki/PRISM_%28surveillance_program%29">PRISM</a>. Unfortunately nobody 
-						can say for sure about that <a href="http://en.wikipedia.org/wiki/PRISM_%28surveillance_program%29#Companies">with Google</a>. 
-						Chromium may be another alternative but the proprietary Google Chrome is not recommended.
-					</p>
-					<p>
-						It is recommended to run the browser profile from inside a 
-						<a href="https://en.wikipedia.org/wiki/Truecrypt">TrueCrypt</a> volume to protect the one-time pads when 
-						they are stored inside the browser storage. Future versions of the software will encrypt the one-time pads 
-						within the program before storing locally.
-					</p>					
-					<p>
-						The program is built using sound, provably strong cryptography. The design and implementation to bring the 
-						solution together uses secure cryptographic primitives (<a href="https://en.wikipedia.org/wiki/Skein_hash">Skein</a> and 
-						<a href="https://en.wikipedia.org/wiki/Keccak">Keccak</a>) for authentication which were designed by 
-						publically reputable and trustworthy cryptographers. We have avoided using algorithms from 
-						the NIST who have been shown to be heavily influenced by the NSA. The NSA have been 
-						<a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">secretly weakening</a> 
-						and promoting weak or broken public encryption standards.
-					</p>
-					<p>					
-						The main crypto library this program uses is <a href="https://code.google.com/p/crypto-js/">CryptoJS</a>. 
-						There were some other libraries that would be good to use but they either did not work in a 
-						<a href="http://www.html5rocks.com/en/tutorials/workers/basics/">HTML5 Web Worker</a> which makes 
-						the hashing process take significantly longer and 
-						<a href="https://en.wikipedia.org/wiki/Blocking_%28computing%29">blocks</a> 
-						the user interface, or their outputs couldn't be verified from the reference test vectors. Some more 
-						SHA-3 finalists would be nice to include from the recent competition however there is a lack of hash 
-						algorithms implemented in JavaScript. It is important to verify that the code can produce the same hash 
-						outputs as the test vectors from the specification documents. This ensures the program is not using a 
-						faulty or backdoored version of the algorithm that gives incorrect results.
-					</p>
-					
-					<h2 id="configuring-own-server">Configuring the server</h2>
-					<p>
-						The server basically functions as a temporary store for the encrypted messages. One user leaves encrypted 
+						The server basically functions as a temporary database store for the encrypted messages. One user leaves encrypted 
 						messages on the server and the other users can retrieve them when they are able. If both users are 
 						connected at the same time it is possible for realtime chat, plus or minus a few seconds. The messages 
 						are removed immediately from the server after they are read by all users.
@@ -309,10 +367,10 @@
 					<p>
 						A new protocol from version 1.3 was designed to securely authenticate the requests and responses with the 
 						server API. This replaces TLS which secured the server API credentials (username & password) in transit 
-						from version 1.2. The reason for this was mainly to simplify installation, 
+						in versions up to 1.2. The reason for this was mainly to simplify installation, 
 						<a href="http://www.thoughtcrime.org/blog/ssl-and-the-future-of-authenticity/">avoid Certificate Authorities</a>, 
 						have resistance against active <a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM attacks</a> and 
-						<a href="http://www.washingtonpost.com/world/national-security/nsa-seeks-to-build-quantum-computer-that-could-crack-most-types-of-encryption/2014/01/02/8fff297e-7195-11e3-8def-a33011492df2_story.html">NSA's quantum computers</a>. 
+						<a href="http://www.washingtonpost.com/world/national-security/nsa-seeks-to-build-quantum-computer-that-could-crack-most-types-of-encryption/2014/01/02/8fff297e-7195-11e3-8def-a33011492df2_story.html">quantum computers</a>. 
 						There have also been major security problems with common TLS implementations such as 
 						<a href="http://en.wikipedia.org/wiki/Heartbleed">OpenSSL</a>, 
 						<a href="http://arstechnica.com/security/2014/03/critical-crypto-bug-leaves-linux-hundreds-of-apps-open-to-eavesdropping/">GnuTLS</a> and 
@@ -337,16 +395,16 @@
 							impersonate the server.
 						</li>
 						<li>
-							Mitigate replay attacks and reject a request/response if the data was modified in transit.
+							Mitigate replay attacks and reject any request/response if the data was modified in transit.
 						</li>
 						<li>
-							Prevent one request to the server being modified by an attacker to perform a different API action.
+							Prevent a request to the server being modified by an attacker to perform a different API action.
 						</li>
 						<li>
 							Mitigate quantum computer attacks on the protocol.
 						</li>
 					</ul>
-					<br>
+					
 					<h3>Limitations and assumptions</h3>
 					<ul>
 						<li>
@@ -354,7 +412,7 @@
 							server as well. The server administrator will be a trustworthy person not interested in interfering 
 							with his own chat group's communications. If a group of users want to communicate with each other, 
 							but the server administrator is not included in that group, then they should set up their own server.
-							This rules out the server administrator having the will or capability to interfere with communications.
+							This rules out the server administrator having the will to interfere with communications.
 						</li>
 						<li>
 							Users of the server have an interest in keeping the shared API key on the server a secret to protect 
@@ -378,22 +436,29 @@
 							one-time pads and signed on each client machine. Some anonymised, non-critical meta-data is viewable 
 							if an attacker in a privileged network position is passively watching the traffic. This may indicate 
 							a chat conversation is taking place using this protocol. If this is a problem, the user can easily 
-							add TLS to the connection and use a pinned certificate. Future versions may encrypt the connection 
-							between the client and the server as well using a block or stream cipher as another layer of 
-							protection and to avoid relying on TLS.
+							add TLS to the connection and use a pinned certificate. Version 2.0 of the program will encrypt the connection 
+							between the client and the server using a cascade stream cipher to hide the meta data and to avoid 
+							relying on TLS. Hiding the meta data by sending only encrypted binary blobs between the client 
+							and server will make traffic analysis and fingerprinting much more difficult for spy tools like 
+                            <a href="https://theintercept.com/2015/07/01/nsas-google-worlds-private-communications/">XKeyScore</a>. 
+                            This means <a href="http://www.spiegel.de/international/world/the-nsa-uses-powerful-toolbox-in-effort-to-spy-on-global-networks-a-940969-3.html">TAO agents</a> 
+                            will not know whether a client machine is running this program 
+							or any other program sending binary data. This lowers the likelihood of them being able to 
+							target the client machines with a specific exploit for this program to extract the one-time pads or tamper 
+							with them.
 						</li>
 						<li>
 							The server protocol does not anonymise IP addresses from users connecting to the server. If there is a 
 							requirement for anonymity, then users can tunnel their connection through a SOCKS5 proxy in 
-							their web browser, and even use <a href="https://www.torproject.org/projects/vidalia.html.en">Vidalia</a> 
-							to access the Tor network.
+							their web browser or use <a href="https://www.torproject.org/projects/vidalia.html.en">Vidalia</a> 
+							to tunnel their connection through the Tor network.
 						</li>
 					</ul>
-					<br>
+					
 					<h3>Initial setup</h3>
-					<ul>
+					<ul class="formulas">
 						<li>
-							A random 512 bit <code>API key</code> is created using the TRNG included with the program and entered 
+							A random 512 bit <i>API Key</i> is created using the TRNG included with the program and entered 
 							into the configuration file on the server. The user can use SSH to access their VPS, but ideally to 
 							get the key securely onto the server, the server could be hosted on their local network running a web 
 							server with a static public IP that is serving to the wider internet. Storing the key in 
@@ -401,9 +466,9 @@
 							database lookup each request.
 						</li>
 						<li>
-							The <code>API key</code> is given to each user in person (not using a key exchange protocol or sent 
+							The <i>API Key</i> is given to each user in person (not using a key exchange protocol or sent 
 							via an insecure network). This will be done in the initial key exchange between users as the program 
-							can store the <code>API key</code> and server address along with the one-time pads.
+							can store the <i>API Key</i> and server address along with the one-time pads.
 						</li>
 						<li>
 							The protocol caters for 2-7 users per group using the server. If additional chat groups are required 
@@ -411,9 +476,9 @@
 						</li>
 					</ul>
 					<h3>To send and verify an API request</h3>
-					<ul>
+					<ul class="formulas">
 						<li>
-							User creates a random 512 bit per request <code>nonce</code>. The server keeps track of sent nonces 
+							User creates a random 512 bit per request <i>Nonce</i>. The server keeps track of sent nonces 
 							to prevent replay attacks. The nonce is created using the 
 							<a href="https://dvcs.w3.org/hg/webcrypto-api/raw-file/tip/spec/Overview.html">Web Crypto API</a>  
 							<a href="https://dvcs.w3.org/hg/webcrypto-api/raw-file/tip/spec/Overview.html#RandomSource-method-getRandomValues">getRandomValues()</a> 
@@ -421,16 +486,16 @@
 						</li>
 						<li>
 							User creates an API request including a group of data variables to send to the server as part of the 
-							<code>message packet</code>. For example, this can contain the one-time pad encrypted message 
+							<i>Message Packet</i>. For example, this can contain the one-time pad encrypted message 
 							and its MAC that the server will store.
 						</li>
 						<li>
-							Each request is sent with an <code>API action</code> to perform on the server. This prevents the attacker 
+							Each request is sent with an <i>API Action</i> to perform on the server. This prevents the attacker 
 							from changing what action to perform on the server because any change to the data packet will alter 
 							the MAC.
 						</li>
 						<li>
-							The <code>from user</code> data indicates which user the message is from. The server uses this to retrieve 
+							The <i>From User</i> data indicates which user the message is from. The server uses this to retrieve 
 							the correct key. All users on the server are coded to 
 							<a href="https://en.wikipedia.org/wiki/NATO_phonetic_alphabet">NATO phonetic alphabet</a> names i.e. 
 							Alpha, Bravo, Charlie, Delta, Echo, Foxtrot and Golf. This allows some anonymity when multiple servers 
@@ -440,16 +505,29 @@
 							pads.
 						</li>
 						<li>
-							A <code>sent timestamp</code> is included to indicate when the request was sent. This is a 
+							A <i>Sent Timestamp</i> is included to indicate when the request was sent. This is a 
 							<a href="https://en.wikipedia.org/wiki/Unix_time">UNIX timestamp</a> therefore both the client and 
-							server code use UTC time. The server will reject messages received outside of a 7 second window.
+							server code use UTC time.
+						</li>						
+						<li>
+							The server rejects messages received that are received more than +/- 60 seconds of the 
+							received UNIX timestamp. The server and clients should be synchronized to an NTP server. The 
+							60 second allowance should be enough to counter any clock drift and subtle differences 
+							between the server and client clocks.
+						</li>
+						<li>
+							The server rejects duplicate messages/replay attacks received within the allowed time window 
+							by storing all received nonces and checking incoming message timestamps against past received 
+							nonces. If the nonce is the same and same request is received twice, then the second request 
+							will be invalid. Sent nonces are kept on the server for at least 120 seconds and then 
+							discarded by a separate cleanup process.
 						</li>
 						<li>
 							These variables are stringified into JSON and a MAC is calculated using version 1.3 of the 
 							<a href="https://en.wikipedia.org/wiki/Skein_%28hash_function%29">Skein 512 bit hash function</a> on 
 							the JSON data:<br>
 							<br>
-							<code>MAC = Skein-512(API key || API action || from user || nonce || sent timestamp || message packet)</code>
+							<i>MAC</i> = <i>Skein-512</i>( <i>API Key</i> || <i>API Action</i> || <i>From User</i> || <i>Nonce</i> || <i>Sent Timestamp</i> || <i>Message Packet</i> )
 						</li>
 						<li>
 							The client sends the JSON data and the MAC to the server. The server receives the request, looks up 
@@ -458,44 +536,57 @@
 						</li>
 						<li>
 							The server rejects invalid MACs, which will also mean any attempt to modify the data sent will fail. 
-							The MAC validation method is protected against timing side channel attacks.
+							The MAC validation method in the API is protected against timing side channel attacks using a similar 
+                            method to <a href="https://www.isecpartners.com/blog/2011/february/double-hmac-verification.aspx">Double HMAC Verification</a>. 
+                            It uses a single hash with the <i>API Key</i> and the <i>Skein-512</i> hash 
+                            function rather than using HMAC.
 						</li>
 						<li>
-							The server rejects messages received outside the UNIX timestamp range (+/- 7 seconds). The server and 
-							client are synchronized to an NTP server.
+							Failed requests can be re-sent manually by the client which will use a different <i>Nonce</i>, 
+							<i>Sent Timestamp</i> and <i>MAC</i>.
 						</li>
 						<li>
-							The server rejects duplicate messages/replay attacks received within the 7 second time window by 
-							storing and checking all past received nonces. If the nonce is the same and same request is received 
-							twice, then the second request will be invalid. Sent nonces are kept on the server for 14 seconds and 
-							then discarded by a separate cleanup process. A delay longer than the 7 seconds will not be accepted 
-							due to the time delay.
-						</li>
-						<li>
-							Failed requests can be re-sent manually by the client which will use a different nonce, sent timestamp 
-							and MAC.
+                            Version 1.5 also <a href="https://en.wikipedia.org/wiki/Base64">Base64</a> encodes the 
+                            entire packet before sending in preparation for 
+							version 2.0. In version 2.0 the packet will also be encrypted between the client and server 
+							and then Base64 encoded. The data going back and forth will essentially just be a random 
+                            binary blob. This will help disguise meta data and make it much harder for spy agencies to 
+							fingerprint the traffic as definitely originating from this program and prevent them 
+                            targeting the client machines or server with automated 
+                            <a href="http://www.spiegel.de/international/world/the-nsa-uses-powerful-toolbox-in-effort-to-spy-on-global-networks-a-940969-3.html">TAO hacking tools</a> or malware 
+							that has been mentioned in the Snowden revelations. The current version 1.5 will just 
+							provide an extra annoyance to the Five Eyes agencies who will need to update their 
+                            <a href="https://theintercept.com/2015/07/01/nsas-google-worlds-private-communications/">XKeyScore</a> 
+							detection rules and decode the Base64 data first in order to analyse it.
 						</li>
 					</ul>
 					<h3>Server API response</h3>
-					<ul>
+					<ul class="formulas">
 						<li>
-							On any valid server requests, the server signs the response with the API key so that the user knows 
-							the response from the real server. Invalid requests throw a HTTP/1.1 403 Forbidden error.
+							On any valid server requests, the server signs the response with the <i>API Key</i> so that 
+							the user knows the response from the real server. Invalid requests throw an 
+							<code>HTTP/1.1 404 Not Found</code> error. This means an attacker does not even know if 
+							there is a valid application or web page on the web server if they do not have the 
+							<i>API Key</i> to make a valid request. All invalid requests respond with the server 
+							pretending it is unable to find what the attacker is looking for. This is similar to 
+							standard firewall behaviour by just failing to respond at all when an attacker is scanning 
+							for open ports on your machine, rather than responding with a distinct 'closed' response 
+							which indicates there is something there.
 						</li>
 						<li>
-							The <code>server message packet</code> contains data sent from the server including status responses 
+							The <i>Server Message Packet</i> contains data sent from the server including status responses 
 							and the one-time pad encrypted messages.
 						</li>
 						<li>
-							The original <code>client request MAC</code> is included in the server's response MAC calculation 
+							The original <i>Client Request MAC</i> is included in the server's response MAC calculation 
 							so the client can be sure it is receiving a response to the original request.
 						</li>
 						<li>
-							The <code>server message packet</code> is stringified into JSON and a MAC is calculated using the
+							The <i>Server Message Packet</i> is stringified into JSON and a MAC is calculated using the
 							<a href="https://en.wikipedia.org/wiki/Skein_%28hash_function%29">Skein 512 bit hash function</a> on 
 							the JSON data:<br>
 							<br>
-							<code>MAC = Skein-512(API key || server message packet || client request MAC</code>
+							<i>MAC</i> = <i>Skein-512</i>( <i>API Key</i> || <i>Server Message Packet</i> || <i>Client Request MAC</i> )
 						</li>
 						<li>
 							If the MAC does not match on the client then the response is not actually from the server and will be 
@@ -512,7 +603,7 @@
 					<p>
 						Because of the new server authentication protocol in version 1.3, using TLS is not mandatory anymore. 
 						However it can be added as an optional layer of security to help mitigate monitoring from 
-						low level attackers, for example when using the program at work, public WiFi or home connection 
+						lower level attackers, for example when using the program at work, public WiFi or home connection 
 						where your employer, a casual hacker or your ISP could monitor your connection. 
 						<a href="http://www.thoughtcrime.org/blog/ssl-and-the-future-of-authenticity/">TLS will not stop a powerful attacker</a> 
 						like the NSA or GCHQ as it is possible they have obtained copies of the root keys for most Certificate 
@@ -530,12 +621,76 @@
 						cipher suite order to have forward secrecy and use the highest quality ciphers available.
 					</p>
 					<p>						
-						Users still wanting to use TLS are recommendeded to 
+						Users still wanting to use TLS and don't mind the extra effort to configure it are recommendeded to 
 						<a href="installation-server.html#install-tls-certificate">generate a strong</a> (4096+ bit) self-signed 
-						certificate themselves, install it on the server and deliver the certificate to the chat group users at 
-						the same time as the one-time pad key exchange.
+						certificate themselves, install it on the server and deliver the fingerprints of the certificate to 
+						the chat group users at the same time as the one-time pad key exchange which they can manually 
+						verify when first connecting to the server.
 					</p>
 					
+					
+					<h2 id="frustrating-traffic-analysis">Preventing information leakage and traffic analysis</h2>
+					<p>
+						In version 1.5, each client now sends decoy messages at random intervals to other users in 
+						the chat group to prevent 
+						<a href="https://en.wikipedia.org/wiki/Information_Leakage">information leakage</a> (e.g. when 
+						real messages are sent) and to frustrate 
+						<a href="https://en.wikipedia.org/wiki/Traffic_analysis">traffic analysis</a>. This technique 
+						is similar in principle to the 
+						<a href="https://en.wikipedia.org/wiki/Chaffing_and_Winnowing">Chaffing and Winnowing</a> 
+						cryptographic technique. On starting a 
+						chat session, each client will generate a random number between 1000 and 90,000 using the 
+                        <a href="https://dvcs.w3.org/hg/webcrypto-api/raw-file/tip/spec/Overview.html">browser's CSPRNG</a>. 
+                        A timer will be started and after this number of milliseconds have 
+						elapsed the program will generate a random string of bytes up to 56 bits bits in length. Using 
+						the accuracy of milliseconds rather than seconds gives more randomness for each timer interval. 
+						Otherwise every decoy message would be sent on evenly rounded seconds and an attacker could 
+						determine that they were decoy messages.
+					</p>
+					<p>						
+						The program will then check if these 56 bits exist as a pad identifier in their own set of 
+						one-time pads. If that pad identifier already exists, which is quite rare (1 in 2<sup>56</sup> 
+						chance), then it will skip sending a decoy message for this interval, generate a new random 
+						number and try again after that many seconds have elapsed. If the pad identifier does not already 
+						exist, then the program will send a decoy message to the other users in the chat group. The other 
+						chat group users will safely ignore the decoy message as the pad identifier does not exist in 
+						their copy of the one-time pad database for the user that is sending the message. To send a 
+						decoy message the program simply generates a further random 1480 bits using the 
+                        <a href="https://dvcs.w3.org/hg/webcrypto-api/raw-file/tip/spec/Overview.html">browser's CSPRNG</a> 
+						and concatenates that to the end of the 56 bit random pad identifier, thus forming a random 
+						string consisting of 1536 bits which is the same size as a regular one-time pad and message packet. 
+						This method also avoids burning real one-time pads on decoy messages which would be wasteful.
+					</p>
+					<p>
+						The random message packet is sent as is to the server and left on there for the other chat group 
+						users to collect. It effectively looks no different than a regular message being sent. The other 
+						chat group users will download it, determine it is not a real message because the pad identifier 
+						does not exist in the set of pads belonging to that user and discard it. The other users may not 
+						be saying anything but each client that is connected to the server will be sending decoy messages 
+						to other users in the group at random intervals. If two or more clients are just left unnattended 
+						it can look like an entire conversation is taking place without doing anything. This disguises 
+						when real messages are actually sent by the users. An outside attacker that can monitor all 
+						network traffic has no way of determining whether a message sent or received is a decoy or a real 
+						one. 
+					</p>
+					<p>
+						If a client is online but there have been no real or decoy messages received from other chat 
+						clients for 3 minutes then the decoy timer will stop. This is so it doesn't appear like one user 
+						is just	talking to themself. If another client comes online again and sends a real message or 
+						decoy message then the first client will start up their timer again on a random interval to keep 
+						sending decoy messages. This continues until a user quits the program or all other users are 
+						offline for over 3 minutes. This is twice the length of the maximum random timer interval 
+						(90 seconds) so there is some overlap when users are coming online/offline. These intervals 
+						may be customisable via the UI in future versions or further optimised for network bandwidth 
+						usage.
+					</p>
+					<p>
+						An added bonus of this functionality is that if a user has come online and received a new decoy 
+						message from another user they can know that the other user is most likely online (+/- 90 seconds) 
+						without any other kind of signalling protocol being needed. The program will also show that the 
+						other user is online immediately if a real message is received within the last 90 seconds as well.
+					</p>
+										
 					
 					<h2 id="trng-photo">True Random Number Generator (TRNG)</h2>
 					<p>
@@ -571,8 +726,8 @@
 						<a href="https://en.wikipedia.org/wiki/Portable_Network_Graphics">PNG</a>/<a href="https://en.wikipedia.org/wiki/BMP_file_format">BMP</a> 
 						for the TRNG program to process. 
 						Saving in a lossy algorithm like <a href="https://en.wikipedia.org/wiki/Jpeg">JPEG</a> may have unintended 
-						side effects from performing optimisations on the photo. Modern digital cameras in cellular phones may not 
-						be suitable as they usually compress the photo using JPEG. You can however verify the processed results 
+						side effects from performing optimisations on the photograph. Modern digital cameras in cellular phones may not 
+						be suitable as they usually compress the photo using JPEG. Users can however verify the processed results 
 						and check if the random data passes the required randomness tests.
 					</p>
 					
@@ -623,14 +778,14 @@
 									Check there is enough new input entropy for the new hash, or break out of the loop.
 								</li>
 								<li>
-									Grab the temporary seed from earlier.
+									Get the temporary seed from earlier.
 								</li>
 								<li>
-									Grab a new set of 512 RGB values (512 bits) as the new input entropy.
+									Get a new set of 512 RGB values (512 bits) as the new input entropy.
 								</li>								
 								<li>
-									Concatenate the seed and input entropy together and hash them: 
-									H(seed | input entropy).
+									Concatenate the seed and input entropy together and hash them using: 
+									<span class="formulas"><i>Hash</i>( <i>seed</i> || <i>input entropy</i> )</span>.
 								</li>
 								<li>
 									Append the first 256 bits of the hash output to the output random data.
@@ -722,13 +877,15 @@
 					<div class="testOutput">
 						<h4>Original photo</h4>
 						<a href="img/randomness-tests/sand-original-photo.png">
-							<img src="img/randomness-tests/sand-original-photo-preview.png" alt="Sand">
+							<img class="nonPrintable" src="img/randomness-tests/sand-original-photo-preview.png" alt="Sand">
+							<img class="printable" src="img/randomness-tests/sand-original-photo.png" alt="Sand">
 						</a>						
 					</div>					
 					<div class="testOutput">
 						<h4>Extracted entropy</h4>
 						<a href="img/randomness-tests/sand-extracted-entropy.png">
-							<img src="img/randomness-tests/sand-extracted-entropy-preview.png" alt="Sand">
+							<img class="nonPrintable" src="img/randomness-tests/sand-extracted-entropy-preview.png" alt="Sand">
+							<img class="printable" src="img/randomness-tests/sand-extracted-entropy.png" alt="Sand">
 						</a>
 						<div class="results">Extracted entropy FIPS 140-2 tests: <span class="pass">Pass</span></div>
 					</div>
@@ -743,13 +900,15 @@
 					<div class="testOutput">
 						<h4>Original photo</h4>
 						<a href="img/randomness-tests/grass-original-photo.png">
-							<img src="img/randomness-tests/grass-original-photo-preview.png" alt="Grass">
+							<img class="nonPrintable" src="img/randomness-tests/grass-original-photo-preview.png" alt="Grass">
+							<img class="printable" src="img/randomness-tests/grass-original-photo.png" alt="Grass">
 						</a>						
 					</div>
 					<div class="testOutput">
 						<h4>Extracted entropy</h4>
 						<a href="img/randomness-tests/grass-extracted-entropy.png">
-							<img src="img/randomness-tests/grass-extracted-entropy-preview.png" alt="Grass">
+							<img class="nonPrintable" src="img/randomness-tests/grass-extracted-entropy-preview.png" alt="Grass">
+							<img class="printable" src="img/randomness-tests/grass-extracted-entropy.png" alt="Grass">
 						</a>
 						<div class="results">Extracted entropy FIPS 140-2 tests: <span class="pass">Pass</span></div>
 					</div>
@@ -767,13 +926,15 @@
 					<div class="testOutput">
 						<h4>Original photo</h4>
 						<a href="img/randomness-tests/trees-original-photo.png">
-							<img src="img/randomness-tests/trees-original-photo-preview.png" alt="Trees">
+							<img class="nonPrintable" src="img/randomness-tests/trees-original-photo-preview.png" alt="Trees">
+							<img class="printable" src="img/randomness-tests/trees-original-photo.png" alt="Trees">
 						</a>						
 					</div>
 					<div class="testOutput">
 						<h4>Extracted entropy</h4>
 						<a href="img/randomness-tests/trees-extracted-entropy.png">
-							<img src="img/randomness-tests/trees-extracted-entropy-preview.png" alt="Trees">
+							<img class="nonPrintable" src="img/randomness-tests/trees-extracted-entropy-preview.png" alt="Trees">
+							<img class="printable" src="img/randomness-tests/trees-extracted-entropy.png" alt="Trees">
 						</a>
 						<div class="results">Extracted entropy FIPS 140-2 tests: <span class="pass">Pass</span></div>
 					</div>
@@ -787,13 +948,15 @@
 					<div class="testOutput">
 						<h4>Original photo</h4>
 						<a href="img/randomness-tests/water-original-photo.png">
-							<img src="img/randomness-tests/water-original-photo-preview.png" alt="water">
+							<img class="nonPrintable" src="img/randomness-tests/water-original-photo-preview.png" alt="water">
+							<img class="printable" src="img/randomness-tests/water-original-photo.png" alt="water">
 						</a>						
 					</div>					
 					<div class="testOutput">
 						<h4>Extracted entropy</h4>
 						<a href="img/randomness-tests/water-extracted-entropy.png">
-							<img src="img/randomness-tests/water-extracted-entropy-preview.png" alt="water">
+							<img class="nonPrintable" src="img/randomness-tests/water-extracted-entropy-preview.png" alt="water">
+							<img class="printable" src="img/randomness-tests/water-extracted-entropy.png" alt="water">
 						</a>
 						<div class="results">Extracted entropy FIPS 140-2 tests: <span class="pass">Pass</span></div>
 					</div>
@@ -810,13 +973,15 @@
 					<div class="testOutput">
 						<h4>Original photo</h4>
 						<a href="img/randomness-tests/clouds-original-photo.png">
-							<img src="img/randomness-tests/clouds-original-photo-preview.png" alt="clouds">
+							<img class="nonPrintable" src="img/randomness-tests/clouds-original-photo-preview.png" alt="clouds">
+							<img class="printable" src="img/randomness-tests/clouds-original-photo.png" alt="clouds">
 						</a>						
 					</div>
 					<div class="testOutput">
 						<h4>Extracted entropy</h4>
 						<a href="img/randomness-tests/clouds-extracted-entropy.png">
-							<img src="img/randomness-tests/clouds-extracted-entropy-preview.png" alt="clouds">
+							<img class="nonPrintable" src="img/randomness-tests/clouds-extracted-entropy-preview.png" alt="clouds">
+							<img class="printable" src="img/randomness-tests/clouds-extracted-entropy.png" alt="clouds">
 						</a>
 						<div class="results">Extracted entropy FIPS 140-2 tests: <span class="pass">Pass</span></div>
 					</div>
@@ -900,28 +1065,586 @@
 						</li>
 						<li>
 							Saving to removable media such as a CD, DVD, MicroSD, SD card or USB drive will be convenient and 
-							portable. <a href="http://www.cs.auckland.ac.nz/~pgut001/pubs/secure_del.html">Hard drives and flash 
-							memory are notoriously difficult</a> to remove data from so do not save them there unless it's inside an 
-							encrypted volume. Flash memory is at least small and compact which means you can conceal, destroy or 
-							get rid of it quickly and easily. The most secure option may be to use CDs/DVDs which can be written once, 
-							transferred to each user, then destroyed. The most convenient option is to get a USB thumbdrive, with 
-							portable versions of <a href="https://en.wikipedia.org/wiki/Truecrypt">TrueCrypt</a> and 
-							<a href="http://portableapps.com/apps/internet/firefox_portable">Firefox</a> loaded on it. Create a 
-							small, hidden encrypted TrueCrypt volume on the device, using a cascade of all 3 block cipher 
-							algorithms available with a long password and potentially keyfiles. Then install Portable Firefox into 
-							it. Save the one-time pads in there as well. Load up Firefox and then load the one-time pads from 
-							inside it. Now the program is portable and you can take it with you on your keyring, run it from any 
-							trusted computer (e.g. home or work) and stay in contact wherever you are.
+							portable. Flash memory is at least small and compact which means you can conceal, destroy or 
+							get rid of it quickly and easily. The most secure option may be to use CDs/DVDs which can be 
+							written once, transferred to each user, then destroyed. The most convenient option is to get 
+							a USB thumbdrive, with a portable version of 
+							<a href="http://portableapps.com/apps/internet/firefox_portable">Firefox</a> loaded on it. 
+							Save the one-time pads in there as well. Load up Firefox and then load the one-time pads from 
+							inside it. Now the program is portable and you can take it with you on your keyring, run it 
+							from any trusted computer (e.g. home or work) and stay in contact wherever you are.
+						</li>
+						<li>
+							<a href="http://www.cs.auckland.ac.nz/~pgut001/pubs/secure_del.html">Hard drives and flash 
+							memory are notoriously difficult</a> to remove data from. Version 1.5 of the program now allows 
+							for the one-time pad database to be encrypted and authenticated before transport. This is 
+							detailed in full in the next section.
+						</li>
+						<li class="formulas">
+							The password/passphrase used should have at least 256 bits of entropy for transport which is 
+							about 41 characters. In version 2.0 the database will be encrypted all the time so users may 
+							opt for a shorter password for faster access on their mobile devices.
+							The password strength estimator calculates a rough estimate of the password strength in bits 
+							as the user is typing. Password characters are assumed to be drawn uniformly randomly among the 
+							most commonly used characters on a standard US keyboard. This is calculated as uppercase A-Z 
+							(26 characters) plus lowercase a-z (26 characters) plus numbers 0-9 (10 characters) for a 
+							total of 62 characters. This will produce a more conservative entropy estimate than if special 
+							characters were included as well (i.e. the full 95 ASCII printable characters). The formula 
+							will also take into account the PBKDF iterations which roughly increases the security in bits 
+							by <i>log<sub>2</sub></i>( <i>Iterations</i> ) e.g. <i>log<sub>2</sub></i>( <i>10,000</i> ) 
+							which is approximately 13~ bits. The full formula for calculating the entropy of the password 
+							in bits is as follows:<br>
+							<br>
+							<b>Entropy Bits</b> = ( <i>Number of Password Characters</i> &#215; <i>log<sub>2</sub></i>( <i>62</i> )) + <i>log<sub>2</sub></i>( <i>Number of PBKDF Iterations</i> ).							
 						</li>
 					</ul>
+					
+					
+					<h2 id="database-encryption">One-time pad database encryption and authentication</h2>
+					<p>
+						Since version 1.5, the program can now encrypt and authenticate the one-time pad 
+						database prior to export and transportation to other chat group users. The program uses a 
+						strong cascade stream cipher encryption and a cascade of two modern MAC algorithms for 
+						authentication. This provides additional assurances such as:
+					</p>
+					<ul>
+						<li>
+							The database has not been tampered with in transit. An attacker cannot replace the 
+							one-time pads with ones that they already know which would allow covert surveillance, set 
+							all the one-time pads to zero bits which would nullify the encryption, subtly duplicate the 
+							one-time pads in the database which would allow for two-time pad cryptanalysis, or swap pads 
+							between users which would cause lost/indecipherable messages for other users in the group.
+						</li>
+						<li>
+							The database is not easily readable if stolen or seized in transit. A computationally unbounded 
+							adversary could in theory break the cascade encryption after many decades of brute force 
+							attack with a quantum computer, but this is very unlikely. If a user knew that their 
+							one-time pad database was stolen or seized (e.g. at an international airport) then they 
+							would notify the other chat group users to stop using that set of one-time pads immediately 
+							and switch to a different set. Then only the small number of messages which had been sent 
+							since one-time pad generation until that point in time would be compromised. Because only a 
+							small number of messages would have been sent during this time and the database is very 
+							difficult to crack, then this reduces the likelyhood an attacker would even try mounting a 
+							brute force attack.
+						</li>
+						<li>
+							After successful transportation of the one-time pads without interception or tampering, the 
+							database can be quickly deleted and the rewriteable transport media (e.g. MicroSD card, SD 
+							card, USB drive) can be re-purposed for something else which would overwrite the database 
+							eventually anyway. Because an attacker does not even have the encrypted one-time pad 
+							database, it is not absolutely necessary to secure erase the media or destroy it (e.g. 
+							write once CD, DVD media) unless absolute security is required.
+						</li>
+					</ul>
+					<p>
+						In version 2.0 of the program, which is currently in development, the same encryption will be 
+						used to secure the database as it resides on the client devices. Pads will be decrypted as they 
+						are needed, used to encrypt a message, then deleted from the database. The program does not currently  
+						provide any steganography for transporting the database, so if this is needed in the near future 
+                        it is advised to use a 
+                        <a href="http://www.howtogeek.com/109210/the-htg-guide-to-hiding-your-data-in-a-truecrypt-hidden-volume/?PageSpeed=noscript">TrueCrypt 7.1a hidden volume</a> 
+                        and store the one-time pad database 
+						inside it. If an attacker forces you to reveal the password you can reveal the outer volume 
+						password which would reveal decoy files, and you would still have plausible deniability that a 
+						hidden volume containing the one-time pads does not exist.
+					</p>
+					
+					<h3 id="cascade-database-encryption">Cascade database encryption</h3>
+					<p>
+						To encrypt each one-time pad in the database a cascade of two strong, reputable stream 
+                        ciphers is used. The ciphers are the 
+                        <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard">Advanced Encryption Standard</a> (AES)
+                        in <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Counter_.28CTR.29">Counter Mode</a> (AES-CTR) 
+                        and <a href="https://en.wikipedia.org/wiki/Salsa20">Salsa20</a> with the full 20 rounds. AES, 
+                        which is based on the Rijndael algorithm by Vincent 
+                        Rijmen and Joan Daemen, won the 
+                        <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard_process">Advanced Encryption Standard competition</a>. 
+                        A reduced 12 round variant of Salsa20 (Salsa20/12) by Daniel J. Bernstein was selected for the 
+                        <a href="https://en.wikipedia.org/wiki/ESTREAM#In_ESTREAM_portfolio">eSTREAM software portfolio</a>. 
+                        The full 20 round variant of Salsa20 was chosen for added security. 
+						Two random 256 bit keys are generated using the TRNG at export time. One key is used for AES-CTR 
+						and the other for Salsa20. A different nonce is used for each one-time pad to be encrypted in the 
+						database. The design Exclusive ORs (XORs) the AES-CTR keystream and the Salsa20 keystream 
+						together then XORs the combined keystream with the plaintext one-time pad.
+					</p>
+					<p>
+						The reason a cascade of two stream ciphers is used is because there may be secret cryptanalytic 
+						techniques against a cipher such as AES when it's used to encrypt something on its own. A 
+                        recent publication of the Snowden documents revealed that 
+                        <a href="http://www.spiegel.de/international/germany/bild-1010361-793640.html">NSA have their own in-house (non public) techniques</a> 
+                        against AES and other ciphers. 
+						While a trivial reversal of a strong cipher without any additional information is highly 
+						unlikely and would be indicative of the algorithm being very weak, it may be more likely that a single 
+                        encryption algorithm becomes vulnerable to NSA when they have access to 
+                        <a href="https://en.wikipedia.org/wiki/Cryptanalysis">known or chosen plaintext</a> 
+						encrypted by the algorithm as well. With a stream cipher cascade, the separate 
+						keystreams are XORed together. There is no way to determine which bits belong to each keystream 
+						and cipher if each cipher is suitably strong on their own. Even if there is a cryptanalytic break in AES, 
+						an attacker does not have access to the raw keystream created by the AES algorithm because 
+						there is still plaintext and the Salsa20 keystream mixed in with it. Even if an attacker knows 
+						a lot of the plaintext they still won't be able to decrypt the AES layer of encryption because 
+						the layer underneath is a random Salsa20 keystream which they do not know. Likewise if they 
+						tried to decrypt the Salsa20 encryption layer first, the next layer is a random AES keystream 
+						so they would not even know when they have decrypted the first layer correctly. The best 
+						remaining attack against a stream cipher cascade may be a brute force of both keys which would 
+						take a very long time.
+					</p>
+					<p>
+						The following describes the encryption for the database:
+					</p>
+					<div class="formulas">
+						<b>Key<sub>1</sub></b> = A 256 bit random key for AES-CTR generated by the TRNG<br>
+						<b>Key<sub>2</sub></b> = A different 256 bit random key for Salsa20 generated by the TRNG<br>
+						<b>Nonce<sub>1</sub></b> = A unique 96 bit nonce for AES-CTR, changing for each database row (one-time pad) to be encrypted<br>
+						<b>Nonce<sub>2</sub></b> = A unique 64 bit nonce for Salsa20, changing for each database row (one-time pad) to be encrypted<br>
+						<b>Counter<sub>1</sub></b> = A 32 bit counter for AES-CTR, starting at 0 for each database row and incrementing by 1 for each block being encrypted<br>
+						<b>Counter<sub>2</sub></b> = A 64 bit counter for Salsa20, starting at 0 for each database row and incrementing by 1 for each block being encrypted<br>
+						<br>
+						<b>Keystream<sub>1</sub></b> = <i>AES-CTR</i>( <i>Key<sub>1</sub></i>, ( <i>Nonce<sub>1</sub></i> || <i>Counter<sub>1</sub></i> ))<br>
+						<b>Keystream<sub>2</sub></b> = <i>Salsa20</i>( <i>Key<sub>2</sub></i>, ( <i>Nonce<sub>2</sub></i> || <i>Counter<sub>2</sub></i> ))<br>
+						<br>
+						<b>Row Cascade Encryption</b> = <i>Keystream<sub>1</sub></i> &oplus; <i>Keystream<sub>2</sub></i> &oplus; <i>One-Time Pad</i><br>
+						<b>Row Cascade Decryption</b> = <i>Ciphertext One-Time Pad</i> &oplus; <i>Keystream<sub>2</sub></i> &oplus; <i>Keystream<sub>1</sub></i><br>
+					</div>
+					<ul>
+						<li>
+							The reason to encrypt each row individually rather than encrypting the entire database at 
+							once is for performance. Also in the upcoming version 2.0 of the program the database will 
+							always be encrypted on disk, so it is advantageous to only have the small keys in memory and 
+							decrypt each row as needed then delete the row.
+						</li>
+						<li>
+							The keys remain the same for the entire database but the nonce changes for each database row 
+							to be encrypted. The keys for encryption and authentication are obtained from slicing the 
+							required number of bits off the beginning of the TRNG generated random data. This ensures 
+							the keys are not used for anything else and the one-time pads are generated from the 
+							remaining random data.
+						</li>
+						<li>
+							Because AES in Counter Mode does not need a random IV, a unique nonce is used for 
+							encrypting each row. Each one-time pad has an index number in the database starting from 0 
+							up to the number of pads in the database. One user might have index numbers from 0 - 1000 in 
+							their set of one-time pads and the next user might have index numbers from 1001 to 2000 in 
+							their set. This ensures there is a unique index number for each row in the database. This 
+							number is converted to hexadecimal and left padded with 0 bytes (<code>00</code> in hexadecimal) 
+							up to 96 bits in length. The block counter for AES is 32 bits in length starting at 0 
+							(<code>00000000</code> in hexadecimal) for each row and increments by 1 for each subsequent 
+							block being encrypted.
+						</li>
+						<li>
+							The nonce for Salsa20 is 8 bytes, so the pad index number is is converted to hexadecimal 
+							and left padded with 0 bytes (<code>00</code> in hexadecimal) up to 64 bits in length. The 
+							block counter for Salsa20 is also 8 bytes starting at 0 (<code>0000000000000000</code> in 
+							hexadecimal) for each row and increments by 1 for each subsequent block being encrypted.
+						</li>
+						<li>
+							The first 56 bits of a one-time pad is the pad identifier which is public and used to 
+							lookup the correct pad in the database when another user sends a message. The pad 
+							identifier is not encrypted and removed prior to encryption so only the remaining 1480 bits 
+							of the random pad are encrypted. This removes any remaining known plaintext for an attacker 
+							if they attempt to decrypt one of the one-time pads.
+						</li>
+						<li>
+							There is some pad database information which is stored in the client database as well 
+							(program version, custom user preferences, server address, server key, user callsign and 
+							list of group user nicknames). This is JSON encoded to a string and encrypted with the same 
+							database keys, but the 96 bit nonce <code>ffffffffffffffffffffffff</code> in hexadecimal 
+							for AES-CTR and the 64 bit nonce <code>ffffffffffffffff</code> for Salsa20 is used for 
+							encryption. Because each pad index number is converted to a nonce and in the language being 
+							used integers cannot exceed 2<sup>53 - 1</sup> (9007199254740991), this nonce cannot be 
+							accidentally be re-used for encrypting a pad, therefore it is used it to encrypt the pad 
+							database information.
+						</li>
+					</ul>
+					
+					<h3 id="cascade-database-authentication">Cascade database authentication</h3>
+					<p>
+                        Using the safe principles of <a href="https://en.wikipedia.org/wiki/Authenticated_encryption#Encrypt-then-MAC_.28EtM.29">Encrypt Then MAC</a>, 
+                        the program creates a MAC of the database row 
+						information including the encrypted one-time pad by using a cascade MAC. The chosen hash functions 
+                        for this are <a href="https://en.wikipedia.org/wiki/SHA-3">Keccak-512</a> with the capacity set 
+                        at 1024 (same as the <a href="https://en.wikipedia.org/wiki/SHA-3#Instances">finalised SHA3</a>) and 
+                        <a href="https://en.wikipedia.org/wiki/Skein_%28hash_function%29">Skein-512</a>. Each MAC digest 
+                        is calculated independently by computing 
+						<span class="formulas"><i>Hash</i>(<i>Key</i> || <i>Data</i>)</span> with independent keys for 
+						each algorithm. The resulting digests are then XORed together to hide the individual MAC digests 
+						from independent cryptanalysis in case one of the algorithms has a flaw. Keccak and Skein are 
+						newer hash functions that are not vulnerable to length extension attacks with this simple MAC 
+						construct.
+					</p>
+					<p>
+						The following describes the authentication for each row in the database:
+					</p>
+					<div class="formulas">
+						<b>MAC Key<sub>1</sub></b> = A 512 bit random key for Keccak-512 generated by the TRNG<br>
+						<b>MAC Key<sub>2</sub></b> = A different 512 bit random key for Skein-512 generated by the TRNG<br>
+						<b>Nonce<sub>1</sub></b> = A unique 96 bit nonce based on the row index number which was used by AES-CTR to encrypt the one-time pad<br>
+						<b>Nonce<sub>2</sub></b> = A unique 64 bit nonce based on the row index number which was used by Salsa20 to encrypt the one-time pad<br>
+						<b>User Callsign</b> = The user callsign (e.g. 'alpha', 'bravo', 'charlie' etc) which this one-time pad is allocated to for sending<br>
+						<b>Pad Identifier</b> = The first 56 bits of the one-time pad<br>
+						<b>Ciphertext One-Time Pad</b> = The remaining 1480 bits of the one-time pad which is encrypted by AES-CTR and Salsa20<br>
+						<br>
+						<b>MAC<sub>1</sub></b> = Keccak-512( <i>MAC Key<sub>1</sub></i> || <i>Nonce<sub>1</sub></i> || <i>Nonce<sub>2</sub></i> || <i>User Callsign</i> || <i>Pad Identifier</i> || <i>Ciphertext One-Time Pad</i> )<br>
+						<b>MAC<sub>2</sub></b> = Skein-512( <i>MAC Key<sub>2</sub></i> || <i>Nonce<sub>1</sub></i> || <i>Nonce<sub>2</sub></i> || <i>User Callsign</i> || <i>Pad Identifier</i> || <i>Ciphertext One-Time Pad</i> )<br>
+						<br>
+						<b>Row Cascade MAC</b> = <i>MAC<sub>1</sub></i> &oplus; <i>MAC<sub>2</sub></i><br>
+					</div>
+					<ul>
+						<li>
+							The resulting MAC tag is stored along with the other information for each row. When the 
+							database is being loaded on a client machine, the program will calculate the MAC again 
+							for each database row and verify that the hash digest matches the stored MAC tag for the row. 
+							If there is a match for each row then no tampering has occurred, otherwise a warning will be 
+							shown to the user. If the warning is shown, then the user should abandon the database of 
+							one-time pads and look to transfer a new set.
+						</li>
+						<li>
+							In version 1.5 of the program, the database is verified only when loading the pads initially 
+							after they have been exported and transported. Currently after the pads are verified and 
+							decrypted, the database is saved to the client PC in an unencrypted state. Running the 
+							application and browser profile from inside a TrueCrypt volume is still recommended for this 
+							release to keep the one-time pads encrypted locally on the disk. In the future, version 2.0 
+							of the program will have the one-time pad database be fully encrypted and authenticated at 
+							all times. Each one-time pad row will need to be verified and decrypted before sending or 
+							receiving a message. The reason for why this functionality is not available in version 1.5 
+							is that the application needs to be converted to a Single Page Application first. Currently 
+							each web page is run separately and there is no in memory data sharing between pages. 
+							Converting to a single page application will reduce code duplication and mean the master 
+							password only needs to be entered once on startup, not once for each page opened.
+						</li>
+						<li>
+							The pad database information which is stored in the client database (program version, 
+							custom user preferences, server address, server key, user callsign and list of group user 
+							nicknames) is also authenticated using the same cascade MAC. This is checked before 
+							decrypting and importing the pad database information. In version 2.0 it will be verified 
+							each program load to ensure database integrity.
+						</li>
+					</ul>
+					
+					<h3 id="database-index-authentication">Database index authentication</h3>
+					<p>
+						The program also creates a MAC of the database index for each user's set of one-time pads 
+						by combining the pad index numbers for each row and then creating a cascade MAC. This 
+						ensures that the all user's one-time pads in the database have not been added, swapped, 
+						reordered, removed or otherwise tampered with. 
+					</p>
+					<p>
+						The following describes the database index MAC:
+					</p>
+					<div class="formulas">
+						<b>MAC Key<sub>1</sub></b> = A 512 bit random key for Keccak-512 generated by the TRNG<br>
+						<b>MAC Key<sub>2</sub></b> = A different 512 bit random key for Skein-512 generated by the TRNG<br>
+						<b>User Callsign</b> = The user callsign (e.g. 'alpha', 'bravo', 'charlie' etc) of the set of pads being authenticated<br>
+						<b>Pad Index Number</b> = The index number of the row in the database for the user's set of pads<br>
+						<br>												
+						<b>MAC<sub>1</sub></b> = Keccak-512( <i>MAC Key<sub>1</sub></i> || <i>User Callsign</i> || <i>Pad Index Number<sub>0</sub></i> || <i>Pad Index Number<sub>1</sub></i> || <i>Pad Index Number<sub>2</sub></i> || ... )<br>
+						<b>MAC<sub>2</sub></b> = Skein-512( <i>MAC Key<sub>2</sub></i> || <i>User Callsign</i> || <i>Pad Index Number<sub>0</sub></i> || <i>Pad Index Number<sub>1</sub></i> || <i>Pad Index Number<sub>2</sub></i> || ... )<br>
+						<br>
+						<b>Index Cascade MAC</b> = <i>MAC<sub>1</sub></i> &oplus; <i>MAC<sub>2</sub></i><br>
+					</div>
+					<ul>
+						<li>
+							When a message is received or sent that pad is deleted from the database so the pad index 
+							MAC needs to be updated every time a new message is received or sent. This functionality 
+							will be added in version 2.0 when the database will be encrypted and authenticated at all 
+							times. At the moment in version 1.5, the full verification of the index is only performed 
+							as part of the initial importing of the one-time pads after transportation. This is 
+							mainly to verify that the transfer took place without tampering. Version 2.0 will be much 
+							more comprehensive and ensure that the database integrity and authenticity is valid at all 
+							times.
+						</li>
+						<li>
+							Including the user callsign in the MAC means that an attacker cannot swap out one-time pads 
+							from one user into another user's set of pads, forcing a two-time pad situation and allowing 
+							cryptanalysis.
+						</li>
+					</ul>
+					
+					
+					<h2 id="database-key-wrapping">Protection of database encryption and authentication keys</h2>
+					<p>
+						The actual database encryption and authentication keys which were generated by the TRNG are 
+						stored in inside the database with the rest of the other information. To protect these keys 
+                        while they reside in unprotected storage a simple 
+                        <a href="https://en.wikipedia.org/wiki/Key_Wrap">key wrapping</a> construction is used.
+					</p>
+					
+					<h3 id="database-pbkdf">Database master key derivation</h3>
+					<p>
+						To encrypt the actual database encryption and authentication keys, a master key is created 
+						by deriving it from a password, two salts and two separate Database Password Based Key 
+						Derivation Functions (PBKDFs). The following describes the cascade PBKDF construction:
+					</p>
+					<div class="formulas">
+						<b>Password</b> = A strong password/passphrase entered by the user<br>
+						<b>Salt<sub>1</sub></b> = A 768 bit random salt generated by the TRNG to be used with the Keccak PBKDF<br>
+						<b>Salt<sub>2</sub></b> = A different 768 bit random salt generated by the TRNG to be used with the Skein PBKDF<br>
+						<b>Keccak Iterations</b> = The number of iterations to be performed by the Keccak PBKDF with the default set at 10,000<br>
+						<b>Skein Iterations</b> = The number of iterations to be performed by the Skein PBKDF with the default set at 10,000<br>
+						<br>
+						<b>Intermediate Key</b> = PBKDF2-Keccak-512( <i>Password</i>, <i>Salt<sub>1</sub></i>, <i>Keccak Iterations</i> )<br>
+						<b>Master Key</b> = PBKDF-Skein-512( <i>Intermediate Key</i>, <i>Salt<sub>2</sub></i>, <i>Skein Iterations</i> )
+					</div>
+					<ul>
+						<li>
+                            The first PBKDF is <a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a> with the 
+                            Keccak-512 hash function. The output key size is set at 
+							512 bits, the default number of iterations is set at 10,000 and a 768 bit random salt which was 
+                            generated by <a href="information.html#trng-photo">the TRNG</a> is used.
+						</li>
+						<li>
+                            <a href="http://crypto.stackexchange.com/a/15825">Keccak can be used in conjunction with HMAC</a> 
+                            which is what PBKDF2 uses internally. The reason to use Keccak instead of 
+                            <a href="https://en.wikipedia.org/wiki/SHA-2">SHA2</a> is because it is a 
+                            newer hash function and it is not designed by the NSA. Anything designed by the NSA is avoided 
+                            by this program in case it has deliberate secret weaknesses that are unknown to the academic 
+                            community. An algorithm designer is in the best position to design an algorithm 
+							with a subtle weakness. In the case of SHA2 a weakness may not be discovered for many years if 
+                            academia is well behind the state of the art in cryptography. We know at one point 
+                            <a href="https://en.wikipedia.org/wiki/Data_Encryption_Standard#NSA.27s_involvement_in_the_design">the NSA were 20 years ahead in cryptography</a> 
+                            when they knew about differential cryptanalysis before anyone else. They are likely still 
+                            ahead by a large margin. Using Keccak which was the winner in an open competition and which 
+                            has a design which is completely open is considered much safer. In comparison to SHA2, Keccak 
+                            should provide better entropy in the derived key, however it may be a lot faster in hardware 
+                            which would provide a slightly better advantage for an attacker performing a brute force attack. 
+                            However the main attacker to be considered is the NSA and we can reasonably assume they have dedicated 
+                            <a href="https://en.wikipedia.org/wiki/Application-specific_integrated_circuit">ASICs</a> and other 
+							hardware for cracking password hashes which were derived using PBKDF2-SHA1 or PBKDF2-SHA2 simply 
+							because everyone in the world is using those algorithms. If everyone uses the same algorithms 
+							recommended by the US government which is also running worldwide mass surveillance programs then 
+							this makes the NSA's job much easier. They can focus their efforts on attacking only a few 
+							algorithms at a much cheaper cost. By using the newer Keccak algorithm this forces the NSA to 
+							expend more money building new dedicated ASICs or re-engineer their supercomputer code just to 
+							crack an encrypted database created by this program.
+						</li>
+						<li>
+							The second PBKDF uses the Skein hash function. The output key size is set at 512 bits, the 
+							default number of iterations/repetitions is set at 10,000 and a separate 768 bit random salt 
+							which was generated by the TRNG is used. The resulting 512 bit <i>Intermediate Key</i> from 
+							the previous PBKDF2-Keccak function is passed in as the <i>Password</i> for this function.
+						</li>
+						<li>
+                            The Skein PBKDF method is described in section 4.8 of 
+                            <a href="https://www.schneier.com/skein1.3.pdf">The Skein Hash Function Family</a> specification 
+							document (v1.3) - Skein as a Password-Based Key Derivation Function (PBKDF). Quoting 
+							the document:<br>
+							<i>"The application stores a random seed S, asks the user for a password P, and then 
+							performs a long computation to combine S and P." ... "An even simpler PBKDF is to simply create 
+							a very long repetition of S and P; e.g., S || P || S || P || S ..., and hash that using Skein. (Any other 
+							optional data can also be included in the repetition.) This approach is not ideal with a normal 
+							hash function, as the computation could fall into a loop. But in Skein, every block has a 
+							different tweak and is thus processed differently."</i>
+						</li>
+						<li>
+							For added security an option exists in the user interface to use custom iteration counts. 
+							The user can decrease the number of iterations for slower portable devices and use a longer 
+							password to compensate. The user may also choose to increase the iteration counts to make 
+							the database more resilient to attack. The default of 10,000 iterations for each of the 
+							PBKDFs is a good balance between strength and slow speed of the JavaScript runtime engine.
+						</li>
+						<li>
+							The user can also choose not store the number of Keccak or Skein iterations with the rest of 
+							the database. The user would remember the iterations or write them down separately on a 
+							piece of paper. This may be useful if passing through airport security and there is a high 
+							likelihood of the data being confiscated and copied. This forces an attacker with only the 
+							database to try every iteration count for every password permutation. To counter an attacker 
+							simply caching the results of previous iteration counts and running the PBKDF on one password 
+							at a time, the number of iterations are appended to the end of the salt at runtime. This 
+							forces the attacker to do the full PBKDF iterations for every reasonable iteration count 
+							the user could have chosen e.g. 1 - 10,000+ then repeat that for all possible password 
+							permutations.
+						</li>
+						<li>
+							The total length of the two salts is the same length of all the database keys (256 bits 
+							AES-CTR + 256 bits Salsa20 + 512 bits Keccak + 512 bits Skein) which adds up to 1536 bits. 
+							Each 768 bit salt is fed into a different PBKDF. Normally passwords do not contain much 
+							entropy, so the salts which are randomly generated by the TRNG are used as a backup to add 
+							additional entropy to safely secure the database keys.
+						</li>
+						<li>
+							Another option exists in the user interface to store the two 768 bit salts (1536 bits 
+							concatenated together) as a separate keyfile. The advantage of this is to store the 
+							keyfile on a separate storage device (e.g. MicroSD card) or written down on a piece of paper 
+							which can be easily hidden if the database is at risk of being compromised in transit. If 
+							an attacker can confiscate or steal the primary device (e.g. notebook PC) which has the 
+							encrypted database but can't find the keyfile as well then it is practically impossible to 
+							crack the database encryption in any reasonable timeframe. Future versions may allow this 
+							keyfile to be hidden inside an image file using steganography.
+						</li>
+						<li>
+                            In the future the program may support 
+                            <a href="https://password-hashing.net/submissions/specs/Argon-v3.pdf">Argon2</a> which was 
+                            the winner in the <a href="https://password-hashing.net/candidates.html">Password Hashing Competition</a>. 
+                            At the time of writing, this standard is not currently finalised and there is no library 
+                            support for it currently.
+						</li>
+					</ul>
+					
+					<h3 id="subkey-derivation">Sub key derivation</h3>
+					<p>
+						Four sub keys are derived from the master key and are used to encrypt the actual database 
+                        encryption and authentication keys. This is basically a simple 
+                        <a href="https://crypto.stackexchange.com/questions/15673/security-of-kdf1-and-kdf2-hash-based-kdfs">KDF2</a> 
+                        construction but uses a cascade of two hash functions for each counter value to protect against 
+                        flaws in either algorithm. The newer hash functions used are already secure against 
+                        <a href="https://en.wikipedia.org/wiki/Length_extension_attack">length extension attacks</a> and 
+                        do not need HMAC. The following describes the cascade sub key derivation:
+					</p>
+					<div class="formulas">
+						<b>Master Key</b> = The 512 bit master key derived from the cascade PBKDF used earlier<br>
+						<b>Counter<sub>i</sub></b> = A 32 bit numeric counter to be combined with the hash function e.g. (<code>00000001</code>, <code>00000002</code>, ... in hexadecimal)<br>
+						<br>
+						<b>Derived Key<sub>1</sub></b> = Keccak-512( <i>Master Key</i> || <i>Counter</i><sub>1</sub> ) &oplus; Skein-512( <i>Master Key</i> || <i>Counter</i><sub>1</sub> )<br>
+						<b>Derived Key<sub>2</sub></b> = Keccak-512( <i>Master Key</i> || <i>Counter</i><sub>2</sub> ) &oplus; Skein-512( <i>Master Key</i> || <i>Counter</i><sub>2</sub> )<br>
+						<b>Derived Key<sub>3</sub></b> = Keccak-512( <i>Master Key</i> || <i>Counter</i><sub>3</sub> ) &oplus; Skein-512( <i>Master Key</i> || <i>Counter</i><sub>3</sub> )<br>
+						<b>Derived key<sub>4</sub></b> = Keccak-512( <i>Master Key</i> || <i>Counter</i><sub>4</sub> ) &oplus; Skein-512( <i>Master Key</i> || <i>Counter</i><sub>4</sub> )<br>
+					</div>
+					<ul>
+						<li>
+							A simple KDF1 construct to get encryption and authentication keys from a master key would 
+							apply the hash function twice. Once with the <i>Master Key</i> and a unique <i>Counter</i> 
+							to make an encryption key, and again with the <i>Master Key</i> and another unique 
+							<i>Counter</i> gain a unique MAC key. If the keys used for encryption is compromised 
+							it is computationally hard to find a pre-image for the one-way hash function to determine 
+							the <i>Master Key</i> or the derived MAC key. Similarly if the MAC key is compromised it is 
+							hard to reverse the process to find the master key or encryption key. This cascade construct 
+							performs two hashes for each derived key, once using Keccak on the <i>Master Key</i> and 
+							unique <i>Counter</i>, then again with the Skein algorithm and another unique <i>Counter</i>. 
+							Finally it XORs the resulting random hash digests together to produce the derived key. This 
+							adds additional assurances that the derived key will not be easily reversed if there is a 
+							flaw in either algorithm discovered in the future.
+						</li>
+						<li>
+							The resulting derived keys are 512 bits in length. The first and second derived keys are 
+							used for AES-CTR and Salsa20. Because the key lengths for these encryption algorithms are 
+							only 256 bits in length, these two derived keys are truncated to just the first 256 bits. 
+							The third and fourth derived keys which are used for Keccak and Skein remain at 512 bits.
+						</li>
+					</ul>
+					
+					<h3 id="encryption-and-authentication-of-database-keys">Encryption and authentication of database keys</h3>
+					<p>
+						The following describes the encryption and authentication of the actual database keys using the 
+						derived keys from earlier:
+					</p>
+					<div class="formulas">
+						<b>Database Keys</b> = The actual AES-CTR, Salsa20, Keccak and Skein database keys, concatenated together<br>
+						<b>Nonce<sub>1</sub></b> = A static 96 bit nonce for AES-CTR (<code>000000000000000000000000</code> in hexadecimal)<br>
+						<b>Nonce<sub>2</sub></b> = A static 64 bit nonce for Salsa20 (<code>0000000000000000</code> in hexadecimal)<br>
+						<b>Counter<sub>1</sub></b> = A 32 bit counter for AES-CTR, starting at 0 and incrementing by 1 for each block being encrypted<br>
+						<b>Counter<sub>2</sub></b> = A 64 bit counter for Salsa20, starting at 0 and incrementing by 1 for each block being encrypted<br>
+						<br>
+						<b>Keystream<sub>1</sub></b> = <i>AES-CTR</i>( <i>Derived Key<sub>1</sub></i>, ( <i>Nonce<sub>1</sub></i> || <i>Counter<sub>1</sub></i> ))<br>
+						<b>Keystream<sub>2</sub></b> = <i>Salsa20</i>( <i>Derived Key<sub>2</sub></i>, ( <i>Nonce<sub>2</sub></i> || <i>Counter<sub>2</sub></i> ))<br>
+						<b>Encrypted Database Keys</b> = <i>Keystream<sub>1</sub></i> &oplus; <i>Keystream<sub>2</sub></i> &oplus; <i>Database Keys</i><br>
+						<br>
+						<b>MAC<sub>1</sub></b> = Keccak-512( <i>Derived Key<sub>3</sub></i> <i>Encrypted Database Keys</i> )<br>
+						<b>MAC<sub>2</sub></b> = Skein-512( <i>Derived Key<sub>4</sub></i> <i>Encrypted Database Keys</i> )<br>
+						<b>Cascade MAC</b> = <i>MAC<sub>1</sub></i> &oplus; <i>MAC<sub>2</sub></i><br>
+					</div>
+					<ul>
+						<li>
+							After encryption and authentication, the encrypted database keys and the MAC are stored in the 
+							database. To decrypt the database, a user will enter their password, load the keyfile and 
+							set the number of iterations. It will perform the same steps above to generate the derived Keccak 
+							and Skein keys, recreate the MAC against the stored encrypted database keys, then match that 
+							against the stored MAC. Any incorrect match may mean an incorrect password, keyfile or number 
+							of iterations used. Alternatively a more serious issue could be that someone has tampered 
+							with the database.
+						</li>
+					</ul>
+															
+					
+					<h2 id="using-html5">Using HTML5</h2>
+					<p>
+						<a href="http://www.matasano.com/articles/javascript-cryptography/">Matasano Security raises some points</a> 
+						about JavaScript cryptography and how JavaScript being delivered by the web server is insecure. 
+						There are <a href="http://blog.meadhbh.org/2013/08/in-defense-of-javascript-cryptography.html">definite sensible</a> 
+						and <a href="http://log.nadim.cc/?p=33">secure solutions</a> to the problems they raised. Also if you read 
+						the FAQ, <a href="faq.html#matasano-article-discussion">all of their other concerns have been mitigated</a> 
+						one by one.
+					</p>
+					<p>
+						Most points they made are not applicable for this software due to the fact that the source code is 
+						downloaded as a <a href="http://en.wikipedia.org/wiki/Tar_%28computing%29">.tar.gz</a> archive 
+						file and users are expected to verify the file's GPG signature with the one from this website to 
+						ensure its authenticity. From there the code can be run <i>locally</i> from the machine by going to 
+						the directory and running index.html which will load the website and code into the browser. This means all 
+						code is always running locally from the local hard drive and the web address will be similar to 
+						<code>file:///media/truecrypt1/jericho/client/index.html</code>. All the executable code is self 
+						contained and does not rely on any server delivered JavaScript at all. This itself mitigates 
+						the majority of the problems the Matasano Security article raised.
+					</p>
+					<p>
+						HTML5 has more advantages than disadvantages. It's easier and faster to develop with. New APIs allow for 
+						<a href="http://www.w3.org/TR/WebCryptoAPI/">cryptography</a>, 
+						<a href="http://www.w3.org/TR/webstorage/">persistent database storage</a>, 
+						<a href="http://dev.w3.org/html5/postmsg/">messaging</a> and 
+						<a href="http://www.w3.org/TR/FileAPI/">file management</a>. Browsers are first in line for security 
+						updates and the best ones are open source and trustworthy. People rely on browsers to have good security 
+						to do their internet banking and shopping online. The source code does not need to be compiled. 
+						You can verify the source code being run live in the browser using Chromium or Firefox built-in Web 
+						Development tools or with addons like <a href="http://getfirebug.com">Firebug</a>. This allows you to 
+						verify the code is doing exactly what it should be. HTML5 is cross platform, one code base can literally 
+						run on Windows, Linux, Mac, phones and tablets simply with the latest web browser. One of the goals of 
+						the project is to get a truly secure chat program functioning on 
+						an open hardware platform and an open operating system like 
+						<a href="http://en.wikipedia.org/wiki/Firefox_OS">Firefox OS</a>. This is a true open source OS for 
+						smartphones and tablets from a reputable organisation that believes that 
+						<a href="http://www.mozilla.org/en-US/about/manifesto/">individual's security and privacy on the internet 
+						is fundamental</a>.
+					</p>
+					<p>
+						Currently this software has been tested to work in 
+						<a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a>, 
+						<a href="http://www.chromium.org">Chromium</a> and <a href="http://www.google.com/chrome/‎">Google Chrome</a>. 
+						Some of the other browsers have not implemented the <a href="http://www.w3.org/TR/WebCryptoAPI/">Web Crypto API</a> 
+						yet. From version 1.4 onwards, the layout will be responsive and will work on desktops, tablets and mobiles. 
+						Some more work and testing is still required to get it working nicely on mobile. In particular a method to 
+						load the one-time pads into the program using later versions of Android. Using Firefox is recommended as 
+						they are open source and are not involved in the spy scandal with 
+						<a href="https://en.wikipedia.org/wiki/PRISM_%28surveillance_program%29">PRISM</a>. Unfortunately nobody 
+						can say for sure about that <a href="http://en.wikipedia.org/wiki/PRISM_%28surveillance_program%29#Companies">with Google</a>. 
+						Chromium may be another alternative but the proprietary Google Chrome is not recommended.
+					</p>
+					<p>
+						It is recommended to run the browser profile from inside a 
+						<a href="https://en.wikipedia.org/wiki/Truecrypt">TrueCrypt</a> volume to protect the one-time pads when 
+						they are stored inside the browser storage. Future versions of the software will encrypt the one-time pads 
+						within the program before storing locally.
+					</p>					
+					<p>
+						The program is built using sound, provably strong cryptography. The design and implementation to bring the 
+						solution together uses secure cryptographic primitives (<a href="https://en.wikipedia.org/wiki/Skein_hash">Skein</a> and 
+						<a href="https://en.wikipedia.org/wiki/Keccak">Keccak</a>) for authentication which were designed by 
+						publically reputable and trustworthy cryptographers. We have avoided using algorithms from 
+						the NIST who have been shown to be heavily influenced by the NSA. The NSA have been 
+						<a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">secretly weakening</a> 
+						and promoting weak or broken public encryption standards.
+					</p>
+					<p>					
+						The main crypto library this program uses is <a href="https://code.google.com/p/crypto-js/">CryptoJS</a>. 
+						There were some other libraries that would be good to use but they either did not work in a 
+						<a href="http://www.html5rocks.com/en/tutorials/workers/basics/">HTML5 Web Worker</a> which makes 
+						the hashing process take significantly longer and 
+						<a href="https://en.wikipedia.org/wiki/Blocking_%28computing%29">blocks</a> 
+						the user interface, or their outputs couldn't be verified from the reference test vectors. Some more 
+						SHA-3 finalists would be nice to include from the recent competition however there is a lack of hash 
+						algorithms implemented in JavaScript. It is important to verify that the code can produce the same hash 
+						outputs as the test vectors from the specification documents. This ensures the program is not using a 
+						faulty or backdoored version of the algorithm that gives incorrect results.
+					</p>
+					
 					
 					<h2 id="json-rest-api">REST API using JSON</h2>
 					<ul>
 						<li>
 							The client browsers communicate to and from the server using <a href="http://en.wikipedia.org/wiki/JSON">JSON</a> 
 							and the <a href="http://en.wikipedia.org/wiki/REST_API">REST API</a> on the server. The server side 
-							code is currently written in PHP 5.3+ using best security practices for protection against SQL 
-							injection and other attacks. This may be rewritten in a different language in the future.
+							code is currently written for the latest version of PHP 5 using best security practices for 
+							protection against SQL injection and other attacks. This will likely be rewritten in a 
+							different language in the next release e.g. NodeJS to have a common cryptographic library 
+							base across the client and server.
 						</li>
 						<li>
 							The server sends <a href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a> HTTP 
@@ -971,32 +1694,31 @@
 					<p>
 						<img src="img/api-receive-messages-response-json.png">
 					</p>
-					<h3>Initiate auto nuke</h3>
+					<h3>Initiate auto nuke request</h3>
 					<p>
-						This is the request a client makes if they want to wipe the server database of all encrypted messages, 
-						and also wipe all the other chat group user's local one-time pad databases as well. It is fairly 
-						disruptive and designed for use only in an emergency.
+						This is the request a client makes if they want to wipe the all the other chat group user's 
+						local one-time pad databases. It is very disruptive and designed for use only in an emergency. 
+						This command is sent encrypted and authenticated via the secure message channel. This is so 
+						only a valid user with the set of one-time pads can trigger an auto nuke. An attacker with 
+						access to the server cannot change anything to trigger the chat group users to delete 
+						their local databases.
 					</p>
 					<p>
-						<img src="img/api-initiate-auto-nuke-request.png">
-					</p>
-					<h3>Initiate auto nuke response</h3>
-					<p>
-						This is the response the server makes after it has received an auto nuke request.
-					</p>
-					<p>
-						<img src="img/api-initiate-auto-nuke-response.png">
+						To trigger the request, the user will visit a separate screen in the user interface and click 
+						a button. The client will send a regular message with the string code "<code>init auto nuke</code>". 
+						This will be encrypted with the one-time pad, authenticated with the MAC and sent to the server 
+						like a regular message. The initiating user's current local database of one-time pads will then 
+						be wiped and their screen cleared.
 					</p>
 					<h3>Auto nuke initiated response</h3>
 					<p>
-						This is the response other chat group users will receive while they are checking for new messages and an 
-						auto nuke has been initiated by one of the group users. Instead of receiving new messages, they will 
-						receive this notification, and the program will immediately wipe their local database of any data and 
-						clear the screen from any sent or received messages.
+						If a chat group user is checking for new messages and an authentic message comes through with the 
+						code "<code>init auto nuke</code>", instead of receiving and processing new messages, the user's 
+						client will show a notification that the auto nuke has been initiated by the user who initiated it, 
+						then the program will immediately wipe their local database of any data and clear the screen of 
+						any sent or received messages.
 					</p>
-					<p>
-						<img src="img/api-auto-nuke-initiated-response.png">
-					</p>
+					
 					
 					<h2 id="message-encoding">Message encoding</h2>
 					<p>
@@ -1093,7 +1815,8 @@
 							process is explained in depth <a href="#message-authentication">here</a>.
 						</li>
 					</ul>
-										
+					
+					
 					<h2 id="encryption-process">Encryption process</h2>
 					<ul>
 						<li>
@@ -1123,8 +1846,9 @@
 						<li>
 							In step two, because some of the bits of the 40 bit UNIX timestamp can be predictable, this could leave 
 							a <a href="https://en.wikipedia.org/wiki/Crib_%28cryptanalysis%29">crib</a> for an attacker and they 
-							could recover those few bits of the key. This would not compromise the remainder of the plaintext but 
-							would be an academic attack none the less. For example, if the timestamp was 1406440512 for 
+							could recover those few bits of the key. This however would not compromise the remainder of the plaintext 
+							because each bit of the one-time pad is random and independent from the rest. For example, if the 
+							timestamp was 1406440512 for 
 							2014-07-27 at 5:55am in UTC then that would convert to binary as <code>00000000 01010011 11010100 10010100 01000000</code>. 
 							If we compare another time in the future, 1503040500 for 2017-08-18 at 7:15am in UTC then that would 
 							convert to binary as <code>00000000 01011001 10010110 10010011 11110100</code>. The first 12 bits are 
@@ -1156,11 +1880,13 @@
 						</li>
 						<li>
 							Once the message has been encrypted, the MAC is created using a random MAC algorithm that was 
-							selected and then encrypted with part of the one-time pad. This process is explained further on. 
-							The MAC is concatenated to the end of the ciphertext and sent with the message to the server. The 
-							server holds the message until all the other users have retrieved it.
+                            selected and then encrypted with part of the one-time pad. This process is explained 
+                            <a href="information.html#message-authentication">further on</a>. 
+							The MAC is concatenated to the end of the ciphertext and sent with the message to the server. 
+                            The server holds the message until all the other users have retrieved it.
 						</li>
 					</ul>
+					
 					
 					<h2 id="decryption-process">Decryption process</h2>
 					<p>
@@ -1207,6 +1933,7 @@
 						</li>
 					</ul>
 	
+					
 					<h2 id="message-authentication">Message authentication code (MAC)</h2>
 					<p>
 						The one-time pad is vulnerable to a 
@@ -1239,8 +1966,7 @@
 							it uses this algorithm to create the MAC. It selects the random array index by using the last byte of 
 							the one-time pad. It converts this byte to an integer value (0 - 255), then uses that number modulo 
 							the number of MAC algorithms available. Because there are only two MAC algorithms at the moment, that 
-							will return an integer of 0 or 1 which references the index of the algorithm in an array. When a few 
-							more MAC algorithms are added in the future, this method will continue to work without adjustment.
+							will return an integer of 0 or 1 which references the index of the algorithm in an array.
 						</li>
 						<li>
 							The process is to perform the encryption on the message parts first, then calculate the MAC from the 
@@ -1251,7 +1977,7 @@
 							to prevent length extension attacks unlike the NSA designed 
 							<a href="https://en.wikipedia.org/wiki/Sha1">SHA1</a> and 
 							<a href="https://en.wikipedia.org/wiki/Sha2">SHA2</a>. The MAC can be created simply by prepending 
-							the message with the key and hashing it, i.e. H(K || m).
+							the message with the key and hashing it, i.e. <span class="formulas"><i>H</i>(<i>K</i> || <i>M</i>)</span>.
 						</li>
 						<li>
 							Finally the MAC tag is encrypted with the last 64 bytes (512 bits) of the one-time pad. This retains the 
@@ -1261,6 +1987,7 @@
 							an attacker know if they have created a successful forgery when they do not know the correct key.
 						</li>
 					</ul>
+					
 					
 					<h2 id="auto-nuke-process">Auto nuke process</h2>
 					<p>
@@ -1281,12 +2008,12 @@
 						database of one-time pads may be compromised soon, or 3 letter agencies are inbound on a 
 						<a href="http://www.theregister.co.uk/2012/08/08/dotcom_arrest_video/">helicopter assault</a> then they 
 						should initiate the auto nuke. This means the users are no longer in possession of the decryption keys so 
-						it means you cannot be compelled to <a href="https://www.xkcd.com/538/">produce them under duress</a> or 
+						it means they cannot be compelled to <a href="https://www.xkcd.com/538/">produce them under duress</a> or 
 						in a court of law. No encryption keys means no way to decrypt past messages. Without the real encryption 
 						keys, a user under duress can easily think of any plausible plaintext message for any encrypted message and 
 						an aggressor will not know the difference. A simple way to calculate this for a one-time pad, given any 
-						ciphertext is to simply create a fake message, convert the ciphertext and fake message to binary, then XOR 
-						them together which will produce a plausible key to give to an attacker.
+						ciphertext is to simply create a fake message, convert the ciphertext and fake message to binary, 
+						then XOR them together which will produce a plausible key to give to an attacker.
 					</p>
 				</div>
 				<div class="clear"></div>
@@ -1329,7 +2056,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 -2014 Joshua M. David
+				Copyright &copy; 2013 - 2015 Joshua M. David
 			</div>
 		</div>
 	</body>

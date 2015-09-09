@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
-	Jericho Chat - Information-theoretically secure communications
-	Copyright (C) 2013-2014  Joshua M. David
+	Jericho Comms - Information-theoretically secure communications
+	Copyright (c) 2013-2015  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
 -->
 <html lang="en">
 	<head>
-		<title>Jericho Chat - Download</title>
+		<title>Jericho Comms&trade; - Download</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
-		<meta name="description" content="Jericho Chat is a secure program using one-time pads.">
+		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
 		<meta name="viewport" content="width=720, maximum-scale=1.0, user-scalable=yes">
 		
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
@@ -65,12 +65,13 @@
 					</p>
 					<h3 class="important">Important:</h3>
 					<p>
-						It is absolutely critical to verify the downloaded file with one of the hashes or GPG signature. This is 
+						It is absolutely critical to verify the downloaded file with the GPG signature. This is 
 						to prevent anyone from modifying the source code which could weaken/break the encryption and 
 						then distributing those copies around the internet pretending to be the real thing. You can verify the 
-						file hashes with  
+						file integrity using the file hashes and with  
 						<a href="http://www.mydigitallife.info/hash-calculator-to-get-compute-and-calculate-md5-and-sha1-file-checksum-or-hash-value/">tools for Windows</a> or
-						<a href="http://sourceforge.net/projects/quickhash/">Linux</a>. You can verify the GnuPG signature with 
+						<a href="http://sourceforge.net/projects/quickhash/">Linux</a>. You can verify the authenticity 
+						of the file by verifying the GnuPG signature with 
 						<a href="http://gpg4win.org">gpg4win</a> (Windows) or <a href="http://www.gnupg.org/">GnuPG</a> (Linux). 
 						<a href="installation-server.html#verify-signature">See this guide</a> for how to verify the signature.
 					</p>
@@ -78,6 +79,107 @@
 						Please also see and verify our <a href="faq.html#warrant-canary">warrant canary</a> for each release using 
 						the same GPG signature listed below.
 					</p>
+					
+					
+					<h2 id="release1.5">Jericho Comms version 1.5 downloads (Windows, Linux and Unix based systems)</h2>
+					<p>
+						There are quite a few large changes in this release which is why it has taken almost a year 
+                        to develop. With the uncertainty surrounding 
+                        <a href="https://en.wikipedia.org/wiki/TrueCrypt#End_of_life_announcement">the future of Truecrypt</a>,
+                        which was most likely a triggered <a href="https://en.wikipedia.org/wiki/Warrant_canary">warrant canary</a>, 
+                        the main change in this release was the cascade encryption and authentication of the one-time pad database 
+                        to protect the one-time pads with a strong passphrase they are transported. You should of course continue 
+                        to use version 7.1a of TrueCrypt if you need the plausible deniability features that a hidden volume offers. 
+                        TrueCrypt version 7.1a has had a reasonably clean bill of health 
+                        <a href="http://istruecryptauditedyet.com/">after an audit of the code</a>.
+                    </p>
+                    <p>
+                        This release may also be the last version before version 2.0 where the program will need to be converted 
+                        to a single page application so that the one-time pads can be encrypted at all times in client 
+                        side storage and decrypted only as needed.
+					</p>
+					<p>
+						Many of the changes will make it backwards incompatible with version 1.41. You will need to 
+						replace the client code, the server code and generate new one-time pads. If you want to keep 
+						using your existing one-time pads that you have already shared with your chat partners 
+						and it is too much hassle to create and share new ones, then keep using version 1.41 for now. 
+						Please make a request on the <a href="https://github.com/joshua-m-david/jerichoencryption/issues">GitHub issue list</a> 
+						and we will prioritise creation of a small script to convert the one-time pads from 1.41 format 
+						to 1.5.
+					</p>
+					<b>Changes in v1.5</b><br>
+					<ul class="changeLog">
+						<li>Renamed the program to Jericho Comms.</li>
+						<li>Cascade cipher encryption and authentication of the one-time pad database for transport, see <a href="information.html#database-encryption">technical design information</a>.</li>
+						<li>Added functionality for clients to automatically <a href="information.html#frustrating-traffic-analysis">send decoy messages</a> at random intervals to hinder traffic analysis.</li>
+						<li>The auto nuke command is now sent covertly via the secure and authenticated message channel rather than as a separate API request.</li>
+						<li>Added desktop alert notifications for incoming chat messages so users can see they have a new message when the browser is not in focus.</li>
+						<li>Base64 encoded the server protocol data packets in preparation of the next v2.0 release which will encrypt all meta data.</li>						
+					</ul>
+					<table class="downloadLinks">
+						<tr>
+							<th>Mirror</th>
+							<th>Program download</th>
+							<th>Signature</th>
+							<th>White paper</th>
+							<th>Signature</th>
+						</tr>
+						<tr>
+							<td>Freenet</td>
+							<td><a href="http://localhost:8888/SSK@Q4n6ymgwnsg6uShZHkWJOlwsXfRSIndGdemLq4fVg~E,J8ED9zwy2Zj7iJtIlA3yr3fJb8P9078BcqHf5PHxkJs,AQACAAE/jericho-v1.5.tar.gz">jericho-v1.5.tar.gz</a></td>
+							<td><a href="http://localhost:8888/SSK@mS~BMPUsPETEGQI3-9YsUSS7RNKA3ZqDQtpg1H4mshc,~5vz5HokFITaaNKu9Nb8gDbsv7enIHuO89O~lVwrEhw,AQACAAE/jericho-v1.5.tar.gz.asc">jericho-v1.5.tar.gz.asc</a></td>
+							<td><a href="http://localhost:8888/SSK@cfmCMuE-4zlWApO2eH49fkIJ6kyHR3uhFQcp~M-OKy8,85renE7fSrTzsckKiJGkUchqgmFkU4ohPaw6dQkUk58,AQACAAE/jericho-v1.5.pdf">jericho-v1.5.pdf</a></td>
+							<td><a href="http://localhost:8888/SSK@3qBL81gwJrDFps3Ktruuq6R4KuSboQdDNKTjZ0UbPZQ,OhK1g1a4XUwnYELqtWyrFZmhN6yJtx7UuyyDXmmjk2c,AQACAAE/jericho-v1.5.pdf.asc">jericho-v1.5.pdf.asc</a></td>
+						</tr>
+						<tr>
+							<td>Mega</td>
+							<td><a href="https://mega.nz/#!4ZVHUZrR!3KRP2j7hvdPvEEjlbF-Wdog5rhu2_azZW3YRo_GepN0">jericho-v1.5.tar.gz</a></td>
+							<td><a href="https://mega.nz/#!gJc1VIZQ!LGeqWW8UrYRCAfsxge-nBG3zwd3A65rH0sHUmsHiRaA">jericho-v1.5.tar.gz.asc</a></td>
+							<td><a href="https://mega.nz/#!kcNyhACT!NiTfgHZSXUznAc7L4t7eE4Fk7VDeRRRv6yzWNQIUOTk">jericho-v1.5.pdf</a></td>
+							<td><a href="https://mega.nz/#!kc0xSJwZ!yaXKzHFji0ThQyaFHwmvr3A650tLeIKjGKlVfTfGiZM">jericho-v1.5.pdf.asc</a></td>
+						</tr>
+						<tr>
+							<td>This site</td>
+							<td><a href="files/jericho-v1.5.tar.gz">jericho-v1.5.tar.gz</a></td>
+							<td><a href="files/jericho-v1.5.tar.gz.asc">jericho-v1.5.tar.gz.asc</a></td>
+							<td><a href="files/jericho-v1.5.pdf">jericho-v1.5.pdf</a></td>
+							<td><a href="files/jericho-v1.5.pdf.asc">jericho-v1.5.pdf.asc</a></td>
+						</tr>
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th colspan="2">GPG signing key details for authenticity verification</th>
+						</tr>
+						<tr>
+							<td>Key server</td>
+							<td>x-hkp://pool.sks-keyservers.net</td>
+						</tr>
+						<tr>							
+							<td>Key ID</td>
+							<td>DC768471C467B6D0</td>
+						</tr>
+						<tr>
+							<td>Fingerprint</td>
+							<td>CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0</td>
+						</tr>
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th colspan="2">File hashes of jericho-v1.5.tar.gz for integrity verification</th>
+						</tr>
+						<tr>
+							<td>SHA384 digest</td>
+							<td class="hash">73c5899cd37af0369f9b0afd31b37c84724ed1d51a3e45e4f5ae7cc365c5d1ed88987835ccc2dd719b004de1a7c92c2d</td>
+						</tr>
+						<tr>
+							<td>SHA512 digest</td>
+							<td class="hash">1c2a4b45b30bc4703cc10c6023b1d04783cbc46c054347df799e393f6517d7c9685ae4ee8c3f0400e7770a2a805b89ffeb72487def830e1f701eca1cc918b3b0</td>
+						</tr>
+						<tr>
+							<td>Whirlpool digest</td>
+							<td class="hash">6d1a509139f5c49333b028898ebd959dfda5f87568f39cafc23a45c8082a7b928fdeb072e99651412648f4fd8b23b40917090ca49bde3e98200272fce9195ffb</td>
+						</tr>
+					</table>
 					
 					
 					<h2 id="release1.41">Jericho Chat version 1.41 downloads (Windows, Linux and Unix based systems)</h2>
@@ -88,51 +190,7 @@
 					<ul class="changeLog">
 						<li>Modified the Export dialog on the TRNG pages to make the Test Connection functionality work properly again.</li>
 					</ul>
-					<table class="downloadLinks">
-						<tr>
-							<th>Mirror</th>
-							<th>Download link</th>
-						</tr>
-						<tr>
-							<td>Freenet key</td>
-							<td><a href="http://127.0.0.1:8888/SSK@WuxwCyNsWXRegYPkIyf3bsq3hD8hID7lecC4A0Nt3Ug,BeARYTtOLRBL0l2EDofncY52R0BEMPnTpiDxJ-3MZEQ,AQACAAE/jericho-v1.41.tar.gz">jericho-v1.41.tar.gz</a></td>
-						</tr>
-						<tr>
-							<td>This site</td>
-							<td><a href="files/jericho-v1.41.tar.gz">jericho-v1.41.tar.gz</a></td>								
-						</tr>
-					</table>
-					<table class="downloadLinks">
-						<tr>
-							<th colspan="2">File verification</th>
-						</tr>
-						<!-- Insert GPG KEY fingerprint here -->
-						<tr>
-							<td>GPG signature</td>
-							<td>
-								<a href="files/jericho-v1.41.tar.gz.asc">jericho-v1.41.tar.gz.asc</a><br>
-								<b>Key ID:</b> 0xDC768471C467B6D0<br>
-								<b>Fingerprint:</b> CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0
-							</td>
-						</tr>
-						<tr>
-							<td>SHA1 digest</td>
-							<td class="hash">8a255fd9bcfffef9a0cdb563f45038a023a0a3e2</td>
-						</tr>
-						<tr>
-							<td>SHA256 digest</td>
-							<td class="hash">ea83cda016f78a1b8dce9962bd25f1e2d27b5e1e5ad754fc408a6702e19dae64</td>
-						</tr>
-						<tr>
-							<td>SHA512 digest</td>
-							<td class="hash">7e8a8731ac70cd58ba5698ecae8e850934f2ffc3d0a19394cbe52dcb8bf3db963b04868e4221c07f47964a0cdf7eec2675c8d9dcedb0e48e32c0adac0c8b3a91</td>
-						</tr>
-						<tr>
-							<td>Whirlpool digest</td>
-							<td class="hash">07b9f75b0ca545cd590a93f02dafb6447ec69cef1ef9771f255896b262766fb4e62eb62e2de9dccd0306c167bee5f75a9d042f029a875008274a1c25acee5523</td>
-						</tr>
-					</table><br>
-					
+										
 					
 					<h2 id="release1.4">Jericho Chat version 1.4 downloads (Windows, Linux and Unix based systems)</h2>
 					<p>
@@ -143,51 +201,9 @@
 					<b>Changes in v1.4</b><br>
 					<ul class="changeLog">
 						<li>Modified <a href="information.html#trng-photo">photo TRNG</a> algorithm.</li>
-						<li>Added ability to <a href="information.html#trng-custom">load custom random data</a> into the programCustom.</li>
+						<li>Added ability to <a href="information.html#trng-custom">load custom random data</a> into the program.</li>
 					</ul>
-					<table class="downloadLinks">
-						<tr>
-							<th>Mirror</th>
-							<th>Download link</th>
-						</tr>
-						<tr>
-							<td>Freenet key</td>
-							<td><a href="http://127.0.0.1:8888/SSK@YoZypxedpGp-EaN8WF9FN-VCgLUGmnzB0wbv2tpx-YU,4DJrcLPiDhSgmwSXYPQ1iIbtDUnwdxPJXEkUyiIKWUs,AQACAAE/jericho-v1.4.tar.gz">jericho-v1.4.tar.gz</a></td>
-						</tr>
-						<tr>
-							<td>This site</td>
-							<td><a href="files/jericho-v1.4.tar.gz">jericho-v1.4.tar.gz</a></td>								
-						</tr>
-					</table>
-					<table class="downloadLinks">
-						<tr>
-							<th colspan="2">File verification</th>
-						</tr>
-						<tr>
-							<td>GPG signature</td>
-							<td><a href="files/jericho-v1.4.tar.gz.asc">jericho-v1.4.tar.gz.asc</a><br>
-								<b>Key ID:</b> 0xDC768471C467B6D0<br>
-								<b>Fingerprint:</b> CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0
-							</td>
-						</tr>
-						<tr>
-							<td>SHA1 digest</td>
-							<td class="hash">56ae71e8a08ddd59ac7fa7e7aed8bb354b7773b8</td>
-						</tr>
-						<tr>
-							<td>SHA256 digest</td>
-							<td class="hash">5ab8e0a0ee2557bc2e86fb0bc397ccc40471e4be15d8fd3642f8adb843fe2611</td>
-						</tr>
-						<tr>
-							<td>SHA512 digest</td>
-							<td class="hash">a39dc00a3d16c2b14c9d648667e2d77a1818af77bf209fb8f147597bd6898021087a3250b856a0de0c95e3e97f38d28b9f3194de8a54e6d3bbbbd60179f4865c</td>
-						</tr>
-						<tr>
-							<td>Whirlpool digest</td>
-							<td class="hash">0756ff53753923043040fabe509639b5babe687995ae5dfb8e939b68927c0612a7bc1e82fce5596b3ee9299ac0dd682d73ef030d14993f56753f358c1b114e0c</td>
-						</tr>
-					</table><br>
-					
+										
 					
 					<h2 id="release1.3">Jericho Chat version 1.3 downloads (Windows, Linux and Unix based systems)</h2>
 					<p>
@@ -208,48 +224,7 @@
 						<li><a href="information.html#message-encoding">Increased maximum message size</a> to 115 bytes/characters.</li>
 						<li>Shortened the message length field and timestamp field.</li>
 					</ul>
-					<table class="downloadLinks">
-						<tr>
-							<th>Mirror</th>
-							<th>Download link</th>
-						</tr>
-						<tr>
-							<td>Freenet key</td>
-							<td><a href="http://127.0.0.1:8888/SSK@cmQ2DzHIEMOUoD5xqmEILaJuqvq-Oj7CuGqHikqND4o,xT8ekS~POStRqJny~UMIQJ2lzlatLUxdtNmI7Kbl088,AQACAAE/jericho-v1.3.tar.gz">jericho-v1.3.tar.gz</a></td>
-						</tr>
-						<tr>
-							<td>This site</td>
-							<td><a href="files/jericho-v1.3.tar.gz">jericho-v1.3.tar.gz</a></td>								
-						</tr>
-					</table>
-					<table class="downloadLinks">
-						<tr>
-							<th colspan="2">File verification</th>
-						</tr>
-						<tr>
-							<td>GPG signature</td>
-							<td><a href="files/jericho-v1.3.tar.gz.asc">jericho-v1.3.tar.gz.asc</a><br>
-								<b>Key ID:</b> 0xDC768471C467B6D0<br>
-								<b>Fingerprint:</b> CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0
-							</td>
-						</tr>
-						<tr>
-							<td>SHA1 digest</td>
-							<td class="hash">32aa727411e8fd822194cf489bf09d2ea4b8ce62</td>
-						</tr>
-						<tr>
-							<td>SHA256 digest</td>
-							<td class="hash">d4d9f4a29f37a0cf1fe943048103e9c4739b9b16313123ddd943b266d473ce1c</td>
-						</tr>
-						<tr>
-							<td>SHA512 digest</td>
-							<td class="hash">f291659299fb4b7d41e4b46b8930926a15b647fdd54552824cc264638c3d83e4f6b816302d82dceef21e74c0e253eadeaa723c816f91e8f4e5f68c77bf4f2261</td>
-						</tr>
-						<tr>
-							<td>Whirlpool digest</td>
-							<td class="hash">d032cad80a769f29f5209ad319c17e253ac4478765e1a44d658efb643e79e4af6361ec2125f38cac27adcb1320414164e401d558c2579853c20b1291e2a445d8</td>
-						</tr>
-					</table><br>
+					
 					
 					<h2 id="release1.2">Jericho Chat version 1.2 downloads (Windows, Linux and Unix based systems)</h2>
 					<b>Changes in v1.2</b><br>					
@@ -262,48 +237,7 @@
 						<li>Added more test result outputs to give confidence in the randomness tests.</li>
 						<li>Hyperlinks in sent chat messages are now converted to clickable links just like received messages.</li>
 					</ul>
-					<table class="downloadLinks">
-						<tr>
-							<th>Mirror</th>
-							<th>Download link</th>
-						</tr>
-						<tr>
-							<td>Freenet key</td>
-							<td><a href="http://localhost:8888/SSK@8x~8QSKZwP8YzjWdgMZuCUlINNIToNCnprI3zA9AAtA,AyMRj0BIADvslMsA1K7W9L5FHyGRDKJUFpAY1mclPiY,AQACAAE/jericho-v1.2.tar.gz">jericho-v1.2.tar.gz</a></td>
-						</tr>
-						<tr>
-							<td>This site</td>
-							<td><a href="files/jericho-v1.2.tar.gz">jericho-v1.2.tar.gz</a></td>								
-						</tr>
-					</table>
-					<table class="downloadLinks">
-						<tr>
-							<th colspan="2">File verification</th>
-						</tr>
-						<tr>
-							<td>GPG signature</td>
-							<td><a href="files/jericho-v1.2.tar.gz.asc">jericho-v1.2.tar.gz.asc</a><br>
-								<b>Key ID:</b> 0xDC768471C467B6D0<br>
-								<b>Fingerprint:</b> CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0
-							</td>
-						</tr>
-						<tr>
-							<td>SHA1 digest</td>
-							<td class="hash">a3a6fbd09350bfa04f92798a2f2958b2a214e57e</td>
-						</tr>
-						<tr>
-							<td>SHA256 digest</td>
-							<td class="hash">448ecee94daee44172494648da00a7fa5b600ad0bade70ce0236684a7efa7c0d</td>
-						</tr>
-						<tr>
-							<td>SHA512 digest</td>
-							<td class="hash">fe281d6acb44469232387d84fdc205dad65ae61d9b639ff197bc91b37bfd07012f87f76b3b0f97a4636ad96dd688d6dcd594779415068589207c0b5c6973bfc7</td>
-						</tr>
-						<tr>
-							<td>Whirlpool digest</td>
-							<td class="hash">addc640fb8dd7411a9373433d5beb221fa6f55c754955f1059f8bfd4593d08840bd0e56aa4c0b2fa7a8fdb0083f5d2c0e0c54cbc10afc9a13b4480d05fa25b8c</td>
-						</tr>
-					</table><br>
+					
 					
 					<h2 id="release1.1">Jericho Encrypted Chat version 1.1 downloads (Windows, Linux and Unix based systems)</h2>
 					<b>Changes in v1.1</b><br>
@@ -314,92 +248,10 @@
 						<li>Long words that are too wide for the window can now be viewed with scroll bar.</li>
 						<li>Added validation checking for message length, MAC and timestamp to be within acceptable ranges.</li>						
 					</ul>
-					<table class="downloadLinks">
-						<tr>
-							<th>Mirror</th>
-							<th>Download link</th>
-						</tr>
-						<tr>
-							<td>Freenet key</td>
-							<td><a href="http://localhost:8888/SSK@k4uZi21SA~P6K1JvyPTzwyvGKdJ3FEGOlD-sQtgZ008,DI0zI5OjzD9HiQOXDTN4ob-kdlNe34EBrEm-qj1o7wk,AQACAAE/jericho-v1.1.tar.gz">jericho-v1.1.tar.gz</a></td>
-						</tr>
-						<tr>
-							<td>This site</td>
-							<td><a href="files/jericho-v1.1.tar.gz">jericho-v1.1.tar.gz</a></td>								
-						</tr>
-					</table>
-					<table class="downloadLinks">
-						<tr>
-							<th colspan="2">File verification</th>
-						</tr>
-						<tr>
-							<td>GPG signature</td>
-							<td><a href="files/jericho-v1.1.tar.gz.asc">jericho-v1.1.tar.gz.asc</a><br>
-								<b>Key ID:</b> 0xDC768471C467B6D0<br>
-								<b>Fingerprint:</b> CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0
-							</td>
-						</tr>
-						<tr>
-							<td>SHA1 digest</td>
-							<td class="hash">cbe5212470615044cf67eac5f5034c332ebd712f</td>
-						</tr>
-						<tr>
-							<td>SHA256 digest</td>
-							<td class="hash">aff9063cfc1e57dfb625ff286472998f0d5d555151c9593b5aff8e64be041d1d</td>
-						</tr>
-						<tr>
-							<td>SHA512 digest</td>
-							<td class="hash">de8dfba4468be90963d464bceb5eda20f23965806e4eef9a2e49a7f571f1bab3d095154d0b0db61cbca55c837a7157ee2267e030d6903cd1af1b45ce3d6f5532</td>
-						</tr>
-						<tr>
-							<td>Whirlpool digest</td>
-							<td class="hash">2c13864b1da9102b692535f0db359b042d6e30fc7897efc1df86fc1817873ae3a96b727122f194d9e50d6342d3ae2d5f6f5210746c1343a8c3a4cea844b41657</td>
-						</tr>
-					</table><br>
+					
 					
 					<h2 id="release1.0">Jericho Encrypted Chat version 1.0 downloads (Windows, Linux and Unix based systems)</h2>
-					<table class="downloadLinks">
-						<tr>
-							<th>Mirror</th>
-							<th>Download link</th>								
-						</tr>
-						<tr>
-							<td>Freenet key</td>
-							<td><a href="http://localhost:8888/SSK@sbYkxoKIO-WPxFoOAWH-i-YjN7wewA85Bv0M9qoQsIs,rfZF1--5VQ-8yx400q4p2rS4E71sFLepv77poFM08As,AQACAAE/jericho-v1.tar.gz">jericho-v1.tar.gz</a></td>								
-						</tr>
-						<tr>
-							<td>This site</td>
-							<td><a href="files/jericho-v1.tar.gz">jericho-v1.tar.gz</a></td>								
-						</tr>
-					</table>					
-					<table class="downloadLinks">
-						<tr>
-							<th colspan="2">File verification</th>
-						</tr>
-						<tr>
-							<td>GPG signature</td>
-							<td><a href="files/jericho-v1.tar.gz.asc">jericho-v1.tar.gz.asc</a><br>
-								<b>Key ID:</b> 0xDC768471C467B6D0<br>
-								<b>Fingerprint:</b> CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0
-							</td>
-						</tr>
-						<tr>
-							<td>SHA1 digest</td>
-							<td class="hash">5124b6bf7c1dab5a36c3e4909fe54a6547872fee</td>
-						</tr>
-						<tr>
-							<td>SHA256 digest</td>
-							<td class="hash">ce8e7870fbf4f5d7b63d506d2fe01199399814bd14e874659289b2dfde4fc954</td>
-						</tr>
-						<tr>
-							<td>SHA512 digest</td>
-							<td class="hash">679151c3e32abba001088de256c4cfa5667cbc83b8cb1aca5cbc895365d2062484520d1eaf6be8ecbfb17bcb43b76d888435e354f8fd0deb6aa3bd67e773ea57</td>
-						</tr>
-						<tr>
-							<td>Whirlpool digest</td>
-							<td class="hash">83c8e0e78f8b314c23e2c013c85c0bfe9dbc8b2373044afd960b2bc6f291e887351b1703bbda8cd3c94239e9b644b500d4ee046f408262b54939010be5f41c7c</td>
-						</tr>
-					</table>
+					<b>Initial release</b><br>
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -441,7 +293,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 -2014 Joshua M. David
+				Copyright &copy; 2013 - 2015 Joshua M. David
 			</div>
 		</div>
 	</body>

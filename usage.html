@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
-	Jericho Chat - Information-theoretically secure communications
-	Copyright (C) 2013-2014  Joshua M. David
+	Jericho Comms - Information-theoretically secure communications
+	Copyright (c) 2013-2015  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
 -->
 <html lang="en">
 	<head>
-		<title>Jericho Chat - How to use</title>
+		<title>Jericho Comms&trade; - How to use</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
-		<meta name="description" content="Jericho Chat is a secure program using one-time pads.">
+		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
 		<meta name="viewport" content="width=720, maximum-scale=1.0, user-scalable=yes">
 
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
@@ -209,13 +209,31 @@
 						cryptanalysis.
 					</p>
 					<p class="diagram">
-						<img src="img/export-pads-full-settings.png" alt="Export pads setting">
+						<img src="img/export-pads-settings.png" alt="Export pads setting">
 					</p>
 					<ul>
 						<li>
-							First set the full server address and port in the format shown. If the server is using a non-standard port you can add the 
-							port number into the URL e.g. <code>http://servername.com:443</code>. If the code for the web server is not in the root
-							directory of the web server be sure to add the directory path in too e.g. <code>http://servername.com/chat/</code>.
+							There are multiple ways to export the pads. Generally the text file method (default) is the 
+							easiest. This will export the one-time pads to a text file which you can load into the program 
+							later. You can also export to the clipboard and then manually copy and paste into a text file. 
+							Or if you are	going to be using that particular computer to chat, you can load 
+							the one-time pads directly into the local database. Version 2.0 will include a method to 
+							export to an image file so the file can be easily imported on tablet and mobile devices 
+							which add restrictions to only allow importing from images.
+						</li>
+						<li>
+							Next to <b>Export to</b> select option 
+							<code>One-time pads (Text file)</code>. Click the <b>Export</b> button which will popup a save dialog. 
+							Save the file to removable storage such as MicroSD card, SD card or USB drive. If you need 
+							plausible deniability you should always save the one-time pads within a hidden encrypted 
+							volume e.g. with <a href="https://www.grc.com/misc/truecrypt/truecrypt.htm">TrueCrypt</a>.
+						</li>
+						<li>
+							Now set the full server address and port in the format shown. If the server is using a 
+							non-standard port you can add the port number into the URL e.g. 
+							<code>http://servername.com:443</code>. If the code for the web server is not in the root
+							directory of the web server be sure to add the directory path in too e.g. 
+							<code>http://servername.com/chat/</code>.
 						</li>
 						<li>
 							Click <b>Create server key</b> to generate a 512 bit server API key. This needs to match the one in the 
@@ -241,21 +259,57 @@
 							twice.
 						</li>
 						<li>
-							There are multiple ways to export the pads. Generally the text file method (default) is the easiest. This will export the 
-							one-time pads to a text file which you can load into the program later. You can also export to the clipboard and then 
-							manually copy and paste into a text file. Or if you are	going to be using that particular computer to chat, you can load 
-							the one-time pads directly into the local database.
+							Next you can choose a <b>Passphrase</b> to encrypt the one-time pads before they are transported. 
+							This passphrase should be communicated in person when you deliver the pads to the other 
+							user/s. It should not be stored in any computer and ideally not written down on paper 
+							either. This gives you some extra security if your storage media is stolen or confiscated 
+							(e.g. by immigration security/border control) when the one-time pads are in transit. The 
+							passphrase strength should be at least 256 bits to prevent quantum computer attacks.
 						</li>
 						<li>
-							Next to <b>Export for user</b> select option <code>Alpha</code>. Next to <b>Export to</b> select option 
-							<code>One-time pads (Text file)</code>. Click the <b>Export</b> button which will popup a save dialog. 
-							Save the file to removable storage such as MicroSD card, SD card or USB drive. For extra 
-							security you should always save the one-time pads within an encrypted volume e.g. with 
-							<a href="https://www.grc.com/misc/truecrypt/truecrypt.htm">TrueCrypt</a>.
+							In the <b>Advanced options</b> you can choose to <b>Store the PBKDF salt as a separate keyfile</b>. 
+							This means 1536 bits of random data which is critical to decrypting the database can be saved 
+							to a different storage medium than where the one-time pads will be for transport. If this 
+							keyfile is stored on a separate MicroSD or printed on a piece of paper then an attacker 
+							needs this information to have any hope of decrypting the database. If you are at risk of 
+							having your electronic devices confiscated as you go through customs you can store the 
+							keyfile written printed on a piece of paper inside a book or magazine. Then if your notebook 
+							PC is confiscated which has the one-time pads you can eat the piece of paper and even divulge 
+							the password if forced to under duress and no-one will be able to crack the database for a 
+							very long time.
 						</li>
 						<li>
-							Now do the same for the second user. Next to <b>Export for</b> select <b>User 2</b>. Click the Export 
-							pads button again which will prompt a save dialog to save the pads for User 2.
+							Next in the <b>Advanced options</b> you can choose to <b>Enter the PBKDF iterations at decryption 
+                            time</b>. If checked, the number of <a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF</a> 
+                            iterations will not be stored with the one-time 
+							pads and will need to be manually entered at decryption time. These numbers can be written 
+							on a piece of paper or remembered and communicated verbally with the user/s you are sharing 
+							the encrypted one-time pad database with. This increases the amount of work for an attacker 
+							by a large margin as it is another piece of the puzzle they do not have to crack the 
+							database encryption. Essentially an attacker will need to try every possible number of PBKDF 
+							iterations (1 - 10,000+) for every password attempt they make.
+						</li>
+						<li>
+							Finally in the <b>Advanced options</b> you can choose the number of PBKDF iterations to 
+							perform for both PBKDF algorithms. This is the amount of computational difficulty required 
+							to compute the master encryption key from the passphrase. Attackers have the advantage as 
+							they can perform password guessing attempts in parallel on supercomputers and specialised 
+                            hardware like <a href="https://en.wikipedia.org/wiki/Graphics_processing_unit">GPUs</a> and 
+                            <a href="https://en.wikipedia.org/wiki/Application-specific_integrated_circuit">ASICs</a>. 
+                            This forces them to expend significant computational 
+							effort for each password attempt. The defaults of 10,000 iterations for both algorithms are 
+							reasonable for a quad core desktop PC and may take about 8 seconds to encrypt/decrypt. If 
+							the database will be decrypted on a low powered mobile device or tablet you may wish to lower 
+							the number of iterations significantly otherwise the database will take a long time to decrypt. 
+							You can compensate for the lower number of iterations by adding extra password characters. 
+							There are some limits to what number of iterations can be computed in a reasonable timeframe 
+							with the browser's JavaScript engine so 100,000 iterations is likely unrealistic. It is 
+							better to use a longer passphrase to compensate for this anyway.
+						</li>						
+						<li>
+							Click the <b>Export one-time pads</b> button which will prompt a save dialog to save the 
+							one-time pads for each user. Ideally write them to the transport storage media immediately 
+							to avoid leaving copies across multiple storage devices.
 						</li>
 					</ul>
 					
@@ -449,7 +503,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 -2014 Joshua M. David
+				Copyright &copy; 2013 - 2015 Joshua M. David
 			</div>
 		</div>
 	</body>

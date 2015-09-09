@@ -1,39 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 	<url>
-		<loc>http://jerichochat.tk/</loc>
+		<loc>http://jerichocomms.ml/</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichochat.tk/information.html</loc>
+		<loc>http://jerichocomms.ml/information.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichochat.tk/download.html</loc>
+		<loc>http://jerichocomms.ml/download.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichochat.tk/installation.html</loc>
+		<loc>http://jerichocomms.ml/installation.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichochat.tk/installation-server.html</loc>
+		<loc>http://jerichocomms.ml/installation-server.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichochat.tk/installation-server-tls.html</loc>
+		<loc>http://jerichocomms.ml/installation-server-tls.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichochat.tk/installation-client.html</loc>
+		<loc>http://jerichocomms.ml/installation-client.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichochat.tk/usage.html</loc>
+		<loc>http://jerichocomms.ml/usage.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichochat.tk/faq.html</loc>
+		<loc>http://jerichocomms.ml/faq.html</loc>
+		<changefreq>monthly</changefreq>
+	</url>
+	<url>
+		<loc>http://jerichocomms.ml/warrant-canary.txt</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 </urlset>
