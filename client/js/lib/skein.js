@@ -9,6 +9,12 @@
  * This algorithm and source code is released to the public domain.
  */
 
+// Use ECMAScript 5's strict mode
+'use strict';
+
+/**
+ * Skein hash function
+ */
 var skein = {
 	
 	hex2string: function(s)
@@ -57,8 +63,11 @@ var skein = {
 		
 		// final: 0x80; first: 0x40; conf: 0x4; msg: 0x30; out: 0x3f
 		var tweak = [[0, 32], [(0x80 + 0x40 + 0x4) << 24, 0]], c = [];
-		var buff = skein.string2bytes("SHA3\1\0\0\0\0\2");
 		
+		// Fix for an error in Strict mode, use the result of skein.string2bytes("SHA3\1\0\0\0\0\2"); 
+		// instead, rather than the octal escape sequence which is deprecated
+		var buff = [83, 72, 65, 51, 1, 0, 0, 0, 0, 2];
+				
 		skein.block(c, tweak, buff, 0);
 		tweak = [[0, 0], [(0x40 + 0x30) << 24, 0]];
 		
@@ -223,22 +232,3 @@ var skein = {
 		}
 	}
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

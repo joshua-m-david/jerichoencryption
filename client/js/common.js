@@ -1,6 +1,6 @@
 /*!
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,13 +15,16 @@
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
 
+// Use ECMAScript 5's strict mode
+'use strict';
+
 /**
  * Various and common functions used by multiple pages
  */
 var common = {
 	
 	// Current program version to help with importing from old versions later
-	programVersion: '1.41',
+	programVersion: '1.5',
 	
 	// Define lengths of message attributes in bytes
 	padIdentifierSize: 7,		// Size of the pad identifier in bytes. The first 7 bytes of pad are used only to identify which pad was used
@@ -50,6 +53,11 @@ var common = {
 	totalMessagePartsSizeBinary: 968,
 	totalPadSizeBinary: 1536,
 	
+	// Salt length
+	saltLength: 192,
+	saltLengthHex: 384,
+	saltLengthBinary: 1536,	
+	
 	// Hash and MAC algorithms to be used
 	macAlgorithms: ['skein-512', 'keccak-512'],
 	
@@ -70,94 +78,76 @@ var common = {
 	// Random data collected or loaded from TRNG
 	randomDataBinary: '',
 	randomDataHexadecimal: '',
-		
-	/**
-	 * Calculates the length of the plaintext message without any padding
-	 * @param {string} plaintextMessage The plaintext message
-	 * @return {integer} Returns the original length of the message in bytes before padding e.g. 70, 5, 115
-	 */
-	getOriginalPlaintextLength: function(plaintextMessage)
-	{
-		var messageLength = plaintextMessage.length;
-		
-		// If the message is somehow bigger than the allowed message size (maybe they bypassed the text field maxlength)
-		if (messageLength > this.messageSize)
-		{
-			// Return the max length allowed, the message will be truncated by the padMessage function
-			return this.messageSize;
-		}
-		else {
-			// Return the actual size
-			return messageLength;
-		}
-	},
 	
+	// A timer for hiding the status messages
+	statusTimeoutId: null,
+		
 	/**
-	 * Pad a message with random numbers up to the length of the message. Random numbers will be added to the 
-	 * right of the message. This is so that all messages will be the same length to frustrate cryptanalysis.
-	 * @param {string} plaintextMessageBinary The plaintext message in binary to be padded
-	 * @return {string} Returns a binary string with length the sames as the maximum message length
+	 * Pad a message with random numbers up to the length of the message. Random bits will be added to the 
+	 * right of the message. This is so that all messages will be the same length to make cryptanalysis difficult.
+	 * @param {String} plaintextMessageBinary The plaintext message in binary to be padded
+	 * @return {Object} Returns the 'actualMessageLength' as an integer representing the length of message in bytes and 
+	 *                  the 'plaintextWithPaddingBinary' as a binary string with length that should be the same as the 
+	 *                  maximum message length.
 	 */
 	padMessage: function(plaintextMessageBinary)
 	{
 		// Get the current message length
-		var currentMessageLength = plaintextMessageBinary.length;
+		var currentBinaryMessageLength = plaintextMessageBinary.length;		
+		var paddingInfo = {
+			actualMessageLength: null,
+			plaintextWithPaddingBinary: null
+		};
 		
 		// If the message is somehow bigger than the allowed message size (maybe they bypassed the 
 		// text field maxlength), then truncate it up to the maximum message size
-		if (currentMessageLength > this.messageSizeBinary)
+		if (currentBinaryMessageLength > this.messageSizeBinary)
 		{
-			return plaintextMessageBinary.substr(0, this.messageSizeBinary);
+			paddingInfo.actualMessageLength = this.messageSize;
+			paddingInfo.plaintextWithPaddingBinary = plaintextMessageBinary.substr(0, this.messageSizeBinary);
 		}
-		else if (currentMessageLength === this.messageSizeBinary)
+		
+		// If it is already the max length just return it
+		else if (currentBinaryMessageLength === this.messageSizeBinary)
 		{
-			// If it's already the max length just return it
-			return plaintextMessageBinary;
-		}
+			paddingInfo.actualMessageLength = this.messageSize;
+			paddingInfo.plaintextWithPaddingBinary = plaintextMessageBinary;
+		}		
 		else {
-			// Otherwise add random numbers up to message size
-			while (currentMessageLength < this.messageSizeBinary)
-			{
-				// Collect a random number from the HTML5 CSPRNG
-				var byteArray = new Uint32Array(1);
-				window.crypto.getRandomValues(byteArray);
-				
-				// Convert to string
-				var randomNumbers = byteArray[0].toString();
-								
-				// Loop through the integers returned
-				for (var i=0, length = randomNumbers.length; i < length; i++)
-				{
-					// The crypto.getRandomValues API returns whole integers however random bits for the padding is better to prevent a crib 
-					// for an attacker (the first 4 bits of every ASCII encoded number is 0011). This method will get a single bit for every 
-					// integer received from the API. To get a uniform distribution, half the integers (0, 1, 2, 3, 4) will be assigned to a 
-					// 0 bit and the other half (5, 6, 7, 8, 9) to a 1 bit.
-					var integer = parseInt(randomNumbers.charAt(i));
-					plaintextMessageBinary += (integer < 5) ? '0' : '1';
-				}
-				
-				// Add to the plaintext and update the current length
-				currentMessageLength = plaintextMessageBinary.length;
-			}
+			// Determine how much padding required
+			var numOfPaddingBitsRequired = this.messageSizeBinary - currentBinaryMessageLength;
 			
-			// Sometimes the getRandomValues returns variable sized numbers and it would put it oversize so truncate it
-			return plaintextMessageBinary.substr(0, this.messageSizeBinary);
+			// Get random padding bits
+			var randomPaddingBitsBinary = common.getRandomBits(numOfPaddingBitsRequired, 'binary');
+			
+			// Add the padding onto the end of the existing plaintext
+			var plaintextWithPaddingBinary = plaintextMessageBinary + randomPaddingBitsBinary;
+			
+			// Set actual message length to a count of the bytes
+			paddingInfo.actualMessageLength = currentBinaryMessageLength / 8;
+			paddingInfo.plaintextWithPaddingBinary = plaintextWithPaddingBinary;
 		}
+		
+		return paddingInfo;
 	},
 	
 	/**
 	 * Get the current UNIX timestamp in UTC
-	 * @return {string} The current timestamp
+	 * @return {Number} The current timestamp as an integer
 	 */
 	getCurrentUtcTimestamp: function()
 	{
-		// Convert from milliseconds to seconds
-		return Math.floor(Date.now() / 1000);
+		// Get current timestamp and convert from milliseconds to seconds
+		var currentTimestampMilliseconds = Date.now();
+		var currentTimestampSeconds = currentTimestampMilliseconds / 1000; 
+				
+		// Remove any numbers after the decimal point 
+		return Math.floor(currentTimestampSeconds);
 	},
 	
 	/**
 	 * Gets the current local date and time
-	 * @return {string} Returns the formatted string
+	 * @return {String} Returns the formatted string
 	 */
 	getCurrentLocalDateTime: function()
 	{
@@ -173,7 +163,7 @@ var common = {
 	
 	/**
 	 * Gets the current local time
-	 * @return {string} Returns the string in format: 19:37:21
+	 * @return {String} Returns the string in format: 19:37:21
 	 */
 	getCurrentLocalTime: function()
 	{
@@ -182,8 +172,8 @@ var common = {
 	
 	/**
 	 * Gets the current date from a UTC timestamp
-	 * @param {number} timestamp A UNIX timestamp
-	 * @return {string} Returns the string in format: Mon 14 Jul 2014 19:37:21
+	 * @param {Number} timestamp A UNIX timestamp
+	 * @return {String} Returns the string in format: Mon 14 Jul 2014 19:37:21
 	 */
 	getCurrentLocalDateTimeFromUtcTimestamp: function(timestamp)
 	{
@@ -212,7 +202,7 @@ var common = {
 	/**
 	 * Formats the current local date from a date object
 	 * @param {date} date A JavaScript date object
-	 *  @return {string} Returns the string in format: 21 JUL 14
+	 *  @return {String} Returns the string in format: 21 JUL 14
 	 */
 	formatDateFromDateObject: function(date)
 	{
@@ -228,20 +218,30 @@ var common = {
 	/**
 	 * Gets the current local time from a date object passed in
 	 * @param {date} date A JavaScript date object
-	 * @return {string} Returns the string in format: 19:37:21
+	 * @return {String} Returns the string in format: 19:37:21
 	 */
 	formatTimeFromDateObject: function(date)
 	{	
 		return this.leftPadding(date.getHours(), '0', 2) + ':' + this.leftPadding(date.getMinutes(), '0', 2) + ':' + this.leftPadding(date.getSeconds(), '0', 2);
 	},
-			
+	
+	/**
+	 * Returns the full one-time pad without the pad identifier at the front
+	 * @param {String} pad The full one-time pad in hexadecimal
+	 * @returns {String}
+	 */
+	getPadWithoutPadIdentifier: function(pad)
+	{
+		return pad.substr(common.padIdentifierSizeHex);
+	},
+	
 	/**
 	 * Gets the index of a random MAC algorithm to use to create and verify the MAC for each message. It uses the 
 	 * last byte of the one-time pad, converts it to an integer value, then uses that number mod the number of 
 	 * MAC algorithms available. That will return an integer from 0, 1 which references the index of the algorithm 
 	 * in an array.
-	 * @param {string} pad The one-time pad for this message in hexadecimal
-	 * @return {number} Returns a number (the array index) referencing the algorithm in the macAlgorithms array
+	 * @param {String} pad The one-time pad for this message in hexadecimal
+	 * @return {Number} Returns a number (the array index) referencing the algorithm in the macAlgorithms array
 	 */
 	getRandomMacAlgorithmIndex: function(pad)
 	{
@@ -261,8 +261,8 @@ var common = {
 	
 	/**
 	 * Returns the portion of the pad that will be used to encrypt or decrypt the MAC
-	 * @param {string} pad The full pad in hexadecimal
-	 * @returns {string} The pad to use to encrypt the MAC
+	 * @param {String} pad The full pad in hexadecimal
+	 * @returns {String} The pad to use to encrypt the MAC
 	 */
 	getPadPartForMac: function(pad)
 	{
@@ -276,17 +276,17 @@ var common = {
 	/**
 	 * Generate a Message Authentication Code for the message. This is to 
 	 * verify the data integrity and the authentication of each message sent.
-	 * @param {integer} macAlgorithmIndex The MAC algorithm to use
-	 * @param {string} pad The pad (key) as hexadecimal
-	 * @param {string} ciphertextMessage The ciphertext (message) as hexadecimal
-	 * @return {string} The MAC of the message and pad as hexadecimal
+	 * @param {Number} macAlgorithmIndex The MAC algorithm to use
+	 * @param {String} pad The pad (key) as hexadecimal
+	 * @param {String} ciphertextMessage The ciphertext (message) as hexadecimal
+	 * @return {String} The MAC of the message and pad as hexadecimal
 	 */
 	createMessageMac: function(macAlgorithmIndex, pad, ciphertextMessage)
 	{
 		// Get which algorithm to use and generate the MAC
 		var macAlgorithm = this.macAlgorithms[macAlgorithmIndex];
 		
-		// The new SHA3 competition algorithms Skein and Keccak are secure in the simple format of Hash(K, M) for a MAC. 
+		// The new SHA3 competition algorithms Skein and Keccak are secure in the simple format of Hash(K | M) for a MAC. 
 		// They have length extension attack prevention built in and do not need more complicated constructions like HMAC.
 		var inputMessageHex = pad + ciphertextMessage;
 				
@@ -296,9 +296,9 @@ var common = {
 	
 	/**
 	 * Encrypt or decrypt the MAC with part of the one-time pad
-	 * @param {string} padForMac Part of the pad to use for encrypting/decrypting the MAC in hexadecimal
-	 * @param {string} mac The MAC or ciphertext MAC as hexadecimal
-	 * @returns {string} Returns the encrypted or decrypted MAC in hexadecimal
+	 * @param {String} padForMac Part of the pad to use for encrypting/decrypting the MAC in hexadecimal
+	 * @param {String} mac The MAC or ciphertext MAC as hexadecimal
+	 * @returns {String} Returns the encrypted or decrypted MAC in hexadecimal
 	 */		
 	encryptOrDecryptMac: function(padForMac, mac)
 	{
@@ -318,11 +318,11 @@ var common = {
 	 * check the integrity and authentication of the message by comparing the MAC to what was sent with the message. 
 	 * The sender and receiver have a shared secret which is the one-time pad and the algorithm to be used to verify 
 	 * the MAC is encoded with the message.
-	 * @param {integer} macAlgorithmIndex The array index of MAC algorithm to use
-	 * @param {string} pad The full pad as a hexadecimal string
-	 * @param {string} ciphertextMessage The ciphertext of the message as a hexadecimal string	 
-	 * @param {string} mac The plaintext MAC to be checked as a hexadecimal string
-	 * @return {boolean} Returns true if valid, false if not 
+	 * @param {Number} macAlgorithmIndex The array index of MAC algorithm to use
+	 * @param {String} pad The full pad as a hexadecimal string
+	 * @param {String} ciphertextMessage The ciphertext of the message as a hexadecimal string	 
+	 * @param {String} mac The plaintext MAC to be checked as a hexadecimal string
+	 * @return {Boolean} Returns true if valid, false if not 
 	 */
 	validateMac: function(macAlgorithmIndex, pad, ciphertextMessage, mac)
 	{		
@@ -336,10 +336,10 @@ var common = {
 	/**
 	 * Prepares the message parts to be encrypted. It simply makes sure everything is in binary the appends the 
 	 * plaintext, message length and message timestamp together. The message parts should now be ready to be encrypted.
-	 * @param {string} plaintextMessageWithPaddingBinary The plaintext and any padding in binary
-	 * @param {integer} messageLength The length of the actual message minus padding
-	 * @param {integer} messageTimestamp The current UNIX timestamp in UTC
-	 * @return {string} Returns binary string of all message parts
+	 * @param {String} plaintextMessageWithPaddingBinary The plaintext and any padding in binary
+	 * @param {Number} messageLength The length of the actual message minus padding
+	 * @param {Number} messageTimestamp The current UNIX timestamp in UTC
+	 * @return {String} Returns binary string of all message parts
 	 */
 	prepareMessageForEncryption: function(plaintextMessageWithPaddingBinary, messageLength, messageTimestamp)
 	{
@@ -359,9 +359,9 @@ var common = {
 	 * to message, the message parts are dynamically reversed depending on the second last byte in the pad for each 
 	 * message. The occassional reversal of the bits from message to message means that an attacker can not know 
 	 * with absolute certainty which bits are where in the message thus making cryptanalysis extremely difficult.
-	 * @param {string} pad The one-time pad in hexadecimal
-	 * @param {string} messagePartsBinary The message parts in binary
-	 * @returns {string}
+	 * @param {String} pad The one-time pad in hexadecimal
+	 * @param {String} messagePartsBinary The message parts in binary
+	 * @returns {String}
 	 */
 	reverseMessageParts: function(pad, messagePartsBinary)
 	{
@@ -391,18 +391,18 @@ var common = {
 	 * Return the pad identifier part which helps identify which pad to use for decryption. The first x characters of the pad are 
 	 * not XORed with the plaintext as these are used to help identify which pad should be used to decrypt the message. If we 
 	 * simply used a numeric key to identify which pad to decrypt with then that would leak how many messages have been sent so far.
-	 * @param {string} binary Pass in a pad in binary, or a full encrypted message in binary to retrieve the pad identifier
-	 * @return {string} Returns just the message parts without the pad identifier
+	 * @param {String} binary Pass in a pad in binary, or a full encrypted message in binary to retrieve the pad identifier
+	 * @return {String} Returns just the message parts without the pad identifier
 	 */
 	getPadIdentifier: function(binary)
 	{
 		return binary.substr(0, this.padIdentifierSizeBinary);
 	},
-	
+		
 	/**
 	 * Get the pad message parts from the pad. After that it can be XORed (pad message parts XOR plaintext message parts)
-	 * @param {string} binaryPad Pass in a pad in binary
-	 * @return {string} Returns just the message parts without the pad identifier
+	 * @param {String} binaryPad Pass in a pad in binary
+	 * @return {String} Returns just the message parts without the pad identifier
 	 */
 	getPadMessageParts: function(binaryPad)
 	{
@@ -414,9 +414,9 @@ var common = {
 	 * The pad and the plaintext/ciphertext being passed in should be the same length.
 	 * To encrypt, pass in the one-time pad and the plaintext in binary
 	 * To decrypt, pass in the one-time pad and the ciphertext in binary
-	 * @param {string} binaryPad The pad/key (as a binary string) without the pad identifier
-	 * @param {string} binaryText The plaintext or ciphertext as a binary string
-	 * @returns {string} A binary string containing the XOR of the pad and text
+	 * @param {String} binaryPad The pad/key (as a binary string) without the pad identifier
+	 * @param {String} binaryText The plaintext or ciphertext as a binary string
+	 * @returns {String} A binary string containing the XOR of the pad and text
 	 */
 	encryptOrDecrypt: function(binaryPad, binaryText)
 	{
@@ -440,9 +440,9 @@ var common = {
 	/**
 	 * Concatenates the pad identifier and ciphertext to make the full encrypted message
 	 * After this the encrypted message can be converted to hexadecimal and is ready for sending
-	 * @param {string} binaryPadIdentifier The pad identifier
-	 * @param {string} binaryEncryptedMessageParts The encrypted message parts
-	 * @return {string} Returns the complete encrypted message including pad identifier and encrypted message parts
+	 * @param {String} binaryPadIdentifier The pad identifier
+	 * @param {String} binaryEncryptedMessageParts The encrypted message parts
+	 * @return {String} Returns the complete encrypted message including pad identifier and encrypted message parts
 	 */
 	combinePadIdentifierAndCiphertext: function(binaryPadIdentifier, binaryEncryptedMessageParts)
 	{
@@ -451,8 +451,8 @@ var common = {
 	
 	/**
 	 * Get the separate message parts (plaintext with padding, the actual message length and the message timestamp)
-	 * @param {string} decryptedUnreversedMessagePartsBinary The plaintext message parts joined together
-	 * @return {array} Returns the message parts separated out into an array with keys 'messagePlaintextWithPaddingBinary', 'messageLength', 'messageTimestamp'
+	 * @param {String} decryptedUnreversedMessagePartsBinary The plaintext message parts joined together
+	 * @return {Array} Returns the message parts separated out into an array with keys 'messagePlaintextWithPaddingBinary', 'messageLength', 'messageTimestamp'
 	 */
 	getSeparateMessageParts: function(decryptedUnreversedMessagePartsBinary)
 	{
@@ -475,9 +475,9 @@ var common = {
 	/**
 	 * Removes padding from the message portion. This checks to make sure the message length is 
 	 * in the correct range for a message to avoid DOS and/or buffer overflow attacks.
-	 * @param {string} messagePlaintextWithPaddingBinary The plaintext message with padding on it
-	 * @param {integer} actualMessageLength The actual message length in number of bytes
-	 * @return {string} Returns the original plaintext message in binary
+	 * @param {String} messagePlaintextWithPaddingBinary The plaintext message with padding on it
+	 * @param {Number} actualMessageLength The actual message length in number of bytes
+	 * @return {String} Returns the original plaintext message in binary
 	 */
 	removePaddingFromMessage: function(messagePlaintextWithPaddingBinary, actualMessageLength)
 	{
@@ -501,8 +501,8 @@ var common = {
 	
 	/**
 	 * Takes a string of binary code and converts it to ASCII text
-	 * @param {string} binaryText The binary numbers to be converted
-	 * @returns {string} A string of ASCII characters
+	 * @param {String} binaryText The binary numbers to be converted
+	 * @returns {String} A string of ASCII characters
 	 */
 	convertBinaryToText: function(binaryText)
 	{
@@ -528,8 +528,8 @@ var common = {
 	
 	/**
 	 * Converts a binary representation of a number into an integer
-	 * @param {string} binaryString The binary representation of the number
-	 * @returns {integer}
+	 * @param {String} binaryString The binary representation of the number
+	 * @returns {Number}
 	 */
 	convertBinaryToInteger: function(binaryString)
 	{
@@ -538,8 +538,8 @@ var common = {
 
 	/**
 	 * Converts text to binary string (one character at a time)
-	 * @param {string} inputText The text to be converted
-	 * @returns {string} A string of binary numbers
+	 * @param {String} inputText The text to be converted
+	 * @returns {String} A string of binary numbers
 	 */
 	convertTextToBinary: function(inputText)
 	{
@@ -563,9 +563,9 @@ var common = {
 	
 	/**
 	 * Converts an integer to binary and pads it up to the required length
-	 * @param {integer} number The number to be converted to binary
-	 * @param {integer} length The fixed length required in number of bits
-	 * @returns {string} Returns the binary representation of the number
+	 * @param {Number} number The number to be converted to binary
+	 * @param {Number} length The fixed length required in number of bits
+	 * @returns {String} Returns the binary representation of the number
 	 */
 	convertIntegerToBinary: function(number, length)
 	{
@@ -578,10 +578,10 @@ var common = {
 	
 	/**
 	 * Converts a small number (0-255) to its hexadecimal representation
-	 * @param {integer} number The number to be converted
-	 * @returns {string} Returns the hexadecimal representation of the number
+	 * @param {Number} number The number to be converted
+	 * @returns {String} Returns the hexadecimal representation of the number
 	 */
-	convertIntegerToHexadecimal: function(number)
+	convertSingleByteIntegerToHex: function(number)
 	{
 		// Convert to hexadecimal and left pad it with 0s if it is not a full byte (numbers 0-9)
 		var numberHex = number.toString(16);
@@ -589,19 +589,40 @@ var common = {
 		
 		return numberWithPaddingBinary;
 	},
+	
+	/**
+	 * Converts a number from an integer to hexadecimal string of even length. The maximum number of the integer 
+	 * should be 2^53 - 1. If a string is passed it will convert it to an integer (e.g. from form field).
+	 * @param {integer|string} number The number as an integer or string
+	 * @returns {String} Returns the hexadecimal string
+	 */
+	convertIntegerToHex: function(number)
+	{
+		// Make sure it is an integer then convert it to hex
+		var numberInt = parseInt(number);
+		var numberHex = numberInt.toString(16);
+		var length = numberHex.length;
+		
+		// If the number length is not even, add a 0 onto the left side
+		if (length % 2 !== 0) {
+			numberHex = common.leftPadding(numberHex, '0', length + 1);
+		}
+		
+		return numberHex;
+	},
 
 	/**
 	 * Converts binary code to hexadecimal string. All hexadecimal is lowercase for consistency with the hash functions
 	 * These are used as the export format and compatibility before sending via JSON or storing in the database
-	 * @param {string} binaryString A string containing binary numbers e.g. '01001101'
-	 * @return {string} A string containing the hexadecimal numbers
+	 * @param {String} binaryString A string containing binary numbers e.g. '01001101'
+	 * @return {String} A string containing the hexadecimal numbers
 	 */
 	convertBinaryToHexadecimal: function(binaryString)
 	{
 		var output = '';
 		
 		// For every 4 bits in the binary string
-		for (var i=0; i < binaryString.length; i+=4)
+		for (var i=0; i < binaryString.length; i += 4)
 		{
 			// Grab a chunk of 4 bits
 			var bytes = binaryString.substr(i, 4);
@@ -619,8 +640,8 @@ var common = {
 	
 	/**
 	 * Converts hexadecimal code to binary code
-	 * @param {string} hexString A string containing single digit hexadecimal numbers
-	 * @return {string} A string containing binary numbers
+	 * @param {String} hexString A string containing single digit hexadecimal numbers
+	 * @return {String} A string containing binary numbers
 	 */
 	convertHexadecimalToBinary: function(hexString)
 	{
@@ -644,10 +665,10 @@ var common = {
 
 	/**
 	 * Left pad a string with a certain character to a total number of characters
-	 * @param {string} inputString The string to be padded
-	 * @param {string} padCharacter The character that the string should be padded with
-	 * @param {number} totalCharacters The length of string that's required
-	 * @returns {string} A string with characters appended to the front of it
+	 * @param {String} inputString The string to be padded
+	 * @param {String} padCharacter The character that the string should be padded with
+	 * @param {Number} totalCharacters The length of string that's required
+	 * @returns {String} A string with characters appended to the front of it
 	 */
 	leftPadding: function(inputString, padCharacter, totalCharacters)
 	{
@@ -655,7 +676,7 @@ var common = {
 		inputString = inputString.toString();
 		
 		// If the string is already the right length, just return it
-		if (!inputString || !padCharacter || inputString.length >= totalCharacters)
+		if (!padCharacter || inputString.length >= totalCharacters)
 		{
 			return inputString;
 		}
@@ -674,9 +695,9 @@ var common = {
 	
 	/**
 	 * Round a number to specified decimal places
-	 * @param {number} num The number to be rounded
-	 * @param {number} decimals The number of decimal places to round to (use 0 for none)
-	 * @returns {number} The number round to the specified decimal places
+	 * @param {Number} num The number to be rounded
+	 * @param {Number} decimals The number of decimal places to round to (use 0 for none)
+	 * @returns {Number} The number round to the specified decimal places
 	 */
 	roundNumber: function(num, decimals)
 	{
@@ -687,18 +708,19 @@ var common = {
 	/**
 	 * Wrapper function to do all the work necessary to encrypt the message for sending. Also returns the encrypted 
 	 * MAC as well. This will use random padding, get the current timestamp for the message and random MAC algorithm as well.
-	 * @param {string} plaintextMessage The actual plaintext written by the user
-	 * @param {string} pad The one-time pad as a hexadecimal string
-	 * @return {array} Returns the ciphertext and MAC concatenated together ready to be sent
+	 * @param {String} plaintextMessage The actual plaintext written by the user
+	 * @param {String} pad The one-time pad as a hexadecimal string
+	 * @return {Array} Returns the ciphertext and MAC concatenated together ready to be sent
 	 */
 	encryptAndAuthenticateMessage: function(plaintextMessage, pad)
 	{
-		// Get the original length of the plaintext
-		var originalPlaintextLength = common.getOriginalPlaintextLength(plaintextMessage);
-		
-		// Get the message with random variable length padding, but use the padding if it's passed in (for testing purposes)
+		// Convert the text to binary
 		var plaintextMessageBinary = common.convertTextToBinary(plaintextMessage);
-		var plaintextBinaryWithPadding = common.padMessage(plaintextMessageBinary);
+		
+		// Get the message with random variable length padding
+		var paddingInfo = common.padMessage(plaintextMessageBinary);
+		var plaintextBinaryWithPadding = paddingInfo.plaintextWithPaddingBinary;
+		var originalPlaintextLength = paddingInfo.actualMessageLength;
 				
 		// Get the current timestamp and get a random MAC algorithm to use based on last byte of the pad
 		var timestamp = common.getCurrentUtcTimestamp();
@@ -732,8 +754,8 @@ var common = {
 	/**
 	 * Get the pad identifier from the ciphertext
 	 * We can use this to quickly look up the database and retrieve the pad (key) used to encipher this message
-	 * @param {string} ciphertextHex The ciphertext as sent in hexadecimal string
-	 * @return {string} Returns the portion of the ciphertext that is the pad identifier
+	 * @param {String} ciphertextHex The ciphertext as sent in hexadecimal string
+	 * @return {String} Returns the portion of the ciphertext that is the pad identifier
 	 */
 	getPadIdentifierFromCiphertext: function(ciphertextHex)
 	{
@@ -742,8 +764,8 @@ var common = {
 	
 	/**
 	 * Get the encrypted MAC from the end of the ciphertext 
-	 * @param {string} ciphertextHex
-	 * @returns {string}
+	 * @param {String} ciphertextHex
+	 * @returns {String}
 	 */
 	getMacFromCiphertext: function(ciphertextHex)
 	{
@@ -752,8 +774,8 @@ var common = {
 	
 	/**
 	 * Gets the Pad identifier and ciphertext message parts from the full ciphertext which includes the MAC
-	 * @param {string} ciphertextHex The full ciphertext that would be sent over the wire
-	 * @returns {string} Returns the ciphertext without the MAC
+	 * @param {String} ciphertextHex The full ciphertext that would be sent over the wire
+	 * @returns {String} Returns the ciphertext without the MAC
 	 */
 	getCiphertextWithoutMac: function(ciphertextHex)
 	{
@@ -763,9 +785,9 @@ var common = {
 	/**
 	 * Wrapper function to decrypt a received message and compare the MAC to see if it is valid or not. It will return 
 	 * the plaintext, the timestamp of when the message was sent, and whether the message was validated or not.
-	 * @param {string} ciphertext The ciphertext and ciphertext MAC concatenated together in hexadecimal string format
-	 * @param {string} pad The pad to be used to decrypt the message. The pad to use can be found from the message identifier (first x symbols in the ciphertext)
-	 * @return {array} Returns an array with the following keys 'plaintext', 'timestamp', 'valid'
+	 * @param {String} ciphertext The ciphertext and ciphertext MAC concatenated together in hexadecimal string format
+	 * @param {String} pad The pad to be used to decrypt the message. The pad to use can be found from the message identifier (first x symbols in the ciphertext)
+	 * @return {Array} Returns an array with the following keys 'plaintext', 'timestamp', 'valid'
 	 */
 	decryptAndVerifyMessage: function(ciphertext, pad)
 	{
@@ -819,140 +841,19 @@ var common = {
 			'valid': macValidation				// Whether the message is valid (MAC matched or not)
 		};
 	},
-	
+		
 	/**
-	 * Create the one-time pads from the collected and extracted entropy
-	 * @param {integer} numOfUsers The number of users in the group ie. 2, 3, 4, 5, 6, 7
-	 * @param {string} randomDataHexadecimal A string of hexadecimal random data
-	 * @return {array} Returns an array of pad objects. Each object contains keys 'padIdentifier' and 'pad'
+	 * This lets a user move the pads from one computer/device to another. Because pads are deleted once
+	 * they are sent/received then it's not a good idea to just import the original text file of pads 
+	 * because that could easily lead to pad re-use. This will copy the current remaining pads from the 
+	 * local database to the clipboard or text file.
+	 * @param {String} exportMethod How the pads will be exported. Pass in 'clipboard', 'textFile'
 	 */
-	createPads: function(numOfUsers, randomDataHexadecimal)
+	preparePadsForBackup: function(exportMethod)
 	{
-		var pads = {};
-		
-		// Initialise an array of pads for each user
-		for (var i=0; i < numOfUsers; i++)
-		{
-			// Get the user e.g. 'alpha', 'bravo' etc and set that as the key to hold the pads
-			var user = this.userList[i];
-			pads[user] = [];
-		}
-		
-		// Counters for loop
-		var numOfPads = 0;
-		var currentUserIndex = 0;
-		var currentUser = 'alpha';
-		
-		// Loop through all the entropy hexadecimal chars
-		for (var i=0, length = randomDataHexadecimal.length; i < length; i += this.totalPadSizeHex)
-		{
-			// Get the number of characters for the pad
-			var pad = randomDataHexadecimal.substr(i, this.totalPadSizeHex);
-			
-			// If near the end of the string and we don't have enough for one more pad, don't use the remainder
-			if (pad.length < this.totalPadSizeHex)
-			{
-				break;
-			}
-			
-			// Store the pad in an object that can be easily retrieved later
-			var padInfo = {
-				'padIdentifier': pad.substr(0, this.padIdentifierSizeHex),	// A copy of the first x characters of the pad to identify which pad to use, separated for faster DB lookup
-				'pad': pad													// The actual pad
-			};
-			
-			// Add to array of pads for this user
-			pads[currentUser].push(padInfo);
-			
-			// Update counters for next loop
-			numOfPads++;
-			currentUserIndex++;
-			currentUser = this.userList[currentUserIndex];
-						
-			// Start back on first user
-			if (currentUserIndex === numOfUsers)
-			{
-				currentUserIndex = 0;
-				currentUser = this.userList[currentUserIndex];
-			}
-		}
-		
-		return pads;
-	},
-	
-	/**
-	 * Exports the random data to the clipboard in various formats or to a binary file
-	 * @param {string} exportMethod How to export the data e.g. 'testExportBase64', 'testExportHexadecimal', 'testExportBinaryFile' or 'testExportBinaryString'
-	 * @param {string} extractedRandomDataBinary The extracted entropy bits in binary
-	 * @param {string} extractedRandomDataHexadecimal The extracted entropy bits in hexadecimal
-	 */
-	prepareRandomDataForExternalTesting: function(exportMethod, extractedRandomDataBinary, extractedRandomDataHexadecimal)
-	{
-		// Instructions for the popup prompt
-		var instructions = 'Copy to clipboard (Ctrl + C) then paste into a plain text file';
-
-		// Export to Base 64
-		if (exportMethod.indexOf('Base64') !== -1)
-		{
-			// Convert to WordArray objects for CryptoJS to use
-			var words = CryptoJS.enc.Hex.parse(extractedRandomDataHexadecimal);
-			var output = CryptoJS.enc.Base64.stringify(words);
-			
-			// Export the Base64 to a dialog which lets the user copy from there to a text file
-			window.prompt(instructions, output);
-		}
-		
-		// Export to hexadecimal string
-		else if (exportMethod.indexOf('Hexadecimal') !== -1)
-		{			
-			window.prompt(instructions, extractedRandomDataHexadecimal);
-		}
-		
-		// Export to binary file
-		else if (exportMethod.indexOf('BinaryFile') !== -1)
-		{
-			// Convert to hexadecimal then WordArray objects for CryptoJS to use
-			var words = CryptoJS.enc.Hex.parse(extractedRandomDataHexadecimal);
-			var output = CryptoJS.enc.Base64.stringify(words);
-			
-			// Output the binary file for the user to save
-			location.href = 'data:application/octet-stream;base64,' + output;
-		}
-	},
-	
-	/**
-	 * Export the pads to either clipboard, textfile or to the local machine database for each user.
-	 * Each user gets allocated their own one-time pads for sending. This prevents each user from using 
-	 * each other's pads which could cause them to use a pad more than once. If a one-time pad is used more 
-	 * than once then cryptanalysis is possible.
-	 * 
-	 * @param {integer} numOfUsers The number of users in the group ie. 2, 3, 4, 5, 6, 7
-	 * @param {string} exportForUser Who the pads are being exported for, e.g. alpha, bravo, charlie
-	 * @param {array} userNicknames An array of objects containing the users and their nicknames, e.g. [{ user: 'alpha', nickname: 'Joshua' }, ...]
-	 * @param {string} exportMethod How the pads will be exported. Pass in 'clipboard', 'textFile' or 'localDatabase'
-	 * @param {string} serverAddressAndPort The server address to send/receive messages
-	 * @param {string} serverKey The key to connect to the server and send/receive messages
-	 * @param {string } extractedRandomDataHexadecimal The random data as a hexadecimal string
-	 */
-	preparePadsForExport: function(numOfUsers, userNicknames, exportForUser, exportMethod, serverAddressAndPort, serverKey, extractedRandomDataHexadecimal)
-	{
-		// Ssplit up the random data into separate pads
-		var pads = common.createPads(numOfUsers, extractedRandomDataHexadecimal);
-				
-		// Clone the object storage schema
-		var padData = db.clone(db.padDataSchema);
-		
-		// Set the values
-		padData.info.programVersion = common.programVersion;
-		padData.info.serverAddressAndPort = serverAddressAndPort;
-		padData.info.serverKey = serverKey;
-		padData.info.user = exportForUser;
-		padData.info.userNicknames = userNicknames;
-		padData.pads = pads;
-				
 		// Convert to JSON for export to clipboard or text file
-		var padDataJson = JSON.stringify(padData);	
-		
+		var padDataJson = JSON.stringify(db.padData);	
+
 		// Export to a dialog which lets the user copy from there to a text file
 		if (exportMethod === 'clipboard')
 		{							
@@ -963,55 +864,13 @@ var common = {
 			// Check for the various File API support
 			if ((window.File && window.FileReader && window.FileList && window.Blob) === false)
 			{
-				alert('The File APIs are not fully supported in this browser, try exporting to clipboard then pasting to a new plain text file.');
-			}
-			else {
-				// Set parameters
-				var blob = new Blob([padDataJson], { type: 'text/plain;charset=utf-8' });
-				var nickname = padData.info.userNicknames[exportForUser].toLowerCase();
-				var filename = 'one-time-pads-user-' + nickname + '.txt';
-				
-				// Pop up a save dialog for the user to save to a text file preferably straight onto removable media such as USB flash drive
-				saveAs(blob, filename);
-			}
-		}
-		else {
-			// Save to current machine local database
-			db.saveNewPadDataToDatabase(padData);
-			
-			// Show success message
-			common.showStatus('success', 'Pads saved successfully to local database.');
-		}
-	},
-	
-	/**
-	 * This lets a user move the pads from one computer/device to another. Because pads are deleted once
-	 * they are sent/received then it's not a good idea to just import the original text file of pads 
-	 * because that could easily lead to pad re-use. This will copy the current remaining pads from the 
-	 * local database to the clipboard or text file.
-	 * @param {string} exportMethod How the pads will be exported. Pass in 'clipboard', 'textFile'
-	 */
-	preparePadsForBackup: function(exportMethod)
-	{
-		// Convert to JSON for export to clipboard or text file
-		var padDataJson = JSON.stringify(db.padData);	
-
-		// Export to a dialog which lets the user copy from there to a text file
-		if (exportMethod == 'clipboard')
-		{							
-			window.prompt('Copy to clipboard (Ctrl + C) then paste into text file', padDataJson);
-		}
-		else if (exportMethod == 'textFile')
-		{
-			// Check for the various File API support
-			if ((window.File && window.FileReader && window.FileList && window.Blob) === false)
-			{
 				alert('The File APIs are not fully supported in this browser, try exporting to clipboard then pasting to a new text file.');
 			}
 			else {
 				// Set text file download parameters
 				var blob = new Blob([padDataJson], { type: 'text/plain;charset=utf-8' });
-				var nickname = db.padData.info.userNicknames[db.padData.info.user].toLowerCase();
+				var userCallsign = db.padData.info.user;
+				var nickname = db.padData.info.userNicknames[userCallsign].toLowerCase();
 				var filename = 'one-time-pads-backup-user-' + nickname + '.txt';
 				
 				// Pop up a save dialog for the user to save to a text file preferably straight onto removable media such as USB flash drive
@@ -1021,52 +880,10 @@ var common = {
 	},
 	
 	/**
-	 * Gets the data back from JSON format and saves it to the two database tables
-	 * @param {string} padDataJson The one-time pads and meta data in JSON format
-	 */
-	preparePadDataForImport: function(padDataJson)
-	{
-		// Parse the serialized data into a JavaScript object and save to the database
-		db.padData = JSON.parse(padDataJson);
-		db.savePadDataToDatabase();
-	},
-		
-	/**
-	 * Load the one-time pads from a text file
-	 * @param {event} evt The event object
-	 */
-	loadPadsFromTextFile: function(evt)
-	{
-		// FileList object
-		var files = evt.target.files;
-		var file = files[0];
-		
-		// List some properties
-		var fileInfo = 'Pads loaded: ' + file.name + ', ' + file.type + ', ' + file.size + ' bytes.';
-		
-		// Set up to read from text file
-		var reader = new FileReader();
-		reader.readAsText(file);
-
-		// Closure to read the file information
-		reader.onload = (function(theFile)
-		{
-			return function(e)
-			{
-				// Send the JSON to be loaded to the database
-				common.preparePadDataForImport(e.target.result);
-				
-				// Log loaded file info to console
-				common.showStatus('success', 'Pads loaded successfully. ' + fileInfo);
-			};
-		})(file);
-	},
-	
-	/**
 	 * Remove non ASCII characters from the plaintext message and cut the 
 	 * message short if they have exceeded the maximum size allowed
-	 * @param {string} plaintext The plaintext to remove invalid characters from
-	 * @return {string} A clean ASCII string
+	 * @param {String} plaintext The plaintext to remove invalid characters from
+	 * @return {String} A clean ASCII string
 	 */
 	removeInvalidChars: function(plaintext)
 	{
@@ -1079,12 +896,20 @@ var common = {
 	
 	/**
 	 * Get the pad to be used in encrypting the message
-	 * @return {string|false} Returns the pad to be used, or false if none available
+	 * @return {String|false} Returns the pad to be used, or false if none available
 	 */
 	getPadToEncryptMessage: function()
 	{
 		// Initialisations
 		var user = db.padData.info.user;
+		
+		// If the user doesn't exist, then the database hasn't been loaded
+		if (user === null)
+		{
+			return false;
+		}
+		
+		// Get the number of pads remaining for the user
 		var numOfPads = db.padData.pads[user].length;
 		
 		// If there are no pads to use (sent all messages) return false, and calling function can show error
@@ -1109,9 +934,9 @@ var common = {
 	 * Gets the pad to decrypt the message. It finds the right pad based on the first x letters in the ciphertext
 	 * which is the pad identifer. The database is then searched for the pad with the same pad identifier. After the 
 	 * pad is found, it is returned to the calling function and the pad is removed from the local database.
-	 * @param {string} ciphertextHex The ciphertext and MAC in hexadecimal format
-	 * @param {string} fromUser Which user the message is from
-	 * @return {object} Returns an object with properties 'padIndex', 'padIdentifier' and 'pad'
+	 * @param {String} ciphertextHex The ciphertext and MAC in hexadecimal format
+	 * @param {String} fromUser Which user the message is from
+	 * @return {Object} Returns an object with properties 'padIndex', 'padIdentifier' and 'pad'
 	 */
 	getPadToDecryptMessage: function(ciphertextHex, fromUser)
 	{
@@ -1145,11 +970,11 @@ var common = {
 	
 	/**
 	 * Fixes the URL depending on if the user entered a URL with a slash on the end or not
-	 * @param {string} serverAddress The url of the server where the files are e.g. http://mydomain.com or http://mydomain.com/otpchat/
-	 * @param {string} page The page to be accessed e.g. index.php
-	 * @return {string} The correct url e.g. http://mydomain/otpchat/index.php
+	 * @param {String} serverAddress The url of the server where the files are e.g. http://mydomain.com or http://mydomain.com/otpchat/
+	 * @param {String} page The page to be accessed e.g. index.php
+	 * @return {String} The correct url e.g. http://mydomain/otpchat/index.php
 	 */
-	standardiseUrl: function(serverAddress, page)
+	normaliseUrl: function(serverAddress, page)
 	{		
 		// If the user has entered a server address with a slash on the end then just append the page name
 		if (serverAddress.charAt(serverAddress.length - 1) === '/')
@@ -1164,8 +989,8 @@ var common = {
 	
 	/**
 	 * HTML encodes entities to prevent XSS
-	 * @param {string} string The string to replace characters in
-	 * @return {string} The escaped string
+	 * @param {String} string The string to replace characters in
+	 * @return {String} The escaped string
 	 */
 	htmlEncodeEntities: function(string)
 	{
@@ -1190,36 +1015,95 @@ var common = {
 	},
 		
 	/**
-	 * Shows a success or error message
-	 * @param {string} type The type of the error which will match the CSS class 'success' or 'error'
-	 * @param {string} message The error or success message
+	 * Shows a success, error or processing message. The processing message also has an animated gif.
+	 * @param {String} type The type of the error which will match the CSS class 'success', 'error' or 'processing'
+	 * @param {String} message The error or success message
+	 * @param {Boolean} keepDisplayed Optional flag to keep the message on screen until manually cleared
 	 */
-	showStatus: function(type, message)
+	showStatus: function(type, message, keepDisplayed)
 	{
-		// Escape for XSS just in case a message is coming back from the server
-		message = this.htmlEncodeEntities(message);
+		// Cache selector
+		var $statusMessage = $('.statusMessage');
 		
-		// Remove existing CSS classes and add the class depending on the type of message
-		$('.statusMessage').removeClass('success error').addClass(type);
+		// Remove existing CSS classes, add the class depending on the type of message and set the message
+		$statusMessage.removeClass('success error processing').addClass(type);
+		$statusMessage.find('.message').text(message);
 		
-		// Show the message for 14 seconds then fade it out
-		$('.statusMessage').html(message).show().delay(14000).fadeOut(300);
+		// Clear previous timeout so that new status messages being shown don't get prematurely 
+		// hidden by an old timer that is still running but just completes and hides the new message
+		window.clearTimeout(common.statusTimeoutId);
+		
+		// If the message should be kept displayed just show it
+		if (keepDisplayed)
+		{
+			$statusMessage.show();
+		}
+		else {
+			// Otherwise show the error or success message for 14 seconds then fade it out
+			$statusMessage.show();
+			
+			// Set a timer to hide the status message after 14 seconds
+			common.statusTimeoutId = setTimeout(function()
+			{
+				$statusMessage.fadeOut(300);
+			
+			}, 14000);
+		}
 	},
+	
+	/**
+	 * Clears the previous status message
+	 */
+	hideStatus: function()
+	{
+		// Cache selector
+		var $statusMessage = $('.statusMessage');
 		
+		// Remove past classes, clear the message and hide it
+		$statusMessage.removeClass('success error processing');
+		$statusMessage.find('.message').text('');
+		$statusMessage.hide();
+		
+		// Clear previous timeout so that new status messages being 
+		// shown don't get prematurely hidden by an old timer still running
+		window.clearTimeout(common.statusTimeoutId);
+	},
+	
+	/**
+	 * Shows how long it took to process the data up to this point
+	 * @param {String} message The status message to be displayed
+	 * @param {Boolean} showTimeElapsed Whether to show how long it has taken so far, turn this off if just starting the process
+	 */
+	showProcessingMessage: function(message, showTimeElapsed)
+	{
+		// Current time
+		var currentTime = new Date();
+		
+		// Calculate time taken in milliseconds and seconds
+		var milliseconds = currentTime.getTime() - common.startTime.getTime();
+		var seconds = (milliseconds / 1000).toFixed(1);
+		
+		// Show the time the process started if applicable
+		var timeElapsedMessage = (showTimeElapsed) ? ' Total time elapsed: ' + milliseconds + ' ms (' + seconds + ' s)' : '';
+		
+		// Show status on page
+		common.showStatus('processing', message + timeElapsedMessage, true);
+	},
+	
 	/**
 	 * Wrapper around the various hash functions from different libraries and options to keep the output format consistent
-	 * @param {string} algorithm The name of the algorithm to run ('keccak-512' or 'skein-512')
-	 * @param {string} messageHex The string to be hashed in hexadecimal
-	 * @return {string} The hashed message as hexadecimal
+	 * @param {String} algorithm The name of the algorithm to run ('keccak-512' or 'skein-512')
+	 * @param {String} messageHex The string to be hashed in hexadecimal
+	 * @return {String} The hashed message as hexadecimal
 	 */
 	secureHash: function(algorithm, messageHex)
 	{
 		switch (algorithm)
-		{			
+		{
 			// Keccak (512 bits) - Winner of the NIST hash function competition and selected to be next SHA-3.
 			// This uses the original Keccak algorithm, Keccak[c=2d], not the SHA3 version with NSA/NIST modifications. 
 			// The hexadecimal is converted to CryptoJS wordArray objects so it can accept the hexadecimal input.
-			case 'keccak-512':				
+			case 'keccak-512':
 				var messageWordArray = CryptoJS.enc.Hex.parse(messageHex);
 				return CryptoJS.SHA3(messageWordArray, { outputLength: 512 }).toString();
 			
@@ -1230,51 +1114,88 @@ var common = {
 	},
 		
 	/**
-	 * Gets a random 512 bit nonce from the Web Crypto API
-	 * @returns {String} Returns a random hexadecimal string with length of 128 hexadecimal symbols (512 bits/64 bytes)
+	 * The biggest random number the Web Crypto API can return is an unsigned 32 bits. This function will collect blocks 
+	 * of 512 random bits and hash them separately with the Skein 512 bit hash function. The final output will then be 
+	 * truncated to the required length of bits. The reason for this is it is not certain whether the browser's implementation 
+	 * of the Web Crypto API getRandomValues() function has had a thorough security review. The output could be suspect on 
+	 * closed source systems or they may make use of Intel's on-chip closed design "random" number generator. This is an 
+	 * extra security measure to prevent leakage of the real RNG output in case there is a bug or bias found in future. Thus 
+	 * if nonces or IVs are sent in the clear as with the server protocol, an attacker will have a harder time discerning a 
+	 * pattern or predicting future output.
+	 * @param {Number} requiredNumOfBits The desired number of random bits as an integer.
+	 * @param {String} returnFormat Pass in 'binary' or 'hexadecimal' to return the random bits in that format.
+	 * @returns {String} Returns the random bits as a string. If the return type is hexadecimal, then the requiredNumOfBits 
+	 *                   should be a multiple of 4 bits, otherwise it can't convert the remaining few bits to a hexadecimal 
+	 *                   symbol and will truncate the output to the nearest multiple of 4 bits.
 	 */
-	getRandomNonce: function()
+	getRandomBits: function(requiredNumOfBits, returnFormat)
 	{
-		var nonceBitLength = 512;
-		var randomBits = '';		
+		// Find out how many 512 bit blocks we need
+		var requiredNumOf512BitBlocks = Math.ceil(requiredNumOfBits / 512);
 		
-		// Gather until we have 512 random bits
-		while (randomBits.length < nonceBitLength)
-		{		
-			// Collect a random number from the Web Crypto API
-			var byteArray = new Uint32Array(1);
-			window.crypto.getRandomValues(byteArray);
+		// Find out number of bits needed as a multiple of 512 bits
+		var numOfBitsToGet = requiredNumOf512BitBlocks * 512;
 			
-			// Convert the typed integer to a string so we can check the length
-			var randomNum = byteArray[0].toString();
-			
-			// For every integer in the random number
-			for (var i=0, length = randomNum.length; i < length; i++)
-			{
-				// Convert each integer to a single bit. If the integer is (0-4) then output a 0 bit, if the integer 
-				// is (5-9) then output a 1 bit. This will provide a uniform distribution of bits from the numbers 0-9.
-				randomBits += (randomNum.charAt(i) < 5) ? '0' : '1';
-			}
+		// Find out how many 32 bit random numbers from the Web Crypto API is needed to get enough bits
+		var numOf32BitNumbers = numOfBitsToGet / 32;
+				
+		// Collect 32 bit random numbers from the Web Crypto API
+		var byteArray = new Uint32Array(numOf32BitNumbers);
+		window.crypto.getRandomValues(byteArray);
+		
+		// Variable to store output
+		var randomBitsHexadecimal = '';
+		
+		// Convert the numbers to hexadecimal
+		for (var i=0, length = byteArray.length; i < length; i++)
+		{
+			// Convert to hexadecimal and left pad the number with 0s so it is exactly 32 bits
+			var numberHexadecimal = byteArray[i].toString(16);
+			numberHexadecimal = common.leftPadding(numberHexadecimal, '0', 8);
+						
+			// Build up the output
+			randomBitsHexadecimal += numberHexadecimal;
 		}
 		
-		// Shorten to exactly 512 bits because above process will sometimes return more bits 
-		// than necessary due to the varying length of numbers returned from the Web Crypto API
-		randomBits = randomBits.substr(0, nonceBitLength);
+		// Determine when loop should finish
+		var hashedRandomBitsHexadecimal = '';
+		var numOfHexSymbolsToGet = numOfBitsToGet / 4;
 		
-		// Hash the bits to prevent leakage of internal RNG state (in case there is a bug in the Web Crypto API)
-		var randomBitsHex = this.convertBinaryToHexadecimal(randomBits);
-		var hashedRandomBitsHex = this.secureHash('keccak-512', randomBitsHex);
-				
-		// Convert the bits to hexadecimal
-		return hashedRandomBitsHex;
+		// Hash the bits in 512 bit blocks (128 hexadecimal symbols is 512 bits)
+		for (var j=0; j < numOfHexSymbolsToGet; j += 128)
+		{
+			var bitsToHashHexadecimal = randomBitsHexadecimal.substr(j, 128);
+			var hashedBits = common.secureHash('skein-512', bitsToHashHexadecimal);
+			
+			// Build up the output
+			hashedRandomBitsHexadecimal += hashedBits;
+		}
+						
+		// If hexadecimal format is needed
+		if (returnFormat === 'hexadecimal')
+		{	
+			// Determine how many hexadecimal symbols to return and truncate the output to desired length
+			var numOfHexSymbols = Math.floor(requiredNumOfBits / 4);
+			var randomBitsHexadecimal = hashedRandomBitsHexadecimal.substr(0, numOfHexSymbols);
+									
+			return randomBitsHexadecimal;
+		}
+		else {
+			// Convert to binary then truncate the output to desired length
+			var randomBitsBinary = common.convertHexadecimalToBinary(hashedRandomBitsHexadecimal);
+			randomBitsBinary = randomBitsBinary.substr(0, requiredNumOfBits);
+			
+			return randomBitsBinary;
+		}
 	},
 	
 	/**
 	 * Test that the server and database connection is working from the client
-	 * @param {string} serverAddressAndPort
-	 * @param {string} serverKey
+	 * @param {String} serverAddressAndPort The server address and port e.g. http://myserver.net:8080/jericho/
+	 * @param {String} serverKey The 512 bit server key in hexadecimal
+	 * @param {String} callbackFunction Optional callback function to execute after server response is complete
 	 */
-	testServerConnection: function(serverAddressAndPort, serverKey)
+	testServerConnection: function(serverAddressAndPort, serverKey, callbackFunction)
 	{
 		// If they didn't enter the server address show error
 		if (serverAddressAndPort === '')
@@ -1293,14 +1214,11 @@ var common = {
 			};
 			
 			// Send a request off to the server to check the connection
-			common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseDataJson)
+			common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseData)
 			{
 				// If the server response is authentic
 				if (validResponse)
 				{
-					// Convert from JSON to object
-					var responseData = JSON.parse(responseDataJson);
-
 					// If it connected successfully show success message or error on failure
 					var status = (responseData.success) ? 'success' : 'error';
 					common.showStatus(status, responseData.statusMessage);
@@ -1315,7 +1233,13 @@ var common = {
 				else {
 					// Most likely cause is user has incorrect server url or key entered.
 					// Another alternative is the attacker modified their request while en route to the server
-					common.showStatus('error', 'Error contacting server. Double check you are connected to the network and that the client and server configurations are correct. Another possibility is that the data was modified in transit by an attacker.');
+					common.showStatus('error', 'Error contacting server. Check: 1) you are connected to the network, 2) the client/server configurations are correct, and 3) client/server system clocks are up to date. If everything is correct, the data may have been tampered with by an attacker.');
+				}
+				
+				// Execute the callback function (used to reposition Export Pads dialog if long error message)
+				if (typeof callbackFunction === 'function')
+				{
+					callbackFunction();
 				}
 			});
 		}
@@ -1323,58 +1247,59 @@ var common = {
 		
 	/**
 	 * Sends a request to the server and performs a specific API action on the server
-	 * @param {object} data The data to be sent to the server
-	 * @param {string} serverAddressAndPort The server address and port
-	 * @param {string} serverKey The hexadecimal server key
-	 * @param {string} callbackFunction The name of the callback function to run when complete
+	 * @param {Object} requestData The data to be sent to the server
+	 * @param {String} serverAddressAndPort The server address and port
+	 * @param {String} serverKey The 512 bit hexadecimal server key
+	 * @param {String} callbackFunction The name of the callback function to run when complete
 	 */
-	sendRequestToServer: function(data, serverAddressAndPort, serverKey, callbackFunction)
+	sendRequestToServer: function(requestData, serverAddressAndPort, serverKey, callbackFunction)
 	{
-		// Fix the url for any excess slashes
-		var fullServerAddress = common.standardiseUrl(serverAddressAndPort, 'index.php');
+		// Fix the URL for any excess slashes
+		var fullServerAddress = common.normaliseUrl(serverAddressAndPort, 'index.php');
 		
 		// Add a random nonce and the current timestamp to the data to be sent
-		data['nonce'] = common.getRandomNonce();
-		data['timestamp'] = common.getCurrentUtcTimestamp();
+		requestData.nonce = common.getRandomBits(512, 'hexadecimal');
+		requestData.timestamp = common.getCurrentUtcTimestamp();
 		
 		// Convert to JSON and MAC the request data
-		var requestDataJson = JSON.stringify(data);			
-		var requestMac = this.authenticateRequest(requestDataJson, serverKey);
+		var requestDataJson = JSON.stringify(requestData);			
+		var requestMac = common.authenticateRequest(requestDataJson, serverKey);
+		
+		// Base64 encode to obfuscate the meta data somewhat (future versions will encrypt the request data)
+		var requestDataAndMacBase64 = btoa(requestDataJson + requestMac);
 		
 		// Create AJAX request to chat server
 		$.ajax(
 		{
-			url: fullServerAddress,
-			type: 'POST',
-			dataType: 'json',
-			timeout: 14000,					// Timeout at 14 seconds
-			data: {
-				'data': requestDataJson,
-				'mac': requestMac
-			}
+			data: { data: requestDataAndMacBase64 },	// Use 'data' as the POST key which is as generic as possible to hinder traffic fingerprinting
+			dataType: 'text',							// Expect plain text response as Base64 encoded string
+			jsonp: false,								// Prevent insecure JSONP from being used and use CORS instead
+			timeout: 14000,								// Timeout at 14 seconds
+			type: 'POST',								// API accepts POST requests only
+			url: fullServerAddress						// The API URL
 		})
 		.done(function(responseData)
 		{
 			// Check if the response was really from the server
-			var validResponse = common.validateServerResponse(serverKey, responseData, requestMac);
+			var validation = common.decodeAndValidateServerResponse(serverKey, responseData, requestMac);
 
 			// Return back to the calling function so it can process the response
-			callbackFunction(validResponse, responseData.data);
+			callbackFunction(validation.valid, validation.responseData);
 		})
 		.fail(function()
 		{			
 			// Return back to the calling function so it can process the error
 			callbackFunction(null, null);
-		});
+		});		
 	},
 		
 	/**
 	 * Function will use Skein-512 as a MAC to authenticate data being sent to the server. 
 	 * On the server side the key and data is input into the hash as binary so this means 
 	 * the MAC from JavaScript and MAC from PHP will match.
-	 * @param {string} dataJson The JSON data to be sent to the server
-	 * @param {string} serverKey The server key as a hexadecimal string
-	 * @returns {string} Returns the MAC as a hexadecimal string
+	 * @param {String} dataJson The JSON data to be sent to the server
+	 * @param {String} serverKey The server key as a hexadecimal string
+	 * @returns {String} Returns the MAC as a hexadecimal string
 	 */
 	authenticateRequest: function(dataJson, serverKey)
 	{
@@ -1382,8 +1307,11 @@ var common = {
 		var dataJsonBinary = common.convertTextToBinary(dataJson);
 		var dataJsonHex = common.convertBinaryToHexadecimal(dataJsonBinary);	
 
-		// MAC the response by doing Hash(K, M)
-		return common.secureHash('skein-512', serverKey + dataJsonHex);
+		// MAC the response by doing Hash(K | data)
+		var dataToMac = serverKey + dataJsonHex;
+		var mac = common.secureHash('skein-512', dataToMac);
+		
+		return mac;
 	},
 	
 	/**
@@ -1391,34 +1319,69 @@ var common = {
 	 * that the response it sent was a direct response to the request it was sent. It does this by 
 	 * performing a MAC using the Skein-512 hash algorithm on the request data and the response data 
 	 * with the server key then comparing that with the MAC sent back from the server.
-	 * @param {string} serverKey The hexadecimal server key
-	 * @param {object} responseData The data from the response which should contain the JSON data and the MAC
-	 * @param {string} requestMac The MAC of the data sent to the server
+	 * @param {String} serverKey The hexadecimal server key
+	 * @param {Object} response The data from the response which should be the Base64 encoded JSON data and the MAC
+	 * @param {String} requestMac The MAC of the data sent to the server
 	 * @returns {Boolean} Whether the response was valid or not
 	 */
-	validateServerResponse: function(serverKey, responseData, requestMac)
+	decodeAndValidateServerResponse: function(serverKey, response, requestMac)
 	{
+		// Default is invalid result
+		var result = {
+			valid: false,
+			responseData: {}
+		};
+				
 		// Check the data actually came back from the request
-		if ((responseData.data !== undefined) && (responseData.mac !== undefined))
+		if (typeof response !== 'undefined')
 		{
-			// Validate the response from the server			
-			var validResponse = common.validateResponseMac(serverKey, responseData.data, requestMac, responseData.mac);
+			try {
+				// Filter invalid Base64 characters
+				var filteredResponseData = response.replace(/[^A-Za-z0-9+\/=]/g, '');
+				
+				// Decode from Base64
+				var responseString = atob(filteredResponseData);
 			
-			// Return if the response was valid or not
-			return validResponse;
+				// Take off the last 128 hex chars of the response which is the MAC
+				var macStartPos = responseString.length - 128;
+				var responseMac = responseString.substring(macStartPos);
+
+				// Get the string up to the start of the MAC, which is the data then parse the JSON
+				var responseDataJson = responseString.substring(0, macStartPos);
+				
+				// Validate the response from the server			
+				var validResponse = common.validateResponseMac(serverKey, responseDataJson, requestMac, responseMac);
+			
+				// Check if it is an authentic response from the server first before decoding the JSON in case an 
+				// attacker has modified the response and it executes some 0-day exploit in the browser's JSON parser
+				if (validResponse)
+				{
+					// Decode the JSON to a regular JavaScript object, invalid JSON will throw an exception
+					var responseData = JSON.parse(responseDataJson);
+
+					// Successful result
+					result.valid = true;
+					result.responseData = responseData;
+				}
+			}
+			catch (exception)
+			{
+				// If Base64 decoding or JSON parsing fails, e.g. malformed data was sent back, then return failure
+				return result;
+			}
 		}
 		
-		// Return failure
-		return false;
+		// Return result
+		return result;
 	},
 		
 	/**
 	 * Function to validate the response from the server
-	 * @param {string} serverKey The server key
-	 * @param {string} responseDataJson The server response JSON data
-	 * @param {string} requestMac The MAC that was sent to the server	 
-	 * @param {string} responseMac The server response MAC	 
-	 * @returns {boolean} Returns whether the server response is valid or not
+	 * @param {String} serverKey The server key
+	 * @param {String} responseDataJson The server response JSON data
+	 * @param {String} requestMac The MAC that was sent to the server	 
+	 * @param {String} responseMac The server response MAC	 
+	 * @returns {Boolean} Returns whether the server response is valid or not
 	 */
 	validateResponseMac: function(serverKey, responseDataJson, requestMac, responseMac)
 	{
@@ -1427,7 +1390,8 @@ var common = {
 		var responseDataJsonHex = common.convertBinaryToHexadecimal(responseDataJsonBinary);
 		
 		// Perform the MAC - the order should match the PHP code
-		var macToCheck = common.secureHash('skein-512', serverKey + responseDataJsonHex + requestMac);
+		var dataToMac = serverKey + responseDataJsonHex + requestMac;
+		var macToCheck = common.secureHash('skein-512', dataToMac);
 		
 		// Check the calculated MAC matches the one from the server
 		return (macToCheck === responseMac) ? true : false;
@@ -1435,8 +1399,8 @@ var common = {
 	
 	/**
 	 * Saves just the server connection details to local storage
-	 * @param {string} serverAddressAndPort
-	 * @param {string} serverKey
+	 * @param {String} serverAddressAndPort
+	 * @param {String} serverKey
 	 */
 	saveServerConnectionDetails: function(serverAddressAndPort, serverKey)
 	{
@@ -1450,14 +1414,14 @@ var common = {
 	
 	/**
 	 * Checks if HTML5 Local Storage is supported
-	 * @return {boolean}
+	 * @return {Boolean}
 	 */
 	checkLocalStorageSupported: function()
 	{
 		try	{
 			return 'localStorage' in window && window['localStorage'] !== null;
 		}
-		catch (e)
+		catch (exception)
 		{
 			return false;
 		}
@@ -1465,7 +1429,7 @@ var common = {
 	
 	/**
 	 * Checks if the HTML5 Web Workers are supported
-	 * @returns {boolean}
+	 * @returns {Boolean}
 	 */
 	checkWebWorkerSupported: function()
 	{
@@ -1474,7 +1438,7 @@ var common = {
 	
 	/**
 	 * Checks if the HTML5 Web Crypto API getRandomValues functon is supported
-	 * @returns {boolean}
+	 * @returns {Boolean}
 	 */
 	checkWebCryptoApiSupported: function()
 	{
@@ -1500,7 +1464,7 @@ var common = {
 			// If no random numbers found
 			return false;
 		}
-		catch (e)
+		catch (exception)
 		{
 			return false;
 		}
@@ -1508,38 +1472,17 @@ var common = {
 	
 	/**
 	 * Checks if HTML5 Offline Web Application Cache is supported
-	 * @returns {boolean}
+	 * @returns {Boolean}
 	 */
 	checkOfflineWebApplicationSupported: function()
 	{
 		return !!window.applicationCache;
 	},
-	
-	/**
-	 * Shows how long it took to process the data up to this point
-	 * @param {string} message The status message to be displayed
-	 * @param {boolean} showTimeElapsed Whether to show how long it has taken so far, turn this off if just starting the process
-	 */
-	showProcessingMessage: function(message, showTimeElapsed)
-	{
-		// Current time
-		var currentTime = new Date();
-		
-		// Calculate time taken in milliseconds and seconds
-		var milliseconds = currentTime.getTime() - common.startTime.getTime();
-		var seconds = (milliseconds / 1000).toFixed(3);
-		
-		// Show the time the process started if applicable
-		var timeElapsedMessage = (showTimeElapsed) ? ' Total time elapsed: ' + milliseconds + ' ms (' + seconds + ' s)' : '';
-			
-		// Show status on page
-		$('.processingStatus').html(message + timeElapsedMessage);
-	},
 		
 	/**
 	 * Formats the number with thousands separator
-	 * @param {integer} num Pass in number e.g. 2000000
-	 * @returns {string} Returns in format 2,000,000
+	 * @param {Number} num Pass in number e.g. 2000000
+	 * @returns {String} Returns in format 2,000,000
 	 */
 	formatNumberWithCommas: function(num)
 	{
@@ -1548,8 +1491,8 @@ var common = {
 	
 	/**
 	 * Capitalises the first letter of a string
-	 * @param {string} text
-	 * @returns {string}
+	 * @param {String} text
+	 * @returns {String}
 	 */
 	capitaliseFirstLetter: function(text)
 	{
@@ -1557,197 +1500,115 @@ var common = {
 	},
 	
 	/**
-	 * Configure the Export Pads dialog to open and all functionality within
+	 * Some boilerplate code to start a web worker. Using the ID of the worker it will find the code within the 
+	 * <script> tags of the HTML page and initialise the HTML5 Web Worker with that code
+	 * @param {String} workerId The CSS ID of the worker to be loaded e.g. 'export-pads-worker'
+	 * @returns {Worker} Returns the handle to the web worker
 	 */
-	initExportPadsDialog: function()
+	startWebWorker: function(workerId)
 	{
-		// Configure button to open entropy collection settings dialog
-		$('#btnOpenExportPadsSettings').click(function()
-		{					
-			$('#exportPadsSettings').dialog('open');
-		});
-
-		// Configure entropy collection settings dialog
-		$('#exportPadsSettings').dialog(
-		{
-			autoOpen: false,
-			create: function (event)
-			{
-				// Set the dialog position as fixed before opening the dialog. See: http://stackoverflow.com/a/6500385
-				$(event.target).parent().css('position', 'fixed');
-			},
-			resizable: false,
-			width: 'auto'
-		});
+		// Convert the base URL so the web worker can import the common.js script
+		// Also load the JavaScript code on the HTML page which is what the worker will run
+		var baseUrl = window.location.href.replace(/\\/g, '/').replace(/\/[^\/]*$/, '');
+        var array = ['var baseUrl = "' + baseUrl + '";' + $('#' + workerId).html()];
 		
-		// Initialise other functionality within the dialog
-		common.dynamicallySetNicknameTextEntry();
-		common.hideOptionsDependingOnExportMethod();
-		common.initCreateServerKeyButton();
-		common.initExportPadsButton();
-		common.preloadServerConnectionDetails();
-		common.initTestServerConnectionButton();
-	},
-	
-	/**
-	 * When the number of users changes, enable/disable options in the Export for user 
-	 * select box and dynamically alter the number of user nicknames they can enter
-	 */
-	dynamicallySetNicknameTextEntry: function()
-	{		
-		$('#numOfUsers').change(function()
+		// Create a Blob to hold the JavaScript code and send it to the inline worker
+        var blob = new Blob(array, { type: "text/javascript" });
+		var blobUrl = window.URL.createObjectURL(blob);
+		var worker = new Worker(blobUrl);
+		
+		// Worker error handler
+		worker.addEventListener('error', function(event)
 		{
-			// Get the number of users
-			var numOfUsers = parseInt($(this).val());
-			var options = '';
-			var nicknames = '';
-
-			// Build the dropdown options dynamically
-			for (var i=0; i < numOfUsers; i++)
-			{
-				options += '<option value="' + common.userList[i] + '">' + common.userList[i] + '</option>';
-			}
-
-			// Build list of users so the user can edit the user nicknames
-			for (var i=0; i < numOfUsers; i++)
-			{
-				// Build the HTML to be rendered inside the dialog
-				var nicknameCapitalised = common.capitaliseFirstLetter(common.userList[i]);
-				nicknames += '<label>' + nicknameCapitalised + '</label> '
-						  +  '<input id="nickname-' + common.userList[i] + '" type="text" maxlength="12" value="' + nicknameCapitalised + '"><br>';
-			}
-
-			// Display the options
-			$('#exportForUser').html(options);
-			$('.nicknames').html(nicknames);
-		});
+			console.error('ERROR: Worker ID ' + workerId + ' line ' + event.lineno + ' in ' + event.filename + ': ' + event.message);
+			
+		}, false);
+		
+		// Free up memory
+		window.URL.revokeObjectURL(blobUrl);
+		
+		return worker;
 	},
-	
+		
 	/**
-	 * Hide or show the last option in the dialog if the export method is changed
+	 * Parses JSON with detection for invalid JSON
+	 * @param {String} jsonString The JSON string to parse
+	 * @returns {Object|false} Returns the JavaScript object if valid JSON or false if not
 	 */
-	hideOptionsDependingOnExportMethod: function()
-	{		
-		$('#exportMethod').change(function()
-		{
-			var exportMethod = $(this).val();
-
-			// If the pads will be exported for actual use show the Export for User option
-			if ((exportMethod === 'textFile') || (exportMethod === 'clipboard') || (exportMethod === 'localDatabase'))
-			{
-				$('.exportForUserRow').show();
-			}
-			else {
-				// Otherwise export for testing so hide the Export for User option
-				$('.exportForUserRow').hide();
-			}					
-		});
-	},
-	
-	/**
-	 * Creates a 512 bit server key from the random, extracted 
-	 * data and puts it in the export dialog's text field
-	 */
-	initCreateServerKeyButton: function()
+	parseJson: function(jsonString)
 	{
-		$('#btnCreateServerKey').click(function()
-		{
-			// Check there is enough data to create a 512 bit key (128 hexadecimal symbols)
-			if (common.randomDataHexadecimal.length < 128)
+		try {
+			// Try parsing the string
+			var json = JSON.parse(jsonString);
+			
+			// Handle non-exception throwing cases
+			if (json && (typeof json === 'object'))
 			{
-				common.showStatus('error', 'Not enough bits remaining to create a full 512 bit key.');
+				// Return valid JSON
+				return json;
 			}
-			else {
-				// Take the first 512 bits of the extracted data and convert it to hexadecimal
-				var serverKeyHex = common.randomDataHexadecimal.slice(0, 128);
-
-				// After removing the first 512 bits, use the remainder of the bits for the one-time pads
-				common.randomDataHexadecimal = common.randomDataHexadecimal.slice(128);
-
-				// Put it in the text field
-				$('#serverKey').val(serverKeyHex);
-			}
-		});
-	},
-	
-	/**
-	 * Initialise the button to export the one-time pads or random data for external testing
-	 */
-	initExportPadsButton: function()
-	{
-		// Export the pads
-		$('#btnExportPads').click(function()
+			
+			return false;
+		}		
+		catch (exception)
 		{
-			// Get the selected export method
-			var exportMethod = $('#exportMethod').val();
-
-			// Export to text, file or database depending on user selection
-			if ((exportMethod === 'textFile') || (exportMethod === 'clipboard') || (exportMethod === 'localDatabase'))
-			{
-				var numOfUsers = parseInt($('#numOfUsers').val());
-				var exportForUser = $('#exportForUser').val();
-				var serverAddressAndPort = $('#serverAddressAndPort').val();
-				var serverKey = $('#serverKey').val();						
-				var userNicknames = {};
-
-				// Loop through the number of users
-				for (var i=0; i < numOfUsers; i++)
-				{
-					// Get the user, nickname, then filter the nickname field so only A-z and 0-9 characters allowed
-					var user = common.userList[i];
-					var nickname = $('#nickname-' + common.userList[i]).val();
-						nickname = nickname.replace(/[^A-Za-z0-9]/g, '');
-
-					// If the nickname field has nothing, then use the default user name e.g. Alpha, Bravo
-					if (nickname === '')
-					{
-						// Capitalise the default user
-						nickname = common.userList[i];
-						nickname = common.capitaliseFirstLetter(nickname);
-					}
-
-					// Store the nickname as a key next to the user
-					userNicknames[user] = nickname;
-				}
-
-				// Export the pads
-				common.preparePadsForExport(numOfUsers, userNicknames, exportForUser, exportMethod, serverAddressAndPort, serverKey, common.randomDataHexadecimal);
-			}
-			else {
-				// Otherwise export the random data for testing using external methods
-				common.prepareRandomDataForExternalTesting(exportMethod, common.randomDataBinary, common.randomDataHexadecimal);
-			}
-		});
-	},
-	
-	/**
-	 * Preload values into the text boxes if they already have connection settings in local storage
-	 */
-	preloadServerConnectionDetails: function()
-	{
-		// If they already have connection settings in local storage
-		if (db.padData.info.serverAddressAndPort !== null)
-		{
-			// Load from local storage into the text fields
-			$('#serverAddressAndPort').val(db.padData.info.serverAddressAndPort);
-			$('#serverUsername').val(db.padData.info.serverUsername);
-			$('#serverKey').val(db.padData.info.serverKey);
+			return false;
 		}
 	},
 	
 	/**
-	 * Test the server connection when the button is clicked
+	 * Gets a random integer inbetween the minimum and maxium passed in. It gets a random number from the Web 
+	 * Crypto API and then uses rejection sampling (see http://en.wikipedia.org/wiki/Rejection_sampling).
+	 * Depending on the maximum value wanted it will get a 8 bit, 16 bit or 32 bit unsigned integer from the 
+	 * API. For example if a small number between 0 and 10 is wanted it will just get an 8 bit number from the 
+	 * API rather than a 32 bit number which is unnecessary.
+	 * @param {Number} min The minimum number allowed. The minimum this function will allow is 0.
+	 * @param {Number} max The maximum number allowed. The maximum this function will allow is 4294967295.
+	 * @returns {Number} A random number between the minimum and maximum
 	 */
-	initTestServerConnectionButton: function()
-	{						
-		$('#testServerConnection').click(function()
+	getRandomIntInRange: function(min, max)
+	{
+		var maxRange = null;
+		var byteArray = null;
+		var range = max - min + 1;
+		
+		// If the maximum is less than 255, get a small 8 bit unsigned integer
+		if ((max >= 1) && (max <= 255))
 		{
-			// Get values from text inputs
-			var serverAddressAndPort = $('#serverAddressAndPort').val();
-			var serverKey = $('#serverKey').val();
+			maxRange = 256;
+			byteArray = new Uint8Array(1);
+		}
+		else if ((max >= 256) && max <= 65535)
+		{
+			// If the maximum is inbetween 256 and 65535, get a random 16 bit unsigned integer
+			maxRange = 65536;
+			byteArray = new Uint16Array(1);
+		}
+		else {
+			// Otherwise get a 32 bit unsigned random integer
+			maxRange = 4294967296;
+			byteArray = new Uint32Array(1);
+		}
+		
+		// Fill the byte array with a random number
+		window.crypto.getRandomValues(byteArray);
 
-			// Check connection and show success or failure message on screen
-			common.testServerConnection(serverAddressAndPort, serverKey);
-		});
+		// If the random number is outside of the range, get another
+		if (byteArray[0] >= Math.floor(maxRange / range) * range)
+		{
+			return this.getRandomIntInRange(min, max);
+		}
+
+		return min + (byteArray[0] % range);
+	},
+	
+	/**
+	 * Helper function to get a clone of the outer HTML of an element
+	 * @param {Object} $html The jQuery element or object e.g. $html = $('<div class="abc"></div>')
+	 * @returns {String} Returns the outer HTML as a string e.g. '<div class="abc"></div>'
+	 */
+	getOuterHtml: function($html)
+	{
+		return $html.clone().wrap('<p>').parent().html();
 	}
 };

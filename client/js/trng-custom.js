@@ -1,6 +1,6 @@
 /*!
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
+
+// Use ECMAScript 5's strict mode
+'use strict';
 
 /**
  * True Random Number Generator (TRNG) to extract random data from photographs
@@ -39,7 +42,7 @@ var trngCustom = {
 		trngCustom.initResetButton();
 		trngCustom.catchOutOfMemoryError();
 		trngCustom.initUploadSettingsDialog();
-		common.initExportPadsDialog();
+		exportPads.initExportPadsDialog();
 	},
 	
 	/**
@@ -165,7 +168,7 @@ var trngCustom = {
 	{
 		// Catch out of memory error if it occurs and display to the user
 		window.onerror = function(error, url, line) {
-			common.showStatus('error', 'Error occurred: ' + error + ' URL: ' + url);
+			common.showStatus('error', 'Error occurred: ' + error + ' URL: ' + url + ' line: ' + line, true);
 		};
 	},
 	
@@ -212,9 +215,6 @@ var trngCustom = {
 	 */
 	displayProccessingStats: function()
 	{
-		// Show current status
-		common.showProcessingMessage('Completed randomness tests.', true);
-		
 		// Calculate the collected data
 		var totalRandomBits = common.randomDataBinary .length;
 		var totalNumOfMessages = Math.floor(totalRandomBits / common.totalPadSizeBinary);
@@ -243,15 +243,15 @@ var trngCustom = {
 			trngCustom.fillCanvasWithData('imageCanvas', common.randomDataBinary );
 
 			// Final status
-			common.showProcessingMessage('Data import and testing complete.', true);
+			common.showStatus('success', 'Data import and testing complete.', true);
 			
 		}, 500);
 	},			
 
 	/**
 	 * Fills the HTML5 canvas with random bits, 0 bits are coloured white, 1 bits are coloured black.
-	 * @param {string} canvasId The id to render the binary data into
-	 * @param {string} randomBits Random binary data
+	 * @param {String} canvasId The id to render the binary data into
+	 * @param {String} randomBits Random binary data
 	 */
 	fillCanvasWithData: function(canvasId, randomBits)
 	{
@@ -273,6 +273,8 @@ var trngCustom = {
 		// Fill everything with white first
 		ctx.fillStyle = "#FFF";
 		ctx.fillRect(0, 0, axisLength, axisLength);
+		
+		// Change to black
 		ctx.fillStyle = "#000";
 
 		// Loop through each binary char
@@ -283,7 +285,7 @@ var trngCustom = {
 				// If the character is a binary 1
 				if (randomBits[i * axisLength + j] === '1')
 				{
-					// Fill that pixel with black
+					// Colour that pixel black
 					ctx.fillRect(i, j, 1, 1);
 				}
 			}

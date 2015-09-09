@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-	Jericho Chat - Information-theoretically secure communications
-	Copyright (C) 2013-2014  Joshua M. David
+	Jericho Comms - Information-theoretically secure communications
+	Copyright (c) 2013-2015  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -->
 <html class="testServerPage">
 	<head>
-		<title>Jericho Chat</title>
+		<title>Jericho Comms</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="viewport" content="height=device-height, width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 		<meta name="apple-mobile-web-app-capable" content="yes">
@@ -34,10 +34,10 @@
 		<script src="js/lib/jquery.js"></script>
 		<script src="js/lib/jquery-ui.js"></script>
 		
-		<script src="js/lib/jscrypto-core.js"></script>
-		<script src="js/lib/jscrypto-x64core.js"></script>
-		<script src="js/lib/jscrypto-enc-base64.js"></script>
-		<script src="js/lib/jscrypto-sha3.js"></script>
+		<script src="js/lib/cryptojs-core.js"></script>
+		<script src="js/lib/cryptojs-x64core.js"></script>
+		<script src="js/lib/cryptojs-enc-base64.js"></script>
+		<script src="js/lib/cryptojs-sha3.js"></script>
 		<script src="js/lib/skein.js"></script>
 		
 		<script src="js/database.js"></script>
@@ -78,7 +78,10 @@
 			<div class="navItem">
 				<a href="index.html" class="blueButton">Home</a>
 			</div>
-			<div class="navItem statusMessage"></div>
+			<div class="navItem statusMessage">
+				<span class="icon"></span>
+				<span class="message"></span>
+			</div>
 		</div>
 		<h2>Test server connection</h2>
 		<div class="information">

@@ -1,6 +1,6 @@
 /*!
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,8 +15,11 @@
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
 
+// Use ECMAScript 5's strict mode
+'use strict';
+
 /**
- * Functions for the chat page
+ * Functionality for the chat page
  */
 var chat = {
 	
@@ -27,7 +30,24 @@ var chat = {
 	// Running tally of how many pads/messages are remaining
 	evenPadsRemaining: 0,
 	oddPadsRemaining: 0,
+	
+	// Whether this is the first check for new messages or not
+	firstCheckForNewMessages: true,
 		
+	// When a message was last received from the user
+	lastMessageReceivedFromUserTimestamps: {
+		alpha: null,
+		bravo: null,
+		charlie: null,
+		delta: null,
+		echo: null,
+		foxtrot: null,
+		golf: null
+	},
+	
+	// The maximum number of seconds ago that a user can be considered as online
+	maxSecondsUserConsideredOnline: 90,
+			
 	/**
 	 * Make the chat window always scroll to the bottom if there are lots of messages on page load
 	 */
@@ -47,11 +67,11 @@ var chat = {
 	{
 		// If the send message function is clicked
 		$('#btnSendMessage').click(function(event)
-		{
+		{			
 			// Get plaintext message and remove invalid non ASCII characters from message
 			var plaintextMessage = $('#newChatMessage').val();
 			plaintextMessage = common.removeInvalidChars(plaintextMessage);
-			
+						
 			// Make sure they've entered in some data
 			if (plaintextMessage === '')
 			{
@@ -84,15 +104,12 @@ var chat = {
 			};
 			
 			// Send the message off to the server
-			common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseDataJson)
+			common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseData)
 			{
 				// If the server response is authentic
 				if (validResponse)
 				{
-					// Convert from JSON to object
-					var responseData = JSON.parse(responseDataJson);
-					
-					// Get message back from server, and protect against XSS
+					// Get message and protect against XSS
 					var statusMessage = common.htmlEncodeEntities(responseData.statusMessage);
 					
 					// If it saved to the database
@@ -117,7 +134,7 @@ var chat = {
 				else {
 					// Most likely cause is user has incorrect server url or key entered.
 					// Another alternative is the attacker modified their request while en route to the server
-					common.showStatus('error', 'Error contacting server. Double check you are connected to the network and that the client and server configurations are correct. Another possibility is that the data was modified in transit by an attacker.');
+					common.showStatus('error', 'Error contacting server. Check: 1) you are connected to the network, 2) the client/server configurations are correct, and 3) client/server system clocks are up to date. If everything is correct, the data may have been tampered with by an attacker.');
 				}
 				
 				// Add send failure to the message status
@@ -160,8 +177,8 @@ var chat = {
 	
 	/**
 	 * Gets the user's nickname from the local storage
-	 * @param {string} user The user e.g. 'alpha'
-	 * @returns {string} Returns the user's nickname/real name e.g. 'Joshua'
+	 * @param {String} user The user e.g. 'alpha'
+	 * @returns {String} Returns the user's nickname/real name e.g. 'Joshua'
 	 */
 	getUserNickname: function(user)
 	{
@@ -228,7 +245,7 @@ var chat = {
 		
 		// Set max length on the text field
 		var $messageInput = $('#newChatMessage');
-		$messageInput.attr('maxlength', common.messageSize);
+		    $messageInput.attr('maxlength', common.messageSize);
 		
 		// After a key is entered
 		$messageInput.keyup(function()
@@ -252,45 +269,107 @@ var chat = {
 	},
 	
 	/**
-	 * Counts the number of pads remaining for sending and receiving. This will 
-	 * do a full count of the local database once for the initial page load.
+	 * Initialises the display of users in the group, counts the number of pads remaining for sending/receiving 
+	 * and initialises the online status for every user to offline. This will do a full count of the local 
+	 * database once for the initial page load.
 	 */
-	countNumOfPadsRemaining: function()
+	initGroupUserStatus: function()
 	{
-		var output = 'Remaining messages per user:<br>';
+		var output = '';
+		var $groupUsers = $('.groupUsers');
 		
 		// Count the pads for each user
-		$.each(db.padData.pads, function(user, userPads)
+		$.each(db.padData.pads, function(userCallsign, userPads)
 		{
 			// The unit tests page will put some test pads in the local 
 			// database so don't show these on the chat screen
-			if (user !== 'test')
+			if (userCallsign !== 'test')
 			{			
-				// Build the output
-				output += db.padData.info.userNicknames[user] + ': <b><span class="' + user + '">' + userPads.length + '</span></b> ';
+				// Clone the template, get the user nickname and number of pads remaining
+				var $template = $groupUsers.find('.userTemplate').clone();
+				var userNickname = db.padData.info.userNicknames[userCallsign];
+				var numOfPadsRemaining = userPads.length;
+				
+				// Add the callsign as a class 'alpha', 'bravo' etc and populate the template
+				$template.addClass(userCallsign);
+				$template.removeClass('userTemplate');
+				$template.find('.callsign').text(userNickname);
+				$template.find('.numOfPadsRemaining').text(numOfPadsRemaining);
+				
+				// Update the HTML
+				output += common.getOuterHtml($template);
 			}
 		});
 		
-		// Display the count
-		$('.messagesRemaining').html(output);
+		// Display the output
+		$groupUsers.append(output);
 	},
 	
 	/**
 	 * Updates the number of pads remaining in the local database.
-	 * @param {string} user Update the number of pads remaining for just the user passed in or 'allUsers' if passed in
+	 * @param {String} userCallsign Update the number of pads remaining for just the user callsign that is passed in.
+	 *                              If 'all' is passed in, update the number of pads remaining for all users.
 	 */
-	updateNumOfPadsRemaining: function(user)
-	{		
-		// Update the number of pads remaining for all users if no user passed in
-		if (user === undefined)
+	updateNumOfPadsRemaining: function(userCallsign)
+	{
+		// Cache lookup
+		var $groupUsers = $('.chatPage .groupUsers');
+		
+		// If all users
+		if (userCallsign === 'all')
 		{
-			this.countNumOfPadsRemaining();
+			// Count the pads for each user
+			$.each(db.padData.pads, function(user, userPads)
+			{
+				var numOfPadsRemaining = userPads.length;
+				$groupUsers.find('.user.' + user + ' .numOfPadsRemaining').text(numOfPadsRemaining);
+			});
 		}
 		else {
-			// Otherwise update just for the specific user
-			var padsRemaining = db.padData.pads[user].length;
-			$('.messagesRemaining .' + user).text(padsRemaining);
+			// Update just for the specific user
+			var padsRemaining = db.padData.pads[userCallsign].length;
+			$groupUsers.find('.user.' + userCallsign + ' .numOfPadsRemaining').text(padsRemaining);
 		}
+	},
+	
+	/**
+	 * Updates all users statuses to be online or offline. This is based on whether they sent a message 
+	 * (either decoy or a real message) in the last x seconds (configurable at the top of the file). 
+	 * The current user will have their timestamp updated every time a successful response is received 
+	 * from the user when fetching messages.
+	 */
+	updateOnlineStatuses: function()
+	{
+		// Cache lookup
+		var $groupUsers = $('.chatPage .groupUsers');
+		var currentTimestamp = common.getCurrentUtcTimestamp();
+
+		// Loop through the timestamps for each group user to see when they last sent a message (real or decoy)
+		$.each(chat.lastMessageReceivedFromUserTimestamps, function(userCallsign, lastMessageTimestamp)
+		{
+			var className = 'offline';
+			
+			// If they were online in the last x seconds, then they are considered online
+			if (lastMessageTimestamp >= (currentTimestamp - chat.maxSecondsUserConsideredOnline))
+			{
+				className = 'online';
+			}
+			
+			// On hover of the user show the last date/time they were online if available
+			if (lastMessageTimestamp !== null)
+			{
+				// Get the date and time
+				var lastOnlineDateTime = common.getCurrentLocalDateTimeFromUtcTimestamp(lastMessageTimestamp);
+				    lastOnlineDateTime = 'Last online at: ' + lastOnlineDateTime.date + ' ' + lastOnlineDateTime.time;
+				
+				// Display it in the title text
+				$groupUsers.find('.user.' + userCallsign).attr('title', lastOnlineDateTime);
+			}
+			
+			// Set the status to online or offline
+			$groupUsers.find('.user.' + userCallsign + ' .onlineStatusCircle').removeClass('offline online');
+			$groupUsers.find('.user.' + userCallsign + ' .onlineStatusCircle').addClass(className);
+		});
 	},
 	
 	/**
@@ -317,14 +396,11 @@ var chat = {
 		};
 
 		// Check the server for messages
-		common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseDataJson)
+		common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseData)
 		{
 			// If the server response is authentic
 			if (validResponse)
 			{
-				// Convert from JSON to object
-				var responseData = JSON.parse(responseDataJson);
-				
 				// Get message back from server, and protect against XSS
 				var status = responseData.success;
 				var statusMessage = common.htmlEncodeEntities(responseData.statusMessage);
@@ -334,16 +410,6 @@ var chat = {
 				{
 					// Decrypt and display them
 					chat.processReceivedMessages(responseData.messages);
-				}
-				
-				// If another user initiated the auto nuke sequence
-				else if ((status === false) && (statusMessage === 'Auto nuke initiated'))
-				{
-					// Clear the screen and database
-					chat.processAutoNuke(statusMessage, responseData.initiatedBy);
-					
-					// Stop automatic checking of messages
-					chat.stopIntervalReceivingMessages();
 				}
 				
 				// If some other error occurred
@@ -361,6 +427,15 @@ var chat = {
 					// Otherwise if there are no messages, just display last checked status message
 					$('.messagesLastCheckedStatus').html('No messages since: <b>' + common.getCurrentLocalTime() + '</b>');
 				}
+								
+				// Checked first message, so set to false
+				chat.firstCheckForNewMessages = false;
+				
+				// Update the current user to have received a response from the server so we are considered 'online'
+				chat.lastMessageReceivedFromUserTimestamps[db.padData.info.user] = common.getCurrentUtcTimestamp();
+				
+				// Update online status for each user
+				chat.updateOnlineStatuses();
 			}
 			
 			// If response check failed it means there was probably interference from attacker altering data or MAC
@@ -372,7 +447,7 @@ var chat = {
 			else {
 				// Most likely cause is user has incorrect server url or key entered.
 				// Another alternative is the attacker modified their request while en route to the server
-				common.showStatus('error', 'Error contacting server. Double check you are connected to the network and that the client and server configurations are correct. Another possibility is that the data was modified in transit by an attacker.');
+				common.showStatus('error', 'Error contacting server. Check: 1) you are connected to the network, 2) the client/server configurations are correct, and 3) client/server system clocks are up to date. If everything is correct, the data may have been tampered with by an attacker.');
 				
 				// Stop automatic checking of messages
 				chat.stopIntervalReceivingMessages();
@@ -382,7 +457,7 @@ var chat = {
 		
 	/**
 	 * Process each message, by verifying, decrypting and displaying to the screen
-	 * @param {array} messages An array of messages received from the server
+	 * @param {Array} messages An array of messages received from the server
 	 */
 	processReceivedMessages: function(messages)
 	{		
@@ -392,7 +467,7 @@ var chat = {
 		var padIndexesToErase = [];
 					
 		// For each message returned
-		for (var i=0; i < numOfMessages; i++)
+		for (var i = 0; i < numOfMessages; i++)
 		{
 			// Get details necessary to decrypt and verify
 			var fromUser = messages[i].from;
@@ -413,15 +488,22 @@ var chat = {
 			// If it couldn't find a pad to decrypt this message
 			if (padData.padIndex === null)
 			{
-				// Show an error message to appear in the chat
-				decryptedMessages.push({
-					'padIdentifier': padData.padIdentifier,
-					'fromUser': fromUser,					
-					'plaintext': 'Warning: could not find the one-time pad to decrypt this message. Reference the Message ID and ask them to send the contents of this message again.',
-					'timestamp': common.getCurrentUtcTimestamp(),
-					'valid': false
-				});
-								
+				// Most likely a decoy message was received
+				console.info('Decoy message ' + padData.padIdentifier + ' received from ' + fromUser + ' at ' + common.getCurrentLocalTime() + '.');
+				
+				// If this is the first check for new messages upon opening the chat then we don't want to update the 
+				// last message received timestamps because decoy messages may have been sent some time ago and now 
+				// the user has gone offline. However if after the first request the user has received new decoy 
+				// messages then this would indicate there is another user currently online.
+				if (chat.firstCheckForNewMessages === false)
+				{
+					// Update the last message received timestamp (from any user) which is used for the decoy messages
+					decoy.lastMessageReceivedTimestamp = common.getCurrentUtcTimestamp();
+					
+					// Update the last message received timestamp from the specific user which shows online status
+					chat.lastMessageReceivedFromUserTimestamps[fromUser] = common.getCurrentUtcTimestamp();
+				}
+				
 				// Try the next message
 				continue;
 			}
@@ -429,15 +511,32 @@ var chat = {
 			// Decrypt and verify the message
 			var decryptedOutput = common.decryptAndVerifyMessage(ciphertext, padData.pad);
 			
-			// If it is an authentic message, queue up the padIndexes to remove from the local database. If it's invalid we 
-			// don't want an attacker (which has gained access to the server) able to send arbitrary messages with chosen 
-			// pad identifiers back to the client when they check for new messages which would deplete the user's list of valid pads.
+			// If it is an authentic message and the plaintext message contains 'init auto nuke' then clear everything
+			if (decryptedOutput.valid && (decryptedOutput.plaintext.indexOf('init auto nuke') > -1))
+			{
+				// Clear the screen and database
+				chat.processAutoNuke(fromUser);
+				
+				// Don't process further messages
+				return false;
+			}
+			
+			// If it is an authentic message
 			if (decryptedOutput.valid)
 			{
+				// Queue up the padIndexes to remove from the local database. If it's invalid we don't want an attacker 
+				// (which has gained access to the server) able to send arbitrary messages with chosen pad identifiers 
+				// back to the client when they check for new messages which would deplete the user's list of valid pads.
 				padIndexesToErase.push({
 					'index': padData.padIndex,
 					'user': fromUser
 				});
+				
+				// Update the last message received timestamp (from any user) which is used for the decoy messages
+				decoy.lastMessageReceivedTimestamp = decryptedOutput.timestamp;
+				
+				// Update the last message received timestamp from the specific user which shows online status
+				chat.lastMessageReceivedFromUserTimestamps[fromUser] = decryptedOutput.timestamp;
 			}
 			
 			// Add a few more values to the object before it gets sorted
@@ -447,6 +546,9 @@ var chat = {
 			// Add to an array so each message can be sorted by timestamp
 			decryptedMessages.push(decryptedOutput);
 		}
+		
+		// Update online statuses of users
+		chat.updateOnlineStatuses();
 		
 		// If it couldn't find the pads for any messages in the database exit out
 		if (decryptedMessages.length === 0)
@@ -467,19 +569,18 @@ var chat = {
 		$(htmlMessages).appendTo('.mainChat');
 		chat.scrollChatWindowToBottom();
 		
-		// Play a sound and vibrate the device to signal new message/s received
-		chat.playSound('incoming-message.wav');
-		chat.vibrateDevice();
+		// Play a sound, vibrate the device and display a desktop notification to signal new message/s received
+		notification.alertForIncomingMessage();
 
-		// Update status
+		// Update status and number of pads remaining for all users
 		$('.messagesLastCheckedStatus').html('Messages received at: <b>' + common.getCurrentLocalTime() + '</b>');
-		chat.updateNumOfPadsRemaining();
+		chat.updateNumOfPadsRemaining('all');
 	},
 		
 	/**
 	 * Remove from in memory database the one-time pads that have been used and verified.
 	 * Also update the local database so that pad can't be used again
-	 * @param {array} padIndexesToErase An array of objects containing keys 'user' (the user to erase the pad from) and 'index' (the array index of the pad to erase)
+	 * @param {Array} padIndexesToErase An array of objects containing keys 'user' (the user to erase the pad from) and 'index' (the array index of the pad to erase)
 	 */
 	deleteVerifiedMessagePads: function(padIndexesToErase)
 	{
@@ -511,8 +612,8 @@ var chat = {
 	
 	/**
 	 * Sort the messages by earliest timestamp first, in case messages were reordered by an attacker on the server
-	 * @param {object} decryptedMessages
-	 * @returns {object} Returns the messages sorted by earliest sent timestamp first
+	 * @param {Object} decryptedMessages
+	 * @returns {Object} Returns the messages sorted by earliest sent timestamp first
 	 */
 	sortDecryptedMessagesByTimestamp: function(decryptedMessages)
 	{
@@ -527,8 +628,8 @@ var chat = {
 	
 	/**
 	 * Loop through the messages and build the HTML to be rendered
-	 * @param {array} decryptedMessages The array of message objects
-	 * @returns {string}
+	 * @param {Array} decryptedMessages The array of message objects
+	 * @returns {String}
 	 */
 	generateHtmlForReceivedMessages: function(decryptedMessages)
 	{	
@@ -541,7 +642,7 @@ var chat = {
 			var html = chat.prepareMessageForDisplay(decryptedMessages[i]);
 
 			// Then get the whole message div (the outer HTML) and continue building output
-			htmlMessages += html.clone().wrap('<p>').parent().html();
+			htmlMessages += common.getOuterHtml(html);
 		}
 		
 		return htmlMessages;
@@ -549,8 +650,8 @@ var chat = {
 	
 	/**
 	 * Format the message for display to the chat window
-	 * @param {object} message An object with the following keys 'ciphertext', 'plaintext', 'timestamp', 'valid', 'fromUser'
-	 * @return {string} The HTML to be displayed
+	 * @param {Object} message An object with the following keys 'ciphertext', 'plaintext', 'timestamp', 'valid', 'fromUser'
+	 * @return {String} The HTML to be displayed
 	 */
 	prepareMessageForDisplay: function(message)
 	{
@@ -583,8 +684,8 @@ var chat = {
 	 * Gets a message, finds all the URLs in it, then shortens the URL and turns it into a hyperlink.
 	 * Because the whole text needs to be escaped, the URLs must be removed first and escaped separately, 
 	 * then enclosed in anchor tags, then the whole text is escaped, then the URLs put back into the text.
-	 * @param {string} text The text to escape
-	 * @returns {string}
+	 * @param {String} text The text to escape
+	 * @returns {String}
 	 */
 	convertLinksAndEscapeForXSS: function(text)
 	{
@@ -627,14 +728,17 @@ var chat = {
 	
 	/**
 	 * Auto nuke was initiated by the other user, clear everything
-	 * @param {string} statusMessage The status from the server which will contain which user initiated the nuke
-	 * @param {string} initiatedBy The user that initiated the auto nuke
+	 * @param {String} initiatedBy The user callsign e.g. alpha, bravo etc that initiated the auto nuke
 	 */
-	processAutoNuke: function(statusMessage, initiatedBy)
+	processAutoNuke: function(initiatedBy)
 	{
 		// Get the call sign of the user who initiated the nuke, this 
 		// can be helpful in knowing which member of the group is in trouble
-		var initiatedByCallSign = chat.getUserNickname(initiatedBy);
+		var initiatedByNickname = chat.getUserNickname(initiatedBy);
+		
+		// Stop automatic checking of messages and sending of decoy messages
+		chat.stopIntervalReceivingMessages();
+		decoy.stopTimerForDecoyMessages();
 		
 		// Clear the local in memory and local storage database
 		db.nukeDatabase();
@@ -647,53 +751,66 @@ var chat = {
 		$('.messagesRemaining').html('');
 
 		// Show warning message
-		common.showStatus('error', statusMessage + ' by ' + initiatedByCallSign + '!');
+		common.showStatus('error', 'Auto nuke initiated by ' + initiatedByNickname + '! Local database has been cleared.');
 	},
-	
-	/**
-	 * Plays a sound in the browser using the HTML5 audio element. 
-	 * Chrome, Firefox, Safari and Opera currently have common support using wav audio file format.
-	 * @param {string} filename The filename of the audio file in the /client/sounds/ directory
-	 */
-	playSound: function(filename)
-	{
-		// Make sure the user has enabled sound
-		if (db.padData.custom.enableSounds)
-		{
-			// Play the sound
-			var sound = new Audio('sounds/' + filename);
-			sound.load();
-			sound.play();
-		}
-	},
-	
-	/**
-	 * Vibrates the device if supported
-	 */
-	vibrateDevice: function()
-	{
-		// Normalise the HTML5 vibration API between browser vendors
-		navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate;
 		
-		// If it's supported, vibrate the device for 700ms
-		if (navigator.vibrate) {
-			navigator.vibrate(700);
-		}
-	},
-	
 	/**
 	 * Initialises the display of the audio icon and the toggle audio on/off button
 	 */
 	initialiseToggleAudioButton: function()
 	{
 		// Show correct icon for whether sound is currently enabled or disabled
-		var onOrOff = (db.padData.custom.enableSounds === true) ? 'on' : 'off';		
-		$('.enableDisableAudio').addClass('ui-icon-volume-' + onOrOff).prop('title', 'Audio currently ' + onOrOff);
+		var onOrOff = (db.padData.info.custom.enableSounds === true) ? 'on' : 'off';
+		var icon = (db.padData.info.custom.enableSounds === true) ? 'fa-toggle-on' : 'fa-toggle-off';
+		
+		// Set the icon
+		$('.enableDisableAudio').removeClass('fa-toggle-on fa-toggle-off').addClass(icon).prop('title', 'Audible notifications currently ' + onOrOff);
+		$('.enableDisableAudioIcon').prop('title', 'Audible notifications currently ' + onOrOff);
 		
 		// Enable click event to toggle the audio on or off
-		$('.enableDisableAudio').click(function()
+		$('.enableDisableAudio, .enableDisableAudioIcon').click(function()
 		{
 			chat.enableOrDisableAudio();
+		});
+	},
+	
+	/**
+	 * Initialises the display of the vibration icon and the toggle vibration on/off button
+	 */
+	initialiseToggleVibrationButton: function()
+	{
+		// Show correct icon for whether vibration is currently enabled or disabled
+		var onOrOff = (db.padData.info.custom.enableVibration === true) ? 'on' : 'off';
+		var icon = (db.padData.info.custom.enableVibration === true) ? 'fa-toggle-on' : 'fa-toggle-off';
+		
+		// Set the icon
+		$('.enableDisableVibration').removeClass('fa-toggle-on fa-toggle-off').addClass(icon).prop('title', 'Vibration currently ' + onOrOff);
+		$('.enableDisableVibrationLightningIcon').prop('title', 'Vibration currently ' + onOrOff);
+		
+		// Enable click event to toggle the vibration on or off
+		$('.enableDisableVibration, .enableDisableVibrationLightningIcon').click(function()
+		{
+			chat.enableOrDisableVibration();
+		});
+	},
+	
+	/**
+	 * Initialises the display of the Web Notifications icon and the toggle on/off button
+	 */
+	initialiseToggleWebNotificationsButton: function()
+	{
+		// Show correct icon for whether notifications are currently enabled or disabled
+		var onOrOff = (db.padData.info.custom.enableWebNotifications === true) ? 'on' : 'off';
+		var icon = (db.padData.info.custom.enableWebNotifications === true) ? 'fa-toggle-on' : 'fa-toggle-off';
+		
+		// Set the icon
+		$('.enableDisableWebNotifications').removeClass('fa-toggle-on fa-toggle-off').addClass(icon).prop('title', 'Web notifications currently ' + onOrOff);
+		$('.enableDisableWebNotificationsIcon').prop('title', 'Web notifications currently ' + onOrOff);
+		
+		// Enable click event to toggle the notifications on or off
+		$('.enableDisableWebNotifications, .enableDisableWebNotificationsIcon').click(function()
+		{
+			chat.enableOrDisableWebNotifications();
 		});
 	},
 	
@@ -703,22 +820,78 @@ var chat = {
 	enableOrDisableAudio: function()
 	{
 		// If sound is currently enabled, disable it
-		if (db.padData.custom.enableSounds === true)
+		if (db.padData.info.custom.enableSounds === true)
 		{
 			// Disable sound and save changes to database
-			db.padData.custom.enableSounds = false;
+			db.padData.info.custom.enableSounds = false;
 			db.savePadDataToDatabase();
 			
 			// Change icon to volume off
-			$('.enableDisableAudio').removeClass('ui-icon-volume-on').addClass('ui-icon-volume-off').prop('title', 'Audio currently off');
+			$('.enableDisableAudio').removeClass('fa-toggle-on').addClass('fa-toggle-off').prop('title', 'Audible notifications currently off');
+			$('.enableDisableAudioIcon').prop('title', 'Audible notifications currently off');
 		}
 		else {
 			// Enable sound and save changes to database
-			db.padData.custom.enableSounds = true;
+			db.padData.info.custom.enableSounds = true;
 			db.savePadDataToDatabase();
 			
 			// Change icon to volume on
-			$('.enableDisableAudio').removeClass('ui-icon-volume-off').addClass('ui-icon-volume-on').prop('title', 'Audio currently on');
+			$('.enableDisableAudio').removeClass('fa-toggle-off').addClass('fa-toggle-on').prop('title', 'Audible notifications currently on');
+			$('.enableDisableAudioIcon').prop('title', 'Audible notifications currently on');
+		}
+	},
+	
+	/**
+	 * Toggles the vibration on or off
+	 */
+	enableOrDisableVibration: function()
+	{
+		// If vibrate is currently enabled, disable it
+		if (db.padData.info.custom.enableVibration === true)
+		{
+			// Disable vibrate and save changes to database
+			db.padData.info.custom.enableVibration = false;
+			db.savePadDataToDatabase();
+			
+			// Change icon to vibration off
+			$('.enableDisableVibration').removeClass('fa-toggle-on').addClass('fa-toggle-off').prop('title', 'Vibration currently off');
+			$('.enableDisableVibrationLightningIcon').prop('title', 'Vibration currently off');
+		}
+		else {
+			// Enable vibrate and save changes to database
+			db.padData.info.custom.enableVibration = true;
+			db.savePadDataToDatabase();
+			
+			// Change icon to vibration on
+			$('.enableDisableVibration').removeClass('fa-toggle-off').addClass('fa-toggle-on').prop('title', 'Vibration currently on');
+			$('.enableDisableVibrationLightningIcon').prop('title', 'Vibration currently on');
+		}
+	},	
+	
+	/**
+	 * Toggles the Web Notifications on or off
+	 */
+	enableOrDisableWebNotifications: function()
+	{
+		// If Web Notifications is currently enabled, disable it
+		if (db.padData.info.custom.enableWebNotifications === true)
+		{
+			// Disable Web Notifications and save changes to database
+			db.padData.info.custom.enableWebNotifications = false;
+			db.savePadDataToDatabase();
+			
+			// Change icon to Web Notifications off
+			$('.enableDisableWebNotifications').removeClass('fa-toggle-on').addClass('fa-toggle-off').prop('title', 'Web Notifications currently off');
+			$('.enableDisableWebNotificationsIcon').prop('title', 'Web Notifications currently off');
+		}
+		else {
+			// Enable Web Notifications and save changes to database
+			db.padData.info.custom.enableWebNotifications = true;
+			db.savePadDataToDatabase();
+			
+			// Change icon to Web Notifications on
+			$('.enableDisableWebNotifications').removeClass('fa-toggle-off').addClass('fa-toggle-on').prop('title', 'Web Notifications currently on');
+			$('.enableDisableWebNotificationsIcon').prop('title', 'Web Notifications currently on');
 		}
 	}
 };

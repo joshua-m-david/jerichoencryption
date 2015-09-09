@@ -1,6 +1,6 @@
 /**
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,13 +67,13 @@
 }
 
 /* Text and select box entry styles so is consistent on Firefox and Chrome */
-input[type="text"], select {
-	border: 1px solid #E7D9E1;
+input[type="text"], input[type="password"], select {
+	border: 1px solid #c0c0c0;
 }
-input[type="text"] {
+input[type="text"], input[type="password"] {
 	padding-left: 5px;
 }
-input[type="text"]:focus {
+input[type="text"]:focus, input[type="password"]:focus {
 	outline: 0 none;
 }
 
@@ -88,9 +88,12 @@ select {
 }
 .pageNavigation .navItem {
 	display: table-cell;
+	vertical-align: top;
 }
-.pageNavigation .statusMessage {
+.pageNavigation .navItem.statusMessage {
 	padding-left: 10px;
+	text-align: left;
+	vertical-align: middle;
 }
 
 /* Normal page heading */
@@ -98,35 +101,91 @@ h2 {
 	color: #3399cc;
 	font-size: 12px;
 	font-weight: bold;
-	margin: 3px 0;
+	margin: 5px 0 3px;
 	text-align: center;
 }
 
 /* Error and success status messages */
 .statusMessage {
 	display: none;
+}
+.statusMessage .message {
 	font-size: 12px;
     font-weight: bold;
-	text-align: left;	
+	text-align: left;
 	vertical-align: middle;
+}
+.statusMessage.processing .icon {
+	background-image: url('../img/loading.gif');
+	background-repeat: no-repeat;
+	display: inline-block;
+	height: 16px;
+	vertical-align: middle;
+	width: 13px;
 }
 .error {
 	color: #ff0000;
 }
 .success {
-	color: green;
+	color: #008000;
+}
+.processing {
+	color: #2da2cc;
 }
 
+
 /* Style the Export Pads and Server Settings dialog */
+.exportPadsSettings .exportMethodTable {
+	margin-top: 15px;
+}
 .exportPadsSettings .helpExplanation {
-	margin-top: 3px;
-	margin-bottom: 14px;
+	margin-bottom: 15px;
+	margin-top: 21px;
 	text-align: center;
+}
+.exportPadsSettings .helpExplanation .randomData {
+	display: none;
 }
 .exportPadsSettings .statusMessage {
 	margin-bottom: 14px;
-	max-width: 423px;
 	text-align: center;
+}
+.exportPadsSettings fieldset {
+	border-color: #3399cc;
+	border-radius: 5px;
+	padding-bottom: 14px;
+	padding-top: 10px;
+	margin-bottom: 14px;
+}
+.exportPadsSettings .databaseEncryptionPassword {
+	position: relative;
+}
+.exportPadsSettings .passphraseStrength {
+	display: none;
+	font-size: 12px;
+	margin-right: 14px;
+	position: absolute;
+	right: 0;
+	top: 57px;
+}
+.exportPadsSettings .passphraseStrength .text {
+	font-weight: bold;
+}
+.exportPadsSettings .passphraseStrength .text.bad {
+	color: #ff0000;
+}
+.exportPadsSettings .passphraseStrength .text.average {
+	color: #ff9100;
+}
+.exportPadsSettings .passphraseStrength .text.good {
+	color: #008000;
+}
+.exportPadsSettings legend {
+	color: #3399cc;
+	font-weight: bold;
+}
+.exportPadsSettings table {
+	margin: 0 auto;
 }
 .exportPadsSettings th {
 	text-align: right;
@@ -141,9 +200,6 @@ h2 {
 .exportPadsSettings table td {
 	padding: 2px 4px;
 }
-.exportPadsSettings .userSettings {
-	margin-top: 14px;
-}
 .exportPadsSettings .buttons {
 	margin-top: 14px;
 	text-align: center;
@@ -152,8 +208,9 @@ h2 {
 .exportPadsSettings input[type="text"] {
 	width: 270px;
 }
-.exportPadsSettings .exportForUser {
-	text-transform: capitalize;
+.exportPadsSettings .databaseEncryptionPassword input[type="password"],
+.exportPadsSettings .databaseEncryptionPassword input[type="text"] {
+	width: 307px;
 }
 .exportPadsSettings .exportMethod optgroup:last-child {
 	padding-top: 5px;
@@ -174,4 +231,15 @@ h2 {
 }
 .exportPadsSettings .nicknames input:last-of-type {
 	margin-bottom: 0;
+}
+.exportPadsSettings input.numOfIterations {
+	width: 57px;
+}
+.exportPadsSettings .btnExportKeyfile {
+	display: none;
+}
+
+/* Override jQueryUI modal background */
+.ui-widget-overlay {
+	background: #000;
 }

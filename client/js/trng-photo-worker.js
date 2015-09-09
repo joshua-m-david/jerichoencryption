@@ -1,6 +1,6 @@
 /*!
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,12 @@
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
 
+// Use ECMAScript 5's strict mode
+'use strict';
+
+/**
+ * Web worker for the Photo TRNG
+ */
 var trngImgWorker = {
 
 	hashAlgorithm: null,
@@ -24,10 +30,10 @@ var trngImgWorker = {
 	
 	/**
 	 * Hashes the entropy in the photo
-	 * @param {string} hashAlgorithm
-	 * @param {integer} entropyInputEstimatePerPixel
-	 * @param {array} dataset
-	 * @returns {string}
+	 * @param {String} hashAlgorithm
+	 * @param {Number} entropyInputEstimatePerPixel
+	 * @param {Array} dataset
+	 * @returns {String}
 	 */
 	init: function(hashAlgorithm, entropyInputEstimatePerPixel, dataset)
 	{
@@ -37,7 +43,18 @@ var trngImgWorker = {
 		trngImgWorker.dataset = dataset;
 				
 		// Get 512 bits worth of input entropy and hash it to get 512 bits for the initial seed
-		var inputEntropy = trngImgWorker.getRandomBits();	
+		var inputEntropy = trngImgWorker.getRandomBits();
+		
+		// If there is not enough entropy to create the seed, exit early
+		if (inputEntropy === false)
+		{
+			return {
+				extractedRandomDataBinary: '',
+				extractedRandomDataHexadecimal: ''			
+			};
+		}
+		
+		// Create the initial seed by hashing the entropy
 		var seed = common.secureHash(trngImgWorker.hashAlgorithm, inputEntropy);
 		
 		// Loop initialisations
@@ -94,7 +111,7 @@ var trngImgWorker = {
 		var end = trngImgWorker.currentDatasetStartIndex + totalRequiredRgbValues;
 		var rgbValues = trngImgWorker.dataset.slice(start, end);
 		var rgbValuesLength = rgbValues.length;
-				
+		
 		// Check to make sure enough length has been retrieved
 		if (rgbValuesLength < totalRequiredRgbValues)
 		{
@@ -104,10 +121,10 @@ var trngImgWorker = {
 		var entropyHexadecimal = '';
 
 		// Build up the x bits of entropy
-		for (var i=0; i < rgbValuesLength; i++)
+		for (var i = 0; i < rgbValuesLength; i++)
 		{
 			// Convert each integer value to hexadecimal and concatenate to the seed
-			entropyHexadecimal += common.convertIntegerToHexadecimal(rgbValues[i]);						
+			entropyHexadecimal += common.convertSingleByteIntegerToHex(rgbValues[i]);						
 		}
 		
 		// Update the new start index to the start of new entropy, so next call to this function will get new entropy

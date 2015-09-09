@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-	Jericho Chat - Information-theoretically secure communications
-	Copyright (C) 2013-2014  Joshua M. David
+	Jericho Comms - Information-theoretically secure communications
+	Copyright (c) 2013-2015  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -->
 <html class="chatPage">
 	<head>
-		<title>Jericho Chat - Chat session</title>
+		<title>Jericho Comms - Chat session</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<meta name="apple-mobile-web-app-capable" content="yes">
@@ -28,21 +28,24 @@
 				
 		<link rel="stylesheet" href="css/lib/normalize.css">
 		<link rel="stylesheet" href="css/lib/ui-lightness/jquery-ui.css">
+		<link rel="stylesheet" href="css/lib/font-awesome/css/font-awesome.css">
 		<link rel="stylesheet" href="css/common.css">
 		<link rel="stylesheet" href="css/chat.css">		
 		
 		<script src="js/lib/jquery.js"></script>
 		<script src="js/lib/jquery-ui.js"></script>
 		
-		<script src="js/lib/jscrypto-core.js"></script>
-		<script src="js/lib/jscrypto-x64core.js"></script>
-		<script src="js/lib/jscrypto-enc-base64.js"></script>
-		<script src="js/lib/jscrypto-sha3.js"></script>
+		<script src="js/lib/cryptojs-core.js"></script>
+		<script src="js/lib/cryptojs-x64core.js"></script>
+		<script src="js/lib/cryptojs-enc-base64.js"></script>
+		<script src="js/lib/cryptojs-sha3.js"></script>
 		<script src="js/lib/skein.js"></script>
 		
 		<script src="js/database.js"></script>
 		<script src="js/common.js"></script>
+		<script src="js/notification.js"></script>
 		<script src="js/chat.js"></script>
+		<script src="js/decoy.js"></script>
 		<script type="text/javascript">
 			
 			// On page load
@@ -50,13 +53,15 @@
 			{
 				chat.scrollChatWindowToBottom();
 				chat.initialiseSendMessageButton();				
-				chat.bindEnterKeyToSendMessage();
-				
-				chat.countNumOfPadsRemaining();
+				chat.bindEnterKeyToSendMessage();				
+				chat.initGroupUserStatus();
 				chat.startIntervalToReceiveMessages();
 				chat.initialiseDisplayForCharsRemaining();
-				chat.updateNumOfPadsRemaining();
+				decoy.startDecoyMessageTimer();
+				
 				chat.initialiseToggleAudioButton();
+				chat.initialiseToggleVibrationButton();
+				chat.initialiseToggleWebNotificationsButton();
 			});
 		</script>
 	</head>
@@ -65,10 +70,22 @@
 			<div class="navItem">
 				<a href="index.html" class="blueButton">Home</a>
 			</div>
-			<div class="navItem statusMessage"></div>
+			<div class="navItem statusMessage">
+				<span class="icon"></span>
+				<span class="message"></span>
+			</div>
 		</div>
-		<h2>Chat <span class="ui-icon enableDisableAudio"></span></h2>
-				
+		<h2>
+			Chat
+			<span class="notificationButtons">
+				<i class="fa fa-volume-up fa-lg enableDisableAudioIcon"></i>
+				<i class="fa fa-toggle-on fa-lg enableDisableAudio"></i>
+				<i class="fa fa-bolt fa-lg enableDisableVibrationLightningIcon"></i>
+				<i class="fa fa-toggle-on fa-lg enableDisableVibration"></i>
+				<i class="fa fa-bell-o fa-lg enableDisableWebNotificationsIcon"></i>
+				<i class="fa fa-toggle-on fa-lg enableDisableWebNotifications"></i>
+			</span>
+		</h2>				
 		<div class="mainChat">
 			<div class="templateMessage">
 				<div class="padIdentifier">
@@ -82,15 +99,24 @@
 			</div>
 		</div>			
 		<div class="chatEntry">
-			<textarea id="newChatMessage" class="chatInput" placeholder="Type message here..." autocomplete="off" autofocus></textarea>
+			<textarea id="newChatMessage" class="chatInput" placeholder="Type message here..." autofocus></textarea>
 			<table>
 				<tr>
 					<td class="messagesLastCheckedStatus"></td>
 					<td class="messageCharactersRemaining"></td>
 				</tr>
 				<tr>
-					<td class="messagesRemaining"></td>
-					<td>
+					<td class="messagesRemaining">
+						<div>Remaining messages per user:</div>
+						<div class="groupUsers">
+							<div class="user userTemplate">
+								<span class="onlineStatusCircle offline"></span> 
+								<span class="callsign">Alpha</span>:
+								<span class="numOfPadsRemaining">0</span>
+							</div>
+						</div>
+					</td>
+					<td rowspan="2">
 						<input id="btnSendMessage" class="blueButton btnSendMessage" type="button" value="Send message">
 					</td>
 				</tr>

@@ -1,6 +1,6 @@
 /**
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  */
 
 /* --------------------------------------- */
-/*	BACKUP/MOVE PADS PAGE
+/*	BACKUP/RESTORE PADS PAGE
 /* --------------------------------------- */
 
 .backupPage body {
@@ -42,5 +42,30 @@
 }
 .backupPage .buttons {
 	margin-top: 21px;
+	text-align: center;
+}
+
+/* Restore pads */
+.restorePads h2 {
+	margin-top: 30px;
+	margin-bottom: 15px;
+}
+.restorePads {
+	font-size: 12px;
+}
+.restorePads .method {
+	margin: 21px 0;
+	text-align: center;
+}
+.restorePads .methodTitle {
+	font-weight: bold;
+	margin: 3px 0;
+}
+.restorePads .padDataClipboardInput {
+	margin: 3px 0;
+	width: 200px;
+}
+.restorePads .chatButton {
+	display: none;
 	text-align: center;
 }

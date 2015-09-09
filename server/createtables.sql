@@ -1,6 +1,6 @@
 /**
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,14 +66,12 @@ CREATE TABLE `settings` (
   `settings_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'An id for the table',
   `test_connection` TINYINT(1) DEFAULT '1' COMMENT 'Value to test connection to database',
   `cleanup_last_run` BIGINT(10) DEFAULT NULL COMMENT 'When the cleanup task to clear read messages and old nonces was last run',
-  `auto_nuke_initiated` TINYINT(1) DEFAULT '0' COMMENT 'Whether an auto nuke of all data has been initiated by the user',
-  `auto_nuke_initiated_by_user` VARCHAR(30) DEFAULT NULL COMMENT 'Which user initiated the auto nuke',
   PRIMARY KEY (`settings_id`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 /*Data for the table `settings` */
 
-INSERT  INTO `settings`(`test_connection`,`cleanup_last_run`,`auto_nuke_initiated`,`auto_nuke_initiated_by_user`) VALUES (1,1399156649,0,NULL);
+INSERT  INTO `settings`(`test_connection`,`cleanup_last_run`) VALUES (1,1399156649);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
@@ -132,15 +130,15 @@ CREATE TABLE `nonces` (
 DROP TABLE IF EXISTS `settings`;
 
 CREATE TABLE `settings` (
+  `settings_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'An id for the table',
   `test_connection` TINYINT(1) DEFAULT '1' COMMENT 'Value to test connection to database',
   `cleanup_last_run` BIGINT(10) DEFAULT NULL COMMENT 'When the cleanup task to clear read messages and old nonces was last run',
-  `auto_nuke_initiated` TINYINT(1) DEFAULT '0' COMMENT 'Whether an auto nuke of all data has been initiated by the user',
-  `auto_nuke_initiated_by_user` VARCHAR(30) DEFAULT NULL COMMENT 'Which user initiated the auto nuke'
+  PRIMARY KEY (`settings_id`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 /*Data for the table `settings` */
 
-INSERT  INTO `settings`(`test_connection`,`cleanup_last_run`,`auto_nuke_initiated`,`auto_nuke_initiated_by_user`) VALUES (1,1399156649,0,NULL);
+INSERT  INTO `settings`(`test_connection`,`cleanup_last_run`) VALUES (1,1399156649);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

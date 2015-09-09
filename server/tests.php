@@ -1,7 +1,7 @@
 <?php
 /**
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 class Tests extends PHPUnit_Framework_TestCase
 {
 	// Configs
-	private $users = null;
+	private $numberOfUsers = null;
 	private $serverKey = null;
 	private $databaseConfig = null;
 	private $applicationConfig = null;
@@ -43,10 +43,10 @@ class Tests extends PHPUnit_Framework_TestCase
 		
 	// Main setup
     public function setUp()
-	{		
+	{
 		// Valid users for this chat group that are allowed to connect to the server API to send/receive messages
-		$this->users = array('alpha', 'bravo', 'charlie');
-
+		$this->numberOfUsers = 3;
+		
 		// The server key
 		$this->serverKey = '68f7d8675928635867086720617a56174101bf2ea5d3dd9449769e717638e17341e67df0efc5d9b851ec5a72493b7df1846a9901e8758cd1b132c6afacb3ebe9';
 
@@ -67,7 +67,7 @@ class Tests extends PHPUnit_Framework_TestCase
 		
 		// Connect to the database and initalise the API
 		$this->db = new Database($this->databaseConfig);
-		$this->api = new Api($this->db, $this->users, $this->serverKey, $this->applicationConfig);
+		$this->api = new Api($this->db, $this->numberOfUsers, $this->serverKey, $this->applicationConfig);
 		
 		// Store database connection result to test later
 		$this->dbConnectionSuccess = $this->db->connect();
@@ -78,7 +78,7 @@ class Tests extends PHPUnit_Framework_TestCase
 			echo "Check database connection settings inside the testing code. " . $this->db->getErrorMsg() . "\n\n";
 			exit;
 		}
-		
+						
 		// Static test data to mock a request
 		$data = array(
 			'user' => 'alpha',
@@ -98,6 +98,57 @@ class Tests extends PHPUnit_Framework_TestCase
 		$this->staticRequestData['data'] = $dataJson;
 		$this->staticRequestData['mac'] = $mac;
     }
+	
+	public function testSetChatGroupUsers()
+	{
+		// Test valid number of users
+		$numberOfUsers = 2;
+		$validUsers = $this->api->setChatGroupUsers($numberOfUsers);
+		$expectedUsers = array('alpha', 'bravo');
+		$this->assertEquals(json_encode($validUsers), json_encode($expectedUsers));
+		
+		$numberOfUsers = 3;
+		$validUsers = $this->api->setChatGroupUsers($numberOfUsers);
+		$expectedUsers = array('alpha', 'bravo', 'charlie');
+		$this->assertEquals(json_encode($validUsers), json_encode($expectedUsers));
+		
+		$numberOfUsers = 4;
+		$validUsers = $this->api->setChatGroupUsers($numberOfUsers);
+		$expectedUsers = array('alpha', 'bravo', 'charlie', 'delta');
+		$this->assertEquals(json_encode($validUsers), json_encode($expectedUsers));
+		
+		$numberOfUsers = 5;
+		$validUsers = $this->api->setChatGroupUsers($numberOfUsers);
+		$expectedUsers = array('alpha', 'bravo', 'charlie', 'delta', 'echo');
+		$this->assertEquals(json_encode($validUsers), json_encode($expectedUsers));
+		
+		$numberOfUsers = 6;
+		$validUsers = $this->api->setChatGroupUsers($numberOfUsers);
+		$expectedUsers = array('alpha', 'bravo', 'charlie', 'delta', 'echo', 'foxtrot');
+		$this->assertEquals(json_encode($validUsers), json_encode($expectedUsers));
+		
+		$numberOfUsers = 7;
+		$validUsers = $this->api->setChatGroupUsers($numberOfUsers);
+		$expectedUsers = array('alpha', 'bravo', 'charlie', 'delta', 'echo', 'foxtrot', 'golf');
+		$this->assertEquals(json_encode($validUsers), json_encode($expectedUsers));
+		
+		
+		// Test invalid number of users
+		$numberOfUsers = 8;
+		$validUsers = $this->api->setChatGroupUsers($numberOfUsers);
+		$expectedUsers = array('alpha', 'bravo');
+		$this->assertEquals(json_encode($validUsers), json_encode($expectedUsers));
+				
+		$numberOfUsers = 1;
+		$validUsers = $this->api->setChatGroupUsers($numberOfUsers);
+		$expectedUsers = array('alpha', 'bravo');
+		$this->assertEquals(json_encode($validUsers), json_encode($expectedUsers));
+		
+		$numberOfUsers = 'x';
+		$validUsers = $this->api->setChatGroupUsers($numberOfUsers);
+		$expectedUsers = array('alpha', 'bravo');
+		$this->assertEquals(json_encode($validUsers), json_encode($expectedUsers));
+	}
 	
 	public function testConnectToDatabase()
 	{
@@ -124,34 +175,7 @@ class Tests extends PHPUnit_Framework_TestCase
 		$user = $this->api->getDataKeyIfExists('other', $this->staticRequestData);
         $this->assertFalse($user);
     }
-	
-	public function testCheckOversizeRequest()
-	{
-		// Test valid request params with valid lengths
-		$lengthCheck = $this->api->checkOversizeRequest($this->staticRequestData['data'], $this->staticRequestData['mac']);
-		$this->assertTrue($lengthCheck);
-				
-		// Test oversize data
-		$data = $this->staticRequestData['data'] . 'a9c5ead3';
-		$lengthCheck = $this->api->checkOversizeRequest($data, $this->staticRequestData['mac']);
-		$this->assertFalse($lengthCheck);
-		
-		// Test no mac
-		$mac = '';
-		$lengthCheck = $this->api->checkOversizeRequest($this->staticRequestData['data'], $mac);
-		$this->assertFalse($lengthCheck);
-		
-		// Test undersize mac
-		$mac = substr($this->staticRequestData['mac'], 0, 127);
-		$lengthCheck = $this->api->checkOversizeRequest($this->staticRequestData['data'], $mac);
-		$this->assertFalse($lengthCheck);
-		
-		// Test oversize mac
-		$mac = $this->staticRequestData['mac'] . 'a';
-		$lengthCheck = $this->api->checkOversizeRequest($this->staticRequestData['data'], $mac);
-		$this->assertFalse($lengthCheck);
-	}
-		
+			
 	public function testFilterNonHexadecimalChars()
 	{
 		// Check valid string
@@ -257,6 +281,43 @@ class Tests extends PHPUnit_Framework_TestCase
 		$numbers = $this->api->filterNonIntegers('!"#$%&()*+-,./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ');
 		$this->assertEquals('0123456789', $numbers);
 	}
+		
+	public function testFilterNonBase64Chars()
+	{
+		$base64Chars = $this->api->filterNonBase64Chars('!"#$%&()*+-,./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ');
+		$this->assertEquals('+/0123456789=ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', $base64Chars);
+	}
+	
+	public function testValidateAndDecodeBase64()
+	{
+		// Test a valid send message request
+		$rawDataBase64 = 'eyJ1c2VyIjoiYWxwaGEiLCJhcGlBY3Rpb24iOiJzZW5kTWVzc2FnZSIsIm1zZyI6ImI0M2Y4NDA3YmU0ZjdmODQxZTJhNDgyNDRhZTQyYmZhZDI5YTdlMmQyMmYyZmEzZGUzODZiMzkyNjUyYzNjOTg4YzBiNWQ0M2RhOTIyOTVlMmIzZmYxODFhZWQ3MWM3MWVlODcxODI4ZDQxZjQxOWRlNzVkODcwMzU2NTEyYWNkNmZmOThjMjk3MjBjNzc1YWZlNjc0ZDExZDRiMWIxZTYzZWI4MTQ2YzQ4NmM0M2Q4MGZkM2Q2NzNiNDFiNTIwYjlhOTllOWIyYjgyMDY0M2FhN2EwYTM2ZDdiZTg3OWZlM2U1Y2IwYTQxYzMzYjRlYjYyMTJmYWJlYWU3ODgzNmU2NzE0ZjJiYzAwNDMwMTViMWYzMzQzODgxNThhYTljMGJiYmJjYTkyZjQyNTg0YjcyYzFkYTVlMTJmOTg1MTk5ODIzOGVhMjQzOTI0NDhjMmM3Nzk2MDdmZDFlMWFiNWU2MzZhNDQyNjFlMTA2YTMyNGRmZWE2MjJhMjczZjc0MyIsIm5vbmNlIjoiOTAyNmI0MzAwYWMzNzE1ZGZlOGU0YTc1YTg2MjE0MzliNzI3YzQwOTdmZjNiNDY0MmFmMGQ1MTA1MmRmOTVlOWVhNTk1ZjJiOTJmMDU0MzFhZWE5NGJkMjdmM2YwMjE0ZTI4NWU4ODA2OWQ1NGIyMzVmYzdmYjhiY2M2M2ZhNTIiLCJ0aW1lc3RhbXAiOjE0Mzg1MDgwNDZ9NmU2NTkxNzVjNTM1MzNiNjY3YmJlYzhkNTlmYWI5ZmQ1MTA2MmEyZjczOTc4YjczNzEzNjBiMzRjMTM1ZWQ3Zjk4MDk3ZTMxYzMzNWQ0MWVhYjViNDdkYWM5NjQ3NjE4NDA1MzdhZjg0OWY3YzhkYjk3YmE4ZDQ4ZTBiNzE5ZDI=';
+		$valid = $this->api->validateAndDecodeBase64($rawDataBase64);
+		$this->assertEquals($valid['dataJson'], '{"user":"alpha","apiAction":"sendMessage","msg":"b43f8407be4f7f841e2a48244ae42bfad29a7e2d22f2fa3de386b392652c3c988c0b5d43da92295e2b3ff181aed71c71ee871828d41f419de75d870356512acd6ff98c29720c775afe674d11d4b1b1e63eb8146c486c43d80fd3d673b41b520b9a99e9b2b820643aa7a0a36d7be879fe3e5cb0a41c33b4eb6212fabeae78836e6714f2bc0043015b1f334388158aa9c0bbbbca92f42584b72c1da5e12f9851998238ea24392448c2c779607fd1e1ab5e636a44261e106a324dfea622a273f743","nonce":"9026b4300ac3715dfe8e4a75a8621439b727c4097ff3b4642af0d51052df95e9ea595f2b92f05431aea94bd27f3f0214e285e88069d54b235fc7fb8bcc63fa52","timestamp":1438508046}');
+		$this->assertEquals($valid['mac'], '6e659175c53533b667bbec8d59fab9fd51062a2f73978b7371360b34c135ed7f98097e31c335d41eab5b47dac964761840537af849f7c8db97ba8d48e0b719d2');
+		
+		// Test a bad request
+		$rawDataBase64 = '';
+		$valid = $this->api->validateAndDecodeBase64($rawDataBase64);
+		$this->assertFalse($valid);
+		
+		// Test a bad request
+		$rawDataBase64 = false;
+		$valid = $this->api->validateAndDecodeBase64($rawDataBase64);
+		$this->assertFalse($valid);
+		
+		// Test a bad request
+		$rawDataBase64 = '!"#$%&()*+-,./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ';
+		$valid = $this->api->validateAndDecodeBase64($rawDataBase64);
+		$this->assertFalse($valid);
+		
+		// Test a bad request (shorted MAC tag length)
+		$rawDataBase64 = 'eyJ1c2VyIjoiYWxwaGEiLCJhcGlBY3Rpb24iOiJzZW5kTWVzc2FnZSIsIm1zZyI6ImI0M2Y4NDA3YmU0ZjdmODQxZTJhNDgyNDRhZTQyYmZhZDI5YTdlMmQyMmYyZmEzZGUzODZiMzkyNjUyYzNjOTg4YzBiNWQ0M2RhOTIyOTVlMmIzZmYxODFhZWQ3MWM3MWVlODcxODI4ZDQxZjQxOWRlNzVkODcwMzU2NTEyYWNkNmZmOThjMjk3MjBjNzc1YWZlNjc0ZDExZDRiMWIxZTYzZWI4MTQ2YzQ4NmM0M2Q4MGZkM2Q2NzNiNDFiNTIwYjlhOTllOWIyYjgyMDY0M2FhN2EwYTM2ZDdiZTg3OWZlM2U1Y2IwYTQxYzMzYjRlYjYyMTJmYWJlYWU3ODgzNmU2NzE0ZjJiYzAwNDMwMTViMWYzMzQzODgxNThhYTljMGJiYmJjYTkyZjQyNTg0YjcyYzFkYTVlMTJmOTg1MTk5ODIzOGVhMjQzOTI0NDhjMmM3Nzk2MDdmZDFlMWFiNWU2MzZhNDQyNjFlMTA2YTMyNGRmZWE2MjJhMjczZjc0MyIsIm5vbmNlIjoiOTAyNmI0MzAwYWMzNzE1ZGZlOGU0YTc1YTg2MjE0MzliNzI3YzQwOTdmZjNiNDY0MmFmMGQ1MTA1MmRmOTVlOWVhNTk1ZjJiOTJmMDU0MzFhZWE5NGJkMjdmM2YwMjE0ZTI4NWU4ODA2OWQ1NGIyMzVmYzdmYjhiY2M2M2ZhNTIiLCJ0aW1lc3RhbXAiOjE0Mzg1MDgwNDZ9NmU2NTkxNzVjNTM1MzNiNjY3YmJlYzhkNTlmYWI5ZmQ1MTA2MmEyZjczOTc4YjczNzEzNjBiMzRjMTM1ZWQ3Zjk4MDk3ZTMxYzMzNWQ0MWVhYjViNDdkYWM5NjQ3NjE4NDA1MzdhZjg0OWY3YzhkYjk3YmE4ZDQ4';
+		$valid = $this->api->validateAndDecodeBase64($rawDataBase64);
+		$mac = $this->api->filterNonHexadecimalChars($valid['mac']);
+		$validMac = $this->api->validateDataMac($valid['dataJson'], $this->serverKey, $mac);
+		$this->assertFalse($validMac);
+	}
 	
 	public function testValidateDataTimestamp()
 	{
@@ -343,11 +404,7 @@ class Tests extends PHPUnit_Framework_TestCase
 		$apiAction = 'receiveMessages';
 		$valid = $this->api->validateApiAction($apiAction);
 		$this->assertTrue($valid);
-		
-		$apiAction = 'autoNuke';
-		$valid = $this->api->validateApiAction($apiAction);
-		$this->assertTrue($valid);
-		
+				
 		$apiAction = 'testConnection';
 		$valid = $this->api->validateApiAction($apiAction);
 		$this->assertTrue($valid);
@@ -462,24 +519,7 @@ class Tests extends PHPUnit_Framework_TestCase
 		$result = $this->api->performCleanup();
 		$this->assertFalse($result);
 	}
-	
-	public function testCheckIfAutoNukeInitiated()
-	{
-		// Initiate the nuke
-		$result = $this->db->update("UPDATE settings SET auto_nuke_initiated = 1, auto_nuke_initiated_by_user = 'alpha'");
-				
-		// Check whether initiated
-		$autoNukeInitiatedBy = $this->api->checkIfAutoNukeInitiated();
-		$this->assertEquals('alpha', $autoNukeInitiatedBy);
 		
-		// Set it back to not enabled
-		$result = $this->db->update("UPDATE settings SET auto_nuke_initiated = 0, auto_nuke_initiated_by_user = NULL");
-		
-		// Check whether initiated
-		$autoNukeInitiatedBy = $this->api->checkIfAutoNukeInitiated();
-		$this->assertFalse($autoNukeInitiatedBy);
-	}
-	
 	public function testGetMessagesForUser()
 	{
 		// Clear the database from any old test messages
@@ -529,22 +569,7 @@ class Tests extends PHPUnit_Framework_TestCase
 		$this->assertFalse($jsonResult['success']);
 		$this->assertEquals('No messages in database.', $jsonResult['statusMessage']);
 	}
-	
-	public function testInitiateAutoNuke()
-	{
-		// Start the auto nuke process. This deletes everything from the server and sets a flag 
-		// so the next time the other users connect their chat and pads will be wiped
-		$jsonResult = $this->api->initiateAutoNuke('alpha');
-		$this->assertTrue($jsonResult['success']);
 		
-		// Check whether initiated
-		$autoNukeInitiatedBy = $this->api->checkIfAutoNukeInitiated();
-		$this->assertEquals('alpha', $autoNukeInitiatedBy);
-		
-		// Set it back to not enabled for next test
-		$this->db->update("UPDATE settings SET auto_nuke_initiated = 0, auto_nuke_initiated_by_user = NULL");
-	}
-	
 	public function testCreateMac()
 	{		
 		// Test MAC that is similar to what is used in the response

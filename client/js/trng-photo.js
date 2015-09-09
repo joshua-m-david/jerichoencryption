@@ -1,6 +1,6 @@
 /*!
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
+
+// Use ECMAScript 5's strict mode
+'use strict';
 
 /**
  * True Random Number Generator (TRNG) to extract random data from photographs
@@ -43,7 +46,7 @@ var trngImg = {
 	canvasHeight: null,
 	
 	/**
-	 * Initialise the program
+	 * Initialise the page code
 	 */
 	init: function()
 	{
@@ -52,7 +55,7 @@ var trngImg = {
 		trngImg.initResetButton();
 		trngImg.catchOutOfMemoryError();
 		trngImg.initExtractionSettingsDialog();
-		common.initExportPadsDialog();
+		exportPads.initExportPadsDialog();
 	},
 	
 	/**
@@ -117,7 +120,7 @@ var trngImg = {
 	{
 		// Catch out of memory error if it occurs and display to the user
 		window.onerror = function(error, url, line) {
-			common.showStatus('error', 'Error occurred: ' + error + ' URL: ' + url);
+			common.showStatus('error', 'Error occurred: ' + error + ' URL: ' + url + ' line: ' + line, true);
 		};
 	},
 	
@@ -179,10 +182,10 @@ var trngImg = {
 			width: 'auto'
 		});
 	},
-		
+	
 	/**
 	 * Load the image into a canvas object on the page
-	 * @param {object} eventObj The event object
+	 * @param {Object} eventObj The event object
 	 */
 	loadImageIntoCanvas: function(eventObj)
 	{
@@ -221,7 +224,7 @@ var trngImg = {
 			   $('#totalPhotoPixels .collectionStatusBox').html(totalPhotoPixels);
 
 			   // Show a status message
-			   common.showProcessingMessage('Completed loading of image. Now you can visually inspect the image and process it when ready.', false);
+			   common.showStatus('success', 'Completed loading of image. Now you can visually inspect the image and process it when ready.', true);
 		   };
 
 		   // Display the image
@@ -237,6 +240,9 @@ var trngImg = {
 	 */
 	processImage: function()
 	{
+		// Show status
+		common.showProcessingMessage('Filtering underexposed, overexposed and consecutive repeating pixel colours...', true);
+		
 		// Get the data from the image
 		trngImg.imgDataArr = trngImg.uploadedImgContext.getImageData(0, 0, trngImg.uploadedImgCanvas.width, trngImg.uploadedImgCanvas.height).data;
 				
@@ -340,7 +346,7 @@ var trngImg = {
 		// Worker error handler
 		worker.addEventListener('error', function(e)
 		{
-			console.log('ERROR: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
+			console.error('ERROR: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
 			
 		}, false);
 		
@@ -350,7 +356,7 @@ var trngImg = {
 			entropyInputEstimatePerPixel: trngImg.entropyInputEstimatePerPixel,
 			dataset: trngImg.dataset
 		});
-								
+							
 		// Free up memory
 		delete trngImg.dataset;
 		window.URL.revokeObjectURL(blobUrl);
@@ -377,9 +383,6 @@ var trngImg = {
 	 */
 	displayProccessingStats: function()
 	{
-		// Show current status
-		common.showProcessingMessage('Completed randomness extraction and tests.', true);
-		
 		// Calculate the collected data
 		var totalExtractedBits = common.randomDataBinary.length;
 		var totalNumOfMessages = Math.floor(totalExtractedBits / common.totalPadSizeBinary);
@@ -407,15 +410,15 @@ var trngImg = {
 			trngImg.fillCanvasWithData(trngImg.extractedOutputCanvasId, common.randomDataBinary);
 
 			// Final status
-			common.showProcessingMessage('Processing complete.', true);
+			common.showStatus('success', 'Processing complete.', true);
 			
 		}, 500);
 	},			
 
 	/**
 	 * Fills the HTML5 canvas with random bits, 0 bits are coloured white, 1 bits are coloured black.
-	 * @param {string} canvasId The id to render the binary data into
-	 * @param {string} randomBits Random binary data
+	 * @param {String} canvasId The id to render the binary data into
+	 * @param {String} randomBits Random binary data
 	 */
 	fillCanvasWithData: function(canvasId, randomBits)
 	{

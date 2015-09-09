@@ -1,6 +1,6 @@
 /**
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,9 @@
 /*	CHAT PAGE
 /* --------------------------------------- */
 
+.chatPage  {
+	height: 100%;
+}
 .chatPage body {
 	background-color: #eee;
 	display: flex;
@@ -31,16 +34,23 @@
 	padding: 5px;
 }
 
-/* Position the status message */
-.chatPage .statusMessage {
-	display: inline-block;
-	text-align: left;
-	padding: 0 3px;
+/* Chat page header and notification functionality buttons */
+.chatPage h2 {
+	position: relative;
 }
-.chatPage .enableDisableAudio {
-	vertical-align: middle;
-	display: inline-block;
+.chatPage .notificationButtons {
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.chatPage .notificationButtons i {
 	cursor: pointer;
+}
+.chatPage .enableDisableVibrationLightningIcon {
+	padding-left: 14px;
+}
+.chatPage .enableDisableWebNotificationsIcon {
+	padding-left: 14px;
 }
 
 /* Container for chat input, send button and message checked status */
@@ -52,8 +62,9 @@
 	width: 100%;
 }
 .chatEntry td {
-	vertical-align: top;
 	padding: 0;
+	vertical-align: top;
+	width: 50%;
 }
 .chatEntry td:first-child {
 	text-align: left;
@@ -91,7 +102,7 @@
 .mainChat {
 	background-color: #fff;
 	border: 1px solid #e7d9e1;
-	height: 200px;
+	height: calc(100% - 200px);
 	margin: 0 auto;
 	overflow-x: hidden;
 	overflow-y: scroll;
@@ -104,7 +115,7 @@
 }
 
 /* Style for the message container */
-.message {
+.mainChat .message {
 	border-radius: 7px;
 	-webkit-box-shadow: 1px 1px 3px 0px rgba(0,0,0,0.7), 1px 1px 7px rgba(255,255,255, 0.77) inset;
 	box-shadow: 1px 1px 3px 0px rgba(0,0,0,0.7), 1px 1px 7px rgba(255,255,255, 0.77) inset;
@@ -117,25 +128,26 @@
 }
 
 /* The pad identifier */
-.message .padIdentifier {
+.mainChat .message .padIdentifier {
 	font-size: 10px;
 	color: #373737;
 }
-.message .padIdentifier span {
+.mainChat .message .padIdentifier span {
 	font-weight: bold;
+	text-transform: uppercase;
 }
 
 /* From which user and the date time for the message */
-.message .fromUserAndDateTime {
+.mainChat .message .fromUserAndDateTime {
 	font-size: 10px;
 	color: #373737;
 }
-.message .fromUserAndDateTime span {
+.mainChat .message .fromUserAndDateTime span {
 	font-weight: bold;
 }
 
 /* Text style for the message */
-.message .messageText {
+.mainChat .message .messageText {
 	font-size: 12px;
 	padding-top: 10px;
 	font-weight: bold;
@@ -144,7 +156,7 @@
 }
 
 /* Message MAC authentication status */
-.message .messageStatus {
+.mainChat .message .messageStatus {
 	font-size: 10px;
 	font-weight: bold;
 	position: absolute;
@@ -152,12 +164,12 @@
 	right: 7px;
 	color: #373737;
 }
-.message .messageStatus.sendSuccess,
-.message .messageStatus.messageValid {
+.mainChat .message .messageStatus.sendSuccess,
+.mainChat .message .messageStatus.messageValid {
 	color: green;
 }
-.message .messageStatus.sendError,
-.message .messageStatus.messageInvalid {
+.mainChat .message .messageStatus.sendError,
+.mainChat .message .messageStatus.messageInvalid {
 	color: red;
 }
 
@@ -202,4 +214,34 @@
 	font-size: 10px;
 	color: #373737;
 	text-align: right;
+}
+
+/* Online status for users */
+.groupUsers {
+	font-size: 10px;
+	color: #373737;
+	margin-top: 1px;
+}
+.groupUsers .user {
+	display: inline-block;
+	margin-right: 7px;
+}
+.groupUsers .user.userTemplate {
+	display: none;
+}
+.groupUsers .onlineStatusCircle {
+	background-color: green;
+	border-radius: 50%;
+	display: inline-block;
+	height: 7px;
+	width: 7px;
+}
+.groupUsers .onlineStatusCircle.online {
+	background-color: green;
+}
+.groupUsers .onlineStatusCircle.offline {
+	background-color: red;
+}
+.groupUsers .numOfPadsRemaining {
+	font-weight: bold;
 }

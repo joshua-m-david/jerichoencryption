@@ -1,6 +1,6 @@
 /*!
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,9 @@
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
 
+// Use ECMAScript 5's strict mode
+'use strict';
+
 /**
  * This program will take a large amount of binary data, fire up a web worker and test 
  * each 20,000 bits of the binary string. Finally it will output the results to the page.
@@ -26,10 +29,10 @@ var randomTests = {
 	
 	/**
 	 * Initialise the randomness tests
-	 * @param {string} randomData A binary string to test
-	 * @param {string} overallResultOutputId Where the overall result will be rendered after the tests are complete
-	 * @param {string} overallResultLogOutputId Where the overall result logs will be rendered after the tests are complete
-	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
+	 * @param {String} randomData A binary string to test
+	 * @param {String} overallResultOutputId Where the overall result will be rendered after the tests are complete
+	 * @param {String} overallResultLogOutputId Where the overall result logs will be rendered after the tests are complete
+	 * @param {String} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
 	 * @param {function} callbackFunction Function to run when the tests have completed
 	 */
 	init: function(randomData, overallResultOutputId, overallResultLogOutputId, testVersion, callbackFunction)
@@ -64,17 +67,17 @@ var randomTests = {
 		// Worker error handler
 		worker.addEventListener('error', function(e)
 		{
-			console.log('ERROR: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
+			console.error('ERROR: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
 			
 		}, false);
 	},
 	
 	/**
 	 * Render the test results to the page
-	 * @param {object} overallResults
-	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
-	 * @param {string} overallResultOutputId
-	 * @param {string} overallResultLogOutputId
+	 * @param {Object} overallResults
+	 * @param {String} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
+	 * @param {String} overallResultOutputId
+	 * @param {String} overallResultLogOutputId
 	 */
 	displayTestResults: function(overallResults, testVersion, overallResultOutputId, overallResultLogOutputId)
 	{
@@ -96,15 +99,15 @@ var randomTests = {
 		}
 		
 		// Update status message on the page
-		common.showProcessingMessage('Processing and randomness tests complete.', true);
+		common.showProcessingMessage('Processing and randomness tests complete...', true);
 	},
 	
 	/**
 	 * Starts the tests on every 20,000 bits of random data.
 	 * Returns the overall result of all the tests and a log for each test run.
-	 * @param {string} randomData All the bits to test
-	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
-	 * @returns {object} Returns object with keys: overallResult (boolean) and overallResultLog (string)
+	 * @param {String} randomData All the bits to test
+	 * @param {String} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
+	 * @returns {Object} Returns object with keys: overallResult (boolean) and overallResultLog (string)
 	 */
 	runTests: function(randomData, testVersion)
 	{
@@ -162,10 +165,10 @@ var randomTests = {
 	 * A single bit stream of 20,000 consecutive bits of output from the generator is subjected to each of the following tests. 
 	 * If any of the tests fail, then they haven't created good statistical randomness and should try again.	
 	 * To do: add more randomness tests e.g. from http://www.random.org/analysis/Analysis2005.pdf
-	 * @param {string} randomBits The 20,000 bits to test
-	 * @param {integer} numOfBits The number of bits e.g. 20000
-	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
-	 * @return {object} Returns an object with all the test results and keys 'monobitTest', 'pokerTest', 'runsTest', 'longRunsTest'
+	 * @param {String} randomBits The 20,000 bits to test
+	 * @param {Number} numOfBits The number of bits e.g. 20000
+	 * @param {String} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
+	 * @return {Object} Returns an object with all the test results and keys 'monobitTest', 'pokerTest', 'runsTest', 'longRunsTest'
 	 */
 	testRandomness: function(randomBits, numOfBits, testVersion)
 	{		
@@ -187,9 +190,9 @@ var randomTests = {
 	 * Test 1 - The Monobit Test
 	 * 1. Count the number of ones in the 20,000 bit stream. Denote this quantity by X.
 	 * 2. The test is passed if X is between the threshold.
-	 * @param {string} randomBits The random bits to test
+	 * @param {String} randomBits The random bits to test
 	 * @param {int} numOfBits The number of random bits
-	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
+	 * @param {String} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
 	 * @return {bool} Returns true if the test passed or false if not
 	 */
 	randomnessMonobitTest: function(randomBits, numOfBits, testVersion)
@@ -235,9 +238,9 @@ var randomTests = {
 	 * 2. Evaluate the following:
 	 *    X = (16/5000) * (Sum i=0 -> i=15 [f(i)]^2) - 5000
 	 * 3. The test is passed if X is between the threshold.
-	 * @param {string} randomBits The random bits to test
+	 * @param {String} randomBits The random bits to test
 	 * @param {int} numOfBits The number of random bits
-	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
+	 * @param {String} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
 	 * @return {bool} Returns true if the test passed or false if not
 	 */
 	randomnessPokerTest: function(randomBits, numOfBits, testVersion)
@@ -310,9 +313,9 @@ var randomTests = {
 	 * within the corresponding interval specified below. This must hold for both the zeros
 	 * and ones; that is, all 12 counts must lie in the specified interval. For the purpose of this
 	 * test, runs of greater than 6 are considered to be of length 6.
-	 * @param {string} randomBits The random bits to test
+	 * @param {String} randomBits The random bits to test
 	 * @param {int} numOfBits The number of random bits
-	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
+	 * @param {String} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
 	 * @return {bool} Returns true if the test passed or false if not
 	 */
 	randomnessRunsTest: function(randomBits, numOfBits, testVersion)
@@ -452,9 +455,9 @@ var randomTests = {
 	 * Test 4 - The Long Run Test
 	 * 1. A long run is defined to be a run of length x bits or more (of either zeros or ones).
 	 * 2. On the sample of 20,000 bits, the test is passed if there are NO long runs.
-	 * @param {string} randomBits The random bits to test
+	 * @param {String} randomBits The random bits to test
 	 * @param {int} numOfBits The number of random bits
-	 * @param {string} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
+	 * @param {String} testVersion Which FIPS 140 version and test thresholds to use e.g. 'FIPS-140-1' or 'FIPS-140-2'
 	 * @return {bool} Returns true if the test passed or false if not
 	 */
 	randomnessLongRunsTest: function(randomBits, numOfBits, testVersion)

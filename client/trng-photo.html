@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-	Jericho Chat - Information-theoretically secure communications
-	Copyright (C) 2013-2014  Joshua M. David
+	Jericho Comms - Information-theoretically secure communications
+	Copyright (c) 2013-2015  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -->
 <html>
 	<head>
-		<title>Jericho Chat - TRNG Photo</title>
+		<title>Jericho Comms - TRNG Photo</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		
 		<link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
@@ -31,30 +31,42 @@
 		<script src="js/lib/jquery.js"></script>
 		<script src="js/lib/jquery-ui.js"></script>
 		<script src="js/lib/filesaver.js"></script>
-		<script src="js/lib/jscrypto-core.js"></script>
-		<script src="js/lib/jscrypto-x64core.js"></script>
-		<script src="js/lib/jscrypto-enc-base64.js"></script>
-		<script src="js/lib/jscrypto-sha3.js"></script>
-		<script src="js/lib/skein.js"></script>
 				
+		<script src="js/lib/cryptojs-core.js"></script>
+		<script src="js/lib/cryptojs-x64core.js"></script>
+		<script src="js/lib/cryptojs-enc-base64.js"></script>
+		<script src="js/lib/cryptojs-hmac.js"></script>
+		<script src="js/lib/cryptojs-sha3.js"></script>
+		<script src="js/lib/cryptojs-cipher-core.js"></script>
+		<script src="js/lib/cryptojs-mode-ctr.js"></script>
+		<script src="js/lib/cryptojs-pad-nopadding.js"></script>
+		<script src="js/lib/cryptojs-aes.js"></script>
+		<script src="js/lib/cryptojs-pbkdf2.js"></script>
+		<script src="js/lib/skein.js"></script>
+		<script src="js/lib/salsa20.js"></script>
+		
 		<script src="js/database.js"></script>
+		<script src="js/database-crypto.js"></script>
 		<script src="js/common.js"></script>
+		<script src="js/export.js"></script>
 		<script src="js/trng-photo.js"></script>
-		<script src="js/tests-randomness.js"></script>		
+		<script src="js/tests-randomness.js"></script>
 		<script type="text/javascript">
 			$(function()
-			{				
+			{
 				trngImg.init();
-			});	
-		</script>		
+			});
+		</script>
 		<script id="trng-extraction-worker" type="javascript/worker">
+			// Use ECMAScript 5's strict mode
+			'use strict';
 			
 			// Import scripts to be used
 			importScripts(baseUrl + '/js/common.js');
 			importScripts(baseUrl + '/js/trng-photo-worker.js');
-			importScripts(baseUrl + '/js/lib/jscrypto-core.js');
-			importScripts(baseUrl + '/js/lib/jscrypto-x64core.js');
-			importScripts(baseUrl + '/js/lib/jscrypto-sha3.js');
+			importScripts(baseUrl + '/js/lib/cryptojs-core.js');
+			importScripts(baseUrl + '/js/lib/cryptojs-x64core.js');
+			importScripts(baseUrl + '/js/lib/cryptojs-sha3.js');
 			importScripts(baseUrl + '/js/lib/skein.js');
 
 			// Get data from the process which started the worker thread
@@ -69,7 +81,9 @@
 			}, false);
 		</script>
 		<script id="randomness-tests-worker" type="javascript/worker">
-						
+			// Use ECMAScript 5's strict mode
+			'use strict';
+	
 			// Import scripts to be used
 			importScripts(baseUrl + '/js/tests-randomness.js');
 
@@ -84,6 +98,39 @@
 					overallResults: overallResults,
 					testVersion: e.data.testVersion
 				});
+				
+			}, false);			
+		</script>
+		<script id="export-pads-worker" type="javascript/worker">
+			// Use ECMAScript 5's strict mode
+			'use strict';
+	
+			// Import scripts to be used
+			importScripts(baseUrl + '/js/lib/cryptojs-core.js');
+			importScripts(baseUrl + '/js/lib/cryptojs-x64core.js');
+			importScripts(baseUrl + '/js/lib/cryptojs-enc-base64.js');
+			importScripts(baseUrl + '/js/lib/cryptojs-hmac.js');
+			importScripts(baseUrl + '/js/lib/cryptojs-sha3.js');
+			importScripts(baseUrl + '/js/lib/cryptojs-cipher-core.js');
+			importScripts(baseUrl + '/js/lib/cryptojs-mode-ctr.js');
+			importScripts(baseUrl + '/js/lib/cryptojs-pad-nopadding.js');
+			importScripts(baseUrl + '/js/lib/cryptojs-aes.js');
+			importScripts(baseUrl + '/js/lib/cryptojs-pbkdf2.js');
+			importScripts(baseUrl + '/js/lib/skein.js');
+			importScripts(baseUrl + '/js/lib/salsa20.js');
+			importScripts(baseUrl + '/js/database-crypto.js');
+			importScripts(baseUrl + '/js/common.js');
+			importScripts(baseUrl + '/js/export.js');
+			importScripts(baseUrl + '/js/export-worker.js');
+
+			// Get data from the process which started the worker thread
+			this.addEventListener('message', function(event)
+			{
+				// Create the keys, derive keys from password, encrypt and MAC the one-time pads (inside web worker)
+				var workerData = exportPadsWorker.createAndEncryptPads(event.data.options, event.data.extractedRandomDataHex);
+
+				// Send the processed data back to the main thread
+				self.postMessage(workerData);
 				
 			}, false);			
 		</script>
@@ -153,8 +200,10 @@
 				</tr>
 			</table>
 			
-			<div class="processingStatus"></div>
-			<div class="statusMessage"></div>
+			<div class="navItem statusMessage">
+				<span class="icon"></span>
+				<span class="message"></span>
+			</div>
 		</div>
 		
 		<!-- Headings hidden and shown with JavaScript -->
@@ -183,49 +232,8 @@
 		</div>
 		
 		<!-- Dialog for exporting pads and testing the server connection -->
-		<div id="exportPadsSettings" class="exportPadsSettings" title="Export">
-			<div class="helpExplanation">Fill out all the details to make importing easier for the other user:</div>
-			<div class="statusMessage"></div>
-			<table>				
-				<tr>
-					<th>Server address and port</th>
-					<td>
-						<input id="serverAddressAndPort" type="text" placeholder="http://ip-or-domain.com:8080/alpha-bravo/">
-					</td>
-				</tr>
-				<tr>
-					<th>Server API key (512 bits)</th>
-					<td>
-						<input id="serverKey" type="text">
-					</td>
-				</tr>
-			</table>
-			<div class="buttons">
-				<input id="btnCreateServerKey" class="blueButton" type="button" value="1. Create server key">
-				<input id="testServerConnection" class="blueButton" type="button" value="2. Test connection">				
-			</div>
-			
-			<table class="userSettings">
-				<tr>
-					<th>Number of users in group</th>
-					<td>
-						<select id="numOfUsers">
-							<option value="2">Two users</option>
-							<option value="3">Three users</option>
-							<option value="4">Four users</option>
-							<option value="5">Five users</option>
-							<option value="6">Six users</option>
-							<option value="7">Seven users</option>
-						</select>
-					</td>
-				</tr>				
-				<tr>
-					<th class="nicknamesHeading">Custom user call signs</th>
-					<td class="nicknames">
-						<label>Alpha</label> <input id="nickname-alpha" type="text" maxlength="12" value="Alpha"><br>
-						<label>Bravo</label> <input id="nickname-bravo" type="text" maxlength="12" value="Bravo">
-					</td>
-				</tr>
+		<div id="exportPadsSettings" class="exportPadsSettings" title="Export">			
+			<table class="exportMethodTable">
 				<tr>
 					<th>Export to</th>
 					<td>
@@ -233,28 +241,139 @@
 							<optgroup label="Export one-time pads for actual use">
 								<option value="textFile" selected>One-time pads (Text file)</option>
 								<option value="clipboard">One-time pads (Clipboard)</option>
-								<option value="localDatabase">One-time pads (This browser's database)</option>
 							</optgroup>
 							<optgroup label="Export extracted bits for external tests">
 								<option value="testExportExtractedBinaryFile">Binary file</option>
-								<option value="testExportExtractedBase64">Base64 string</option>
-								<option value="testExportExtractedHexadecimal">Hexadecimal string</option>
+								<option value="testExportExtractedBase64">Base64 string (Clipboard)</option>
+								<option value="testExportExtractedHexadecimal">Hexadecimal string (Clipboard)</option>
 							</optgroup>
 						</select>
 					</td>
-				</tr>				
-				<tr class="exportForUserRow">
-					<th>Export for user</th>
-					<td>
-						<select id="exportForUser" class="exportForUser">
-							<option value="alpha">Alpha</option>
-							<option value="bravo">Bravo</option>
-						</select>
-					</td>
 				</tr>
-			</table>			
+			</table>
+			
+			<div class="helpExplanation">
+				<span class="oneTimePads">Fill out all the details to make importing easier for other users:</span>
+				<span class="randomData">Export the random data for testing in an external program:</span>
+			</div>
+			<div class="statusMessage">
+				<span class="icon"></span>
+				<span class="message"></span>
+			</div>
+			
+			<fieldset class="serverDetails">
+				<legend>Server details</legend>
+				<table>				
+					<tr>
+						<th>Server address and port</th>
+						<td>
+							<input id="serverAddressAndPort" type="text" placeholder="http://ip-or-domain.com:8080/alpha-bravo/">
+						</td>
+					</tr>
+					<tr>
+						<th>Server API key (512 bits)</th>
+						<td>
+							<input id="serverKey" type="text">
+						</td>
+					</tr>
+				</table>
+				<div class="buttons">
+					<input id="btnCreateServerKey" class="blueButton" type="button" value="1. Create server key">
+					<input id="testServerConnection" class="blueButton" type="button" value="2. Test connection">				
+				</div>
+			</fieldset>
+			
+			<fieldset class="chatGroupDetails">
+				<legend>Chat group details</legend>
+				<table>
+					<tr>
+						<th>Number of users in group</th>
+						<td>
+							<select id="numOfUsers">
+								<option value="2">Two users</option>
+								<option value="3">Three users</option>
+								<option value="4">Four users</option>
+								<option value="5">Five users</option>
+								<option value="6">Six users</option>
+								<option value="7">Seven users</option>
+							</select>
+						</td>
+					</tr>				
+					<tr>
+						<th class="nicknamesHeading">Custom user nicknames</th>
+						<td class="nicknames">
+							<label>Alpha</label> <input id="nickname-alpha" type="text" maxlength="12" value="Alpha"><br>
+							<label>Bravo</label> <input id="nickname-bravo" type="text" maxlength="12" value="Bravo">
+						</td>
+					</tr>
+				</table>
+			</fieldset>
+			<fieldset class="databaseEncryptionPassword">
+				<legend>Database encryption password</legend>
+				<table>
+					<tr>
+						<th>Passphrase</th>
+						<td>
+							<input id="passphrase" type="password">
+						</td>
+					</tr>
+					<tr>
+						<th>Passphrase (repeat)</th>
+						<td>
+							<input id="passphraseRepeat" type="password">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="displayPassword">Display password</label>
+						</th>
+						<td>
+							<input id="displayPassword" type="checkbox">
+						</td>
+					</tr>
+				</table>
+				<div class="passphraseStrength">
+					Estimated strength: 
+					<span class="text">
+						<span class="bits">0</span> bits
+					</span>
+				</div>
+			</fieldset>
+			<fieldset class="advancedOptions">
+				<legend>Advanced options</legend>
+				<table>									
+					<tr class="exportKeyfileRow">
+						<th>
+							<label for="storeKeyfileSeparately">Store the PBKDF salt as a separate keyfile</label>
+						</th>
+						<td>
+							<input id="storeKeyfileSeparately" type="checkbox">
+						</td>
+					</tr>
+					<tr class="exportIterationsRow">
+						<th>
+							<label for="enterPbkdfIterationsOnDecrypt">Enter the PBKDF iterations at decryption time</label>
+						</th>
+						<td>
+							<input id="enterPbkdfIterationsOnDecrypt" type="checkbox">
+						</td>
+					</tr>					
+					<tr>
+						<th>Number of PBKDF Keccak iterations</th>
+						<td>
+							<input id="pbkdfKeccakIterations" class="numOfIterations" type="text" value="10000">
+						</td>
+					</tr>
+					<tr>
+						<th>Number of PBKDF Skein iterations</th>
+						<td>
+							<input id="pbkdfSkeinIterations" class="numOfIterations" type="text" value="10000">
+						</td>
+					</tr>
+				</table>				
+			</fieldset>
 			<div class="buttons">
-				<input id="btnExportPads" class="blueButton" type="button" value="3. Export">
+				<input id="btnExportPads" class="blueButton" type="button" value="3. Export one-time pads">
 			</div>
 		</div>
 	</body>

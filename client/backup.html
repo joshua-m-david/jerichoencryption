@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-	Jericho Chat - Information-theoretically secure communications
-	Copyright (C) 2013-2014  Joshua M. David
+	Jericho Comms - Information-theoretically secure communications
+	Copyright (c) 2013-2015  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -->
 <html class="backupPage">
 	<head>
-		<title>Jericho Chat - Backup pads</title>
+		<title>Jericho Comms - Backup pads</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<meta name="apple-mobile-web-app-capable" content="yes">
@@ -25,37 +25,20 @@
 		
 		<link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
 		<link rel="icon" type="image/png" sizes="196x196" href="img/touch-icon-196x196.png">
-				
+		
 		<link rel="stylesheet" href="css/lib/normalize.css">
 		<link rel="stylesheet" href="css/common.css">
 		<link rel="stylesheet" href="css/backup.css">
 		
 		<script src="js/lib/jquery.js"></script>
 		<script src="js/lib/filesaver.js"></script>
-		
 		<script src="js/database.js"></script>
 		<script src="js/common.js"></script>
-		<script type="text/javascript">			
-			// On page load
-			$(document).ready(function()
+		<script src="js/backup.js"></script>
+		<script type="text/javascript">
+			$(function()
 			{
-				// Get values from page and backup to clipboard or text file
-				$('#btnBackup').click(function()
-				{
-					// Backup to clipboard or text file
-					var exportMethod = $('.exportMethod:checked').val();					
-					common.preparePadsForBackup(exportMethod);
-					
-					// Allow the clear local database button to be clicked now (this prevents accidental erasure before backing up)
-					$('#btnClearLocalDatabase').prop('disabled', false);
-				});
-				
-				// Clear the memory and local storage
-				$('#btnClearLocalDatabase').click(function()
-				{
-					db.nukeDatabase();
-					common.showStatus('success', 'Local database cleared successfully.');
-				});
+				backupPads.init();				
 			});
 		</script>
 	</head>
@@ -64,12 +47,18 @@
 			<div class="navItem">
 				<a href="index.html" class="blueButton">Home</a>
 			</div>
-			<div class="navItem statusMessage"></div>
+			<div class="navItem statusMessage">
+				<span class="icon"></span>
+				<span class="message"></span>
+			</div>
 		</div>
-		<h2>Backup/move pads to another device</h2>
-			
+		
+		<h2>Backup/move pads to another device</h2>			
 		<div class="instructions">
 			This will let you save the current pads in this device or computer's local storage to another location.<br>
+			<br>
+			<b>Warning:</b> the pads being backed up will not be encrypted (until v2.0). Please save the pads in an 
+			encrypted TrueCrypt 7.1a container file instead or use destructable media e.g. CD/DVD.<br>
 			<br>
 			Once saved from here you must clear this device's storage so that you don't have the same pads on two 
 			different devices. Doing that could allow duplicate use of a pad and allow for cryptanalysis.
@@ -87,10 +76,31 @@
 				</td>
 			</tr>
 		</table>
-
 		<div class="buttons">
 			<input id="btnBackup" class="blueButton" type="button" value="1. Create backup">
 			<input id="btnClearLocalDatabase" class="blueButton" type="button" value="2. Clear local database" disabled="disabled">
+		</div>
+		
+		<div class="restorePads">
+			<h2>Restore pads from backup</h2>		
+			<div class="information">
+				This will load the backed up one-time pads from the clipboard or text file into the local storage of 
+				this computer/device. Once the pads are loaded you can start chatting.
+			</div>
+			<div class="method">
+				<div class="methodTitle">Method 1: &nbsp;Load from text file:</div>
+				<input id="padFile" type="file" name="padFile">
+			</div>
+			<div class="method">
+				<div class="methodTitle">Method 2: &nbsp;Open text file, select all text (Ctrl + A), copy (Ctrl + C) and paste (Ctrl + V):</div>
+				<div>
+					<input id="padDataClipboardInput" class="padDataClipboardInput" type="text">
+					<input id="loadPadsFromClipboard" class="blueButton" type="button" value="Load">
+				</div>
+			</div>
+			<div class="chatButton">
+				<a href="chat.html" class="blueButton">Go to chat</a>
+			</div>
 		</div>
 	</body>
 </html>

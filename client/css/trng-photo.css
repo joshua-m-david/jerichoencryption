@@ -1,6 +1,6 @@
 /**
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,7 @@ body.trngImagePage {
 	text-transform: capitalize;
 }
 .trngImagePage .ui-dialog .ui-dialog-content {
-	background: #fff;
+	background: #eee;
 }
 .trngImagePage .ui-slider .ui-slider-handle {
 	background: #f7ae37; /* Old browsers */
@@ -165,17 +165,8 @@ body.trngImagePage {
 }
 
 /* Put status in middle */
-.trngImagePage .trngImagePage .statusMessage {
-	text-align: center;
-}
-
-/* Processing status */
-.trngImagePage .processingStatus {
-	color: green;
-	font-size: 12px;
-	font-weight: bold;
-	line-height: 12px;
-	padding: 10px;
+.trngImagePage .statusMessage {
+	margin-top: 20px;
 	text-align: center;
 }
 

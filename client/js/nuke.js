@@ -1,6 +1,6 @@
 /*!
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,13 +15,20 @@
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
 
+// Use ECMAScript 5's strict mode
+'use strict';
+
 /**
- * Function to delete everything from the local device storage and clear messages on the server
+ * Functionality to emergency delete everything from the local device storage of every user in the chat group. It does 
+ * this by sending a special text command 'init auto nuke' which is encrypted and authenticated using the one-time pad. 
+ * When this command is received by the other users in the group, their local databases will be wiped immediately. The 
+ * person initiating the auto nuke will have their own one-time pad database wiped once a successful response has been 
+ * received from the server that the command was sent successfully.
  */
 var nuke = {
 		
 	/**
-	 * Initialises the process to delete everything from the server and local database
+	 * Initialises the process
 	 */
 	initialiseAutoNuke: function()
 	{
@@ -31,53 +38,65 @@ var nuke = {
 			// Make sure there is data in the database
 			if (db.padData.info.serverAddressAndPort === null)
 			{
-				common.showStatus('error', 'No data in local database to delete');
+				common.showStatus('error', 'No data in local database to delete.');
 				return false;
 			}
 			
+			// Get the next pad from the local database and use it to encrypt the auto nuke command
+			var pad = common.getPadToEncryptMessage();
+			if (pad === false)
+			{
+				// There's no pads available to encrypt the message so don't let them send it
+				common.showStatus('error', 'No available pads. Please generate more pads and exchange them with your chat partner.');
+				return false;
+			}
+
+			// Encrypt the auto nuke command and create the MAC
+			var autoNukeCommand = 'init auto nuke';
+			var ciphertextMessageAndMac = common.encryptAndAuthenticateMessage(autoNukeCommand, pad);
+
 			// Get the server address and key
 			var serverAddressAndPort = db.padData.info.serverAddressAndPort;
 			var serverKey = db.padData.info.serverKey;
-						
+			
 			// Package the data to be sent to the server
 			var data = {
 				'user': db.padData.info.user,
-				'apiAction': 'autoNuke'
+				'apiAction': 'sendMessage',
+				'msg': ciphertextMessageAndMac
 			};
 			
-			// Deploy the nuke
-			common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseDataJson)
+			// Fire the nuke
+			common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseData)
 			{
-				// Always nuke the local database
-				db.nukeDatabase();
-				
 				// If the server response is authentic
 				if (validResponse)
-				{
-					// Convert from JSON to object
-					var responseData = JSON.parse(responseDataJson);
-										
-					// If it cleared the server
-					if (responseData.success)
+				{					
+					// If it saved the message on the server
+					if (responseData.success)					
 					{
-						common.showStatus('success', 'Local database nuked successfully. ' + responseData.statusMessage);
+						// Clear the local database
+						db.nukeDatabase();					
+						
+						// Show message
+						common.showStatus('success', 'Local database nuked successfully.');
 					}
 					else {
-						// Failed to clear the server
-						common.showStatus('error', 'Local database nuked successfully. ' + responseData.statusMessage);
+						// Failed to send
+						common.showStatus('error', responseData.statusMessage);
 					}					
 				}
 				
 				// If response check failed it means there was probably interference from attacker altering data or MAC
 				else if (validResponse === false)
-				{	
-					common.showStatus('error', 'Local database has been nuked successfully. However an unauthentic response from server was detected. The server may still contain data, try wiping it manually.');
+				{
+					common.showStatus('error', 'An unauthentic response from server was detected. Try again.');
 				}
 				
 				else {
 					// Most likely cause is user has incorrect server url or key entered.
-					// Another alternative is the attacker modified their request while en route to the server
-					common.showStatus('error', 'Local database has been nuked successfully. However there was an error contacting server or your data was modified by an attacker in transit. Double check you are connected to the network and that the client and server configurations are correct. The server may still contain data, try wiping it manually.');
+					// Another alternative is the attacker modified their request while en route to the server					
+					common.showStatus('error', 'There was an error contacting the server. Check: 1) you are connected to the network, 2) the client/server configurations are correct, and 3) client/server system clocks are up to date. If everything is correct, the data may have been tampered with by an attacker. Double check you are connected to the network and that the client and server configurations are correct.');
 				}
 			});
 		});

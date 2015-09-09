@@ -1,6 +1,6 @@
 /*!
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
+
+// Use ECMAScript 5's strict mode
+'use strict';
 
 /**
  * Stores the pad metadata and pads by serialising the data in HTML5 Local Storage.
@@ -34,19 +37,30 @@ var db = {
 	// Name of the database used as the key for local storage
 	databaseName: 'padData',
 	
-	// Schema for the data to store all the pad information, pads and any custom user settings
+	// Schema for the data to store all the pad information, server connection information, 
+	// contact list and nicknames, crypto keys, one-time pads and any custom user settings
 	padDataSchema: {
-		info: {
-			programVersion: null,
-			serverAddressAndPort: null,
-			serverKey: null,
-			user: null,
-			userNicknames: {}
+		info: {			
+			custom: {
+				enableSounds: true,				// Enables sounds when a message is received
+				enableVibration: true,			// Enables device vibration for incoming messages
+				enableWebNotifications: true	// Enables HTML5 desktop notifications
+			},
+			serverAddressAndPort: null,			// The server address and port
+			serverKey: null,					// The server API key
+			user: null,							// The user callsign
+			userNicknames: {}					// The custom group user nicknames matching the callsigns
 		},
-		pads: [],
-		custom: {
-			enableSounds: true
-		}
+		crypto: {
+			keys: null,							// The encrypted database keys concatenated together
+			keysMac: null,						// The MAC of the encrypted database keys for authentication
+			padIndexMacs: {},					// A MAC of the pad index numbers for each user's list of one-time pads
+			pbkdfKeccakIterations: null,		// The number of Keccak PBKDF iterations used to generate the master key for the database
+			pbkdfSkeinIterations: null,			// The number of Skein PBKDF iterations used to generate the master key for the database
+			pbkdfSalt: null						// The PBKDF salt / keyfile used to generate the master key for the database
+		},
+		pads: [],								// The one-time pads
+		programVersion: null					// The program version that created this database (can be used for upgrading later if the format changes)
 	},
 		
 	// In memory storage for all the pad information and pads (has same structure as schema above)
@@ -86,16 +100,7 @@ var db = {
 	{
 		localStorage.setObject(this.databaseName, this.padData);
 	},
-	
-	/**
-	 * Saves the newly created pad information and pads into the local storage database
-	 * @param {array} padData Created pad data. Uses same structure as padDataSchema above
-	 */
-	saveNewPadDataToDatabase: function(padData)
-	{
-		localStorage.setObject(this.databaseName, padData);
-	},
-	
+		
 	/**
 	 * Clear the database
 	 */
@@ -112,8 +117,8 @@ var db = {
 	/**
 	 * Clone an object so when assigning an object to a variable we're not using the reference of that object
 	 * See http://stackoverflow.com/a/728694
-	 * @param {object} obj The object to be cloned
-	 * @return {object} The cloned object
+	 * @param {Object} obj The object to be cloned
+	 * @return {Object} The cloned object
 	 */
 	clone: function(obj)
 	{
@@ -124,8 +129,8 @@ var db = {
 /**
  * Serializes an object to a JSON string and stores it in HTML5 local storage.
  * Usage: localStorage.setObject('key', objectValue);
- * @param {string} key The name of the key to store the object under and retrieve later
- * @param {object} value The JavaScript object to store in HTML5 local storage
+ * @param {String} key The name of the key to store the object under and retrieve later
+ * @param {Object} value The JavaScript object to store in HTML5 local storage
  */
 Storage.prototype.setObject = function(key, value)
 {
@@ -135,8 +140,8 @@ Storage.prototype.setObject = function(key, value)
 /**
  * Retrieves a serialized object from HTML5 local storage. It deserializes the JSON to a JavaScript object.
  * Usage: localStorage.getObject('key');
- * @param {string} key The name of the object to get from storage
- * @return {object} Gets the object
+ * @param {String} key The name of the object to get from storage
+ * @return {Object} Gets the object
  */
 Storage.prototype.getObject = function(key)
 {

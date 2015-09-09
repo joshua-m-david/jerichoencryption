@@ -1,7 +1,7 @@
 <?php
 /**
- * Jericho Chat - Information-theoretically secure communications
- * Copyright (C) 2013-2014  Joshua M. David
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2015  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,16 +33,16 @@ class Api
 	private $userList = ['alpha', 'bravo', 'charlie', 'delta', 'echo', 'foxtrot', 'golf'];
 	
 	// Whitelist of API actions
-	private $apiActions = ['sendMessage', 'receiveMessages', 'autoNuke', 'testConnection'];
+	private $apiActions = ['sendMessage', 'receiveMessages', 'testConnection'];
 	
 	// Number of seconds after a request has been sent that the request is valid for
-	public $validityWindow = 7;
+	public $validityWindow = 60;
 	
 	// Number of seconds that nonces are kept for in the database, after this they are deleted
-	public $nonceExpiryTime = 14;
+	public $nonceExpiryTime = 120;
 	
-	// Schedule the cleanup task to run every 30 seconds
-	public $cleanupSchedule = 30;
+	// Schedule the cleanup task to run after this many seconds
+	public $cleanupSchedule = 120;
 	
 	// Variables from the request after they have been checked and filtered for bad input
 	private $validatedRequestUser = null;
@@ -56,18 +56,23 @@ class Api
 	/**
 	 * Constructor takes the initialised database and configurations using dependency injection
 	 * @param Database &$db The database object
-	 * @param array &$users The valid users
+	 * @param array &$numberOfUsers The number of valid chat group users
 	 * @param string &$serverKey The server key as a hexadecimal string
 	 * @param array &$applicationConfig Some application settings
 	 */
-	public function __construct(&$db, &$users, &$serverKey, &$applicationConfig)
+	public function __construct(&$db, &$numberOfUsers, &$serverKey, &$applicationConfig)
 	{
 		$this->db = $db;
-		$this->users = $users;
 		$this->serverKey = $serverKey;
 		$this->applicationConfig = $applicationConfig;
+				
+		// Set the number of valid chat users based on the config
+		$this->users = $this->setChatGroupUsers($numberOfUsers);
 	}
-	
+			
+	/**
+	 * Connects to the database
+	 */
 	public function connectToDatabase()
 	{
 		// Try connecting to the database
@@ -92,26 +97,36 @@ class Api
 	 */
 	public function performClientRequestAuthentication()
 	{
-		// Get the data and MAC from the POST request
-		$dataJson = $this->getDataKeyIfExists('data', $_POST);
-		$mac = $this->getDataKeyIfExists('mac', $_POST);
-		
-		// If the data or MAC is missing show an error
-		if (($dataJson === false) || ($mac === false))
-		{
-			$this->outputErrorResponse('Missing JSON data or MAC in request.');
-		}
+		// Get the request data which is sent as a Base64 string in the POST request
+		$rawDataBase64 = $this->getDataKeyIfExists('data', $_POST);
 		
 		
-		// Check to make sure the request parameters do not exceed a reasonable byte length
-		$validLength = $this->checkOversizeRequest($dataJson, $mac);
-		
-		// If the length of the data or MAC exceeds a reasonable limit throw an error response
+		// Check to make sure the request does not exceed a reasonable byte length. This is used to mitigate 
+		// a potential DOS attack which could make the server do lots of request validation at once. An attacker 
+		// could potentially send lots of requests and force the server to do a computationally expensive task 
+		// (e.g. hashing for the MAC) on large data to authenticate multiple requests which would slow the server.
+		$validLength = (strlen($rawDataBase64) <= 975) ? true : false;
+			
+		// If it is an invalid length
 		if ($validLength === false)
 		{
-			$this->outputErrorResponse('Oversize request data.');
+			$this->outputErrorResponse('Request is too large.');
 		}
 		
+		
+		// Validate and decode the Base64 data
+		$data = $this->validateAndDecodeBase64($rawDataBase64);
+	
+		// If the data is invalid throw an error response
+		if ($data === false)
+		{
+			$this->outputErrorResponse('Malformed Base64 in request.');
+		}
+		
+		
+		// Get the JSON data and MAC
+		$dataJson = $data['dataJson'];
+		$mac = $data['mac'];
 		
 		// Remove non-hexadecimal characters and validate the MAC of the user and whole JSON data packet
 		$mac = $this->filterNonHexadecimalChars($mac);
@@ -194,7 +209,7 @@ class Api
 		$this->validatedRequestDataJson = $dataJson;
 		$this->validatedRequestData = $data;
 	}
-	
+		
 	/**
 	 * Performs the requested API action
 	 */
@@ -214,34 +229,10 @@ class Api
 		// If the user is requesting to download their messages
 		else if ($this->validatedRequestAction === 'receiveMessages')
 		{
-			// Check if auto nuke was initiated every time a user makes a request to read messages
-			$autoNukeInitiatedBy = $this->checkIfAutoNukeInitiated();
-			
-			// If initiated
-			if ($autoNukeInitiatedBy !== false)
-			{				
-				// Set "Auto nuke initiated" in the response to tell the other user's client programs to automatically delete their 
-				// local database of pads. On the client this will immediately delete their local database and screen of messages.
-				$jsonResult = array(
-					'success' => false,
-					'statusMessage' => 'Auto nuke initiated',
-					'initiatedBy' => $autoNukeInitiatedBy
-				);
-			}
-			else {
-				// Get the unread messages for this user
-				$jsonResult = $this->getMessagesForUser($this->validatedRequestUser);
-			}			
+			// Get the unread messages for this user
+			$jsonResult = $this->getMessagesForUser($this->validatedRequestUser);			
 		}
-		
-		// If the user wants to initiate the auto nuke
-		else if ($this->validatedRequestAction === 'autoNuke')
-		{
-			// Start the auto nuke process. This deletes everything from the server and sets a flag 
-			// so the next time the other users connect their chat and pads will be wiped
-			$jsonResult = $this->initiateAutoNuke($this->validatedRequestUser);
-		}
-		
+				
 		// If the user is testing the connection from the client
 		else if ($this->validatedRequestAction === 'testConnection')
 		{
@@ -254,34 +245,50 @@ class Api
 	}
 	
 	/**
-	 * Check to make sure the request parameters do not exceed a reasonable byte length. This is used to mitigate 
-	 * a potential DOS attack which could make the server do lots of request validation at once. An attacker could 
-	 * potentially send lots of requests and force the server to do a computationally expensive task (e.g. hashing 
-	 * for the MAC) on large data to authenticate multiple requests which would slow the server.
-	 * @param string $dataJson The JSON data
-	 * @param string $requestMac The request MAC
+	 * Validate and decode the Base64 data
+	 * @param string $rawDataBase64 The Base64 request data
+	 * @return array|boolean Returns an array with keys 'dataJson' and 'mac' or false if the data is invalid
 	 */
-	public function checkOversizeRequest(&$dataJson, &$requestMac)
+	public function validateAndDecodeBase64(&$rawDataBase64)
 	{
-		$validDataLength = 603;		// Max user length (7) + encrypted message & MAC (384) + nonce (128) + timestamp (10) + allowance for JSON encoding (74)
-		$validMacLength = 128;		// Request MAC is 512 bits (128 hexadecimal symbols)
-				
-		// Check the length of the JSON data
-		if (strlen($dataJson) > $validDataLength)
+		try {						
+			// Remove any characters that aren't valid Base64 characters
+			$dataBase64Filtered = $this->filterNonBase64Chars($rawDataBase64);
+
+			// Decode the data from Base64
+			$dataString = base64_decode($dataBase64Filtered, true);
+
+			// If it failed to decode, output error response
+			if ($dataString === false)
+			{
+				return false;
+			}
+
+			// Get the data and the MAC
+			$dataLength = strlen($dataString);
+			$macIndexStart = $dataLength - 128;						// Index of where the MAC begins in the string
+			$dataJson = substr($dataString, 0, $macIndexStart);		// Get everything except the last 128 hex chars
+			$mac = substr($dataString, $macIndexStart, 128);		// Get last 128 hex symbols from the end of the string
+		}
+		catch (Exception $exception)
 		{
-			return false;
-		}		
-		
-		// Check the length of the request MAC tag
-		if (strlen($requestMac) !== $validMacLength)
-		{
+			// Catch any malformed data or errors
 			return false;
 		}
 		
-		// Passes length checks
-		return true;
+		// If the data or MAC is missing
+		if (($dataJson === false) || ($dataJson === '') || ($mac === false) || ($mac === ''))
+		{			
+			return false;
+		}
+		
+		// Return the correctly decoded data
+		return array(
+			'dataJson' => $dataJson,
+			'mac' => $mac
+		);
 	}
-	
+		
 	/**
 	 * Checks that the data in the array before using it, or returns an error to the client
 	 * @param string $key The array key to check
@@ -298,6 +305,16 @@ class Api
 		
 		// Return the key
 		return $dataArray[$key];
+	}
+	
+	/**
+	 * Removes anything not valid Base64 characters (a-z, A-Z, 0-9, +, /, or =)
+	 * @param string $input
+	 * @return string
+	 */
+	public function filterNonBase64Chars($input)
+	{
+		return preg_replace('/[^A-Za-z0-9+\/=]/', '', $input);
 	}
 	
 	/**
@@ -572,7 +589,13 @@ class Api
 	 * @return boolean Whether the received request is valid or not
 	 */
 	public function validateDataMac($dataJson, $key, $receivedMac)
-	{		
+	{
+		// If the MAC is not 512 bits (128 hex symbols) return error immediately
+		if (strlen($receivedMac) !== 128)
+		{
+			return false;
+		}
+		
 		// Calculate what the MAC received should be equal to by converting the JSON data to hexadecimal, 
 		// then converting the key and JSON data to binary and calculating the MAC using Hash(K, M)
 		$dataJsonHex = bin2hex($dataJson);
@@ -582,34 +605,40 @@ class Api
 		// Calculate if the hashes match using a constant time comparison to prevent timing attacks
 		return $this->constantTimeStringCompare($receivedMac, $calculatedMac);
 	}
-	
+		
 	/**
-	 * Create a MAC for the response back to the client using Skein-512 hash algorithm
-	 * @param string $data The data to be sent back in the response
-	 * @param string $key The server key for this user as a hexadecimal string
-	 * @return string Returns a 512 bit hash digest in hexadecimal
+	 * Based on the number of active chat group users set by the user in 
+	 * the configuration, add the user callsigns to the list of valid users. 
+	 * The valid number of users is at least two and a maximum of seven.
+	 * @param string $numberOfUsers The number of chat group users
+	 * @return array Returns the valid chat group users e.g. ['alpha', 'bravo', charlie']
 	 */
-	public function createMac($serverKey, $responseDataJson, $requestMac)
+	public function setChatGroupUsers($numberOfUsers)
 	{
-		// Convert the JSON to hexadecimal before hashing
-		$responseDataJsonHex = bin2hex($responseDataJson);
+		$validUsers = [];
 		
-		// Convert to binary
-		$binaryKeyAndData = pack("H*", $serverKey . $responseDataJsonHex . $requestMac);
+		// If the user has misconfigured the number of chat group users then default to two valid users
+		if ((is_int($numberOfUsers) === false) || ($numberOfUsers < 2) || ($numberOfUsers > 7))
+		{
+			$numberOfUsers = 2;
+		}
 		
-		// Perform the MAC in format Hash(K, M)
-		$mac = skein_hash_hex($binaryKeyAndData);
+		// Add the user callsigns from the whitelist to the list of active user callsigns
+		for ($i = 0; $i < $numberOfUsers; $i++)
+		{
+			$validUsers[] = $this->userList[$i];
+		}
 		
-		return $mac;
+		return $validUsers;
 	}
-		
+	
 	/**
 	 * Checks the user from POST is a valid user by checking against the whitelist
 	 * @param string $user The user e.g. alpha, bravo, charlie etc
 	 * @return boolean
 	 */
 	public function validateUser($user)
-	{
+	{	
 		// If the user is not in the whitelist or in the group's list of active users
 		if ((in_array($user, $this->userList, true) === false) || (in_array($user, $this->users) === false))
 		{
@@ -651,75 +680,6 @@ class Api
 			$jsonResult['statusMessage'] = 'Could not find the test record in the database. ' . $this->db->getErrorMsg();
 		}
 
-		return $jsonResult;
-	}
-	
-	/**
-	 * Check if auto nuke has been initiated by the user
-	 * @return boolean Whether or not it has been initiated or not
-	 */
-	public function checkIfAutoNukeInitiated()
-	{
-		// Check if auto nuke was initiated by other user
-		$query = 'SELECT auto_nuke_initiated, auto_nuke_initiated_by_user FROM settings';
-		$result = $this->db->select($query);
-
-		// If at least one row returned
-		if (($result !== false) && ($this->db->getNumRows() >= 1))
-		{			
-			// If auto nuke has been initiated by the other user, the server database has already been nuked
-			if ($result[0]['auto_nuke_initiated'] === '1')
-			{
-				// Return which user launched the nuke
-				return $result[0]['auto_nuke_initiated_by_user'];
-			}
-		}
-		
-		// Not initiated
-		return false;
-	}
-	
-	/**
-	 * Sets a flag on the database so that next time the other user connects their client will delete all the pads and messages from their 
-	 * machine. Also clears all encrypted messages from the server and resets the table back to original status as if no messages were sent.
-	 * @param string $user Which user initiated the nuke
-	 * @return string Returns the JSON to return to the client
-	 */
-	public function initiateAutoNuke($user)
-	{
-		// Update the value so the next user when they check for new messages will receive the command to nuke their local database
-		$query = 'UPDATE settings SET auto_nuke_initiated = :auto_nuke_initiated, auto_nuke_initiated_by_user = :auto_nuke_initiated_by_user';
-		$params = array(
-			'auto_nuke_initiated' => 1,
-			'auto_nuke_initiated_by_user' => $user
-		);
-		$updateResult = $this->db->preparedUpdate($query, $params);
-
-		// Delete the messages on the server
-		$query = 'DELETE FROM messages';
-		$deleteResult = $this->db->update($query);
-
-		// Reset the auto increment value to remove how many messages have been sent so far
-		$query = 'ALTER TABLE messages AUTO_INCREMENT = 1';
-		$resetResult = $this->db->update($query);
-
-		// If one of the queries fails, show an error message to the user
-		if (($updateResult === false) || ($deleteResult === false) || ($resetResult === false))
-		{
-			// Prepare error output
-			$jsonResult = array(
-				'success' => false,
-				'statusMessage' => 'There was a problem nuking the server database, try wiping it manually.'
-			);
-		}
-		else {		
-			// Prepare output
-			$jsonResult = array(
-				'success' => true,
-				'statusMessage' => 'Server database nuked successfully.'
-			);
-		}
-		
 		return $jsonResult;
 	}
 	
@@ -851,59 +811,80 @@ class Api
 			'cryptoStrong' => $cryptoStrong
 		);
 	}
+		
+	/**
+	 * Output a 404 Not Found error. If attackers fail any part of the authentication protocol 
+	 * it will send a 404 error meaning it can't find the file. This means an attacker won't 
+	 * know if the file is actually there or not. The error message is only displayed in debug 
+	 * mode which needs to be manually enabled.
+	 * @param string $headerErrorMessage The real error to be displayed only in debug/testing mode
+	 */
+	public function outputErrorResponse($headerErrorMessage)
+	{
+		// Common headers
+		header('Access-Control-Allow-Origin: *');
+		
+		// If in debug mode, show the real error response in the header
+		if ($this->applicationConfig['testResponseHeaders'] === true)
+		{
+			header('HTTP/1.1 404 ' . $headerErrorMessage);
+			exit;
+		}
+		else {
+			// Otherwise in production normally just output a 404 error and stop execution
+			header('HTTP/1.1 404 Not Found');
+			exit;
+		}
+	}
 	
 	/**
-	 * Output the JSON for the client to parse. The response is authenticated by a MAC using Skein-512 hash 
+	 * Output the data for the client to parse. The response is authenticated by a MAC using Skein-512 hash 
 	 * and the user's key to ensure no-one can impersonate the server responses without the correct key. 
 	 * A random 512 bit nonce and timestamp help prevent duplicate messages/replay attacks.
 	 */
 	public function outputJson($jsonResult)
 	{
 		// Set JSON and CORS headers to allow JavaScript on the client to make XMLHttpRequests to the server
-		// http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
-		header("Access-Control-Allow-Origin: *");
-		header("Access-Control-Allow-Methods: POST");
-		header('Content-Type: application/json');
+		// https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+		header('Access-Control-Allow-Origin: *');
+		header('Access-Control-Allow-Methods: POST');
+		header('Content-Type: text/plain');
 		
-		// Convert data to JSON so it can be authenticated at once
+		// Convert data to JSON so it can be authenticated all at once
 		$responseDataJson = json_encode($jsonResult);
 		
 		// MAC the response. The user's request MAC is included in the MAC response so an 
 		// attacker cannot respond to one request with a different response that the server made
 		$responseMac = $this->createMac($this->serverKey, $responseDataJson, $this->validatedRequestMac);
 				
-		// Put in an array
-		$response = array(
-			'data' => $responseDataJson,
-			'mac' => $responseMac
-		);
+		// Encode to Base64
+		$response = base64_encode($responseDataJson . $responseMac);
 		
-		// Output the response as JSON
-		echo json_encode($response);
+		// Output the response as plain Base64 string
+		echo $response;
 		exit;
 	}
-	
+		
 	/**
-	 * Output a 403 Forbidden error. If attackers fail any part of the authentication protocol 
-	 * it will send an ambiguous 403 error. The error message is only displayed in debug mode which 
-	 * needs to be manually enabled.
-	 * @param string $headerErrorMessage The real error to be displayed only in debug/testing mode
+	 * Create a MAC for the response back to the client using Skein-512 hash algorithm
+	 * @param string $data The data to be sent back in the response
+	 * @param string $key The server key for this user as a hexadecimal string
+	 * @return string Returns a 512 bit hash digest in hexadecimal
 	 */
-	public function outputErrorResponse($headerErrorMessage)
+	public function createMac($serverKey, $responseDataJson, $requestMac)
 	{
-		// If in debug mode, show the real error response in the header
-		if ($this->applicationConfig['testResponseHeaders'] === true)
-		{
-			header("HTTP/1.1 403 " . $headerErrorMessage);
-			exit;
-		}
-		else {
-			// Otherwise in production normally just output a 403 error and stop execution
-			header("HTTP/1.1 403 Forbidden");
-			exit;
-		}
+		// Convert the JSON to hexadecimal before hashing
+		$responseDataJsonHex = bin2hex($responseDataJson);
+		
+		// Convert to binary
+		$binaryKeyAndData = pack("H*", $serverKey . $responseDataJsonHex . $requestMac);
+		
+		// Perform the MAC in format Hash(K, M)
+		$mac = skein_hash_hex($binaryKeyAndData);
+		
+		return $mac;
 	}
-	
+		
 	/**
 	 * Compare two strings to see if they match and prevent timing attacks. This uses the idea described here:
 	 * https://www.isecpartners.com/blog/2011/february/double-hmac-verification.aspx
