@@ -5,7 +5,6 @@
 Jericho Comms is an encrypted communications program built on the principles of information-theoretic security using true random number generation and one-time pads. The goal is to deliver a free, open source, encrypted communications program for journalists, lawyers, activists and citizens of the world that need high assurances that their communications are free of censorship, control, oppression, totalitarian governments and eavesdropping from the world's most powerful intelligence agencies. To defeat the world's best intelligence agencies, you need to lift your game to their level. That means using encryption that they can never, ever break, regardless of advances in mathematics, quantum physics, cryptanalysis or technology.
 
 The official website, technical design, signed source code and documentation can be found here:
-http://jerichocomms.ml or via HTTPS here:
 https://joshua-m-david.github.io/jerichoencryption/
 
 
