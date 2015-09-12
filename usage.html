@@ -439,10 +439,10 @@
 					<h2 id="auto-nuke">13. Emergency auto nuke feature</h2>
 					<p>
 						To clear everything in an emergency, initiate the auto nuke. This will delete the one-time pads from all 
-						connected devices and encrypted messages from the server. Next time one of the other users opens the 
-						application it will also clear everything on their machine. It will also clear sent and received messages 
-						from the screen of each device. Reserve this for an actual emergency because it is time consuming to 
-						recreate and deliver new one-time pads.
+						connected devices and delete remaining encrypted messages from the server once everyone has received 
+						the command. Next time one of the other users opens the application it will also clear everything on 
+						their machine. It will also clear sent and received messages from the screen of each device. Reserve 
+						this for an actual emergency because it is time consuming to recreate and deliver new one-time pads.
 					</p>
 					<p>
 						You can find the <b>Emergency auto nuke</b> button on the main screen. That will load up another page 
@@ -452,9 +452,9 @@
 						<img src="img/emergency-auto-nuke.png" alt="Auto nuke screen">
 					</p>
 					<p>
-						After the auto nuke has been initiated and all group user's local databases have been wiped, the server 
-						database will need to be reset before you can re-use it. The server administrator can run the following 
-						command:<br>
+						After the auto nuke has been initiated and all group user's local databases have been wiped, the 
+						server database should be ideally reset before you re-use it. The server administrator can run 
+						the following command:<br>
 						<code>mysql -u root -p &lt; /var/www/html/createtables.sql</code>
 					</p>
 					

@@ -320,8 +320,9 @@ sub {
     font-size: 17px;
     font-style: normal;
 }
-.infoPage .formulas.notation li {
-    list-style-type: none;
+.infoPage .formulas.notation th {
+	min-width: 33px;
+	text-align: center;	
 }
 .infoPage .printable {
 	display: none;

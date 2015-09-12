@@ -58,7 +58,7 @@
 					<div class="printableHeader printable">
 						<div class="title">Jericho Comms&trade;</div>
 						<div class="version">Version 1.5</div>
-						<div class="date">9 September 2015</div>
+						<div class="date">12 September 2015</div>
 						<div class="author">Joshua M. David</div>
                         <div class="email">joshua.m.david [at] tutanota.de</div>
 					</div>
@@ -66,7 +66,7 @@
 						<h2 id="abstract">Abstract</h2>
 						<p>
 							In the wake of the <a href="https://www.eff.org/nsa-spying">NSA spying revelations</a> it is clear that 
-							<u>none</u> of our communications are secure any longer. The <a href="http://en.wikipedia.org/wiki/Nsa">NSA</a> 
+							none of our communications are secure any longer. The <a href="http://en.wikipedia.org/wiki/Nsa">NSA</a> 
 							is actively monitoring, collecting, 
 							<a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">decrypting</a> and 
 							<a href="http://www.wired.com/threatlevel/2012/03/ff_nsadatacenter/">indefinitely storing</a> 
@@ -151,9 +151,9 @@
 						<li><a href="#output-testing">Testing the TRNG random output</a></li>
 						<li><a href="#trng-test-analysis">TRNG tests and analysis</a></li>
 						<li><a href="#trng-custom">Custom random data loading</a></li>
+						<li><a href="#pad-storage-export">Pad storage and exporting data</a></li>
 						<li><a href="#database-encryption">One-time pad database encryption and authentication</a></li>
-						<li><a href="#database-key-wrapping">Protection of database encryption and authentication keys</a></li>
-						<li><a href="#pad-storage-export">Pad storage and exporting data</a></li>						
+						<li><a href="#database-key-wrapping">Protection of database encryption and authentication keys</a></li>												
 						<li><a href="#using-html5">Using HTML5</a></li>
 						<li><a href="#json-rest-api">REST API using JSON</a></li>
 						<li><a href="#message-encoding">Message encoding</a></li>
@@ -170,20 +170,35 @@
                         formulas and will tend towards explaining the design in plain English rather than mathematical 
                         formulas so that the content is more accessible and understandable by a wider audience.
 					</p>
-                    <ul class="formulas notation">
-                        <li>
-                            <b>&oplus;</b> = Bitwise <a href="https://en.wikipedia.org/wiki/Exclusive_disjunction">Exclusive OR</a> 
-                            (XOR) operator e.g. 0 &oplus; 1 = 1.
-                        </li>
-                        <li>
-                            <b>||</b> = Concatenation. Usually variables will be converted to the same type and format 
-                            before being concatenated together, e.g. for input into a hash function all variables will 
-                            be in hexadecimal format.
-                        </li>
-                        <li>
-                            <b>&#215;</b> = Regular multiplication.
-                        </li>
-                    </ul>
+                    <table class="formulas notation">
+						<tr>
+							<th>&oplus;</th>
+							<td>
+								Bitwise <a href="https://en.wikipedia.org/wiki/Exclusive_disjunction">Exclusive OR</a> 
+								(XOR) operator e.g. 0 &oplus; 1 = 1.
+							</td>
+                        </tr>
+						<tr>
+							<th>||</th>
+							<td>
+								Concatenation. Usually variables will be converted to the same type and format before 
+								being concatenated together. For example, for input into a hash function all variables 
+								will be in hexadecimal format.
+							</td>
+                        </tr>
+                        <tr>
+							<th>+</th>
+							<td>
+								Regular addition.
+							</td>
+                        </tr>
+						<tr>
+							<th>&#215;</th>
+							<td>
+								Regular multiplication.
+							</td>
+                        </tr>						
+                    </table>
                     
                     
 					<h2 id="overall-network-architecture">Overall network architecture</h2>
@@ -471,7 +486,7 @@
 							can store the <i>API Key</i> and server address along with the one-time pads.
 						</li>
 						<li>
-							The protocol caters for 2-7 users per group using the server. If additional chat groups are required 
+							The protocol caters for 2 - 7 users per group using the server. If additional chat groups are required 
 							on the same server this can also be setup.
 						</li>
 					</ul>
@@ -862,8 +877,9 @@
 						<i>
 							The original camera images were 4000 x 3000 pixels, then have been cropped to 1000 x 750 pixels 
 							for faster processing and to save bandwidth. The photos were processed with the Skein 512 bit hash 
-							algorithm and an estimate of 1 bit per pixel entropy input. Click on the thumbnail images 
-							below to see a bigger image.
+							algorithm and an estimate of 1 bit per pixel entropy input.<br>
+							<br>
+							Click on the thumbnail images below to see a bigger image.
 						</i>
 					</p>
 					
@@ -1248,8 +1264,8 @@
 							There is some pad database information which is stored in the client database as well 
 							(program version, custom user preferences, server address, server key, user callsign and 
 							list of group user nicknames). This is JSON encoded to a string and encrypted with the same 
-							database keys, but the 96 bit nonce <code>ffffffffffffffffffffffff</code> in hexadecimal 
-							for AES-CTR and the 64 bit nonce <code>ffffffffffffffff</code> for Salsa20 is used for 
+							database keys, but the static 96 bit nonce <code>ffffffffffffffffffffffff</code> in hexadecimal 
+							for AES-CTR and the static 64 bit nonce <code>ffffffffffffffff</code> for Salsa20 is used for 
 							encryption. Because each pad index number is converted to a nonce and in the language being 
 							used integers cannot exceed 2<sup>53 - 1</sup> (9007199254740991), this nonce cannot be 
 							accidentally be re-used for encrypting a pad, therefore it is used it to encrypt the pad 
@@ -1501,10 +1517,10 @@
 					</div>
 					<ul>
 						<li>
-							A simple KDF1 construct to get encryption and authentication keys from a master key would 
+							A simple KDF2 construct to get encryption and authentication keys from a master key would 
 							apply the hash function twice. Once with the <i>Master Key</i> and a unique <i>Counter</i> 
-							to make an encryption key, and again with the <i>Master Key</i> and another unique 
-							<i>Counter</i> gain a unique MAC key. If the keys used for encryption is compromised 
+							(e.g. 01) to make an encryption key, and again with the <i>Master Key</i> and another unique 
+							<i>Counter</i> (e.g. 02) to gain a unique MAC key. If the keys used for encryption is compromised 
 							it is computationally hard to find a pre-image for the one-way hash function to determine 
 							the <i>Master Key</i> or the derived MAC key. Similarly if the MAC key is compromised it is 
 							hard to reverse the process to find the master key or encryption key. This cascade construct 

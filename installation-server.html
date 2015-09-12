@@ -80,7 +80,7 @@
 						<li><a href="#test-php">Test the PHP install</a></li>
 						<li><a href="#test-mysql">Test MySQL</a></li>
 						<li><a href="#upload-program-to-server">Uploading the program onto the server</a></li>
-						<li><a href="#verify-signature">Verifying the authenticity of the file</a></li>
+						<li><a href="#verify-signature">Verifying the integrity and authenticity of the file</a></li>
 						<li><a href="#extracting-server-files">Extracting the server files</a></li>
 						<li><a href="#apache-virtual-host-config">Apache virtual host configuration</a></li>
 						<li><a href="#build-skein-library">Build the Skein library</a></li>
@@ -208,17 +208,18 @@
 					<p>
 						Now that Linux, Apache, MySQL and PHP are running it's time to install get the server code running. The easiest way to get it 
 						onto the server would be to use the command line:<br>
-						<code>wget http://jerichoencryption.tk/files/jericho-v1.5.tar.gz</code><br>
+						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-v1.5.tar.gz</code><br>
 						<br>
 						You also need to download the signature file to verify that the download is authentic:<br>
-						<code>wget http://jerichoencryption.tk/files/jericho-v1.5.tar.gz.asc</code><br>
+						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-v1.5.tar.gz.asc</code><br>
 						<br>
 						This will download the two files and put them inside your current working directory. You can list them with <code>ls -l</code>. 
 						If the files are there you can skip to the next step.<br>
 						<br>
-						If for some reason you are unable to download the files from the website you can always download them from <a href="https://freenetproject.org/">Freenet</a> 
-						or <a href="http://en.wikipedia.org/wiki/BitTorrent">BitTorrent</a> using the links on the <a href="download.html">Download page</a>, 
-						then copying the files manually to the server. If you want to copy them to the server from your Windows machine you can use 
+						If for some reason you are unable to download the files from the website you can always download 
+						them from <a href="https://freenetproject.org/">Freenet</a> using the links on the 
+						<a href="download.html">Download page</a>, then copying the files manually to the server. If 
+						you want to copy them to the server from your Windows machine you can use 
 						<a href="http://winscp.net/eng/download.php">WinSCP</a> and connect to your server using the same credentials like you did 
 						earlier with PuTTY. Then it's a basic drag and drop operation.<br>
 						<br>
@@ -231,7 +232,7 @@
 						that for the destination path on the server if you wish e.g. <code>/var/www/html/</code>.
 					</p>
 					
-					<h2 id="verify-signature">Verifying the authenticity of the file</h2>
+					<h2 id="verify-signature">Verifying the integrity and authenticity of the file</h2>
 					<p>
 						It's very important you verify the integrity and authenticity of the downloaded file so you know the file is authentic. Otherwise 
 						an attacker could have performed a <a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM attack</a> and swapped 
@@ -245,14 +246,15 @@
 						If the checksum matches it will display the matching hash output on a line on the command line, for example:<br>
 						<code>73c5899cd37af0369f9b0afd31b37c84724ed1d51a3e45e4f5ae7cc365c5d1ed88987835ccc2dd719b004de1a7c92c2d &nbsp;jericho-v1.5.tar.gz</code><br>
 						<br>
-						You can also verify using the more secure <a href="https://en.wikipedia.org/wiki/SHA-2">SHA-2 512</a> and 
+						You can also verify using <a href="https://en.wikipedia.org/wiki/SHA-2">SHA-2 512</a> and 
 						<a href="https://en.wikipedia.org/wiki/Whirlpool_%28cryptography%29">Whirlpool</a> hashes on the download page by using 
 						<code>sha512sum</code> and <code>whirlpoolsum</code> commands in the format above, along with the corresponding hashes found on the 
 						<a href="download.html">download page</a>. It will tell you to install whirlpoolsum so just follow the 
 						instructions on the screen.<br>
 						<br>
 						If nothing is returned on the command line, then the file is a mismatch and you will have to redownload it. 
-						You can try downloading it from another source such as BitTorrent or FreeNet as well.
+						You can try downloading it from another source such as FreeNet as well (see the 
+						<a href="download.html">download page</a> for a link).
 					</p>
 					<h3>Verifying by GPG signature</h3>
 					<p>

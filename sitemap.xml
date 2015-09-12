@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 	<url>
-		<loc>http://jerichocomms.ml/</loc>
+		<loc>http://joshua-m-david.github.io/jerichoencryption//</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichocomms.ml/information.html</loc>
+		<loc>http://joshua-m-david.github.io/jerichoencryption//information.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichocomms.ml/download.html</loc>
+		<loc>http://joshua-m-david.github.io/jerichoencryption//download.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichocomms.ml/installation.html</loc>
+		<loc>http://joshua-m-david.github.io/jerichoencryption//installation.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichocomms.ml/installation-server.html</loc>
+		<loc>http://joshua-m-david.github.io/jerichoencryption//installation-server.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichocomms.ml/installation-server-tls.html</loc>
+		<loc>http://joshua-m-david.github.io/jerichoencryption//installation-server-tls.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichocomms.ml/installation-client.html</loc>
+		<loc>http://joshua-m-david.github.io/jerichoencryption//installation-client.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichocomms.ml/usage.html</loc>
+		<loc>http://joshua-m-david.github.io/jerichoencryption//usage.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichocomms.ml/faq.html</loc>
+		<loc>http://joshua-m-david.github.io/jerichoencryption//faq.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://jerichocomms.ml/warrant-canary.txt</loc>
+		<loc>http://joshua-m-david.github.io/jerichoencryption//warrant-canary.txt</loc>
 		<changefreq>monthly</changefreq>
 	</url>
 </urlset>

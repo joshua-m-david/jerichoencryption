@@ -1,3 +1,3 @@
 User-agent: *
 Disallow: /img/
-Sitemap: http://jerichocomms.ml/sitemap.xml
+Sitemap: http://joshua-m-david.github.io/jerichoencryption//sitemap.xml
