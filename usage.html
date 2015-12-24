@@ -20,7 +20,7 @@
 		<title>Jericho Comms&trade; - How to use</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
 		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
-		<meta name="viewport" content="width=720, maximum-scale=1.0, user-scalable=yes">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
 		<link rel="stylesheet" href="css/global.css" type="text/css">
@@ -42,9 +42,9 @@
 				<a class="logo" href="index.html" title="Homepage"></a>			
 				<div class="mainNav">
 					<ul>						
-						<li><a href="information.html">Technical information</a></li>
-						<li><a href="download.html">Download</a></li>
+						<li><a href="information.html">Technical design</a></li>
 						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
+						<li><a href="download.html">Download</a></li>
 						<li><a href="installation.html">How to install</a></li>
 						<li><a href="usage.html">How to use</a></li>
 						<li><a href="faq.html">FAQ</a></li>
@@ -75,7 +75,7 @@
 						<li><a href="#loading-pads">Loading the one-time pads</a></li>
 						<li><a href="#using-chat-application">Using the chat application</a></li>
 						<li><a href="#backup-pads">Backing up the one-time pads</a></li>
-						<li><a href="#auto-nuke">Emergency auto nuke feature</a></li>
+						<li><a href="#auto-nuke">Emergency self destruct</a></li>
 						<li><a href="#final-notes">Final notes</a></li>
 					</ol>
 										
@@ -171,7 +171,7 @@
 							distributed and you may be better off finding another photograph. You can use the mouse to scroll up/down 
 							and left/right to see the full image. If you have a good photograph, it should look something like this:<br>
 							<br>
-							<img src="img/random-bitmap-example.png" alt="Random bitmap example">
+							<img class="listImage" src="img/random-bitmap-example.png" alt="Random bitmap example">
 						</li>
 						<li>
 							Click the <b>View extracted tests</b> button. This will run some basic statistical random number 
@@ -197,7 +197,7 @@
 						click the dropdown menu and it will bring up a list of options to export. You can choose to export the raw 
 						and extracted random data. The options are exporting to Base64 string, hexadecimal string and binary file.<br>
 						<br>
-						<img src="img/export-test-data.png" alt="Export test data">
+						<img class="listImage" src="img/export-test-data.png" alt="Export test data">
 					</p>
 					
 					
@@ -209,7 +209,7 @@
 						cryptanalysis.
 					</p>
 					<p class="diagram">
-						<img src="img/export-pads-settings.png" alt="Export pads setting">
+						<img class="listImage" src="img/export-pads-settings.png" alt="Export pads setting">
 					</p>
 					<ul>
 						<li>
@@ -436,7 +436,7 @@
 						local database. This means you only have one copy of the pads and there's no chance of accidental re-use.
 					</p>
 					
-					<h2 id="auto-nuke">13. Emergency auto nuke feature</h2>
+					<h2 id="auto-nuke">13. Emergency self destruct</h2>
 					<p>
 						To clear everything in an emergency, initiate the auto nuke. This will delete the one-time pads from all 
 						connected devices and delete remaining encrypted messages from the server once everyone has received 
@@ -460,7 +460,7 @@
 					
 					<h2 id="final-notes">14. Final notes</h2>
 					<p>
-						Remember to read the security precautions <a href="faq.html#extra-security-considerations">listed in the FAQ</a>.
+						Remember to read the <a href="information.html#extra-security-considerations">extra security precautions</a>.
 					</p>
 				</div>
 				<div class="clear"></div>
@@ -474,7 +474,7 @@
 				</li>
 				<li>-</li>
 				<li>
-					<a href="information.html">Technical information</a>
+					<a href="information.html">Technical design</a>
 				</li>
 				<li>-</li>
 				<li>

@@ -28,6 +28,9 @@ body {
 .topBanner {
 	box-shadow: none;
 }
+.topBanner {
+	display: none;
+}
 .mainNav {
 	display: none;
 }

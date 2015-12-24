@@ -20,7 +20,7 @@
 		<title>Jericho Comms&trade; - Frequently Asked Questions</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
 		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
-		<meta name="viewport" content="width=720, maximum-scale=1.0, user-scalable=yes">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
 		<link rel="stylesheet" href="css/global.css" type="text/css">
@@ -42,9 +42,9 @@
 				<a class="logo" href="index.html" title="Homepage"></a>			
 				<div class="mainNav">
 					<ul>						
-						<li><a href="information.html">Technical information</a></li>
-						<li><a href="download.html">Download</a></li>
+						<li><a href="information.html">Technical design</a></li>
 						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
+						<li><a href="download.html">Download</a></li>
 						<li><a href="installation.html">How to install</a></li>
 						<li><a href="usage.html">How to use</a></li>
 						<li><a href="faq.html">FAQ</a></li>				
@@ -70,7 +70,6 @@
 						<li><a href="#warrant-canary">Do you have a warrant canary?</a></li>
 						<li><a href="#not-helping-terrorists">Aren't you helping terrorists?</a></li>
 						<li><a href="#government-making-encryption-illegal">What about the government trying to ban encryption?</a></li>
-						<li><a href="#extra-security-considerations">What are some extra security considerations for using the software?</a></li>
 						<li><a href="#shannons-perfect-secrecy">Explain Shannon's Perfect Secrecy?</a></li>
 						<li><a href="#export-regulations">Does this break US Export Regulations?</a></li>
 						<li><a href="#multiple-groups-same-server">Is it possible to use the same server for multiple separate groups communicating?</a></li>
@@ -300,7 +299,7 @@
 						senior level commercial web application development experience, then in recent years has moved into 
 						cryptography and security research. That is all the information that will be provided without compromising 
 						the author's true identity as it is preferred to remain anonymous so as not to invite interrogation or 
-						detainment by authorities for developing this software. That has 
+						detainment or exile by authorities for developing this software. That has 
 						<a href="https://en.wikipedia.org/wiki/Nadim_Kobeissi#Detention_and_entrapment_attempt">already happened</a> 
 						with <a href="http://en.wikipedia.org/wiki/Phil_Zimmermann#Criminal_investigation">other</a> 
 						<a href="https://en.wikipedia.org/wiki/Jacob_Appelbaum">developers</a> of cryptographic software. Revealing 
@@ -313,8 +312,8 @@
 						 The author has no affiliations with any government and no interest at all in supporting them with their 
 						 mass surveillance and human rights violations. For other developers contributing to this software, please 
 						 do not base yourself in the US. The reason for this is that if you develop a trusted reputation within 
-						 the project team, then you are given a National Security Letter, we will not know and it could compromise 
-						 the security of the project. 
+						 the project team, then you are given a National Security Letter or gag order, we will not know 
+						 and it could compromise the security of the project. 
 					</p>
 					
 					
@@ -428,87 +427,7 @@
 						'encryption'. The entire debate of banning encryption is a ridiculous and pointless exercise 
 						designed to enact fear, legalised mass surveillance and control of entire populations.
 					</p>
-					
-					
-					<h2 id="extra-security-considerations">What are some extra security considerations for using the software?</h2>
-					<p>
-						There are a number of potential attacks which are more around 
-						<a href="http://en.wikipedia.org/wiki/Social_engineering_%28computer_security%29">social engineering</a>, side channel attacks, 
-						retrieving the one-time pads by other means and attacks on the server. There are ways to mitigate these issues as well.
-					</p>
-					<ul>
-						<li>
-							Keyloggers, trojans or spyware on the PC could compromise the one-time pads or chat messages. To mitigate, generate the 
-							one-time pads on a clean install of an <u>open source</u> Operating System and a clean browser install. Consider even 
-							running different virtual machines for different programs like <a href="https://en.wikipedia.org/wiki/Qubes_OS">Qubes OS</a> 
-							to isolate any potentially malicious programs. By clean browser install this means removing all 
-							the inbuilt proprietary extensions like Java and Flash. When creating the one-time pads, use a PC that is 
-							physically unplugged from any network and any wireless/bluetooth adaptors are disabled. Save the pads to removable media 
-							such as MicroSD card, SD card or USB drive. Secure wipe the Operating System from the hard drive after you are finished. 
-							Booting into a <a href="https://www.linux.com/learn/tutorials/377416:the-five-best-linux-live-cds">Linux Live CD</a> could be 
-							useful for this. For running the chat program, ideally you want to be using Linux and the browser software compiled from 
-							source. Firewalls, antivirus and antispyware tools must be installed and activated. Do not use a shared 
-							computer in a library or cafe.
-						</li>
-						<li>
-							An attacker could steal/copy your one-time pads as they are being delivered to the other person. Keep the 
-							MicroSD card, SD card or USB drive with you at all times. Secure it on you in a zipped up pocket to prevent pickpocketers. 
-							If you need plausible deniability, make sure the one-time pads are stored inside an encrypted hidden volume with Truecrypt 
-                            or other software. If you have misplaced the 
-							one-time pads or they have not been in your possession for a certain amount of time, assume they are compromised and 
-							recreate them. Once loaded into each device, delete the text file containing the one-time pads from the removable media. 
-							This leaves only one copy of the pads in your posession, which is being used by the software. The software will automatically 
-							remove one-time pads as a message is received or sent.
-						</li>
-						<li>
-							The server could be attacked or communications interfered with. Encrypted messages stay on the server for a short period of time until the other person 
-							retrieves them from the server which is similar to email. But the requests to the server are frequent enough that if both 
-							users are connected at the same time then it behaves as real-time chat. There is potential for a serious attacker to intercept 
-							communications and interfere with the transmission of encrypted messages. They will not be able to decrypt any of the messages, 
-							nor will they be able to forge or alter a message without detection due to the strong MAC. 
-							However they could block messages being received, or delete messages from the server, or perform a <a href="http://en.wikipedia.org/wiki/Denial_of_service">DOS</a> type attack 
-							on your communications. If an attacker like the NSA has already targeted your server there's not much you can do about it. 
-							The best option would be to set up a new server somewhere else that they do not know about and tell your chat partner the 
-							new server address. In the meantime the standard precautions for server installs should be used, install a certificate on 
-							the server so TLS is used to secure the session. Set up a firewall, block all ports except for 443 
-							(<a href="https://en.wikipedia.org/wiki/HTTPS">TLS</a>) which will be used by the client to connect to the server and port 
-							22 (<a href="https://en.wikipedia.org/wiki/Secure_Shell">SSH</a>) so you can still log in and administer 
-                            the server. Consider also changing the SSH port to a non-standard port and using public key 
-                            authentication.
-						</li>
-						<li>
-							You won't be completely anonymous when communicating with the server. Potentially a government may intercept the highly 
-							encrypted communications going from your IP to the server, and also from the server to the other user's IP. They may be 
-							suspicious at being unable to decrypt the messages and try trace your IP back to its source so they can arrest you for 
-							suspected "terrorism". If everyone was using this software it would be considered normal communications so they would be 
-							less likely to target a particular individual. If you a truly concerned 
-							about this some sensible precautions may be to use a VPN or <a href="https://en.wikipedia.org/wiki/SOCKS">SOCKS proxy</a> 
-							with your browser to tunnel your connections through a server somewhere else. For added protection you could always have 
-							your chat conversations in a public place, e.g. cafe, library, WiFi hotspot or buy a cheap pre-pay smartphone which will 
-							allow you to tether the internet connection to your laptop. 
-							If using a mobile phone, remember to go somewhere different each time and then connect to the cellular network. Be sure to 
-							disable the GPS on the phone so it is harder to triangulate your position. Also physically remove the battery when you are 
-							done and use a Faraday bag to <a href="http://security.stackexchange.com/questions/65382/is-it-possible-for-a-phone-to-be-transmitting-even-while-turned-off-and-the-batt/65455#65455">block any remote activation attempts</a>. 
-							The software does not currently work with the <a href="https://www.torproject.org/">Tor Browser Bundle</a> 
-							because they block access to the local disk, so that rules out HTML5 Local Storage use. You can however always configure 
-							the separate Tor application Vidalia manually and use that as a SOCKS5 proxy with a newer version of Firefox.
-						</li>
-						<li>
-							You could be forced to hand over your one-time pads with 
-							<a href="http://en.wikipedia.org/wiki/Rubber-hose_cryptanalysis">rubber-hose cryptanalysis</a> or 
-							<a href="https://xkcd.com/538/">beaten with a wrench</a>. While quite unlikely it could be possible. 
-							The software makes sure that after a message is sent the one-time pad is deleted from the device, 
-							then when the other user retrieves the message from the server the encrypted message is deleted from 
-							the server, also when it has been decrypted on the other user's device it is deleted from their local 
-							database as well. This leaves no way to decrypt past messages. It also gives you plausible deniability 
-							that you can decrypt past messages again or remember exactly what was said. To clear messages from the 
-							screen you simply need to refresh the page (F5 key). To clear everything in an emergency, initiate the 
-							auto nuke. This option is available from the main menu. It will delete the one-time pads from all connected 
-							devices and encrypted messages from the server. It will also clear sent messages on the screen of each 
-							device. Reserve this for an actual emergency because it is time consuming to recreate and deliver new one-time pads.
-						</li>
-					</ul>
-							
+											
 					
 					<h2 id="shannons-perfect-secrecy">Explain Shannon's Perfect Secrecy?</h2>
 					<p>
@@ -635,7 +554,7 @@
 					
 					<h2 id="meaning-behind-name">What's the meaning behind the name?</h2>
 					<p>
-						<a href="https://www.biblegateway.com/passage/?search=Joshua+6&version=MSG">Jericho in ancient times</a> 
+						<a href="https://www.biblegateway.com/passage/?search=Joshua+6&version=MSG">Jericho</a> 
 						was a seemingly impenetrable fortress with high walls surrounding the city. We can liken this city 
                         to the seemingly impervious <a href="http://en.wikipedia.org/wiki/UKUSA_Agreement">Five Eyes</a> 
                         global surveillance system. 
@@ -655,11 +574,14 @@
 						give the intelligence agencies secret access to their data or install backdoors in their software.
 					</p>
 					<p>
-						To 'enter the promised land' and have a society that is free of censorship, control, oppression 
-						and mass surveillance, the Five Eyes intelligence network needs to be destroyed. Jericho Comms 
-                        is like a <a href="https://www.youtube.com/watch?v=YBC1Qob27sM">destructive missile</a> launched 
-                        into the heart of their surveillance network, designed to cripple their core cryptanalytic 
-                        capabilities and render their surveillance of personal communications to be completely worthless.
+						Continuing this analogy, in order to enter the promised land and have a society that is free 
+						of censorship, control, oppression and mass surveillance, the Five Eyes intelligence network 
+						needs to be eliminated. Jericho Comms is a secure communications tool which 
+						<a href="https://www.youtube.com/watch?v=YBC1Qob27sM">launches thousands of undecryptable messages</a> 
+						into the heart of their surveillance network, designed to annihilate their core cryptanalytic 
+						and traffic analysis capabilities.
+					</p>
+					<p>
 						When the program is feature complete and fully audited, users should have confidence that the spy 
                         agencies will <a href="information.html#encryption-process">never know the content of messages</a>, 
                         <a href="information.html#message-authentication">never be able to forge messages</a>, 
@@ -1050,7 +972,7 @@
 				</li>
 				<li>-</li>
 				<li>
-					<a href="information.html">Technical information</a>
+					<a href="information.html">Technical design</a>
 				</li>
 				<li>-</li>
 				<li>

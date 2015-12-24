@@ -20,7 +20,7 @@
 		<title>Jericho Comms&trade; - One-time pad chat app</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
 		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
-		<meta name="viewport" content="width=720, maximum-scale=1.0, user-scalable=yes">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
 		<link rel="stylesheet" href="css/global.css" type="text/css">
@@ -42,9 +42,9 @@
 				<a class="logo" href="index.html" title="Homepage"></a>			
 				<div class="mainNav">
 					<ul>						
-						<li><a href="information.html">Technical information</a></li>
-						<li><a href="download.html">Download</a></li>
+						<li><a href="information.html">Technical design</a></li>
 						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
+						<li><a href="download.html">Download</a></li>
 						<li><a href="installation.html">How to install</a></li>
 						<li><a href="usage.html">How to use</a></li>
 						<li><a href="faq.html">FAQ</a></li>
@@ -89,44 +89,53 @@
 					</p>
 					
 					
-					<h2 id="introducing-jericho-encryption">Introducing Jericho Comms&trade;</h2>
+					<h2 id="introducing-jericho-encryption">Introducing Jericho Comms</h2>
 					<p>
-						Jericho Comms is an encrypted group communications program built on the principles of information-theoretic 
-						security using true random number generation, one-time message authentication codes and mathematically 
-						proven security of the <a href="http://en.wikipedia.org/wiki/One_time_pad">one-time pad</a> cipher. The 
-						goal is to deliver a free, open source, plausibly deniable, encrypted communications program 
-						for journalists, lawyers, activists and citizens of the world that need <i>high</i> assurances that their 
-						communications are free of censorship, control, oppression, totalitarian governments and eavesdropping 
-						from the world's most powerful intelligence agencies. To defeat the world's top intelligence agencies, 
-						you need to lift your game to their level. That means using encryption that they can <i>never</i> break, 
-						regardless of advances in mathematics, quantum physics, cryptanalysis or computing power.
+						Jericho Comms is an encrypted group text communications program which provides 
+						<a href="http://en.wikipedia.org/wiki/Information_theoretic_security">information-theoretic security</a> 
+						for all messages that are sent and received.
+
+						The goal is to deliver a high assurance, encrypted communications program with 
+						plausible deniability for activists, human rights lawyers, 
+						journalists, whistleblowers and citizens of the world that need high assurances that their 
+						communications are free of censorship, control and eavesdropping from the world's 
+						governments and intelligence agencies.
+
+						To defeat the world's top intelligence agencies, citizens of every country need to raise 
+						their communications security to a level where no-one can ever hope to break the encryption, 
+						regardless of advances in computing power, cryptanalysis, mathematics or quantum physics.
 					</p>
 					<p>
-						The software makes the whole process very simple from generating truly random one-time pads, key management 
-						and chatting securely. After a message is sent, the one-time pad used is automatically deleted from the computer. 
-						Once received it is also deleted from the server and receiving computers. This prevents the message being 
-						decrypted in the future if one of the computers is compromised. If a user thinks their computer is about 
-						to become compromised they can also initiate the "Auto Nuke" feature which will delete the one-time pads 
-						from the local database, encrypted messages from the server and the one-time pads from the chat partner's 
-						local database. These features combined provide a form of "off the record" encrypted chat. The full 
-						technical design and implementation information can be found on the 
-						<a href="information.html">Technical information</a> page and full source code is available on the 
-						<a href="download.html">download page</a> or 
-						<a href="https://github.com/joshua-m-david/jerichoencryption">on Github</a>. 
+						To accomplish this goal, the program uses a 
+						True Random Number Generator (TRNG), the One-Time Pad (OTP) cipher for message encryption 
+						and a one-time Message Authentication Code (MAC) for message authenticity.
+
+						To provide additional protection of the one-time pad database during the 
+						initial key exchange between users, a strong password/passphrase and 
+						keyfile can be used. The program will then use a cascade of password Key Derivation Functions
+						(KDFs), stream ciphers and MACs to encrypt and authenticate the database.
+
+						Other features of the program include a strong MAC for authentication between the clients 
+						and the server, a decoy messaging system to frustrate 
+						traffic analysis and a self destruct mechanism which can wipe all the client databases in case 
+						of an emergency.
 					</p>
 					<p>
-						The main reason why one-time pads are infrequently used outside of government and military networks is 
-						that you need truly random data, the key must be at least as long as the message and the one-time pads 
-						must be sent through a secure channel e.g. delivered in person. This makes them somewhat inconvenient to 
-						use but these are <i>not</i> insurmountable problems. This software aims to solve most of the issues that 
-						make using one-time pads difficult. The only minor issue would be delivering the one-time pads to 
-						the other user, but <a href="information.html#how-it-works">there are ways</a> to do that easily enough. 
-						In today's world of complete surveillance it is necessary to have a shared secret to authenticate the 
-						correspondents and have complete assurance you are actually communicating with the right people and not an
-						<a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">active Man in the Middle (MITM) attacker</a>. 
-						Obviously this software is not a solution for all cryptography problems. It does however solve a specific 
-						problem and allows you to communicate securely with your family, friends, colleagues or associates in the 
-						future if you have met them at least once and exchanged one-time pads with them.
+						One-time pads are not frequently used outside of government and military networks because 
+						they are somewhat inconvenient to use. This means they have generally only been reserved for 
+						truly important communications such as the highest-level Allied communications in World War II
+						or the Washington-Moscow hotline.
+
+						The main problems are that you need to collect a lot of truly random data and the one-time 
+						pads must be exchanged through a secure channel (e.g. delivered in person) before 
+						communication can take place. These are not insurmountable problems and the design of this 
+						software solves the main issues which make using one-time pads too impractical. The whole 
+						system is very simple to set up and use, including generating truly random key material, 
+						exchanging the one-time pads securely, key management and communicating securely.
+
+						The program itself can be downloaded from the project's website 
+						and the full source code, which is available on GitHub, 
+						is released under the General Public License Version 3.0.
 					</p>
 					
 					
@@ -264,7 +273,7 @@
 						via a <a href="https://help.github.com/articles/creating-a-pull-request">Pull Request</a> from Github and heavily scrutinized 
 						for any security weaknesses. It will be important to remain vigilant against the NSA or other governments who may try to corrupt 
 						the code base, <a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">introduce weaknesses</a> or 
-						attempt to "water down" the security of the program. Contributions are welcome if you truly believe in the 
+						attempt to water down the security of the program. Contributions are welcome if you truly believe in the 
 						mission and are not trying to undermine the security of the software.
 					</p>
 					<p>
@@ -282,6 +291,15 @@
 						</a>
 					</h3>
 					<ol>
+						<li>
+							<a href="download.html#release1.5.1">
+								<b>Version 1.5.1 released</b><br>								
+								Jericho Comms version 1.5.1 released with better network failure resiliency, 
+								improvements for mitigating timing attacks on the server API and added a failsafe 
+								CSPRNG in case of failure in the HTML5 Web Crypto API.
+								<div class="date">24 Dec 2015</div>
+							</a>
+						</li>
 						<li>
 							<a href="download.html#release1.5">
 								<b>Version 1.5 released</b><br>								
@@ -348,7 +366,7 @@
 				</li>
 				<li>-</li>
 				<li>
-					<a href="information.html">Technical information</a>
+					<a href="information.html">Technical design</a>
 				</li>
 				<li>-</li>
 				<li>

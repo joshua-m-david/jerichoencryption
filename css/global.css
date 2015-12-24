@@ -21,12 +21,14 @@
 /*	1. HEADER
 /*	2. GENERAL CONTENT
 /*	3. HOME PAGE SPECIFIC
-/*	4. TECHNICAL INFORMATION PAGE SPECIFIC
+/*	4. TECHNICAL DESIGN PAGE SPECIFIC
 /*  5. DOWNLOAD PAGE SPECIFIC
 /*	6. INSTALLATION PAGE SPECIFIC
 /*  7. HOW TO USE PAGE SPECIFIC
 /*  8. FAQ PAGE SPECIFIC
 /*	9. FOOTER
+/*	10. MOBILE STYLES
+/*	11. TABLET STYLES
 /* --------------------------------------- */
 
 
@@ -35,10 +37,10 @@
 /* --------------------------------------- */
 
 body {
-	font: 13px/20px Arial, Helvetica, sans-serif;
+	background: url("../img/background-pattern.png") repeat scroll left top rgba(0, 0, 0, 0);
+	font: 13px/20px Arial,Helvetica,sans-serif;
 	margin: 0 auto;
-	width: 970px;
-	background: url('../img/background-pattern.png') repeat top left;
+	max-width: 970px;
 }
 .topSection {
 	position: relative;
@@ -74,7 +76,7 @@ body {
 }
 .mainNav ul li {
 	display: inline-block;
-	padding: 0 14px;
+	padding: 0 19px;
 }
 .mainNav a {
 	color: #ccc;	
@@ -145,17 +147,24 @@ h4 {
 p {
 	margin-bottom: 14px;
 }
+cite {
+	display: block;
+	font-size: 14px;
+	font-style: italic;
+	margin-bottom: 14px;
+	margin-left: 14px;
+}
 code, pre {
 	font-family: monospace;
 	font-weight: bold;
 	background-color: #ecebeb;
+	display: inline-block;
 	padding: 1px;
+	word-wrap: break-word;
 }
 .page .information {
 	font-size: 14px;
 	padding: 28px 77px 14px 28px;
-	width: 637px;
-	float: left;
 }
 .page .information h2 {
 	margin-bottom: 7px;
@@ -193,23 +202,54 @@ code, pre {
 	text-decoration: underline;
 }
 .page .listImage {
+	height: auto;
+	max-width: 100%;
 	padding-top: 14px;
 	padding-bottom: 7px;
 }
+.page .information a sup {
+	padding-left: 2px
+}
 sup {
 	vertical-align: super;
-	font-size: 70%;
+	font-size: 75%;
 }
 sub {
 	vertical-align: sub;
-	font-size: 70%;
+	font-size: 75%;
 }
-.page .information .tableOfContents li {
+.page .diagram {	
+	text-align: center;
+}
+.page .diagram img {
+	height: auto;
+	max-width: 100%;
+}
+.page .tableOfContents ol {
+	color: #000;
+	counter-reset: item;
+}
+.page .tableOfContents ol li {
+	display: block;
+	font-weight: bold;
 	margin-bottom: 7px;
 }
-
-.page .diagram {
-	text-align: center;
+.page .tableOfContents li a {
+	padding-left: 20px;
+}
+.page .tableOfContents.whitepaper li:before {
+	content: counters(item, ".") " ";
+	counter-increment: item;
+}
+/* Table of Contents sub menu */
+.page .tableOfContents li ol {
+	padding-left: 23px;
+}
+.page .tableOfContents li ol.singleNumber {
+	padding-left: 14px;
+}
+.page .tableOfContents li ol li {
+	font-weight: normal;
 }
 
 /* --------------------------------------- */
@@ -265,11 +305,10 @@ sub {
 }
 
 /* --------------------------------------- */
-/*	4. TECHNICAL INFORMATION PAGE SPECIFIC
+/*	4. TECHNICAL DESIGN PAGE SPECIFIC
 /* --------------------------------------- */
 
 .infoPage .information {
-	width: 907px;
 	padding: 28px 30px 14px 28px;
 }
 .infoPage .diagramHeading {
@@ -284,6 +323,10 @@ sub {
 }
 .infoPage h3 {
 	margin-top: 28px;
+}
+.infoPage h2 span,
+.infoPage h3 span {
+	padding-right: 10px;
 }
 .infoPage .testOutput h4 {
 	font-size: inherit;
@@ -321,8 +364,16 @@ sub {
     font-style: normal;
 }
 .infoPage .formulas.notation th {
-	min-width: 33px;
-	text-align: center;	
+	font-size: 17px;
+	padding-right: 14px;
+	text-align: center;
+}
+.infoPage .formulas.notation th,
+.infoPage .formulas.notation td {
+	padding-bottom: 10px;
+}
+.infoPage .formulas .functionInner {
+	padding-left: 25px;
 }
 .infoPage .printable {
 	display: none;
@@ -360,7 +411,6 @@ sub {
 /* --------------------------------------- */
 
 .downloadPage .information {
-	width: 907px;
 	padding: 28px 30px 14px 28px;
 }
 .downloadPage .information ul.changeLog li {
@@ -385,7 +435,6 @@ sub {
 /* --------------------------------------- */
 
 .installPage .information {
-	width: 907px;
 	padding: 28px 30px 14px 28px;
 }
 
@@ -394,7 +443,6 @@ sub {
 /* --------------------------------------- */
 
 .usagePage .information {
-	width: 907px;
 	padding: 28px 30px 14px 28px;
 }
 
@@ -403,7 +451,6 @@ sub {
 /* --------------------------------------- */
 
 .faqPage .information {
-	width: 907px;
 	padding: 28px 30px 14px 28px;
 }
 
@@ -451,4 +498,61 @@ sub {
 	text-align: center;
 	font-size: 11px;
 	margin-top: 7px;
+}
+
+
+/* --------------------------------------- */
+/*	10. MOBILE STYLES
+/* --------------------------------------- */
+@media only screen and (max-width: 959px) {
+
+	.topBanner {
+		height: auto;
+		padding: 22px 0 0 0;
+		width: auto;
+	}	
+	.logo {
+		display: block;
+		left: initial;
+		margin-left: 19px;
+		position: relative;
+		top: initial;
+	}
+	.mainNav {
+		left: auto;
+		padding: 14px 0 30px;
+		position: static;
+		top: auto;
+	}
+	.mainNav ul li {
+		display: block;
+		padding: 0 0 0 30px;
+	}
+	.mainNav a {
+		display: block;
+		padding: 3px 0;
+	}
+	.page .information {
+		padding: 28px 28px 14px;
+	}
+	.homePage .news {
+		float: none;
+		padding-left: 28px;
+		width: auto;
+	}
+	.page .information .tableOfContents ol li {
+		margin-left: 0;
+	}
+}
+
+
+/* --------------------------------------- */
+/*	11. TABLET STYLES
+/* --------------------------------------- */
+
+@media only screen and (min-width: 657px) and (max-width: 959px) {
+	
+	.mainNav ul li {
+		display: inline-block;
+	}
 }

@@ -1,1 +1,19 @@
-As of Saturday 12 September 2015 the author has not received any court order/warrant/subpoena/National Security Letter, or been pursuaded/coerced/forced/blackmailed into weakening/backdooring the Jericho Comms design or software.
+As of Thursday 24 December 2015 the author has not received any 
+court order/warrant/subpoena/National Security Letter, or been 
+pursuaded/coerced/forced/blackmailed into weakening/backdooring 
+the Jericho Comms design or software.
+
+To prove that multiple warrant canaries weren't created and signed 
+ahead of time, the current headlines on this date are below.
+
+Current news headlines from The Intercept (https://theintercept.com):
+
+- NSA HELPED BRITISH SPIES FIND SECURITY HOLES IN JUNIPER FIREWALLS
+- MAKERS OF OXYCONTIN BANKROLL EFFORTS TO UNDERMINE PRESCRIPTION PAINKILLER REFORM
+- PRIVATE PRISON EXEC WAVES OFF CRIMINAL JUSTICE REFORM, PREDICTS MORE PROFITS
+
+Current news headlines from The Guardian (http://www.theguardian.com/world):
+
+- Inside Eritrea / Conscription and poverty drive exodus from secretive African state
+- Friends fear for Chinese Christian lawyer spending Christmas behind bars
+- Japan signs off huge defence budget as Senkaku tensions rise

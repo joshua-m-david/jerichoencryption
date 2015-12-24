@@ -20,7 +20,7 @@
 		<title>Jericho Comms&trade; - Download</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
 		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
-		<meta name="viewport" content="width=720, maximum-scale=1.0, user-scalable=yes">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
 		<link rel="stylesheet" href="css/global.css" type="text/css">
@@ -42,9 +42,9 @@
 				<a class="logo" href="index.html" title="Homepage"></a>			
 				<div class="mainNav">
 					<ul>						
-						<li><a href="information.html">Technical information</a></li>
-						<li><a href="download.html">Download</a></li>
+						<li><a href="information.html">Technical design</a></li>
 						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
+						<li><a href="download.html">Download</a></li>
 						<li><a href="installation.html">How to install</a></li>
 						<li><a href="usage.html">How to use</a></li>
 						<li><a href="faq.html">FAQ</a></li>				
@@ -79,19 +79,13 @@
 						Please also see and verify our <a href="faq.html#warrant-canary">warrant canary</a> for each release using 
 						the same GPG signature listed below.
 					</p>
+					<br>
 					
 					
-					<h2 id="release1.5">Jericho Comms version 1.5 downloads (Windows, Linux and Unix based systems)</h2>
+					<h2 id="release1.5.1">Jericho Comms version 1.5.1 downloads (Windows, Linux and UNIX based systems)</h2>
 					<p>
-						There are quite a few large changes in this release which is why it has taken almost a year 
-                        to develop. With the uncertainty surrounding 
-                        <a href="https://en.wikipedia.org/wiki/TrueCrypt#End_of_life_announcement">the future of Truecrypt</a>,
-                        which was most likely a triggered <a href="https://en.wikipedia.org/wiki/Warrant_canary">warrant canary</a>, 
-                        the main change in this release was the cascade encryption and authentication of the one-time pad database 
-                        to protect the one-time pads with a strong passphrase they are transported. You should of course continue 
-                        to use version 7.1a of TrueCrypt if you need the plausible deniability features that a hidden volume offers. 
-                        TrueCrypt version 7.1a has had a reasonably clean bill of health 
-                        <a href="http://istruecryptauditedyet.com/">after an audit of the code</a>.
+						This update mainly makes the client and server more resilent to attack and recovers automatically 
+						from network dropouts or disconnections.
                     </p>
                     <p>
                         This release may also be the last version before version 2.0 where the program will need to be converted 
@@ -99,51 +93,60 @@
                         side storage and decrypted only as needed.
 					</p>
 					<p>
-						Many of the changes will make it backwards incompatible with version 1.41. You will need to 
+						Some of the changes will make it backwards incompatible with version 1.5. You will need to 
 						replace the client code, the server code and generate new one-time pads. If you want to keep 
 						using your existing one-time pads that you have already shared with your chat partners 
-						and it is too much hassle to create and share new ones, then keep using version 1.41 for now. 
+						and it is too much hassle to create and share new ones, then keep using version 1.5 for now. 
 						Please make a request on the <a href="https://github.com/joshua-m-david/jerichoencryption/issues">GitHub issue list</a> 
-						and we will prioritise creation of a small script to convert the one-time pads from 1.41 format 
-						to 1.5.
+						and we will prioritise creation of a small script to convert the one-time pads from 1.5 format 
+						to 1.5.1.
 					</p>
-					<b>Changes in v1.5</b><br>
+					<b>Changes in v1.5.1</b><br>
 					<ul class="changeLog">
-						<li>Renamed the program to Jericho Comms.</li>
-						<li>Cascade cipher encryption and authentication of the one-time pad database for transport, see <a href="information.html#database-encryption">technical design information</a>.</li>
-						<li>Added functionality for clients to automatically <a href="information.html#frustrating-traffic-analysis">send decoy messages</a> at random intervals to hinder traffic analysis.</li>
-						<li>The auto nuke command is now sent covertly via the secure and authenticated message channel rather than as a separate API request.</li>
-						<li>Added desktop alert notifications for incoming chat messages so users can see they have a new message when the browser is not in focus.</li>
-						<li>Base64 encoded the server protocol data packets in preparation of the next v2.0 release which will encrypt all meta data.</li>						
+						<li>Made the client more resilient to network dropouts by automatically reconnecting and on continued failure it backs off exponentially.</li>
+						<li>Added a <a href="information.html#failsafe-csprng">failsafe CSPRNG</a> for the clients in case there is a failure in the Web Crypto API or the browser.</li>
+						<li>Strengthened the API code against timing attacks by adding randomness from /dev/urandom into each <a href="information.html#double-hmac-validation">Double HMAC validation</a> calculation.</li>
+						<li>Changed the timing that other clients are considered as online from 3 minutes to 5 minutes.</li>
+						<li>Made the main website responsive so it is more easily viewable on mobile devices.</li>
+						<li>Added a list of references to the white paper and <a href="information.html">technical documentation</a> and improved the quality in general.</li>
 					</ul>
 					<table class="downloadLinks">
 						<tr>
 							<th>Mirror</th>
 							<th>Program download</th>
 							<th>Signature</th>
+						</tr>
+						<tr>
+							<td>Freenet</td>
+							<td><a href="http://127.0.0.1:8888/SSK@eHb5PjSjVrsSa2V95qXNPXnIJW0ayqxE8glvgppd9GA,EcYOOtd7YVebaA-8zdczzwfe0ePJS442yX6VbpucQXg,AQACAAE/jericho-v1.5.1.tar.gz">jericho-v1.5.1.tar.gz</a></td>
+							<td><a href="http://127.0.0.1:8888/SSK@P5bPgROsgd80hAfSAT~3SRrTQahi3DGdRoSTL6PPHzA,8Nsb0HbmarFiqXA8j2K~Q6ID0mcPCbJ8A21zf9XSdWU,AQACAAE/jericho-v1.5.1.tar.gz.asc">jericho-v1.5.1.tar.gz.asc</a></td>
+						</tr>
+						<tr>
+							<td>Mega</td>
+							<td><a href="https://mega.nz/#!1cUyWKIb!_7Pa2dBoeQRZM2OMrV2NS7i9l9i5oc13s7x3WvS5-qQ">jericho-v1.5.1.tar.gz</a></td>
+							<td><a href="https://mega.nz/#!UZcjCQ6a!E8tIhqfjEZvvApM9wNNQVERmzHfblgyXTRZPooVA3cw">jericho-v1.5.1.tar.gz.asc</a></td>
+						</tr>
+						<tr>
+							<td>This site</td>
+							<td><a href="files/jericho-v1.5.1.tar.gz">jericho-v1.5.1.tar.gz</a></td>
+							<td><a href="files/jericho-v1.5.1.tar.gz.asc">jericho-v1.5.1.tar.gz.asc</a></td>
+						</tr>
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th>Mirror</th>
 							<th>White paper</th>
 							<th>Signature</th>
 						</tr>
 						<tr>
-							<td>Freenet</td>
-							<td><a href="http://localhost:8888/SSK@Q4n6ymgwnsg6uShZHkWJOlwsXfRSIndGdemLq4fVg~E,J8ED9zwy2Zj7iJtIlA3yr3fJb8P9078BcqHf5PHxkJs,AQACAAE/jericho-v1.5.tar.gz">jericho-v1.5.tar.gz</a></td>
-							<td><a href="http://localhost:8888/SSK@mS~BMPUsPETEGQI3-9YsUSS7RNKA3ZqDQtpg1H4mshc,~5vz5HokFITaaNKu9Nb8gDbsv7enIHuO89O~lVwrEhw,AQACAAE/jericho-v1.5.tar.gz.asc">jericho-v1.5.tar.gz.asc</a></td>
-							<td><a href="http://localhost:8888/SSK@cfmCMuE-4zlWApO2eH49fkIJ6kyHR3uhFQcp~M-OKy8,85renE7fSrTzsckKiJGkUchqgmFkU4ohPaw6dQkUk58,AQACAAE/jericho-v1.5.pdf">jericho-v1.5.pdf</a></td>
-							<td><a href="http://localhost:8888/SSK@3qBL81gwJrDFps3Ktruuq6R4KuSboQdDNKTjZ0UbPZQ,OhK1g1a4XUwnYELqtWyrFZmhN6yJtx7UuyyDXmmjk2c,AQACAAE/jericho-v1.5.pdf.asc">jericho-v1.5.pdf.asc</a></td>
-						</tr>
-						<tr>
 							<td>Mega</td>
-							<td><a href="https://mega.nz/#!4ZVHUZrR!3KRP2j7hvdPvEEjlbF-Wdog5rhu2_azZW3YRo_GepN0">jericho-v1.5.tar.gz</a></td>
-							<td><a href="https://mega.nz/#!gJc1VIZQ!LGeqWW8UrYRCAfsxge-nBG3zwd3A65rH0sHUmsHiRaA">jericho-v1.5.tar.gz.asc</a></td>
-							<td><a href="https://mega.nz/#!kcNyhACT!NiTfgHZSXUznAc7L4t7eE4Fk7VDeRRRv6yzWNQIUOTk">jericho-v1.5.pdf</a></td>
-							<td><a href="https://mega.nz/#!kc0xSJwZ!yaXKzHFji0ThQyaFHwmvr3A650tLeIKjGKlVfTfGiZM">jericho-v1.5.pdf.asc</a></td>
+							<td><a href="https://mega.nz/#!AANizRwa!cM-pZbTa5_lAAd7wp87-roDK8ZRdPzYdOXY43V5Vjyw">jericho-v1.5.1.pdf</a></td>
+							<td><a href="https://mega.nz/#!YUc2BSrK!e7IdJ_t1XlxmnL_ySwZDy-gOSO1fiL2LQyDpOGtOZps">jericho-v1.5.1.pdf.asc</a></td>
 						</tr>
 						<tr>
 							<td>This site</td>
-							<td><a href="files/jericho-v1.5.tar.gz">jericho-v1.5.tar.gz</a></td>
-							<td><a href="files/jericho-v1.5.tar.gz.asc">jericho-v1.5.tar.gz.asc</a></td>
-							<td><a href="files/jericho-v1.5.pdf">jericho-v1.5.pdf</a></td>
-							<td><a href="files/jericho-v1.5.pdf.asc">jericho-v1.5.pdf.asc</a></td>
+							<td><a href="files/jericho-v1.5.1.pdf">jericho-v1.5.1.pdf</a></td>
+							<td><a href="files/jericho-v1.5.1.pdf.asc">jericho-v1.5.1.pdf.asc</a></td>
 						</tr>
 					</table>
 					<table class="downloadLinks">
@@ -165,22 +168,54 @@
 					</table>
 					<table class="downloadLinks">
 						<tr>
-							<th colspan="2">File hashes of jericho-v1.5.tar.gz for integrity verification</th>
+							<th colspan="2">File hashes of jericho-v1.5.1.tar.gz for integrity verification</th>
 						</tr>
 						<tr>
 							<td>SHA384 digest</td>
-							<td class="hash">73c5899cd37af0369f9b0afd31b37c84724ed1d51a3e45e4f5ae7cc365c5d1ed88987835ccc2dd719b004de1a7c92c2d</td>
+							<td class="hash">ad5586e073131c019c3af5996dd123f1cf29de1817d5d1b65fc9cfcd6f00441139a3556dce38f434329d95303ae58965</td>
 						</tr>
 						<tr>
 							<td>SHA512 digest</td>
-							<td class="hash">1c2a4b45b30bc4703cc10c6023b1d04783cbc46c054347df799e393f6517d7c9685ae4ee8c3f0400e7770a2a805b89ffeb72487def830e1f701eca1cc918b3b0</td>
+							<td class="hash">7d7cb9b696e00f856b37c1307e332d88cf6a9abe689e1bd52dccb2a88af74157d2e47faa49973009f4e4787700a605bb49e31d688a824dffab374cadfed439b9</td>
 						</tr>
 						<tr>
 							<td>Whirlpool digest</td>
-							<td class="hash">6d1a509139f5c49333b028898ebd959dfda5f87568f39cafc23a45c8082a7b928fdeb072e99651412648f4fd8b23b40917090ca49bde3e98200272fce9195ffb</td>
+							<td class="hash">d40682629b714514a2403bb4430c21a228d7ede070b8a747bc62f98c76a698b0f7d19cd54400bdf00ba74875b26c85a2a1ebd905569a84101927aed1b8c594e9</td>
 						</tr>
 					</table>
 					
+					
+					<h2 id="release1.5">Jericho Comms version 1.5 downloads (Windows, Linux and UNIX based systems)</h2>
+					<p>
+						There are quite a few large changes in this release which is why it has taken almost a year 
+                        to develop. With the uncertainty surrounding 
+                        <a href="https://en.wikipedia.org/wiki/TrueCrypt#End_of_life_announcement">the future of Truecrypt</a>,
+                        which was most likely a triggered <a href="https://en.wikipedia.org/wiki/Warrant_canary">warrant canary</a>, 
+                        the main change in this release was the cascade encryption and authentication of the one-time pad database 
+                        to protect the one-time pads with a strong passphrase they are transported. You should of course continue 
+                        to use version 7.1a of TrueCrypt if you need the plausible deniability features that a hidden volume offers. 
+                        TrueCrypt version 7.1a has had a reasonably clean bill of health 
+                        <a href="http://istruecryptauditedyet.com/">after an audit of the code</a>.
+                    </p>
+					<p>
+						Many of the changes will make it backwards incompatible with version 1.41. You will need to 
+						replace the client code, the server code and generate new one-time pads. If you want to keep 
+						using your existing one-time pads that you have already shared with your chat partners 
+						and it is too much hassle to create and share new ones, then keep using version 1.41 for now. 
+						Please make a request on the <a href="https://github.com/joshua-m-david/jerichoencryption/issues">GitHub issue list</a> 
+						and we will prioritise creation of a small script to convert the one-time pads from 1.41 format 
+						to 1.5.
+					</p>
+					<b>Changes in v1.5</b><br>
+					<ul class="changeLog">
+						<li>Renamed the program to Jericho Comms.</li>
+						<li>Cascade cipher encryption and authentication of the one-time pad database for transport, see <a href="information.html#database-encryption">technical design information</a>.</li>
+						<li>Added functionality for clients to automatically <a href="information.html#frustrating-traffic-analysis">send decoy messages</a> at random intervals to hinder traffic analysis.</li>
+						<li>The auto nuke command is now sent covertly via the secure and authenticated message channel rather than as a separate API request.</li>
+						<li>Added desktop alert notifications for incoming chat messages so users can see they have a new message when the browser is not in focus.</li>
+						<li>Base64 encoded the server protocol data packets in preparation of the next v2.0 release which will encrypt all meta data.</li>						
+					</ul>
+										
 					
 					<h2 id="release1.41">Jericho Chat version 1.41 downloads (Windows, Linux and Unix based systems)</h2>
 					<p>
@@ -264,7 +299,7 @@
 				</li>
 				<li>-</li>
 				<li>
-					<a href="information.html">Technical information</a>
+					<a href="information.html">Technical design</a>
 				</li>
 				<li>-</li>
 				<li>

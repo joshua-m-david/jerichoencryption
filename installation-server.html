@@ -20,7 +20,7 @@
 		<title>Jericho Comms&trade; - Server Installation</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
 		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
-		<meta name="viewport" content="width=720, maximum-scale=1.0, user-scalable=yes">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
 		<link rel="stylesheet" href="css/global.css" type="text/css">
@@ -42,9 +42,9 @@
 				<a class="logo" href="index.html" title="Homepage"></a>			
 				<div class="mainNav">
 					<ul>						
-						<li><a href="information.html">Technical information</a></li>
-						<li><a href="download.html">Download</a></li>
+						<li><a href="information.html">Technical design</a></li>
 						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
+						<li><a href="download.html">Download</a></li>
 						<li><a href="installation.html">How to install</a></li>
 						<li><a href="usage.html">How to use</a></li>
 						<li><a href="faq.html">FAQ</a></li>		
@@ -59,13 +59,14 @@
 					<p>
 						This page explains in an easy step by step guide how to fully setup your 
 						<a href="https://en.wikipedia.org/wiki/Virtual_private_server">VPS</a> or server and get the software running for 
-						Jericho Comms on <a href="releases.ubuntu.com/12.04/">Ubuntu Server 14.04</a> Long Term Support (LTS). Open source 
-						is the best way as it's auditable and less likely to contain backdoors. Compiling your own from source code 
-						is even safer if you know how to do that. If you do not like Ubuntu, you can use whatever Linux or 
-						Unix distribution you want, it is really just setting up a Linux, MySQL, Apache & PHP (LAMP) stack 
-						and configuring it.<br>
+						Jericho Comms on <a href="http://www.ubuntu.com/download/server">Ubuntu Server 14.04.3</a> Long Term Support (LTS). 
+						Open source is the best way as it's auditable and less likely to contain backdoors. Compiling your 
+						own from source code is even safer if you know how to do that. If you do not like Ubuntu, you 
+						can use whatever Linux or Unix distribution you want, it is really just setting up a Linux, 
+						MySQL, Apache & PHP (LAMP) stack and configuring it.<br>
 						<br>
-						You need approximately <b>1 hour</b> of time and some average computer skills. Be sure to read each step carefully.
+						You need approximately <b>1 hour</b> of time and some average computer skills. Be sure to read 
+						each step carefully.
 					</p>
 					
 					<h2>Table of Contents</h2>
@@ -99,35 +100,56 @@
 					<h2 id="vps-sign-up">Sign up for a Virtual Private Server</h2>
 					<p>
 						There are a number of quality VPS providers around. You will need to 
-						<a href="https://duckduckgo.com/?q=vps+provider+europe">do some research</a> on your own. Try finding one 
-						that is not in any of the 
+						<a href="https://duckduckgo.com/?q=vps+provider+europe">do some research</a> on your own. Try 
+						finding one that is not in any of the 
 						<a href="https://en.wikipedia.org/wiki/Five_Eyes">Five Eyes</a> countries 
 						(US, UK, Canada, Australia and New Zealand). Perhaps somewhere in Europe with better privacy laws 
-						e.g. Finland. However some of the European countries co-operate with the NSA 
+						e.g. Finland. Better privacy laws mean they need a proper warrant to hack or shut down your 
+						server whereas countries like the UK 
+						<a href="https://theintercept.com/2015/06/22/gchq-reverse-engineering-warrants/">can just do whatever they want</a>. 
+						Some of the other European countries co-operate with the NSA however 
 						<a href="https://en.wikipedia.org/wiki/Five_Eyes#Future_enlargement">in a wider spying alliance</a>. 
-						Brazil or Iceland may be a better bet. You should only need the most basic server speed wise as the 
-						software isn't doing anything too strenuous. Probably around EUR 10-20 per month is fine.<br>
+						So Brazil or Iceland may be a better bet.<br>
 						<br>
-						Alternatively if you want to run your own server on your own network, that's perfectly fine too. This would 
-						even be more secure as you can administer the server locally rather than over the internet using SSH. Just make 
-						sure it has a public, static IP address so your group's users can connect to it reliably over the internet.
+						You should only need the most basic server in terms of CPU speed, memory and disk space because 
+						the software is not resource intensive. Around 10 Euros (11 USD) per month is probably fine. That 
+						will get you around 1 CPU core, 512 MB of RAM and 10 GB of disk space which is plenty to 
+						run the server software.<br>
+						<br>
+						Avoid VPS providers that use <a href="https://en.wikipedia.org/wiki/OpenVZ">OpenVZ</a> because 
+						each VPS on the same physical server shares the same Linux kernel. That means you cannot have 
+						full control over the VPS to keep the system time properly synchronized with an NTP server.<br>
+						<br>
+						Alternatively if you want to run your own server on your own network, that's perfectly fine too. 
+						This would be the most secure option as you can administer the server locally. This means one less 
+						port open on the public network interface. The clients and server share a 512 bit symmetric API key 
+						for authentication of data going back and forth. However you still need to get that key onto the server. 
+						When managing the server via the internet, the security is only as secure as the SSH connection. 
+						SSH is hard to secure against active MITM attacks unless you are 
+						<a href="">certain of the correct host key fingerprint</a>. For your first connection to the VPS 
+						you will not be sure of the server's true fingerprint. You could however try finding it by logging 
+						in via the HTTPS web management console or asking your VPS provider directly. Then again they will 
+						need to send it to you via encrypted email and you still need to verify their public key somehow. 
+						So it ends up being a lot of extra effort. SSH also does not have ciphers that are secure against 
+						quantum computers. 
 					</p>
 					
 					<h2 id="install-ubuntu">Download and install Ubuntu Server</h2>
 					<p>
-						If using a VPS, select one of the pre-made Ubuntu 14.04 LTS images. The online provider will do all the 
-						installation automatically for you and	initialise your VPS.<br>
+						If using a VPS, select one of the pre-made Ubuntu 14.04.3 LTS images. The online provider will 
+						do all the installation automatically for you andinitialise your VPS.<br>
 						<br>						
 						Otherwise if you're setting up your own server, <a href="http://releases.ubuntu.com/14.04/">download the latest</a> version
-						of Ubuntu Server 14.04 LTS. Write the image to a CD/DVD/USB drive, then boot from the install image on CD/DVD/USB drive and run 
+						of Ubuntu Server 14.04.3 LTS. Write the image to a CD/DVD/USB drive, then boot from the install image on CD/DVD/USB drive and run 
 						through the installation. This should be pretty self explanatory but there is a step-by-step guide with screenshots 
 						<a href="http://ubuntuserverguide.com/2014/04/how-to-install-ubuntu-server-14-04-trusty-tahr.html">here</a> 
-						if you need them.<br>
+						if you need them. Make sure your server has a public, static IP address so your group's users 
+						can connect to it reliably over the internet.<br>
 						<br>
 						At the software selection screen be sure to select <b>OpenSSH server</b> so it gets installed and you can log into your server 
-						remotely with SSH. SSH will likely be enabled by default on a VPS.<br>
-						<br>
-						<img src="img/server-install-openssh.png" alt="">
+						remotely with SSH. SSH will likely be enabled by default on a VPS.
+						<br>						
+						<img class="listImage" src="img/server-install-openssh.png" alt="">
 					</p>
 															
 					<h2 id="connect-to-server">Connect to your server</h2>
@@ -136,7 +158,7 @@
 						<a href="https://en.wikipedia.org/wiki/Secure_Shell">SSH</a>. If you are connecting to your server from a Windows machine you 
 						can use <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html">PuTTY</a>, for example:<br>
 						<br>
-						<img src="img/putty-setup.png"><br>
+						<img class="listImage" src="img/putty-setup.png"><br>
 						<br>
 						Or from Linux you can use the command line: <code>ssh -p 22 username@ipaddress</code>. Swap out 
 						<code>username</code> for the username on your server. You will have created a user account on installation or if using a VPS 
@@ -167,7 +189,18 @@
 						If you are curious about what the ^ does, this is explained 
 						<a href="http://tech.shantanugoel.com/2010/10/23/apt-get-caret.html">here</a>. This will start the installation automatically. 
 						You will need to type <code>Y</code> when prompted to continue. Also be sure to enter a MySQL password when asked. You will 
-						need the password later so remember it.
+						need the password later so remember it.<br>
+						<br>
+						The PHP <a href="http://php.net/manual/en/book.mcrypt.php">Mcrypt</a> extension is required to 
+						collect cryptographically secure random numbers in PHP. Random data is generated for each 
+						request received and used with 
+						<a href="https://www.isecpartners.com/blog/2011/february/double-hmac-verification.aspx">Double HMAC Verification</a> 
+						to prevent timing attacks on the server authentication protocol. You can install the Mcrypt 
+						extension with the following commands:<br>
+						<code>
+							apt-get install php5-mcrypt<br>
+							php5enmod mcrypt
+						</code>
 					</p>
 					
 					<h2 id="test-apache">Test your web server</h2>
@@ -175,7 +208,7 @@
 						Open your web browser and browse to the server IP address, for example, <code>http://192.168.1.101/</code>. This guide setup 
 						the server on a web server in the LAN hence the private IP address. This should bring up a page like this:<br>
 						<br>
-						<img src="img/apache-test.png" alt="Apache test page">
+						<img class="listImage" src="img/apache-test.png" alt="Apache test page">
 					</p>
 					
 					<h2 id="test-php">Test the PHP install</h2>
@@ -190,7 +223,7 @@
 						Now you should be able to browse to the server IP address, for example, <code>http://192.168.1.101/testing.php</code> in your 
 						web browser which should show a page like below and will show all the default PHP settings.<br>
 						<br>
-						<img src="img/php-test.png" alt="The phpinfo() output">
+						<img class="listImage" src="img/php-test.png" alt="The phpinfo() output">
 					</p>
 					
 					<h2 id="test-mysql">Test MySQL</h2>
@@ -198,7 +231,7 @@
 						Now test that MySQL works with the command <code>mysql -p</code>. It will prompt you for the password you created on 
 						installation. You should now be in a MySQL prompt like this:<br>
 						<br>
-						<img src="img/mysql-test.png" alt="MySQL prompt"><br>
+						<img class="listImage" src="img/mysql-test.png" alt="MySQL prompt"><br>
 						<br>
 						Type the command <code>show databases;</code> which should show 4 default databases. Now exit out of MySQL by typing 
 						<code>exit;</code> or doing a <code>Ctrl</code> + <code>C</code> keyboard command.
@@ -208,10 +241,10 @@
 					<p>
 						Now that Linux, Apache, MySQL and PHP are running it's time to install get the server code running. The easiest way to get it 
 						onto the server would be to use the command line:<br>
-						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-v1.5.tar.gz</code><br>
+						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-v1.5.1.tar.gz</code><br>
 						<br>
 						You also need to download the signature file to verify that the download is authentic:<br>
-						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-v1.5.tar.gz.asc</code><br>
+						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-v1.5.1.tar.gz.asc</code><br>
 						<br>
 						This will download the two files and put them inside your current working directory. You can list them with <code>ls -l</code>. 
 						If the files are there you can skip to the next step.<br>
@@ -224,7 +257,7 @@
 						earlier with PuTTY. Then it's a basic drag and drop operation.<br>
 						<br>
 						If wanting to transfer the files from your Linux machine to the server you can use the following command:<br>
-						<code>scp /path/on/local/machine/jericho-v1.5.tar.gz username@ipaddress:~</code><br>
+						<code>scp /path/on/local/machine/jericho-v1.5.1.tar.gz username@ipaddress:~</code><br>
 						<br>
 						Be sure to swap out <code>username</code> for the username on the server and swap out <code>ipaddress</code> for the IP address 
 						of the server. It should prompt you for the password. The <code>~</code> character will put the file in the home directory for 
@@ -241,10 +274,10 @@
 					<h3>Verifying by file hashes</h3>
 					<p>
 						First verify that the file was downloaded correctly using the hashes found on the <a href="download.html">download page</a>:<br>
-						<code>sha384sum jericho-v1.5.tar.gz | grep "73c5899cd37af0369f9b0afd31b37c84724ed1d51a3e45e4f5ae7cc365c5d1ed88987835ccc2dd719b004de1a7c92c2d"</code><br>
+						<code>sha384sum jericho-v1.5.1.tar.gz | grep "ad5586e073131c019c3af5996dd123f1cf29de1817d5d1b65fc9cfcd6f00441139a3556dce38f434329d95303ae58965"</code><br>
 						<br>
 						If the checksum matches it will display the matching hash output on a line on the command line, for example:<br>
-						<code>73c5899cd37af0369f9b0afd31b37c84724ed1d51a3e45e4f5ae7cc365c5d1ed88987835ccc2dd719b004de1a7c92c2d &nbsp;jericho-v1.5.tar.gz</code><br>
+						<code>ad5586e073131c019c3af5996dd123f1cf29de1817d5d1b65fc9cfcd6f00441139a3556dce38f434329d95303ae58965 &nbsp;jericho-v1.5.1.tar.gz</code><br>
 						<br>
 						You can also verify using <a href="https://en.wikipedia.org/wiki/SHA-2">SHA-2 512</a> and 
 						<a href="https://en.wikipedia.org/wiki/Whirlpool_%28cryptography%29">Whirlpool</a> hashes on the download page by using 
@@ -272,7 +305,7 @@
 							sub &nbsp;&nbsp;4096R/BE456DA7 2013-09-25 [expires: 2016-09-24]
 						</code><br>
 						<br>
-						Then run <code>gpg --verify jericho-v1.5.tar.gz.asc jericho-v1.5.tar.gz</code> to verify the signature. This should give you a 
+						Then run <code>gpg --verify jericho-v1.5.1.tar.gz.asc jericho-v1.5.1.tar.gz</code> to verify the signature. This should give you a 
 						message saying <b>Good signature</b> similar to the following:<br>
 						<br>
 						<code>
@@ -291,8 +324,8 @@
 					
 					<h2 id="extracting-server-files">Extracting the server files</h2>
 					<p>
-						Now you need to extract files from inside the jericho-v1.5.tar.gz archive file. This can be done using:<br>
-						<code>tar -zxvf jericho-v1.5.tar.gz</code><br>
+						Now you need to extract files from inside the jericho-v1.5.1.tar.gz archive file. This can be done using:<br>
+						<code>tar -zxvf jericho-v1.5.1.tar.gz</code><br>
 						<br>
 						That will extract the files inside your current working directory. Now we need to copy the server files 
 						to the web directory <code>/var/www/html/</code> so that Apache can serve the files. The server files are 
@@ -308,7 +341,7 @@
 						You can verify the permissions by running:<br>
 						<code>ls -al /var/www/html/</code><br>
 						<br>
-						<img src="img/server-directory-permissions.png" alt="Server directory permissions">
+						<img class="listImage" src="img/server-directory-permissions.png" alt="Server directory permissions">
 					</p>
 					
 					
@@ -320,21 +353,21 @@
 						<br>
 						Before the closing <code>&lt;/VirtualHost&gt;</code> directive insert the following:<br>
 						<br>
-						<code>&lt;Directory /var/www/html&gt;</code><br>
-						&nbsp; <code>Options None</code><br>
-						&nbsp; <code>AllowOverride All</code><br>
-						&nbsp; <code>Require all granted</code><br>
-						<code>&lt;/Directory&gt;</code><br>
+						<code>&lt;Directory /var/www/html&gt;<br>
+						&nbsp; Options None<br>
+						&nbsp; AllowOverride All<br>
+						&nbsp; Require all granted<br>
+						&lt;/Directory&gt;</code><br>
 						<br>
 						This allows Apache to load up the .htaccess file inside the directory which has some additional commands 
 						to block access to every file except the index.php which is where all the API requests are directed to. 
 						Optionally, if you have a domain name you wish to use with the server, you can add the following lines 
 						anywhere inside the VirtualHost directive (replace domain.com with your domain):<br>
-						<code>ServerName www.domain.com</code><br>
-						<code>ServerAlias domain.com *.domain.com</code><br>
+						<code>ServerName www.domain.com<br>
+						ServerAlias domain.com *.domain.com</code><br>
 						<br>
 						So if you removed all the comments in the file it should look something like this:<br>
-						<img src="img/apache-vhosts-config.png" alt="Apache virtual host config file"><br>
+						<img class="listImage" src="img/apache-vhosts-config.png" alt="Apache virtual host config file"><br>
 						<br>
 						Now restart the web server with the command:<br>
 						<code>service apache2 restart</code>
@@ -344,18 +377,18 @@
 					<h2 id="build-skein-library">Build the Skein library</h2>
 					<p>
 						The <a href="https://en.wikipedia.org/wiki/Skein_hash">Skein</a> 1.3 hash algorithm is used with a 512 
-						bit output for client authentication with the API. This is written in C and requires an extension to be 
+						bit digest for client authentication with the API. This is written in C and requires an extension to be 
 						compiled and added to PHP. The compilation process puts the compiled file in the correct location for PHP.<br>
 						<br>
 						First install the php-dev package using:<br>
 						<code>apt-get install php5-dev</code><br>
 						<br>
 						Then, run the following commands:<br>
-						<code>cd /var/www/html/lib/skein/</code><br>
-						<code>phpize</code><br>
-						<code>./configure --enable-skein</code><br>
-						<code>make</code><br>
-						<code>make install</code><br>
+						<code>cd /var/www/html/lib/skein/<br>
+						phpize<br>
+						./configure --enable-skein<br>
+						make<br>
+						make install</code><br>
 						<br>
 						Then edit the php.ini file:<br>
 						<code>nano /etc/php5/apache2/php.ini</code><br>
@@ -364,7 +397,7 @@
 						<code>extension=skein.so</code><br>
 						<br>
 						It should look like this:<br>
-						<img src="img/skein-php-ini.png" alt="Skein extension in php.ini"><br>
+						<img class="listImage" src="img/skein-php-ini.png" alt="Skein extension in php.ini"><br>
 						<br>
 						To save and exit, use your keyboard and do <code>Ctrl</code> + <code>X</code>. It will ask if you want to 
 						save the changes, type <code>Y</code> and press <code>Enter</code>. To make sure the changes are applied, 
@@ -389,23 +422,23 @@
 						do this by connecting via an SSH tunnel to the server and then connect to MySQL from there. For example when creating a new 
 						connection, go to the SSH tab:<br>
 						<br>
-						<img src="img/sqlyog-connect-ssh.png" alt="SQL Yog connection part 1"><br>
+						<img class="listImage" src="img/sqlyog-connect-ssh.png" alt="SQL Yog connection part 1"><br>
 						<br>
 						You need to swap out the SSH host address, username and password for your Linux server ones. Then click on the MySQL tab:<br>
 						<br>
-						<img src="img/sqlyog-connect-mysql.png" alt="SQL Yog connection part 2"><br>
+						<img class="listImage" src="img/sqlyog-connect-mysql.png" alt="SQL Yog connection part 2"><br>
 						<br>
 						Enter in the root password of MySQL that you created earlier. From there you can click <b>Test Connection</b> to make sure everything 
 						works, then Connect.<br>
 						<br>
 						Once inside the main program you can go to <b>File</b> -> <b>Open...</b> then select the <code>createtables.sql</code> file on 
-						your hard drive. If you have extracted the files from <code>jericho-v1.5.tar.gz</code> using <a href="http://www.7-zip.org/">7-Zip</a> it 
+						your hard drive. If you have extracted the files from <code>jericho-v1.5.1.tar.gz</code> using <a href="http://www.7-zip.org/">7-Zip</a> it 
 						should be in the <code>jericho/server/</code> directory.<br>
 						<br>
 						Now select all the SQL querry text with the mouse or <code>Ctrl</code> + <code>A</code>. Then you can click the <b>Execute Current Query</b> 
 						button at the top left of the screen which will create the database and tables required:<br>
 						<br>
-						<img src="img/sqlyog-connect-query.png" alt="SQL Yog query"><br>
+						<img class="listImage" src="img/sqlyog-connect-query.png" alt="SQL Yog query"><br>
 						<br>
 						You should see some queries being executed on the database. To verify if the database was created you can click on <b>root@localhost</b> 
 						in the top left corner of the left window then press F5 which will refresh the list of databases. You should see the 
@@ -427,7 +460,7 @@
 						do this with the text editor Nano which will be installed by default.<br>
 						Type <code>nano /var/www/html/config/config.php</code> and it should open.<br>
 						<br>
-						<img src="img/nano-edit-config.png" alt="Edit program server config" style="width: 100%"><br>
+						<img class="listImage" src="img/nano-edit-config.png" alt="Edit program server config" style="width: 100%"><br>
 						<br>
 						First you need to decide how many users will be in your chat group. You can have 2 - 7 chat users per 
 						group. Simply change the <i>$numberOfUsers</i> variable to have the number of users you want. 
@@ -444,7 +477,7 @@
 						Click the Generate Pads button from the main menu which starts the TRNG. Load up a photo of something random 
 						in nature then click Process. Once processed, click the Export button which opens up a dialog.<br>
 						<br>
-						<img src="img/export-pads-server-key-settings.png" alt="Export pads"><br>
+						<img class="listImage" src="img/export-pads-server-key-settings.png" alt="Export pads"><br>
 						<br>						
 						Here you can click Create server key which will extract 512 bits of the random data from the photo. Copy 
 						paste this into the config file like so:
@@ -500,8 +533,10 @@
 					
 					
 					<h2 id="securing-new-profile">Securing your new Firefox profile</h2>
-					This section follows some steps to lock down your browser profile so it is as secure as possible and will 
-					only be used for chatting with this program.
+					<p>
+						This section follows some steps to lock down your browser profile so it is as secure as possible 
+						and will only be used for chatting with this program.
+					</p>
 					
 					<h3>Disabling default plugins in the browser</h3>
 					<p>
@@ -509,11 +544,11 @@
 						<br>
 						Open the <b>Firefox</b> main menu then click on <b>Add-ons</b><br>
 						<br>
-						<img src="img/firefox-addon-menu.png"><br>
+						<img class="listImage" src="img/firefox-addon-menu.png"><br>
 						<br>
 						Then click on <b>Plugins</b> in the left side menu. For every plugin change the option to <b>Never Activate</b>:<br>
 						<br>
-						<img src="img/firefox-plugins.jpg"><br>
+						<img class="listImage" src="img/firefox-plugins.jpg"><br>
 						<br>
 						Restart the browser for all the changes to take effect. That covers the basic steps to secure the browser profile. If you have 
 						set this up on a portable Firefox install, be sure to copy that install for the other user onto a USB drive so they don't need 
@@ -543,7 +578,7 @@
 						Test it and view rules:<br>
 						<code>ufw status</code><br>
 						<br>
-						<img src="img/firewall-enabled.png" alt="Firewall enabled"><br>
+						<img class="listImage" src="img/firewall-enabled.png" alt="Firewall enabled"><br>
 						<br>
 						Now the firewall is enabled and logging. There are potentially other advanced configuration options you could use to harden 
 						up the firewall and server more. You will need to do some more of your own research for that. The current configuration will 
@@ -565,25 +600,60 @@
 					
 					<h2 id="ntp-setup">Network Time Protocol configuration</h2>
 					<p>
-						The server authentication protocol relies on both the client and server being time synchronised relatively closely. Messages 
-						are sent with a timestamp and if they are received outside of a 7 second window then they are rejected by the server as an 
-						attacker could be delaying, reordering or replaying messages.<br>
+						The server authentication protocol relies on both the client and server being time synchronised 
+						relatively closely. Messages are sent with a UNIX timestamp and if they are received outside of 
+						a one minute window then they are rejected by the server as an attacker could be delaying, 
+						reordering or replaying messages.
+					</p>
+					<h3>Automatic install</h3>
+					<p>
+						First check which version of the NTP package can be installed using 
+						<a href="https://en.wikipedia.org/wiki/Advanced_Packaging_Tool">APT</a>:<br>
+						<code>apt-cache policy ntp</code><br>
 						<br>
-						First install the NTP package which is not installed by default:
-						<br>
+						If the version shown is <code>ntpd 4.2.8.p4</code> or later then you can simply install it using:<br>
 						<code>apt-get install ntp</code><br>
 						<br>
-						Once that is installed run the following commands:<br>
+						If the version available from APT is <b>less</b> than 4.2.8.p4 e.g. 4.2.6.p5 then you will need 
+						to manually install the latest version from the <a href="http://www.ntp.org">ntp.org</a> website 
+						to <a href="https://askubuntu.com/questions/689565/how-to-update-ntpd-to-the-latest-version-to-patch-the-latest-vulnerability">mitigate a new attack</a> 
+						which could allow an attacker to arbitrarily set your server time and therefore block the 
+						clients from connecting.
+					</p>
+					<h3>Manual install</h3>
+					<p>
+						The manual install procedure is as follows:<br>
+						<code>cd ~<br>
+						wget http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/ntp-4.2.8p4.tar.gz<br>
+						md5sum ntp-4.2.8p4.tar.gz<br>
+						sha384sum ntp-4.2.8p4.tar.gz</code><br>
+						<br>
+						Check that the results match the hashes below or your might have a bad file:<br>
+						MD5: <code>6af96862b09324a8ef965ca76b759c8b</code><br>
+						SHA2-384: <code>c09e36a467b764aabb143668137cb752a42af0e4e2162131f82b234686dfcc7892ab821295ea8e596248cbf1c50e4479</code><br>
+						<br>
+						If the hashes match, extract the files and install:<br>
+						<code>tar xvfz ntp-4.2.8p4.tar.gz<br>
+						cd ntp-4.2.8p4/<br>
+						./configure<br>
+						make<br>
+						make install</code>
+					</p>
+					<h3>Post installation</h3>
+					<p>
+						After installation, to get the server time in sync, run the following commands:<br>
 						<code>
 							service ntp stop<br>
 							ntpd -gq<br>
 							service ntp start
 						</code><br>
 						<br>
-						The <code>-gq</code> parameter tells the ntp daemon to correct the time regardless of the offset (g) and exit immediately (q).<br>
+						The <code>-gq</code> parameter tells the ntp daemon to correct the time regardless of the 
+						offset (g) and exit immediately (q). After this run the command:<br>
+						<code>date</code><br>
 						<br>
-						After this run the <code>date</code> command and check this time is within a few seconds of the time on your PC's clock. Your 
-						PC may need to be sync'd to an NTP server as well but usually this is done automatically.
+						Check that this time is within a few seconds of the time on your PC's clock. Your PC may need 
+						to be synchronized to an NTP server as well but usually this is done automatically.
 					</p>
 					
 										
@@ -595,13 +665,14 @@
 						there is also a <b>Test connection</b> button on the main menu.<br>
 						<br>
 						If it is still not working, you can try setting the <code>testResponseHeaders</code> key to <code>true</code> 
-						in the <code>$applicationConfig</code> array of the config.php file. This enables a more specific error 
-						message to be sent back with the 403 error response code. An addon for Firefox called 
-						<a href="http://getfirebug.com/">Firebug</a> can view the error message sent back. Once installed, simply 
+						in the <code>$applicationConfig</code> array of the <code>/var/www/html/config/config.php</code> file. This 
+						enables a more specific error message to be sent back with the HTTP/1.1 404 error response code. 
+						The Web Developer console in Firefox can view the error message sent back. This is found under  
+						Tools -> Web Developer -> Web Console or simply Ctrl + Shift + K to open it. Once installed, simply 
 						press F12 and it will open. Then retry the connection and view the error. That will give you a clue about 
 						what needs to be fixed:<br>
 						<br>
-						<img src="img/firebug-test-connection.png" alt="Firebug error diagnosis"><br>
+						<img class="listImage" src="img/test-connection-browser-console.png" alt="Web console"><br>
 						<br>
 						If you notice some sort of database error it probably means your database password (in the <code>config.php</code> 
 						file) is incorrect. Either that or other database connection details may be incorrect. Basic shared hosting 
@@ -657,7 +728,7 @@
 				</li>
 				<li>-</li>
 				<li>
-					<a href="information.html">Technical information</a>
+					<a href="information.html">Technical design</a>
 				</li>
 				<li>-</li>
 				<li>
