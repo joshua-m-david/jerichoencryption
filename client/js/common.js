@@ -24,7 +24,7 @@
 var common = {
 	
 	// Current program version to help with importing from old versions later
-	programVersion: '1.5',
+	programVersion: '1.5.1',
 	
 	// Define lengths of message attributes in bytes
 	padIdentifierSize: 7,		// Size of the pad identifier in bytes. The first 7 bytes of pad are used only to identify which pad was used
@@ -133,7 +133,7 @@ var common = {
 	
 	/**
 	 * Get the current UNIX timestamp in UTC
-	 * @return {Number} The current timestamp as an integer
+	 * @return {Number} The current timestamp in seconds as an integer
 	 */
 	getCurrentUtcTimestamp: function()
 	{
@@ -194,8 +194,8 @@ var common = {
 		
 		// Return date and time formatted
 		return {
-			'date': common.formatDateFromDateObject(date),
-			'time': common.formatTimeFromDateObject(date)
+			date: common.formatDateFromDateObject(date),
+			time: common.formatTimeFromDateObject(date)
 		};
 	},
 		
@@ -851,6 +851,13 @@ var common = {
 	 */
 	preparePadsForBackup: function(exportMethod)
 	{
+		// If the currently loaded database is the same as the blank default schema then there is nothing to backup
+		if ((JSON.stringify(db.padData) === JSON.stringify(db.padDataSchema)))
+		{
+			common.showStatus('error', 'No pad database currently loaded.');
+			return false;
+		}
+		
 		// Convert to JSON for export to clipboard or text file
 		var padDataJson = JSON.stringify(db.padData);	
 
@@ -864,18 +871,18 @@ var common = {
 			// Check for the various File API support
 			if ((window.File && window.FileReader && window.FileList && window.Blob) === false)
 			{
-				alert('The File APIs are not fully supported in this browser, try exporting to clipboard then pasting to a new text file.');
+				common.showStatus('error', 'The File APIs are not fully supported in this browser, try exporting to clipboard then pasting to a new text file.');
+				return false;
 			}
-			else {
-				// Set text file download parameters
-				var blob = new Blob([padDataJson], { type: 'text/plain;charset=utf-8' });
-				var userCallsign = db.padData.info.user;
-				var nickname = db.padData.info.userNicknames[userCallsign].toLowerCase();
-				var filename = 'one-time-pads-backup-user-' + nickname + '.txt';
-				
-				// Pop up a save dialog for the user to save to a text file preferably straight onto removable media such as USB flash drive
-				saveAs(blob, filename);
-			}
+			
+			// Set text file download parameters
+			var blob = new Blob([padDataJson], { type: 'text/plain;charset=utf-8' });
+			var userCallsign = db.padData.info.user;
+			var nickname = db.padData.info.userNicknames[userCallsign].toLowerCase();
+			var filename = 'one-time-pads-backup-user-' + nickname + '.txt';
+
+			// Pop up a save dialog for the user to save to a text file preferably straight onto removable media such as USB flash drive
+			saveAs(blob, filename);
 		}
 	},
 	
@@ -1114,79 +1121,153 @@ var common = {
 	},
 		
 	/**
-	 * The biggest random number the Web Crypto API can return is an unsigned 32 bits. This function will collect blocks 
-	 * of 512 random bits and hash them separately with the Skein 512 bit hash function. The final output will then be 
-	 * truncated to the required length of bits. The reason for this is it is not certain whether the browser's implementation 
-	 * of the Web Crypto API getRandomValues() function has had a thorough security review. The output could be suspect on 
-	 * closed source systems or they may make use of Intel's on-chip closed design "random" number generator. This is an 
-	 * extra security measure to prevent leakage of the real RNG output in case there is a bug or bias found in future. Thus 
-	 * if nonces or IVs are sent in the clear as with the server protocol, an attacker will have a harder time discerning a 
-	 * pattern or predicting future output.
-	 * @param {Number} requiredNumOfBits The desired number of random bits as an integer.
+	 * A wrapper function to get the required number of random bits.
+	 * @param {Number} numOfBits The desired number of random bits as an integer.
 	 * @param {String} returnFormat Pass in 'binary' or 'hexadecimal' to return the random bits in that format.
-	 * @returns {String} Returns the random bits as a string. If the return type is hexadecimal, then the requiredNumOfBits 
-	 *                   should be a multiple of 4 bits, otherwise it can't convert the remaining few bits to a hexadecimal 
-	 *                   symbol and will truncate the output to the nearest multiple of 4 bits.
+	 * @returns {String} Returns the random bits as a string of 1s and 0s. If the returnFormat is 'hexadecimal', then the 
+	 *                   requiredNumOfBits should be a multiple of 4 bits, otherwise it can't convert the remaining few 
+	 *                   bits to a hexadecimal symbol and will truncate the output to the nearest multiple of 4 bits.
 	 */
-	getRandomBits: function(requiredNumOfBits, returnFormat)
+	getRandomBits: function(numOfBits, returnFormat)
 	{
-		// Find out how many 512 bit blocks we need
-		var requiredNumOf512BitBlocks = Math.ceil(requiredNumOfBits / 512);
+		// Get random bits
+		var failsafeRngKey = db.padData.info.failsafeRngKey;
+		var failsafeRngNonce = db.padData.info.failsafeRngNonce;
+		var randomBits = common.getEncryptedRandomBits(numOfBits, failsafeRngKey, failsafeRngNonce, returnFormat);
 		
-		// Find out number of bits needed as a multiple of 512 bits
-		var numOfBitsToGet = requiredNumOf512BitBlocks * 512;
-			
-		// Find out how many 32 bit random numbers from the Web Crypto API is needed to get enough bits
-		var numOf32BitNumbers = numOfBitsToGet / 32;
-				
-		// Collect 32 bit random numbers from the Web Crypto API
-		var byteArray = new Uint32Array(numOf32BitNumbers);
-		window.crypto.getRandomValues(byteArray);
+		// Update the nonce after use so it is ready for use next time, then persist the change in localStorage
+		db.padData.info.failsafeRngNonce += 1;
+		db.savePadDataToDatabase();
 		
-		// Variable to store output
-		var randomBitsHexadecimal = '';
-		
-		// Convert the numbers to hexadecimal
-		for (var i=0, length = byteArray.length; i < length; i++)
+		// Return the bits in binary or hexadecimal depending on what was requested
+		return randomBits;
+	},
+	
+	/**
+	 * Private function to get the required number of bits from the HTML5 Web Crypto API which uses the operating 
+	 * system's random source. If the browser's implementation of this CSPRNG is compromised then there is a failsafe. 
+	 * The HTML5 Web Crypto API could be compromised by the user running a closed source OS (e.g. Windows or MacOS), or 
+	 * there is a flaw in the browser or underlying OS such as it uses Intel's questionable on-chip RNG. The program 
+	 * will use a 256 bit key, which will be unique to each user running the program, to create a keystream of random 
+	 * bits using the failsafe CSPRNG Salsa20. This is XORed with the random bytes returned from the Web Crypto API. 
+	 * The failsafe nonce for Salsa20 should be incremented after each request by the code calling this function to 
+	 * prevent re-use.
+	 * @param {Number} numOfBits The desired number of random bits as an integer.
+	 * @param {String} failsafeRngKey A key for the Salsa20 CSPRNG which should be a hexadecimal string consisting of 256 bits.
+	 * @param {Number} failsafeRngNonce An integer starting from 0 up to 2^53 - 1 to be used as the nonce for the Salsa20 CSPRNG.
+	 * @param {String} returnFormat Pass in 'binary' or 'hexadecimal' to return the random bits in that format.
+	 * @returns {String} Returns the random bits as a string of 1s and 0s. If the returnFormat is 'hexadecimal', then the 
+	 *                   requiredNumOfBits should be a multiple of 4 bits, otherwise it can't convert the remaining few 
+	 *                   bits to a hexadecimal symbol and will truncate the output to the nearest multiple of 4 bits.
+	 */
+	getEncryptedRandomBits: function(numOfBits, failsafeRngKey, failsafeRngNonce, returnFormat)
+	{
+		// If the failsafe Salsa20 RNG has not been initialised with a key then throw a hard error which will halt 
+		// program execution. This should not happen during normal program operation. It is a protection against 
+		// programming error and the code logic requesting random bits before the key has been loaded.
+		if ((failsafeRngKey === null) || (failsafeRngNonce === null) || (typeof failsafeRngKey === 'undefined') || (typeof failsafeRngNonce === 'undefined'))
 		{
-			// Convert to hexadecimal and left pad the number with 0s so it is exactly 32 bits
-			var numberHexadecimal = byteArray[i].toString(16);
-			numberHexadecimal = common.leftPadding(numberHexadecimal, '0', 8);
-						
-			// Build up the output
-			randomBitsHexadecimal += numberHexadecimal;
+			throw new Error('Failsafe Salsa20 RNG has not been initialised with a key or nonce.\n' + new Error().stack);
 		}
 		
-		// Determine when loop should finish
-		var hashedRandomBitsHexadecimal = '';
-		var numOfHexSymbolsToGet = numOfBitsToGet / 4;
+		// Get at least one byte from the Web Crypto API if less than 8 bits is required
+		var requiredNumOfBytes = 1;
 		
-		// Hash the bits in 512 bit blocks (128 hexadecimal symbols is 512 bits)
-		for (var j=0; j < numOfHexSymbolsToGet; j += 128)
+		// If more than 8 bits is required
+		if (numOfBits > 8)
 		{
-			var bitsToHashHexadecimal = randomBitsHexadecimal.substr(j, 128);
-			var hashedBits = common.secureHash('skein-512', bitsToHashHexadecimal);
-			
-			// Build up the output
-			hashedRandomBitsHexadecimal += hashedBits;
+			// Find out how many bytes to get. If not cleanly divisible by 8 bits, get the next whole number of bytes
+			// so at least that many bits is collected from the Web Crypto API e.g. 17 bits will get 24 bits (3 bytes)
+			requiredNumOfBytes = Math.ceil(numOfBits / 8);
 		}
-						
+		
+		// Initialise a typed array and fill it with 0 bytes
+		var webCryptoRandomBytes = new Uint8Array(requiredNumOfBytes);
+		
+		try {
+			// Fill array with required number of random bytes from the Web Crypto API
+			window.crypto.getRandomValues(webCryptoRandomBytes);
+		}
+		catch (exception)
+		{
+			// If there is a failure getting random bytes from the Web Crypto API then halt program execution
+			throw new Error('Failed to get ' + requiredNumOfBytes + ' random values from Web Crypto API.\n' + exception + '\n' + new Error().stack);
+		}
+		
+		// Encrypt the bytes from the Web Crypto API with a key only the user knows. This prevents flaws in the 
+		// Web Crypto API or underlying operating system's RNG from compromising the security of the program.
+		var encryptedRandomBytesHex = Salsa20.encrypt(failsafeRngKey, webCryptoRandomBytes, failsafeRngNonce, 0, { returnType: 'hex' });
+		
 		// If hexadecimal format is needed
 		if (returnFormat === 'hexadecimal')
 		{	
 			// Determine how many hexadecimal symbols to return and truncate the output to desired length
-			var numOfHexSymbols = Math.floor(requiredNumOfBits / 4);
-			var randomBitsHexadecimal = hashedRandomBitsHexadecimal.substr(0, numOfHexSymbols);
-									
+			var numOfHexSymbols = Math.floor(numOfBits / 4);
+			var randomBitsHexadecimal = encryptedRandomBytesHex.substr(0, numOfHexSymbols);
+			
 			return randomBitsHexadecimal;
 		}
 		else {
-			// Convert to binary then truncate the output to desired length
-			var randomBitsBinary = common.convertHexadecimalToBinary(hashedRandomBitsHexadecimal);
-			randomBitsBinary = randomBitsBinary.substr(0, requiredNumOfBits);
+			// Convert to binary string e.g. '101001010...' then truncate the output to exact length required
+			var randomBitsBinary = common.convertHexadecimalToBinary(encryptedRandomBytesHex);
+			randomBitsBinary = randomBitsBinary.substr(0, numOfBits);
 			
 			return randomBitsBinary;
 		}
+	},
+		
+	/**
+	 * Gets a cryptographically secure random integer inbetween the minimum and maxium passed in. See:  
+	 * http://stackoverflow.com/a/18230432. It gets a random number (assisted by the Web Crypto API and failsafe Salsa20 
+	 * RNG) and then uses rejection sampling (see: http://en.wikipedia.org/wiki/Rejection_sampling). Depending on the 
+	 * maximum value wanted it will get a 8 bit, 16 bit or 32 bit unsigned integer from the API. For example if a small 
+	 * number between 0 and 10 is wanted it will just get an 8 bit number from the API rather than a 32 bit number which 
+	 * is unnecessary.
+	 * @param {Number} min The minimum number allowed. The minimum this function will allow is 0.
+	 * @param {Number} max The maximum number allowed. The maximum this function will allow is 4294967295.
+	 * @returns {Number} A random number between the minimum and maximum
+	 */
+	getRandomIntInRange: function(min, max)
+	{
+		// Find the range
+		var range = max - min + 1;
+				
+		// Get at least 8 bits
+		var numOfBits = 8;
+		var maxRange = 256;
+		
+		// If the maximum required exceeds an unsigned 8 bit int, get 16 bits
+		if (max > 255) 
+		{			
+			numOfBits = 16;
+			maxRange = 65536;
+		}
+		
+		// If the maximum required exceeds an unsigned 16 bit int, get 32 bits
+		if (max > 65535)
+		{			
+			numOfBits = 32;
+			maxRange = 4294967296;
+		}
+		
+		// If the maximum required exceeds an unsigned 32 bit int, throw error
+		if (max > 4294967295)
+		{
+			throw new Error('Maximum exceeded for getting a random int in range. The maximum is 4,294,967,295 (32 bit unsigned int).\n' + new Error().stack)
+		}
+		
+		// Get a random number
+		var randomBitsBinary = common.getRandomBits(numOfBits, 'binary');
+		var randomNumber = common.convertBinaryToInteger(randomBitsBinary);
+		
+		// If the random number is outside of the range, get another. In testing 
+		// it rarely needs to call the function recursively more than once.
+		if (randomNumber >= Math.floor(maxRange / range) * range)
+		{
+			return common.getRandomIntInRange(min, max);
+		}
+
+		return min + (randomNumber % range);
 	},
 	
 	/**
@@ -1197,6 +1278,25 @@ var common = {
 	 */
 	testServerConnection: function(serverAddressAndPort, serverKey, callbackFunction)
 	{
+		// If there's no failsafe CSPRNG key set, e.g. user is using the program for the first time and wants to test 
+		// the connection. This will get overwritten with a key from the TRNG if a user loads a database of one-time pads.
+		if ((db.padData.info.failsafeRngKey === null) || (db.padData.info.failsafeRngNonce === null))
+		{
+			// Get 256 bits (32 bytes) from the Web Crypto API
+			var randomBytes = new Uint8Array(32);
+			window.crypto.getRandomValues(randomBytes);
+			
+			// Convert the random bytes to hexadecimal
+			var randomDataHex = Salsa20.core.util.bytesToHex(randomBytes);
+			
+			// Update the failsafe CSPRNG key and nonce and persist the change in localStorage
+			db.padData.info.failsafeRngKey = randomDataHex;
+			db.padData.info.failsafeRngNonce = 0;
+			db.savePadDataToDatabase();
+			
+			console.info('Generated a temporary failsafe CSPRNG key using the Web Crypto API.');
+		}
+		
 		// If they didn't enter the server address show error
 		if (serverAddressAndPort === '')
 		{
@@ -1250,7 +1350,12 @@ var common = {
 	 * @param {Object} requestData The data to be sent to the server
 	 * @param {String} serverAddressAndPort The server address and port
 	 * @param {String} serverKey The 512 bit hexadecimal server key
-	 * @param {String} callbackFunction The name of the callback function to run when complete
+	 * @param {Function} callbackFunction The anonymous callback function to run when complete. The first parameter to 
+	 *                                    the function will say whether the request succeeded and the MAC was valid 
+	 *                                    (true), or if it failed because of an invalid MAC (false) or if it failed 
+	 *                                    because of other problem e.g. server connection issue (null). The second 
+	 *                                    parameter to the function will include the data response from the server if 
+	 *                                    applicable e.g. messages received.
 	 */
 	sendRequestToServer: function(requestData, serverAddressAndPort, serverKey, callbackFunction)
 	{
@@ -1554,53 +1659,7 @@ var common = {
 		{
 			return false;
 		}
-	},
-	
-	/**
-	 * Gets a random integer inbetween the minimum and maxium passed in. It gets a random number from the Web 
-	 * Crypto API and then uses rejection sampling (see http://en.wikipedia.org/wiki/Rejection_sampling).
-	 * Depending on the maximum value wanted it will get a 8 bit, 16 bit or 32 bit unsigned integer from the 
-	 * API. For example if a small number between 0 and 10 is wanted it will just get an 8 bit number from the 
-	 * API rather than a 32 bit number which is unnecessary.
-	 * @param {Number} min The minimum number allowed. The minimum this function will allow is 0.
-	 * @param {Number} max The maximum number allowed. The maximum this function will allow is 4294967295.
-	 * @returns {Number} A random number between the minimum and maximum
-	 */
-	getRandomIntInRange: function(min, max)
-	{
-		var maxRange = null;
-		var byteArray = null;
-		var range = max - min + 1;
-		
-		// If the maximum is less than 255, get a small 8 bit unsigned integer
-		if ((max >= 1) && (max <= 255))
-		{
-			maxRange = 256;
-			byteArray = new Uint8Array(1);
-		}
-		else if ((max >= 256) && max <= 65535)
-		{
-			// If the maximum is inbetween 256 and 65535, get a random 16 bit unsigned integer
-			maxRange = 65536;
-			byteArray = new Uint16Array(1);
-		}
-		else {
-			// Otherwise get a 32 bit unsigned random integer
-			maxRange = 4294967296;
-			byteArray = new Uint32Array(1);
-		}
-		
-		// Fill the byte array with a random number
-		window.crypto.getRandomValues(byteArray);
-
-		// If the random number is outside of the range, get another
-		if (byteArray[0] >= Math.floor(maxRange / range) * range)
-		{
-			return this.getRandomIntInRange(min, max);
-		}
-
-		return min + (byteArray[0] % range);
-	},
+	},	
 	
 	/**
 	 * Helper function to get a clone of the outer HTML of an element

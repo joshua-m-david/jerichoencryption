@@ -27,12 +27,16 @@ var chat = {
 	checkForMessagesIntervalId: null,
 	checkForMessagesIntervalTime: 3000,		// 3 seconds
 	
-	// Running tally of how many pads/messages are remaining
-	evenPadsRemaining: 0,
-	oddPadsRemaining: 0,
-	
+	// This is used as exponential backoff functionality. If a connection to the API fails, it will retry after this 
+	// many milliseconds. If it fails after that it will double the current time and then re-try after this time. 
+	checkForMessagesRetryIntervalTime: 3000,
+		
 	// Whether this is the first check for new messages or not
 	firstCheckForNewMessages: true,
+	
+	// Flag for whether or not a request is currently being processed for receiving messages. This is used to 
+	// prevent multiple requests being sent to the server from the same client so it waits for a response first.
+	processingReceiveMessagesRequest: false,
 		
 	// When a message was last received from the user
 	lastMessageReceivedFromUserTimestamps: {
@@ -44,10 +48,7 @@ var chat = {
 		foxtrot: null,
 		golf: null
 	},
-	
-	// The maximum number of seconds ago that a user can be considered as online
-	maxSecondsUserConsideredOnline: 90,
-			
+				
 	/**
 	 * Make the chat window always scroll to the bottom if there are lots of messages on page load
 	 */
@@ -56,6 +57,7 @@ var chat = {
 		$('.mainChat').each(function() 
 		{
 			var scrollHeight = Math.max(this.scrollHeight, this.clientHeight);
+			
 			this.scrollTop = scrollHeight - this.clientHeight;
 		});
 	},
@@ -67,7 +69,7 @@ var chat = {
 	{
 		// If the send message function is clicked
 		$('#btnSendMessage').click(function(event)
-		{			
+		{
 			// Get plaintext message and remove invalid non ASCII characters from message
 			var plaintextMessage = $('#newChatMessage').val();
 			plaintextMessage = common.removeInvalidChars(plaintextMessage);
@@ -134,7 +136,7 @@ var chat = {
 				else {
 					// Most likely cause is user has incorrect server url or key entered.
 					// Another alternative is the attacker modified their request while en route to the server
-					common.showStatus('error', 'Error contacting server. Check: 1) you are connected to the network, 2) the client/server configurations are correct, and 3) client/server system clocks are up to date. If everything is correct, the data may have been tampered with by an attacker.');
+					common.showStatus('error', 'Error sending message to server. Check: 1) you are connected to the network, 2) the client/server configurations are correct, and 3) client/server system clocks are up to date. If everything is correct, the data may have been tampered with by an attacker.');
 				}
 				
 				// Add send failure to the message status
@@ -224,7 +226,7 @@ var chat = {
 			chat.checkForNewMessages();
 
 		// The number of milliseconds
-		}, chat.checkForMessagesIntervalTime);
+		}, chat.checkForMessagesRetryIntervalTime);
 	},
 	
 	/**
@@ -350,7 +352,7 @@ var chat = {
 			var className = 'offline';
 			
 			// If they were online in the last x seconds, then they are considered online
-			if (lastMessageTimestamp >= (currentTimestamp - chat.maxSecondsUserConsideredOnline))
+			if (lastMessageTimestamp >= (currentTimestamp - decoy.userOnlineTimestampWindow))
 			{
 				className = 'online';
 			}
@@ -373,6 +375,14 @@ var chat = {
 	},
 	
 	/**
+	 * Sets all users to offline, used in case of a server connection error
+	 */
+	setAllUsersOffline: function()
+	{
+		$('.chatPage .groupUsers .onlineStatusCircle').removeClass('offline online').addClass('offline');
+	},
+	
+	/**
 	 * Checks for new messages from the server and displays them
 	 */
 	checkForNewMessages: function()
@@ -380,8 +390,15 @@ var chat = {
 		// If there's no pad data loaded, stop trying to get messages from the server
 		if (db.padData.info.serverAddressAndPort === null)
 		{
-			common.showStatus('error', "No pads have been loaded into this device's database.");
+			common.showStatus('error', "No one-time pads have been loaded into this device's database.");
 			chat.stopIntervalReceivingMessages();
+			
+			return false;
+		}
+		
+		// If a receive message request is already being processed by the server, wait for that to finish first
+		if (chat.processingReceiveMessagesRequest)
+		{
 			return false;
 		}
 		
@@ -391,11 +408,14 @@ var chat = {
 
 		// Package the data to be sent to the server
 		var data = {
-			'user': db.padData.info.user,
-			'apiAction': 'receiveMessages'
+			user: db.padData.info.user,
+			apiAction: 'receiveMessages'
 		};
+		
+		// Currently processing a request to the server
+		chat.processingReceiveMessagesRequest = true;
 
-		// Check the server for messages
+		// Check the server for messages using an asynchronous request
 		common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseData)
 		{
 			// If the server response is authentic
@@ -431,27 +451,60 @@ var chat = {
 				// Checked first message, so set to false
 				chat.firstCheckForNewMessages = false;
 				
+				// If the current retry interval is more than default, then they have had a connection failure before
+				if (chat.checkForMessagesRetryIntervalTime > chat.checkForMessagesIntervalTime)
+				{
+					// Reset the retry interval back to default interval because a successful message was received
+					chat.checkForMessagesRetryIntervalTime = chat.checkForMessagesIntervalTime;
+					
+					// Stop automatic checking of messages and start again with new retry interval
+					chat.stopIntervalReceivingMessages();
+					chat.startIntervalToReceiveMessages();
+				}
+				
 				// Update the current user to have received a response from the server so we are considered 'online'
 				chat.lastMessageReceivedFromUserTimestamps[db.padData.info.user] = common.getCurrentUtcTimestamp();
 				
 				// Update online status for each user
 				chat.updateOnlineStatuses();
+			}			
+			else {
+				// Calculate how many milliseconds and seconds until next retry
+				var nextRetryMilliseconds = chat.checkForMessagesRetryIntervalTime * 2;
+				var nextRetrySeconds = nextRetryMilliseconds / 1000;
+				var statusMessage = '';
+				
+				// If response check failed it means there was probably interference from attacker altering data or MAC
+				if (validResponse === false)
+				{
+					statusMessage = 'Unauthentic response from server detected. Retrying in ' + nextRetrySeconds + ' seconds.';
+				}
+				else {
+					// Otherwise the most likely cause is user has incorrect server URL or key entered. Another 
+					// alternative is the attacker modified their request while en route to the server
+					statusMessage = 'Error contacting server. Retrying in ' + nextRetrySeconds + ' seconds. Check: ' +
+				                    '1) you are connected to the network, ' +
+					                '2) the client/server configurations are correct, and ' + 
+					                '3) client/server system clocks are up to date. If everything is correct, ' +
+					                'the data may have been tampered with by an attacker.';
+				}
+				
+				// Show status message
+				common.showStatus('error', statusMessage);
+				
+				// Update the retry interval
+				chat.checkForMessagesRetryIntervalTime = nextRetryMilliseconds;
+				
+				// Stop automatic checking of messages and start again with new retry interval
+				chat.stopIntervalReceivingMessages();
+				chat.startIntervalToReceiveMessages();
+				
+				// Set all users offline until server connectivity can be re-established
+				chat.setAllUsersOffline();
 			}
 			
-			// If response check failed it means there was probably interference from attacker altering data or MAC
-			else if (validResponse === false)
-			{
-				common.showStatus('error', 'Unauthentic response from server detected.');
-			}
-
-			else {
-				// Most likely cause is user has incorrect server url or key entered.
-				// Another alternative is the attacker modified their request while en route to the server
-				common.showStatus('error', 'Error contacting server. Check: 1) you are connected to the network, 2) the client/server configurations are correct, and 3) client/server system clocks are up to date. If everything is correct, the data may have been tampered with by an attacker.');
-				
-				// Stop automatic checking of messages
-				chat.stopIntervalReceivingMessages();
-			}
+			// Not currently processing any messages so the next request can be sent (triggered by the timer interval)
+			chat.processingReceiveMessagesRequest = false;
 		});
 	},
 		
@@ -528,8 +581,8 @@ var chat = {
 				// (which has gained access to the server) able to send arbitrary messages with chosen pad identifiers 
 				// back to the client when they check for new messages which would deplete the user's list of valid pads.
 				padIndexesToErase.push({
-					'index': padData.padIndex,
-					'user': fromUser
+					index: padData.padIndex,
+					user: fromUser
 				});
 				
 				// Update the last message received timestamp (from any user) which is used for the decoy messages

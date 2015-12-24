@@ -22,6 +22,18 @@ Other ways to help:
 - User testing and bug reporting.
 - Marketing and spreading the word about the program.
 
+Road map / To do list:
+- Convert code to a single page app. (v2.0)
+- Encrypt the one-time pad database at all times inside the local database. (v2.0)
+- Tablet and mobile screen size support (Firefox and Chromium on Android). (v2.0)
+- Optimise code so all CPU intensive processing is done inside HTML5 web workers. (v2.0)
+- Hide traffic meta data between clients and the server by serializing all network data and encrypting it. (v2.0)
+- Shorten message length to 50 bytes and allow long messages to be automatically split into multiple OTPs. (future)
+- Write and receive messages in UTF-8 encoding to support multiple languages. (future)
+- Mobile phone support for Firefox OS. (future)
+- Build into Firefox and/or Chromium extension. (future)
+- Build into Android app with PhoneGap or similar application. (future)
+
 Some tips for developers:
 - Download the original source code from the website or Freenet and verify the file using the GPG signature (Key ID 0xDC768471C467B6D0 and Fingerprint CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0).
 - Read Clean Code by Robert C. Martin.
@@ -34,17 +46,6 @@ Some tips for developers:
 - Ideally submit small changes with corresponding unit tests if necessary.
 - All existing unit tests must still pass and the program must still be fully functional.
 - Sign your commits with your GnuPG key.
-
-Road map / To do list:
-- Convert code to a single page app. (v2.0)
-- Encrypt the one-time pad database at all times inside the local database. (v2.0)
-- Tablet and mobile screen size support (Firefox and Chromium on Android). (v2.0)
-- Optimise code so all CPU intensive processing is done inside HTML5 web workers. (v2.0)
-- Hide traffic meta data between clients and the server by serializing all network data and encrypting it. (v2.0)
-- Shorten message length to 50 bytes and allow long messages to be automatically split into multiple OTPs. (future)
-- UTF-8 support to support multiple languages. (future)
-- Mobile phone support for Firefox OS. (future)
-- Build into Firefox and/or Chromium extension. (future)
 
 Setting up the development environment:
 - Download the code from the site.

@@ -30,18 +30,20 @@ var exportPadsWorker = {
 	 */
 	createAndEncryptPads: function(options, extractedRandomDataHex)
 	{
-		// Get salt, two encryption keys and two MAC keys
-		var salt = extractedRandomDataHex.substring(0, 384);				// 1536 bits (384 hex symbols)
-		var aesKey = extractedRandomDataHex.substring(384, 448);			// 256 bits (64 hex symbols)
-		var salsaKey = extractedRandomDataHex.substring(448, 512);			// 256 bits (64 hex symbols)
-		var keccakMacKey = extractedRandomDataHex.substring(512, 640);		// 512 bits (128 hex symbols)
-		var skeinMacKey = extractedRandomDataHex.substring(640, 768);		// 512 bits (128 hex symbols)
+		// Get salt, two encryption keys, two MAC keys and a unique RNG key per user
+		var keys = exportPads.getCryptoKeysFromExtractedRandomData(options.numOfUsers, extractedRandomDataHex);
 		
-		// Use only the remaining bits for the one-time pads
-		extractedRandomDataHex = extractedRandomDataHex.substring(768);
-				
+		// Get data
+		var salt = keys.salt;
+		var aesKey = keys.aesKey;
+		var salsaKey = keys.salsaKey;
+		var keccakMacKey = keys.keccakMacKey;
+		var skeinMacKey = keys.skeinMacKey;
+		var userFailsafeRngKeys = keys.userFailsafeRngKeys;
+		var remainingExtractedRandomDataHex = keys.extractedRandomDataHex;
+		
 		// Split up the random data into separate pads, then encrypt and authenticate each pad
-		var pads = exportPads.createPads(options.numOfUsers, extractedRandomDataHex);
+		var pads = exportPads.createPads(options.numOfUsers, remainingExtractedRandomDataHex);
 		var encryptedPads = dbCrypto.encryptAndAuthenticatePads(aesKey, salsaKey, keccakMacKey, skeinMacKey, pads);
 		
 		// Generate a master key from the passphrase and salt, then encrypt and authenticate the database keys
@@ -57,6 +59,7 @@ var exportPadsWorker = {
 			salsaKey: salsaKey,
 			keccakMacKey: keccakMacKey,
 			skeinMacKey: skeinMacKey,
+			userFailsafeRngKeys: userFailsafeRngKeys,
 			encryptedPads: encryptedPads,
 			encryptedDatabaseKeysAndMac: encryptedDatabaseKeysAndMac,
 			padIndexMacs: padIndexMacs

@@ -40,21 +40,23 @@ var db = {
 	// Schema for the data to store all the pad information, server connection information, 
 	// contact list and nicknames, crypto keys, one-time pads and any custom user settings
 	padDataSchema: {
-		info: {			
+		info: {
 			custom: {
 				enableSounds: true,				// Enables sounds when a message is received
 				enableVibration: true,			// Enables device vibration for incoming messages
 				enableWebNotifications: true	// Enables HTML5 desktop notifications
 			},
+			failsafeRngKey: null,				// The failsafe key for the Salsa20 CSPRNG in case the Web Crypto API fails
+			failsafeRngNonce: null,				// The next nonce to use for the failsafe Salsa20 CSPRNG
 			serverAddressAndPort: null,			// The server address and port
 			serverKey: null,					// The server API key
 			user: null,							// The user callsign
-			userNicknames: {}					// The custom group user nicknames matching the callsigns
+			userNicknames: {}					// The custom group user nicknames matching the callsigns			
 		},
 		crypto: {
 			keys: null,							// The encrypted database keys concatenated together
 			keysMac: null,						// The MAC of the encrypted database keys for authentication
-			padIndexMacs: {},					// A MAC of the pad index numbers for each user's list of one-time pads
+			padIndexMacs: {},					// The MAC of the pad index numbers for each user's list of one-time pads
 			pbkdfKeccakIterations: null,		// The number of Keccak PBKDF iterations used to generate the master key for the database
 			pbkdfSkeinIterations: null,			// The number of Skein PBKDF iterations used to generate the master key for the database
 			pbkdfSalt: null						// The PBKDF salt / keyfile used to generate the master key for the database
@@ -71,17 +73,24 @@ var db = {
 	 */
 	initialiseLocalDatabase: function()
 	{
-		var padDataFromLocalStorage = localStorage.getObject(this.databaseName);		
-		
-		// If it already exists, use the existing one
-		if (padDataFromLocalStorage != null)
-		{
-			this.padData = padDataFromLocalStorage;
+		try {
+			// Get the existing database from localStorage if it exists
+			var padDataFromLocalStorage = localStorage.getObject(this.databaseName);		
+
+			// If it already exists, use the existing one
+			if (padDataFromLocalStorage !== null)
+			{
+				db.padData = padDataFromLocalStorage;
+			}
+			else {
+				// Initialise to a blank database schema by cloning the schema, then set the local storage db
+				db.resetInMemoryPadData();
+				localStorage.setObject(this.databaseName, this.padData);
+			}
 		}
-		else {
-			// Initialise to a blank database schema by cloning the schema, then set the local storage db
-			this.resetInMemoryPadData();
-			localStorage.setObject(this.databaseName, this.padData);
+		catch (exception)
+		{
+			console.error('HTML localStorage is not available. Make sure it is enabled or try a different browser.');
 		}
 	},
 	
@@ -148,7 +157,7 @@ Storage.prototype.getObject = function(key)
 	var storageItem = this.getItem(key);
 
 	// If it doesn't exist return null
-	if (storageItem == 'undefined')
+	if (storageItem === null)
 	{
 		return null;
 	}

@@ -21,7 +21,7 @@
 // On page load run QUnit tests
 $(document).ready(function()
 {
-	// Test data
+	// Initialise test data
 	var pad = '72fa270d9148a82c056a62e32c5dbb916db2cba99efbc2c49533c5349bdeaeb4ec307e588b0cb125b4c23f07ccbac5d30b7736903cfb37a72ca6c189185546d401b48210cf46468a5615f2b63eaa7c415592a5bdad98bf47b3f49058ae278d7194567240a66f11755ead65cd194a36f30f7cf98d6c60fd45eca00a845922fc5d411f70a8b3d9c0dfaf69df60c42f6aec429ef479f3caa312ded2944546b93b49e09a53e679c999c99900a6bd93f93d2c2fcd387cb28625ab6c6bbd24baf9251c'; // Generated from TRNG
 	var plaintextMessage = 'The quick brown fox jumps over the lazy dog';	
 	var plaintextMessageMax = 'The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps';
@@ -29,6 +29,16 @@ $(document).ready(function()
 	var plaintextMessageLength = common.messageSize;
 	var plaintextMessageTimestamp = 1374237870;
 	var plaintextMessageMacAlgorithmIndex = 0;		// skein-512 - see common.macAlgorithms[0]
+	var testRngKey = 'cb125b4c23f07ccbac5d30b7736c429ef479f3caa312ded2944546b93b1ca704';	// 256 bits
+	
+	// If the currently loaded database is the same as the blank default schema then load a default failsafe RNG key 
+	// and nonce for testing functions that use getRandomBits(), otherwise it will use the user's current one. This 
+	// check prevents overwriting the user's real key with a default testing one.
+	if ((JSON.stringify(db.padData) === JSON.stringify(db.padDataSchema)))
+	{		
+		db.padData.info.failsafeRngKey = testRngKey;
+		db.padData.info.failsafeRngNonce = 0;
+	}
 	
 	
 	/**
@@ -38,10 +48,44 @@ $(document).ready(function()
 	 */
 	
 	var localStorageSupported = common.checkLocalStorageSupported();
+	var testWrite = true;
+	var testRead = true;
+	var testRemove = true;
+	
+	try {
+		// Try writing some data to localStorage which will throw an exception if unavailable
+		localStorage.setItem('testWrite', 'jericho');
+	}
+	catch (exception)
+	{
+		testWrite = false;
+		console.error(exception);
+	}
+	
+	try {
+		// Try reading from localStorage
+		testRead = localStorage.getItem('testWrite');
+	}
+	catch (exception)
+	{
+		testRead = false;
+	}
+	
+	try {
+		// Try removing from localStorage
+		localStorage.removeItem('testWrite');
+	}
+	catch (exception)
+	{
+		testRemove = false;
+	}
 	
 	test("Test if HTML5 Local Storage is supported in this browser", function()
 	{
-		ok(localStorageSupported === true);
+		ok(localStorageSupported === true, 'Local storage enabled: ' + localStorageSupported);
+		ok(testWrite === true, 'Local storage write ability: ' + testWrite);
+		ok(testRead === 'jericho', 'Local storage read ability: ' + ((testRead === 'jericho') ? true : false));
+		ok(testRemove === true, 'Local storage remove ability: ' + testRemove);
 	});
 	
 	
@@ -142,46 +186,66 @@ $(document).ready(function()
 		ok(hexResultE === '075bcd15', '123456789 converted to hex ' + hexResultE + ' should equal 075bcd15 with even length ' + hexResultE.length);
 		ok(hexResultF === '1fffffffffffff', '10000 converted to hex ' + hexResultF + ' should equal 1fffffffffffff with even length ' + hexResultF.length);
 	});
-	
-	
+		
 	/**
 	 * ------------------------------------------------------------------
-	 * Test method to get specified number of random bits from the Web Crypto API
+	 * Get random bits from the Web Crypto API and XOR it with Salsa20 keystream
 	 * ------------------------------------------------------------------
 	 */
 	
-	var randomBits0Hex = common.getRandomBits(0, 'hexadecimal');
-	var randomBits0Bin = common.getRandomBits(0, 'binary');
-	
-	var randomBits9Hex = common.getRandomBits(9, 'hexadecimal');
-	var randomBits9Bin = common.getRandomBits(9, 'binary');
-	
-	var randomBits11Hex = common.getRandomBits(11, 'hexadecimal');
-	var randomBits11Bin = common.getRandomBits(11, 'binary');
-	
-	var randomBits128Hex = common.getRandomBits(128, 'hexadecimal');
-	var randomBits128Bin = common.getRandomBits(128, 'binary');
-	
-	var randomBits512Hex = common.getRandomBits(512, 'hexadecimal');
-	var randomBits512Bin = common.getRandomBits(512, 'binary');
-	
-	var randomBits768Hex = common.getRandomBits(768, 'hexadecimal');
-	var randomBits768Bin = common.getRandomBits(768, 'binary');
-	
-	var randomBits1024Hex = common.getRandomBits(1024, 'hexadecimal');
-	var randomBits1024Bin = common.getRandomBits(1024, 'binary');
-	
-	var randomBits1536Hex = common.getRandomBits(1536, 'hexadecimal');
-	var randomBits1536Bin = common.getRandomBits(1536, 'binary');
-
-	var nonceA = common.getRandomBits(512, 'hexadecimal');
-	var nonceB = common.getRandomBits(512, 'hexadecimal');
-	var nonceC = common.getRandomBits(512, 'hexadecimal');
-	var noRepeat = (nonceA !== nonceB) && (nonceA !== nonceC) && (nonceB !== nonceC);
-	
-	test("Test method to get specified number of random bits from the Web Crypto API", function()
+	test("Get random bits from the Web Crypto API and XOR it with Salsa20 keystream", function()
 	{
-		ok(randomBits0Hex.length === 0, '0 random bits hex ' + randomBits0Hex);
+		var failsafeRngNonceA = 0;
+		var requiredNumOfBitsA = 17;
+		var rngRandomBitsA = common.getEncryptedRandomBits(requiredNumOfBitsA, testRngKey, failsafeRngNonceA, 'binary');
+		var rngRandomBitsLengthA = rngRandomBitsA.length;
+		var expectedNumOfBitsA = requiredNumOfBitsA;		// Already binary
+
+		var failsafeRngNonceB = 1;
+		var requiredNumOfBitsB = 128;
+		var rngRandomBitsB = common.getEncryptedRandomBits(requiredNumOfBitsB, testRngKey, failsafeRngNonceB, 'hexadecimal');
+		var rngRandomBitsLengthB = rngRandomBitsB.length;
+		var expectedNumOfBitsB = requiredNumOfBitsB / 4;	// Convert to hex length
+
+		var randomBits0Hex = common.getEncryptedRandomBits(0, testRngKey, 2, 'hexadecimal');
+		var randomBits0Bin = common.getEncryptedRandomBits(0, testRngKey, 3, 'binary');
+
+		var randomBits9Hex = common.getEncryptedRandomBits(9, testRngKey, 4, 'hexadecimal');
+		var randomBits9Bin = common.getEncryptedRandomBits(9, testRngKey, 5, 'binary');
+
+		var randomBits11Hex = common.getEncryptedRandomBits(11, testRngKey, 6, 'hexadecimal');
+		var randomBits11Bin = common.getEncryptedRandomBits(11, testRngKey, 7, 'binary');
+
+		var randomBits128Hex = common.getEncryptedRandomBits(128, testRngKey, 8, 'hexadecimal');
+		var randomBits128Bin = common.getEncryptedRandomBits(128, testRngKey, 9, 'binary');
+
+		var randomBits512Hex = common.getEncryptedRandomBits(512, testRngKey, 10, 'hexadecimal');
+		var randomBits512Bin = common.getEncryptedRandomBits(512, testRngKey, 11, 'binary');
+
+		var randomBits768Hex = common.getEncryptedRandomBits(768, testRngKey, 12, 'hexadecimal');
+		var randomBits768Bin = common.getEncryptedRandomBits(768, testRngKey, 13, 'binary');
+
+		var randomBits1024Hex = common.getEncryptedRandomBits(1024, testRngKey, 14, 'hexadecimal');
+		var randomBits1024Bin = common.getEncryptedRandomBits(1024, testRngKey, 15, 'binary');
+
+		var randomBits1536Hex = common.getEncryptedRandomBits(1536, testRngKey, 16, 'hexadecimal');
+		var randomBits1536Bin = common.getEncryptedRandomBits(1536, testRngKey, 17, 'binary');
+
+		var nonceA = common.getEncryptedRandomBits(512, testRngKey, 18, 'hexadecimal');
+		var nonceB = common.getEncryptedRandomBits(512, testRngKey, 19, 'hexadecimal');
+		var nonceC = common.getEncryptedRandomBits(512, testRngKey, 20, 'hexadecimal');
+		var noRepeat = (nonceA !== nonceB) && (nonceA !== nonceC) && (nonceB !== nonceC);
+
+		// Test wrapper function
+		var currentNonce = db.padData.info.failsafeRngNonce;
+		var randomBitsFromWrapperFunction = common.getRandomBits(128, 'hexadecimal');
+		var expectedNewNonce = currentNonce + 1;
+		var expectedRandomBitLength = 128 / 4;
+		
+		ok(rngRandomBitsLengthA === expectedNumOfBitsA, 'Random bits ' + rngRandomBitsA + ' of length ' + rngRandomBitsLengthA + ' should equal length ' + expectedNumOfBitsA);
+		ok(rngRandomBitsLengthB === expectedNumOfBitsB, 'Random bits ' + rngRandomBitsB + ' of length ' + rngRandomBitsLengthB + ' should equal length ' + expectedNumOfBitsB);
+		
+		ok(randomBits0Hex.length === 0, '0 random bits hex: ' + randomBits0Hex);
 		ok(randomBits0Bin.length === 0, '0 random bits: ' + randomBits0Bin);
 		
 		ok(randomBits9Hex.length === 2, '9 random bits hex requested, should be truncated to 8 bits: ' + randomBits9Hex);
@@ -212,8 +276,11 @@ $(document).ready(function()
 		
 		// Check no repeating nonces
 		ok(noRepeat === true, 'No repeat: ' + noRepeat.toString());
+		
+		// Check random bits and nonce incremented correctly using the wrapper function
+		ok(randomBitsFromWrapperFunction.length === expectedRandomBitLength, 'Wrapper function random 128 bits: ' + randomBitsFromWrapperFunction + ' with length: ' + randomBitsFromWrapperFunction.length + ' in hex');
+		ok(db.padData.info.failsafeRngNonce === expectedNewNonce, 'Wrapper function old nonce was: ' + currentNonce + ' and nonce is now: ' + db.padData.info.failsafeRngNonce);
 	});
-	
 	
 	/**
 	 * ------------------------------------------------------------------
@@ -1270,8 +1337,8 @@ $(document).ready(function()
 	 * ------------------------------------------------------------------
 	 */	
 	
-	var aesKey = common.getRandomBits(256, 'hexadecimal');
-	var aesNonce = common.getRandomBits(96, 'hexadecimal');
+	var aesKey = '33ba6d09f4524080487a94e083a39e0db7c446fafacf5109ed9dd33783a43b8c';
+	var aesNonce = 'e6837ad86561a5c31304212c';
 	var aesKeystreamLength = common.totalPadSize - common.padIdentifierSize;	// 192 bytes - 7 bytes
 	var aesKeystream = dbCrypto.generateAesKeystream(aesKey, aesNonce, aesKeystreamLength);
 	var aesKeystreamGeneratedLength = aesKeystream.length;
@@ -1289,14 +1356,14 @@ $(document).ready(function()
 	 * ------------------------------------------------------------------
 	 */	
 	
-	var salsaKey = common.getRandomBits(256, 'hexadecimal');
+	var salsaKey = '3637fda8046fa340dcc5d1510ed772efe4879165326b0666fd1df408b44ff63e';
 	var salsaNonce = 100;
 	var salsaKeystreamLength = common.totalPadSize - common.padIdentifierSize;	// 192 bytes - 7 bytes = 185 bytes
 	var salsaKeystream = dbCrypto.generateSalsaKeystream(salsaKey, salsaNonce, salsaKeystreamLength);
 	var salsaKeystreamGeneratedLength = salsaKeystream.length;
 	var salsaExpectedKeystreamLength = salsaKeystreamLength * 2;	// Multiply by 2 to get the hex length = 370 hex symbols
 	
-	test("Test Salsa20/20 256 bit keystream generation", function()
+	test("Test Salsa20 256 bit keystream generation", function()
 	{
 		ok(salsaKeystreamGeneratedLength === salsaExpectedKeystreamLength, 'Length ' + salsaKeystreamGeneratedLength + ' should equal ' + salsaExpectedKeystreamLength + ' - keystream hex: ' + salsaKeystream);
 	});
@@ -1308,9 +1375,9 @@ $(document).ready(function()
 	 * ------------------------------------------------------------------
 	 */	
 	
-	var aesCascadeKey = common.getRandomBits(256, 'hexadecimal');
-	var salsaCascadeKey = common.getRandomBits(256, 'hexadecimal');
-	var aesCascadeNonce = common.getRandomBits(96, 'hexadecimal');
+	var aesCascadeKey = 'af619105b4c379e8030a9f249bf42199a46565ed19821d804c149a3626011e76';
+	var salsaCascadeKey = '71798aa7fd661eeaeace4929d30c50a18d3d1b1840d07daa6d0335d0216e5489';
+	var aesCascadeNonce = 'ff977a97094eb18f12e53692';
 	var salsaCascadeNonce = 0;
 	var data = common.convertTextToBinary(plaintextMessage);
 	    data = common.convertBinaryToHexadecimal(data);
@@ -1333,8 +1400,8 @@ $(document).ready(function()
 	 * ------------------------------------------------------------------
 	 */	
 	
-	var keccakMacKey = common.getRandomBits(512, 'hexadecimal');
-	var skeinMacKey = common.getRandomBits(512, 'hexadecimal');
+	var keccakMacKey = '23976b12678cb35c187e6f7122bcd8a2ea8415021565a0186617bc455ee3c2f4d25af7e238e7a93b11f660d152cc6ce2f191e4aaa68d0dc73e40b8986eac9200';
+	var skeinMacKey = 'e627fb01d11d71b10dbcf1fe50300da87e022acdd3dc8166a369d04fa894fad6590bec64233f460d0e2b477a590baec966578f8bdab37ef21af0b97243d6827d';
 	var cascadeMac = dbCrypto.cascadeMac(keccakMacKey, skeinMacKey, cascadeCiphertext);
 	var cascadeMacLength = cascadeMac.length;
 	var expectedCascadeMacLength = 128;			// 128 hex symbols = 512 bits
@@ -1351,10 +1418,10 @@ $(document).ready(function()
 	 * ------------------------------------------------------------------
 	 */	
 	
-	var dbEncAesKey = '0abe3c109e5baafd9fd8eef26ff4dc420971b530dbce5dd054baf5055728fa09'; // Generated using common.getRandomBits(256, 'hexadecimal');
-	var dbEncSalsaKey = '93d00583375358157d6c25c01ad123afe1a69a5274e5ccd1378bf06876437a3f'; // Generated using common.getRandomBits(256, 'hexadecimal');
-	var dbEncKeccakKey = '30d5ec01e43e0884eb843201b47bcf585c397ec20450ee50820f1ca56945c16c9991eaa08b13a0e2475b5dc709b7b892e84450882c40f70df05ccbd6c283aadd'; // Generated using common.getRandomBits(512, 'hexadecimal');
-	var dbEncSkeinKey = '054f4f55a5a6ece495de2789cde143987476d7b6ec7b8564f09df7b730ce5daa456177d50211f1f9c29358c92297aa213361ad9145cd6acfbfc656df8a11f1c0'; // Generated using common.getRandomBits(512, 'hexadecimal');
+	var dbEncAesKey = '0abe3c109e5baafd9fd8eef26ff4dc420971b530dbce5dd054baf5055728fa09';
+	var dbEncSalsaKey = '93d00583375358157d6c25c01ad123afe1a69a5274e5ccd1378bf06876437a3f';
+	var dbEncKeccakKey = '30d5ec01e43e0884eb843201b47bcf585c397ec20450ee50820f1ca56945c16c9991eaa08b13a0e2475b5dc709b7b892e84450882c40f70df05ccbd6c283aadd';
+	var dbEncSkeinKey = '054f4f55a5a6ece495de2789cde143987476d7b6ec7b8564f09df7b730ce5daa456177d50211f1f9c29358c92297aa213361ad9145cd6acfbfc656df8a11f1c0';
 	var dbEncUserCallSign = 'alpha';
 	var dbEncPadNumber = 137;
 	var dbEncPadHex = '72fa270d9148a82c056a62e32c5dbb916db2cba99efbc2c49533c5349bdeaeb4ec307e588b0cb125b4c23f07ccbac5d30b7736903cfb37a72ca6c189185546d401b48210cf46468a5615f2b63eaa7c415592a5bdad98bf47b3f49058ae278d7194567240a66f11755ead65cd194a36f30f7cf98d6c60fd45eca00a845922fc5d411f70a8b3d9c0dfaf69df60c42f6aec429ef479f3caa312ded2944546b93b49e09a53e679c999c99900a6bd93f93d2c2fcd387cb28625ab6c6bbd24baf9251c'; // Generated from TRNG
@@ -1490,7 +1557,7 @@ $(document).ready(function()
 	
 	var keccakStartTime = new Date();
 	var keccakPassword = 'password';
-	var keccakSalt = '598627c78963db1ccfd0f9807630fcd8231b9233d7b621233a6ce798d8cc536766a701d9b4e5ac9d30f835de094e79cb61688fe2a5ff5dda0fe14a716836f6b7b4004eeb5c01d4b64abf251066f067a6263f7f68560ad1d156aa64f88fe6b411';	//common.getRandomBits(768, 'hexadecimal');
+	var keccakSalt = '598627c78963db1ccfd0f9807630fcd8231b9233d7b621233a6ce798d8cc536766a701d9b4e5ac9d30f835de094e79cb61688fe2a5ff5dda0fe14a716836f6b7b4004eeb5c01d4b64abf251066f067a6263f7f68560ad1d156aa64f88fe6b411';
 	var keccakIterations = 100;
 	var keccakDerivedKey = dbCrypto.keccakPasswordDerivation(keccakPassword, keccakSalt, keccakIterations);
 	var keccakDerivedKeyLength = keccakDerivedKey.length;
@@ -1515,7 +1582,7 @@ $(document).ready(function()
 	var skeinStartTime = new Date();
 	var skeinPassword = 'password';
 	var skeinPasswordHex = common.convertBinaryToHexadecimal(common.convertTextToBinary(skeinPassword));
-	var skeinSalt = '598627c78963db1ccfd0f9807630fcd8231b9233d7b621233a6ce798d8cc536766a701d9b4e5ac9d30f835de094e79cb61688fe2a5ff5dda0fe14a716836f6b7b4004eeb5c01d4b64abf251066f067a6263f7f68560ad1d156aa64f88fe6b411';	//common.getRandomBits(768, 'hexadecimal');
+	var skeinSalt = '598627c78963db1ccfd0f9807630fcd8231b9233d7b621233a6ce798d8cc536766a701d9b4e5ac9d30f835de094e79cb61688fe2a5ff5dda0fe14a716836f6b7b4004eeb5c01d4b64abf251066f067a6263f7f68560ad1d156aa64f88fe6b411';
 	var skeinIterations = 100;
 	var skeinDerivedKey = dbCrypto.skeinPasswordDerivation(skeinPasswordHex, skeinSalt, skeinIterations);
 	var skeinDerivedKeyLength = skeinDerivedKey.length;
@@ -1539,7 +1606,7 @@ $(document).ready(function()
 	
 	// Use a 1536 bit salt (256 bit AES key + 256 bit Salsa20 key + 512 bit Keccak key + 512 bit Skein key)
 	var cascadePassword = 'password';
-	var cascadeSaltHex = '3da69b5ba280cafd1a8053f595881991eef40fe1adcfa4485849b8fc26f412d85fa2257bacd4831537caa5daf3a23b7d69cc6141f4426524631e8248e74f0a33b104c1f1ae5394ffdf0c1b9562ad27fce03925cd892fdde763b7433aede8cbe4dcb55c42f2d53e58942e6293b1cfb4e5c57b629cfa098b292b5e760a0ba18226f776cb0cb867b4acf8e63934c728bb121efcea31250ba70cc082e9ed645e3879a1dd62d9bb7ebf62eb627dc8d8d0ce8bc19c62337099853a6c0360d9595b724f'; // common.getRandomBits(1536, 'hexadecimal');
+	var cascadeSaltHex = '3da69b5ba280cafd1a8053f595881991eef40fe1adcfa4485849b8fc26f412d85fa2257bacd4831537caa5daf3a23b7d69cc6141f4426524631e8248e74f0a33b104c1f1ae5394ffdf0c1b9562ad27fce03925cd892fdde763b7433aede8cbe4dcb55c42f2d53e58942e6293b1cfb4e5c57b629cfa098b292b5e760a0ba18226f776cb0cb867b4acf8e63934c728bb121efcea31250ba70cc082e9ed645e3879a1dd62d9bb7ebf62eb627dc8d8d0ce8bc19c62337099853a6c0360d9595b724f';
 	var cascadeKeccakNumOfIterations = 100;
 	var cascadeSkeinNumOfIterations = 100;
 	
@@ -1566,7 +1633,7 @@ $(document).ready(function()
 	
 	QUnit.test("Derive keys from master key", function()
 	{
-		var masterKey = '68ff9faddbf1e1d97f18d3eb6fdeb660f796d1aaca4385c35735097415cba8950e8ad1424a3b65248e017a651ef75b7651393c996a0b943f21697e51060e171c'; // Generated using common.getRandomBits(512, 'hexadecimal');
+		var masterKey = '68ff9faddbf1e1d97f18d3eb6fdeb660f796d1aaca4385c35735097415cba8950e8ad1424a3b65248e017a651ef75b7651393c996a0b943f21697e51060e171c';
 		var derivedKeys = dbCrypto.deriveKeysFromMasterKey(masterKey);
 		var expectedDerivedAesKey = '1c28a9f6efb7b613d6566ce153bfe017b8d2e8d5772fb7fc865a3449715fca13';
 		var expectedDerivedSalsaKey = '34d73fabb9618e60fe66f6d34dc16dec17230c5615ee2a91af4eb24678cd0753';
@@ -1591,11 +1658,11 @@ $(document).ready(function()
 	 * ------------------------------------------------------------------
 	 */
 	
-	var dbEncAesKey = '0abe3c109e5baafd9fd8eef26ff4dc420971b530dbce5dd054baf5055728fa09'; // Generated using common.getRandomBits(256, 'hexadecimal');
-	var dbEncSalsaKey = '93d00583375358157d6c25c01ad123afe1a69a5274e5ccd1378bf06876437a3f'; // Generated using common.getRandomBits(256, 'hexadecimal');
-	var dbEncKeccakKey = '30d5ec01e43e0884eb843201b47bcf585c397ec20450ee50820f1ca56945c16c9991eaa08b13a0e2475b5dc709b7b892e84450882c40f70df05ccbd6c283aadd'; // Generated using common.getRandomBits(512, 'hexadecimal');
-	var dbEncSkeinKey = '054f4f55a5a6ece495de2789cde143987476d7b6ec7b8564f09df7b730ce5daa456177d50211f1f9c29358c92297aa213361ad9145cd6acfbfc656df8a11f1c0'; // Generated using common.getRandomBits(512, 'hexadecimal');
-	var dbEncMasterKey = '68ff9faddbf1e1d97f18d3eb6fdeb660f796d1aaca4385c35735097415cba8950e8ad1424a3b65248e017a651ef75b7651393c996a0b943f21697e51060e171c'; // Generated using common.getRandomBits(512, 'hexadecimal');
+	var dbEncAesKey = '0abe3c109e5baafd9fd8eef26ff4dc420971b530dbce5dd054baf5055728fa09';
+	var dbEncSalsaKey = '93d00583375358157d6c25c01ad123afe1a69a5274e5ccd1378bf06876437a3f';
+	var dbEncKeccakKey = '30d5ec01e43e0884eb843201b47bcf585c397ec20450ee50820f1ca56945c16c9991eaa08b13a0e2475b5dc709b7b892e84450882c40f70df05ccbd6c283aadd';
+	var dbEncSkeinKey = '054f4f55a5a6ece495de2789cde143987476d7b6ec7b8564f09df7b730ce5daa456177d50211f1f9c29358c92297aa213361ad9145cd6acfbfc656df8a11f1c0';
+	var dbEncMasterKey = '68ff9faddbf1e1d97f18d3eb6fdeb660f796d1aaca4385c35735097415cba8950e8ad1424a3b65248e017a651ef75b7651393c996a0b943f21697e51060e171c';
 	
 	QUnit.test("Encrypt and MAC the database keys with the derived keys", function()
 	{
@@ -1662,6 +1729,47 @@ $(document).ready(function()
 		ok(valid === true, 'Expected verification of database keys ' + valid + ' should equal true');
 		ok(invalid === false, 'Expected bad verification of database keys ' + valid + ' should equal false');
 	});		
+	
+	
+	/**
+	 * ------------------------------------------------------------------
+	 * Test creation of database keys and failsafe keys using the random data from the TRNG
+	 * ------------------------------------------------------------------
+	 */
+			
+	QUnit.test("Test creation of database keys and failsafe keys using the random data from the TRNG", function()
+	{
+		var randomDataHexadecimalA = 'cabeff2ffd746aca51fca2ca72865786d3d18fda5c42acd7033d3df3900c4b32fb5d36c5f0999d81bea8590c0146bd87032ff5c49a8db673a2bdb89ea1663558861d0d16121a9621be080e54e27a893e455d81a6e285380ab5609d27b7d351599dcada35aac0cbe8fc471e1f9921a4f738d1edab3077f957412e8905c65677a259651681b04b958e04950a1422feef6f585313a97db878845d763d16cea9a3cd8115e8f002cf781d098aa450106259ae57e1c526847d965a62c614f1317ff8d11be37ed18a2fc3835a77ef3c08da45b683592bb912049c3fd04e7f6d889282b90f2a429260b782f4a64c38437aaa7406074a120599a4a8eb9043392b0168136ff0a54c761043e2658a3da88a3cb46fee5dcdeb02c007a05fd1b0e7cdf5dc829112e1ff6459f616e977c6c4597a1209522a40e98d3c213fbcaec61e727e3a5c926b4e7898bbe3d448304bba06628d119083a6ee34a7126ca6f6d6050676146957129646bbf916d6883a6c183786d2ed59486dc9e7bcf8910ff843f41790cb3e4ec26b83acdc9249de952f3ff7310e3401aa6ea92ee86e8e544472e0b30666e64e0152481ce9edc2d379638bc4329aff673017ea1641b3214b3a2865b1637ed210f2a39021f53c60ce24b9f1e0a8f9db806251eac1f30d0efd53c63c16c13a9a3ce27839aa9a922a500f13d10fce4a5ac063b3f3b14e7f7ae755ce2d5fcf80c01d0f0652b6169550d0dc5e7e371f11dcdcfb76aefa21f4d6008f2aeba578bb8d68412234be22a2e3eb3c097643f1bbeadc37e5315d7ae9a71577175201fecfd98e863112ae8216dea03e0e0a8d961f12925b3d12cd54ad6da5b9a85d7acad695510f5e0ea8d888834416b5197233a9207687b33bc167dc5ea782df712e90e848e8567c6295c30225c3107aec5043afcd1336ad2c32d0d1d0c77e2cb85c7f2ac7b9bb6ea050c516ce31373f558e20df2752e6fdcbef4c191f8b4fa7bc526d1b2ed590e740887e79a0b312e4e65a47f6c219f116638d0184a62bff7ef6de0a6ca5f8611828919e587572ee8df2f8803ad8e6738d5f4df95bf945b39ec2bf9c9310c8a9c52d8d576685787f5f7be7ae29b414d1ec7175a22429f0dd8aebdf48e417914660a2309d8b690402e882ecef33e5106ade951daabe485a4990454a05472a33266e5ea80d4b7c11ae6cbe80d45b22cedf49de2029415496b1d61575be60a0b734683715260d49346c2fc4d1fc8a3df8733165c7f21aab989d5aef4aa2a6e9492ac3ba33b8fd1d3f6d99625951dd221e36da966cc90db7d6b003b9834dd925226d0c87d177fb33bfa100bcf1d1f7f4158e2d3b4d29a047685904de36083e9150b43f8407be4f7fec7b53f88be25ce0bfe5318277227fa8bcdcd073c9da09d26540edd21e3a863604eebde6c0b16db88b214e1b38b39d07993892752bbf4624287151a0a9f7e79c47038437aa4e1a47a730cda84eb2e68718fe1c891d57c7a93c954f4c13d74d8a5163e69ce8d4c3d0592fdb31ab9229fa3ea324f9befbc56760df05e2e1a0e7c1fafdc066b77fff1c6279b8729f17122433fd8f7d2f35914433f8dbaacb2d6ec0aedae167cf08494232ee312ff8b7c1d68ef124faf0b950b2cd8c2e62000af314ef5c1fb55b1786a58068d2487719deff41f832ebb8ffa80221a7834a1bae784c3afb8ace63be85620ec3d5d2d6898739708b9565bb8d29a41787732f2bf41fe535433e60eff0636a564388906279691ef3264367ec91a815f672614056a304c16b1a0059e903e1d838f9876a2a5e20f3da976bb8b5e5e5bfce18bc8c4dfa96040e703287db59d2de28e7b5a04807497b6a673988d851616413720b5905b4b3b2442e7260287b980c608bba46763e02f086f4c77fe813746e12bfd1bd82a2cd7a76db1ff2e6364194daaf7c1bb7c3b2cef741808ae2078f3fb2d902281a04e22a78ca36e575da3f7fe80554e4b9a9845a23f33d27b2f39c4d563519ca1cb15beabb5f444115ed006783d6b7ab5619532dd33ba6a1f59ae7eb2e0e553138316bf4540f7418355fe5959cce9db919a1a64c02e8542228e09b8ea88e00f412cfdecf8cc37096c80acc891dab769d074db3aa2a70e789e036a6a2cd5bd1359329cf1c391dd8bd8767f4341e28623c87709fdc320d8dc0f2d02ac95596ae4f9dd598e5558504477bbefca69f71ba9a8eeed138437382ccaa30e8141cb3c6fe688269368d910d70bb1233cfa7773af2797bcfba7118273c02cd9d60fec9c8877c256cb4575d0c982df900b0afc7298976e1f7fd1d114bf5fe898c0f7a2c94815d85efc40128171a05dcc3e44bba2e00eea828b5e708fd73535f73139ab1e31ebdebdb3d3ac6f12f7b789563701b5d8f903a3f2471b1c74cc55c0f5ee9382423f575c4905adad4118fb66cd4c918cf381ba1e6194d5f602f93a1f7f528ff38143fa9e8b2781d76206b49b3561c1b619aeb93e27339eeac478678464ee8120213cf79856e2eb0ca00cf393adea7265eea617b99cf8e9c23d236c7a72e8f8601632d1cd0c7c7c315d022b77e28af4abfb92e4a5a77b6b8ef25947a4dcb92576d68a719bd2613d15bbe23634049c4cfd322ab347f152c107335e1bf8eb92eeefbffff2320273ba276270b012f62be38ce27e44a90658222c682356876ca81ca13b6b60dc1b691ba2ca9a408db01ed568573b7986d7ef4c2e4adf51826830634b7267a05288552d7fa66dbd9ef59f0e66855ac82f294a873f4af0f4bae18580516b3c05407e9f3878c6c5da3d2a952da037f7358e118ec5c879aa51e9b5beb9f2fed1a8930f1f7791546d279fa1d18518f6c45b9ba64f605c766b1f921b2fb359b7b4b8c9c61985d582ea91aea7d7894962ec6f8a34c03d21864c2033e00d998f6194abfa07e22deaf2db57ca6ff30fdbf6c295fade4a7f799e547a644767d8cca0678af443e805546571fdd75900062723305b18c52e4d9ace5994cb37d192d791a7971ba790785bd794a70f5ab7790d4f5e4712b1a1864ad8833b507b062fe302b164cecdd158140fbc0c62e58089d241d7f166f209252e4d4f5826d1016b34a94df0eefc637319f88a6b759afbd12cb3b0d97cfff7286608147cec472d7775a66d90dadf9755a7a31ef15beb2d213614a2e408daa6abd0eb8e5d247d3722c42819a7bff6a1b680e4541d742a048da7a0a3252670bb6789a80812c51116e4676e13747d2654d4432462d7fe4001b73cfa6eac4a8861643c6f93d45317f7e471cb7a05810c1df47b3fa738a4594d6ed9ac8bfbec4a6c79d5a5930c8760d88fdbd415d917e11e35c105fa8f7d8ba81d9bbbe2ebe3b2dbee2bc4177240096866ae62047bea778e6474e371b3fbafc4312acd5454608374698f6eae6e5b2015507d56c374edd75ed6420bcaa3e73348e470b0326edf8e53010fd3d46365699b1780590bca4815af56345c8c79b22b7b5bbef5eb69bea5a3253810f9a17f18b8a62ffe48fac212ca9d1b78962a792a11b78fd3a2f97cd8bb28e38dc78fe5c5aab758e5aa357a0cbcf4c3dd689efbf9d207fb6d637c6729f5152f27b6fa74bdff5442461afa015a00d85def62e51d958be32ecd92f1bc439074324e012b49f554e48fb7b7e4ecad9c300c70d83452ddd97231ae54c7edc5535e5240cf6b6fa53f3d0a0e30d140ed8d71d8c893f6b904872d38690124619d92fb432b173a792d3e455e3f1eecbcd2036d018db5a8ff1e4e51de0e44ae885160113f6bb72a29e3e889a01bc8ff5551db7554bb056e665100de14017cb3d9fe764bcfb86ff0c46184e4fa286c437160f196fd9dfd68e4961eb53ddfdbfbffe80058b70cecc74121017685b080a7e602dc03446ab183f0b7eae3f5f85c061ecd2a98c1780ddc5ae46519f441e924ba740a681cb1ea9b4df6c5ad29b5354d2fa7eeb80fa56be2c0e6fc6c412816e2203ea36719c12da45a167dd31501cc0f77aed2f8f7e20e9b818e9fbc32e002a1b9d39816585366b312894de315382c67f64ab939b0382fd0dedc811550e8f653f07c06f6682bcd525007507ca0376b6fac5854761ac2582cf29d1b87329059e08609dcc4670ec4d97ee163bc5712fc2790ee81cea250f3eb43a37ea0f7b07d1b98a9d3ca27c5b21a349abdd77a73a818eb085475b10deab87b31b314f333912606074583a863631095030a842255df2ece3cae98b7a80faa869073b0d5ac12e3eab464bb10e0d92cda8c0431b8bb48e18170b38b2558f3e5d5f344011eacd95f98facc1060d0714dbe3a6dde1f1a4f4908ece45fe31c71e40b57bb74d2c44cd800a080ccf5516297ccd12d89b6d1e8ccba8c552846766aad66a6cbb7f9da427482e677d38c96abe2e7a173fe9c0c1f91d87ee87d2f3bc287004b3cbb12bf81859b0ac933221dd6d33515c79feb021ae9227ca8fb70c4a8af6b75a152760b2a0b19ce2407e554dc5b146504f83d6998a6f056d702d5cc15db3cd7a39c360b76bd55051e1c7140ce5c990ad25f93541616579fd19472c0c995f2f33e6d4440dd62245cec043bc30ea9d38b33cefdfad39e2a7c4e027f851ce667c632fc88eb9a53a24724ecedb145a6798ccf58e75cf2c0253dfd12eb4e5f5164b7977e71ec158ff4dbef3bac081845d8571cfee9928238ad549828d57c1f58cd31962cfffd521c0e501a57f12fe4992c403a100bcc48b891dd10e8a390000297108a6c8d2f4aac7f7f5800f5df14a2cde3e8a64731772dfff11911a8b2c9ee7ca6206e2232b744c0894303565ff995104c1aa1c7f46d10b435f8ca725b8c909581076be6b4ee838b220d3b75821284404ff1e459ddfe01b95de46034bb3323384eb435222f730c12ab3eb8daa7ba3bc46c0a322e326a667e9928c583c28fd146762d1719a62abf25e86e538ed209b1e2a52fc647d5dafa2215df0a55074d81a1ede826d9d66a0c0e6469d1e77c8b5ceee08bbd36ac45b2c4c61ca70025ed7891b2484babc968af8c8c1eaa61e3b8f9e70ff786443006a0bb74faa1916b4da5f0a6122e2ab5b911d4ba8c903fa8c4042d18ce211fdb42e64576a28fc5ce6d5ab29c796'; // Generated from a small photo using the TRNG
+		var numOfUsersA = 3;
+		var keysA = exportPads.getCryptoKeysFromExtractedRandomData(numOfUsersA, randomDataHexadecimalA);
+				
+		var expectedSalt = 'cabeff2ffd746aca51fca2ca72865786d3d18fda5c42acd7033d3df3900c4b32fb5d36c5f0999d81bea8590c0146bd87032ff5c49a8db673a2bdb89ea1663558861d0d16121a9621be080e54e27a893e455d81a6e285380ab5609d27b7d351599dcada35aac0cbe8fc471e1f9921a4f738d1edab3077f957412e8905c65677a259651681b04b958e04950a1422feef6f585313a97db878845d763d16cea9a3cd8115e8f002cf781d098aa450106259ae57e1c526847d965a62c614f1317ff8d1';
+		var expectedAesKey = '1be37ed18a2fc3835a77ef3c08da45b683592bb912049c3fd04e7f6d889282b9';
+		var expectedSalsaKey = '0f2a429260b782f4a64c38437aaa7406074a120599a4a8eb9043392b0168136f';
+		var expectedKeccakMacKey = 'f0a54c761043e2658a3da88a3cb46fee5dcdeb02c007a05fd1b0e7cdf5dc829112e1ff6459f616e977c6c4597a1209522a40e98d3c213fbcaec61e727e3a5c92';
+		var expectedSkeinMacKey = '6b4e7898bbe3d448304bba06628d119083a6ee34a7126ca6f6d6050676146957129646bbf916d6883a6c183786d2ed59486dc9e7bcf8910ff843f41790cb3e4e';
+		var expectedUserFailsafeRngKeyUserAlpha = 'c26b83acdc9249de952f3ff7310e3401aa6ea92ee86e8e544472e0b30666e64e';
+		var expectedUserFailsafeRngKeyUserBravo = '0152481ce9edc2d379638bc4329aff673017ea1641b3214b3a2865b1637ed210';
+		var expectedUserFailsafeRngKeyUserCharlie = 'f2a39021f53c60ce24b9f1e0a8f9db806251eac1f30d0efd53c63c16c13a9a3c';
+		var expectedRemainingRandomData = 'e27839aa9a922a500f13d10fce4a5ac063b3f3b14e7f7ae755ce2d5fcf80c01d0f0652b6169550d0dc5e7e371f11dcdcfb76aefa21f4d6008f2aeba578bb8d68412234be22a2e3eb3c097643f1bbeadc37e5315d7ae9a71577175201fecfd98e863112ae8216dea03e0e0a8d961f12925b3d12cd54ad6da5b9a85d7acad695510f5e0ea8d888834416b5197233a9207687b33bc167dc5ea782df712e90e848e8567c6295c30225c3107aec5043afcd1336ad2c32d0d1d0c77e2cb85c7f2ac7b9bb6ea050c516ce31373f558e20df2752e6fdcbef4c191f8b4fa7bc526d1b2ed590e740887e79a0b312e4e65a47f6c219f116638d0184a62bff7ef6de0a6ca5f8611828919e587572ee8df2f8803ad8e6738d5f4df95bf945b39ec2bf9c9310c8a9c52d8d576685787f5f7be7ae29b414d1ec7175a22429f0dd8aebdf48e417914660a2309d8b690402e882ecef33e5106ade951daabe485a4990454a05472a33266e5ea80d4b7c11ae6cbe80d45b22cedf49de2029415496b1d61575be60a0b734683715260d49346c2fc4d1fc8a3df8733165c7f21aab989d5aef4aa2a6e9492ac3ba33b8fd1d3f6d99625951dd221e36da966cc90db7d6b003b9834dd925226d0c87d177fb33bfa100bcf1d1f7f4158e2d3b4d29a047685904de36083e9150b43f8407be4f7fec7b53f88be25ce0bfe5318277227fa8bcdcd073c9da09d26540edd21e3a863604eebde6c0b16db88b214e1b38b39d07993892752bbf4624287151a0a9f7e79c47038437aa4e1a47a730cda84eb2e68718fe1c891d57c7a93c954f4c13d74d8a5163e69ce8d4c3d0592fdb31ab9229fa3ea324f9befbc56760df05e2e1a0e7c1fafdc066b77fff1c6279b8729f17122433fd8f7d2f35914433f8dbaacb2d6ec0aedae167cf08494232ee312ff8b7c1d68ef124faf0b950b2cd8c2e62000af314ef5c1fb55b1786a58068d2487719deff41f832ebb8ffa80221a7834a1bae784c3afb8ace63be85620ec3d5d2d6898739708b9565bb8d29a41787732f2bf41fe535433e60eff0636a564388906279691ef3264367ec91a815f672614056a304c16b1a0059e903e1d838f9876a2a5e20f3da976bb8b5e5e5bfce18bc8c4dfa96040e703287db59d2de28e7b5a04807497b6a673988d851616413720b5905b4b3b2442e7260287b980c608bba46763e02f086f4c77fe813746e12bfd1bd82a2cd7a76db1ff2e6364194daaf7c1bb7c3b2cef741808ae2078f3fb2d902281a04e22a78ca36e575da3f7fe80554e4b9a9845a23f33d27b2f39c4d563519ca1cb15beabb5f444115ed006783d6b7ab5619532dd33ba6a1f59ae7eb2e0e553138316bf4540f7418355fe5959cce9db919a1a64c02e8542228e09b8ea88e00f412cfdecf8cc37096c80acc891dab769d074db3aa2a70e789e036a6a2cd5bd1359329cf1c391dd8bd8767f4341e28623c87709fdc320d8dc0f2d02ac95596ae4f9dd598e5558504477bbefca69f71ba9a8eeed138437382ccaa30e8141cb3c6fe688269368d910d70bb1233cfa7773af2797bcfba7118273c02cd9d60fec9c8877c256cb4575d0c982df900b0afc7298976e1f7fd1d114bf5fe898c0f7a2c94815d85efc40128171a05dcc3e44bba2e00eea828b5e708fd73535f73139ab1e31ebdebdb3d3ac6f12f7b789563701b5d8f903a3f2471b1c74cc55c0f5ee9382423f575c4905adad4118fb66cd4c918cf381ba1e6194d5f602f93a1f7f528ff38143fa9e8b2781d76206b49b3561c1b619aeb93e27339eeac478678464ee8120213cf79856e2eb0ca00cf393adea7265eea617b99cf8e9c23d236c7a72e8f8601632d1cd0c7c7c315d022b77e28af4abfb92e4a5a77b6b8ef25947a4dcb92576d68a719bd2613d15bbe23634049c4cfd322ab347f152c107335e1bf8eb92eeefbffff2320273ba276270b012f62be38ce27e44a90658222c682356876ca81ca13b6b60dc1b691ba2ca9a408db01ed568573b7986d7ef4c2e4adf51826830634b7267a05288552d7fa66dbd9ef59f0e66855ac82f294a873f4af0f4bae18580516b3c05407e9f3878c6c5da3d2a952da037f7358e118ec5c879aa51e9b5beb9f2fed1a8930f1f7791546d279fa1d18518f6c45b9ba64f605c766b1f921b2fb359b7b4b8c9c61985d582ea91aea7d7894962ec6f8a34c03d21864c2033e00d998f6194abfa07e22deaf2db57ca6ff30fdbf6c295fade4a7f799e547a644767d8cca0678af443e805546571fdd75900062723305b18c52e4d9ace5994cb37d192d791a7971ba790785bd794a70f5ab7790d4f5e4712b1a1864ad8833b507b062fe302b164cecdd158140fbc0c62e58089d241d7f166f209252e4d4f5826d1016b34a94df0eefc637319f88a6b759afbd12cb3b0d97cfff7286608147cec472d7775a66d90dadf9755a7a31ef15beb2d213614a2e408daa6abd0eb8e5d247d3722c42819a7bff6a1b680e4541d742a048da7a0a3252670bb6789a80812c51116e4676e13747d2654d4432462d7fe4001b73cfa6eac4a8861643c6f93d45317f7e471cb7a05810c1df47b3fa738a4594d6ed9ac8bfbec4a6c79d5a5930c8760d88fdbd415d917e11e35c105fa8f7d8ba81d9bbbe2ebe3b2dbee2bc4177240096866ae62047bea778e6474e371b3fbafc4312acd5454608374698f6eae6e5b2015507d56c374edd75ed6420bcaa3e73348e470b0326edf8e53010fd3d46365699b1780590bca4815af56345c8c79b22b7b5bbef5eb69bea5a3253810f9a17f18b8a62ffe48fac212ca9d1b78962a792a11b78fd3a2f97cd8bb28e38dc78fe5c5aab758e5aa357a0cbcf4c3dd689efbf9d207fb6d637c6729f5152f27b6fa74bdff5442461afa015a00d85def62e51d958be32ecd92f1bc439074324e012b49f554e48fb7b7e4ecad9c300c70d83452ddd97231ae54c7edc5535e5240cf6b6fa53f3d0a0e30d140ed8d71d8c893f6b904872d38690124619d92fb432b173a792d3e455e3f1eecbcd2036d018db5a8ff1e4e51de0e44ae885160113f6bb72a29e3e889a01bc8ff5551db7554bb056e665100de14017cb3d9fe764bcfb86ff0c46184e4fa286c437160f196fd9dfd68e4961eb53ddfdbfbffe80058b70cecc74121017685b080a7e602dc03446ab183f0b7eae3f5f85c061ecd2a98c1780ddc5ae46519f441e924ba740a681cb1ea9b4df6c5ad29b5354d2fa7eeb80fa56be2c0e6fc6c412816e2203ea36719c12da45a167dd31501cc0f77aed2f8f7e20e9b818e9fbc32e002a1b9d39816585366b312894de315382c67f64ab939b0382fd0dedc811550e8f653f07c06f6682bcd525007507ca0376b6fac5854761ac2582cf29d1b87329059e08609dcc4670ec4d97ee163bc5712fc2790ee81cea250f3eb43a37ea0f7b07d1b98a9d3ca27c5b21a349abdd77a73a818eb085475b10deab87b31b314f333912606074583a863631095030a842255df2ece3cae98b7a80faa869073b0d5ac12e3eab464bb10e0d92cda8c0431b8bb48e18170b38b2558f3e5d5f344011eacd95f98facc1060d0714dbe3a6dde1f1a4f4908ece45fe31c71e40b57bb74d2c44cd800a080ccf5516297ccd12d89b6d1e8ccba8c552846766aad66a6cbb7f9da427482e677d38c96abe2e7a173fe9c0c1f91d87ee87d2f3bc287004b3cbb12bf81859b0ac933221dd6d33515c79feb021ae9227ca8fb70c4a8af6b75a152760b2a0b19ce2407e554dc5b146504f83d6998a6f056d702d5cc15db3cd7a39c360b76bd55051e1c7140ce5c990ad25f93541616579fd19472c0c995f2f33e6d4440dd62245cec043bc30ea9d38b33cefdfad39e2a7c4e027f851ce667c632fc88eb9a53a24724ecedb145a6798ccf58e75cf2c0253dfd12eb4e5f5164b7977e71ec158ff4dbef3bac081845d8571cfee9928238ad549828d57c1f58cd31962cfffd521c0e501a57f12fe4992c403a100bcc48b891dd10e8a390000297108a6c8d2f4aac7f7f5800f5df14a2cde3e8a64731772dfff11911a8b2c9ee7ca6206e2232b744c0894303565ff995104c1aa1c7f46d10b435f8ca725b8c909581076be6b4ee838b220d3b75821284404ff1e459ddfe01b95de46034bb3323384eb435222f730c12ab3eb8daa7ba3bc46c0a322e326a667e9928c583c28fd146762d1719a62abf25e86e538ed209b1e2a52fc647d5dafa2215df0a55074d81a1ede826d9d66a0c0e6469d1e77c8b5ceee08bbd36ac45b2c4c61ca70025ed7891b2484babc968af8c8c1eaa61e3b8f9e70ff786443006a0bb74faa1916b4da5f0a6122e2ab5b911d4ba8c903fa8c4042d18ce211fdb42e64576a28fc5ce6d5ab29c796';
+	
+		var randomDataHexadecimalB = 'e27839aa9a922a500f13d10fce4a5ac063b3f3b14e7f7ae755ce2d';
+		var numOfUsersB = 4;
+		var keysB = exportPads.getCryptoKeysFromExtractedRandomData(numOfUsersB, randomDataHexadecimalB);
+		
+		ok(keysA.salt === expectedSalt, 'salt ' + keysA.salt + ' should equal ' + expectedSalt);
+		ok(keysA.aesKey === expectedAesKey, 'aesKey ' + keysA.aesKey + ' should equal ' + expectedAesKey);
+		ok(keysA.salsaKey === expectedSalsaKey, 'salsaKey ' + keysA.salsaKey + ' should equal ' + expectedSalsaKey);
+		ok(keysA.keccakMacKey === expectedKeccakMacKey, 'keccakMacKey ' + keysA.keccakMacKey + ' should equal ' + expectedKeccakMacKey);
+		ok(keysA.skeinMacKey === expectedSkeinMacKey, 'skeinMacKey ' + keysA.skeinMacKey + ' should equal ' + expectedSkeinMacKey);
+		ok(keysA.userFailsafeRngKeys.alpha === expectedUserFailsafeRngKeyUserAlpha, 'userFailsafeRngKeyUserAlpha ' + keysA.userFailsafeRngKeys.alpha + ' should equal ' + expectedUserFailsafeRngKeyUserAlpha);
+		ok(keysA.userFailsafeRngKeys.bravo === expectedUserFailsafeRngKeyUserBravo, 'userFailsafeRngKeyUserBravo ' + keysA.userFailsafeRngKeys.bravo + ' should equal ' + expectedUserFailsafeRngKeyUserBravo);
+		ok(keysA.userFailsafeRngKeys.charlie === expectedUserFailsafeRngKeyUserCharlie, 'userFailsafeRngKeyUserCharlie ' + keysA.userFailsafeRngKeys.charlie + ' should equal ' + expectedUserFailsafeRngKeyUserCharlie);
+		ok(keysA.extractedRandomDataHex === expectedRemainingRandomData, 'remainingRandomData ' + keysA.extractedRandomDataHex + ' should equal ' + expectedRemainingRandomData);
+		
+		ok(keysB === false, 'Second fetch of keys: ' + keysB.toString() + ' should equal false because there is not enough key material');
+	});
+	
 	
 	
 	/**
@@ -1779,10 +1887,10 @@ $(document).ready(function()
 	QUnit.test("Test encryption and MAC of the pad data info then verification and decryption", function(assert)
 	{
 		// Test encryption and MAC
-		var dbEncAesKey = '0abe3c109e5baafd9fd8eef26ff4dc420971b530dbce5dd054baf5055728fa09'; // Generated using common.getRandomBits(256, 'hexadecimal');
-		var dbEncSalsaKey = '93d00583375358157d6c25c01ad123afe1a69a5274e5ccd1378bf06876437a3f'; // Generated using common.getRandomBits(256, 'hexadecimal');
-		var dbEncKeccakKey = '30d5ec01e43e0884eb843201b47bcf585c397ec20450ee50820f1ca56945c16c9991eaa08b13a0e2475b5dc709b7b892e84450882c40f70df05ccbd6c283aadd'; // Generated using common.getRandomBits(512, 'hexadecimal');
-		var dbEncSkeinKey = '054f4f55a5a6ece495de2789cde143987476d7b6ec7b8564f09df7b730ce5daa456177d50211f1f9c29358c92297aa213361ad9145cd6acfbfc656df8a11f1c0'; // Generated using common.getRandomBits(512, 'hexadecimal');
+		var dbEncAesKey = '0abe3c109e5baafd9fd8eef26ff4dc420971b530dbce5dd054baf5055728fa09';
+		var dbEncSalsaKey = '93d00583375358157d6c25c01ad123afe1a69a5274e5ccd1378bf06876437a3f';
+		var dbEncKeccakKey = '30d5ec01e43e0884eb843201b47bcf585c397ec20450ee50820f1ca56945c16c9991eaa08b13a0e2475b5dc709b7b892e84450882c40f70df05ccbd6c283aadd';
+		var dbEncSkeinKey = '054f4f55a5a6ece495de2789cde143987476d7b6ec7b8564f09df7b730ce5daa456177d50211f1f9c29358c92297aa213361ad9145cd6acfbfc656df8a11f1c0';
 		
 		// Mock pad info to encrypt
 		var padData = {
@@ -1832,8 +1940,8 @@ $(document).ready(function()
 	QUnit.test("Test MAC creation and verification of a user's pad database index", function()
 	{
 		// Create the MAC
-		var keccakMacKey = 'e4096eaeadb01cb4a0f274d59da537a66ff4907b7db7b3e0a235581f64b2560eeb129b0f2870a08fe7953e354962a579a5634668e4caae98335fe3379d4bb791'; // Generated using common.getRandomBits(512, 'hexadecimal')
-		var skeinMacKey = 'd6dff9b318515ff04134389ec3da7460f6927e321092c49e3a54d761d57b3d38eae1c0cc2af8aacb8169c9d682bb01a2c8788a5a489baaefd7f7841c80295c9c'; // Generated using common.getRandomBits(512, 'hexadecimal')
+		var keccakMacKey = 'e4096eaeadb01cb4a0f274d59da537a66ff4907b7db7b3e0a235581f64b2560eeb129b0f2870a08fe7953e354962a579a5634668e4caae98335fe3379d4bb791';
+		var skeinMacKey = 'd6dff9b318515ff04134389ec3da7460f6927e321092c49e3a54d761d57b3d38eae1c0cc2af8aacb8169c9d682bb01a2c8788a5a489baaefd7f7841c80295c9c';
 		var userCallSign = 'test';
 		var userPads = db.padData.pads[userCallSign];	
 		var macOfDatabaseIndex = dbCrypto.createMacOfDatabaseIndex(keccakMacKey, skeinMacKey, userCallSign, userPads);
@@ -1855,8 +1963,8 @@ $(document).ready(function()
 	
 	QUnit.test("Test creation of a MAC of the database indexes for all users", function()
 	{
-		var keccakMacKey = 'e4096eaeadb01cb4a0f274d59da537a66ff4907b7db7b3e0a235581f64b2560eeb129b0f2870a08fe7953e354962a579a5634668e4caae98335fe3379d4bb791'; // Generated using common.getRandomBits(512, 'hexadecimal')
-		var skeinMacKey = 'd6dff9b318515ff04134389ec3da7460f6927e321092c49e3a54d761d57b3d38eae1c0cc2af8aacb8169c9d682bb01a2c8788a5a489baaefd7f7841c80295c9c'; // Generated using common.getRandomBits(512, 'hexadecimal')
+		var keccakMacKey = 'e4096eaeadb01cb4a0f274d59da537a66ff4907b7db7b3e0a235581f64b2560eeb129b0f2870a08fe7953e354962a579a5634668e4caae98335fe3379d4bb791';
+		var skeinMacKey = 'd6dff9b318515ff04134389ec3da7460f6927e321092c49e3a54d761d57b3d38eae1c0cc2af8aacb8169c9d682bb01a2c8788a5a489baaefd7f7841c80295c9c';
 		var macOfPadIndexes = dbCrypto.createMacOfAllDatabaseIndexes(keccakMacKey, skeinMacKey, encryptedPadsTwoUsers);
 				
 		ok(macOfPadIndexes.alpha.length === 128, 'MAC length should be 128 hex chars (512 bits)');
@@ -1875,8 +1983,8 @@ $(document).ready(function()
 	QUnit.test("Verify MAC of all user's pad database indexes", function()
 	{
 		// Test data for success case
-		var keccakMacKey = 'e4096eaeadb01cb4a0f274d59da537a66ff4907b7db7b3e0a235581f64b2560eeb129b0f2870a08fe7953e354962a579a5634668e4caae98335fe3379d4bb791'; // Generated using common.getRandomBits(512, 'hexadecimal')
-		var skeinMacKey = 'd6dff9b318515ff04134389ec3da7460f6927e321092c49e3a54d761d57b3d38eae1c0cc2af8aacb8169c9d682bb01a2c8788a5a489baaefd7f7841c80295c9c'; // Generated using common.getRandomBits(512, 'hexadecimal')
+		var keccakMacKey = 'e4096eaeadb01cb4a0f274d59da537a66ff4907b7db7b3e0a235581f64b2560eeb129b0f2870a08fe7953e354962a579a5634668e4caae98335fe3379d4bb791';
+		var skeinMacKey = 'd6dff9b318515ff04134389ec3da7460f6927e321092c49e3a54d761d57b3d38eae1c0cc2af8aacb8169c9d682bb01a2c8788a5a489baaefd7f7841c80295c9c';
 		var userPads = JSON.parse(
 		           '{"alpha":['
 		         +      '{"padNum":0,"padIdentifier":"cabeff2ffd746a","pad":"69ba77f22986ad250a9a30555d4234d34649cb540063bbaa205e0e03c3c77dc50aa3cca8d15e53d63095da5292c5a8d8fdfd1f26edaf9eaafaeba1dcecffe5efa4d6b645ecf48190209e1b0f1ba017d0f7bd25a8e54ba2002e951aa2ffa3d9ad96b831c4c5593e49d0affa9b86ad0b3850f91e8c8a925cd28369aba80f2bd058e0e019c1c52e6608f603c7c4eeff5c28df30b96367249efc082c9f219446dda96797fb82b6b6f42ce3d2c7f47fb9ac915d77f66868e288a29e","mac":"2223c18b198d9a949d94497f5dc7a69fe12dcf53766de3e5515e58e70d0318de6c365beca8fb0a5ccd579a02a3e920f43072b6b56ff3c0fd60db0fb713419e9b"},'
@@ -1893,7 +2001,7 @@ $(document).ready(function()
 		var verifyTestC = dbCrypto.verifyAllUserDatabaseIndexes(keccakMacKey, skeinMacKey, userPads, {});
 		
 		// Test bad MAC key
-		var badMacKeyHex = 'd7dff9b318515ff04134389ec3da7460f6927e321092c49e3a54d761d57b3d38eae1c0cc2af8aacb8169c9d682bb01a2c8788a5a489baaefd7f7841c80295c9c'; // Generated using common.getRandomBits(512, 'hexadecimal')
+		var badMacKeyHex = 'd7dff9b318515ff04134389ec3da7460f6927e321092c49e3a54d761d57b3d38eae1c0cc2af8aacb8169c9d682bb01a2c8788a5a489baaefd7f7841c80295c9c';
 		var verifyTestD = dbCrypto.verifyAllUserDatabaseIndexes(keccakMacKey, badMacKeyHex, userPads, padIndexMacs);
 		
 		// Test bad pad index MAC
@@ -1956,11 +2064,11 @@ $(document).ready(function()
 	
 	/**
 	 * ------------------------------------------------------------------
-	 * Test random numbers from Web Crypto API are in correct range
+	 * Test random numbers between minimum and maximum are in correct range
 	 * ------------------------------------------------------------------
 	 */
-		
-	QUnit.test("Test random numbers from Web Crypto API are in correct range", function()
+	
+	QUnit.test("Test random numbers between minimum and maximum are in correct range", function()
 	{
 		// Test small maximums
 		var smallIntA = common.getRandomIntInRange(0, 1);	// 0 or 1 possible
@@ -1970,6 +2078,7 @@ $(document).ready(function()
 		var smallNumber = common.getRandomIntInRange(0, 255);
 		var mediumNumber = common.getRandomIntInRange(0, 65535);
 		var largeNumber = common.getRandomIntInRange(0, 4294967295);
+		// var tooBigNumber = common.getRandomIntInRange(0, 4294967296);	// Throws exception (as it should)
 
 		// Test fixed limit
 		var numberBetween0and10 = common.getRandomIntInRange(0, 10);
@@ -1980,21 +2089,24 @@ $(document).ready(function()
 		var numberBetween5and10 = common.getRandomIntInRange(5, 10);
 		var numberBetween10kAnd20k = common.getRandomIntInRange(10000, 20000);
 		var numberBetween150kAnd300k = common.getRandomIntInRange(150000, 300000);
+		var numberBetween1kAnd90k = common.getRandomIntInRange(1000, 90000);
 		
-		ok(((smallIntA >= 0) && (smallIntA <= 1)), smallIntA.toString());
-		ok(((smallIntB >= 0) && (smallIntB <= 2)), smallIntB.toString());
 		
-		ok(smallNumber <= 255, smallNumber);
-		ok(mediumNumber <= 65535, mediumNumber);
-		ok(largeNumber <= 4294967295, largeNumber);
+		ok(((smallIntA >= 0) && (smallIntA <= 1)), '0 - 1: ' + smallIntA.toString());
+		ok(((smallIntB >= 0) && (smallIntB <= 2)), '0 - 2: ' + smallIntB.toString());
 		
-		ok(numberBetween0and10 <= 10, numberBetween0and10);
-		ok(numberBetween0and20k <= 20000, numberBetween0and20k);
-		ok(numberBetween0and300k <= 300000, numberBetween0and300k);
+		ok(smallNumber <= 255, '0 - 255: ' + smallNumber);
+		ok(mediumNumber <= 65535, '0 - 65,535: ' + mediumNumber);
+		ok(largeNumber <= 4294967295, '0 - 4,294,967,295: ' + largeNumber);
 		
-		ok(numberBetween5and10 >= 5 && numberBetween5and10 <= 10, numberBetween5and10);
-		ok(numberBetween10kAnd20k >= 10000 && numberBetween10kAnd20k <= 20000, numberBetween10kAnd20k);
-		ok(numberBetween150kAnd300k >= 150000 && numberBetween150kAnd300k <= 300000, numberBetween150kAnd300k);
+		ok(numberBetween0and10 <= 10, '0 - 10: ' + numberBetween0and10);
+		ok(numberBetween0and20k <= 20000, '0 - 20,000: ' + numberBetween0and20k);
+		ok(numberBetween0and300k <= 300000, '0 - 300,000: ' + numberBetween0and300k);
+		
+		ok(numberBetween5and10 >= 5 && numberBetween5and10 <= 10, '5 - 10: ' + numberBetween5and10);
+		ok(numberBetween10kAnd20k >= 10000 && numberBetween10kAnd20k <= 20000, '10,000 - 20,000: ' + numberBetween10kAnd20k);
+		ok(numberBetween150kAnd300k >= 150000 && numberBetween150kAnd300k <= 300000, '150,000 - 300,000: ' + numberBetween150kAnd300k);
+		ok(numberBetween1kAnd90k >= 1000 && numberBetween1kAnd90k <= 90000, '1,000 - 90,000: ' + numberBetween1kAnd90k);
 	});
 	
 	

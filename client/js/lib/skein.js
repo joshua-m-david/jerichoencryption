@@ -3,10 +3,14 @@
  * All other modes are not tested and supported.
  * It is compatible with the revised reference implementation (1.3).
  *
- * Author: Thomas Mueller, 2008-2010 based on the C reference implementation
- * written by Doug Whiting, 2008.
- *
- * This algorithm and source code is released to the public domain.
+ * Author: Thomas Mueller, 2008-2010.
+ * Note: Based on the C reference implementation written by Doug Whiting, 2008.
+ * Site: http://h2database.com/skein/index.html
+ * Licence: This algorithm and source code is released to the public domain.
+ * Modifications:
+ *  - Put code into the 'skein' namespace.
+ *  - Use javaScript Strict mode.
+ *  - Strict mode fix as noted in code comment.
  */
 
 // Use ECMAScript 5's strict mode

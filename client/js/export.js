@@ -70,7 +70,7 @@ var exportPads = {
 	 * e.g. number of users or export method change the amount of information in the dialog
 	 */
 	repositionDialogToCenter: function()
-	{		
+	{
 		exportPads.$exportDialog.dialog('option', 'position', { my : 'center', at: 'center', of: window });
 	},
 	
@@ -79,7 +79,7 @@ var exportPads = {
 	 * select box and dynamically alter the number of user nicknames they can enter
 	 */
 	dynamicallySetNicknameTextEntry: function()
-	{		
+	{
 		$('#numOfUsers').change(function()
 		{
 			// Get the number of users
@@ -433,7 +433,7 @@ var exportPads = {
 			
 			// Change to adding pads for the next user when the current user has the allocated number of pads. 
 			// If there are any remaining pads over the average they will be added to the last user.
-			if ((currentUserIndex !== numOfUsers - 1) && (currentNumOfPadsPerUser === numOfPadsPerUser))
+			if ((currentUserIndex !== (numOfUsers - 1)) && (currentNumOfPadsPerUser === numOfPadsPerUser))
 			{
 				currentUserIndex++;
 				currentUserCallSign = common.userList[currentUserIndex];
@@ -453,7 +453,7 @@ var exportPads = {
 	 * @param {String} extractedRandomDataHex The random data as a hexadecimal string
 	 */
 	preparePadsForExport: function(options, extractedRandomDataHex)
-	{			
+	{
 		// Setup the export worker
 		var worker = common.startWebWorker('export-pads-worker');
 				
@@ -469,6 +469,78 @@ var exportPads = {
 			options: options,
 			extractedRandomDataHex: extractedRandomDataHex
 		});
+	},
+	
+	/**
+	 * Gets unique crypto keys from the random data created by the TRNG then returns the keys and unused random data.
+	 * @param {Number} numOfUsers The total number of users using these one-time pads
+	 * @param {String} extractedRandomDataHex The random data created by the TRNG
+	 * @returns {Object|false} Returns an object with keys: 'salt', 'aesKey', 'salsaKey', 'keccakMacKey', 'skeinMacKey', 
+	 *                         'userFailsafeRngKeys', 'extractedRandomDataHex'. Or returns false if not enough random data.
+	 */
+	getCryptoKeysFromExtractedRandomData: function(numOfUsers, extractedRandomDataHex)
+	{		
+		// The required database keys
+		var databaseKeys = [
+			{ name: 'salt', length: 384 },			// 1536 bits (384 hex symbols)
+			{ name: 'aesKey', length: 64 },			// 256 bits (64 hex symbols)
+			{ name: 'salsaKey', length: 64 },		// 256 bits (64 hex symbols)
+			{ name: 'keccakMacKey', length: 128 },	// 512 bits (128 hex symbols)
+			{ name: 'skeinMacKey', length: 128 }	// 512 bits (128 hex symbols)
+		];
+				
+		var lengthOfDatabaseKeys = 0;
+		
+		// Add the length of the keys from the array above
+		databaseKeys.map(function(key) {
+			lengthOfDatabaseKeys += key.length;
+		});
+		
+		// Get the length of all keys needed
+		var failsafeRngKeyLength = 64;						// 256 bits (64 hex symbols)
+		var lengthOfFailsafeKeysForAllUsers = failsafeRngKeyLength * numOfUsers;
+		var lengthOfAllKeys = lengthOfDatabaseKeys + lengthOfFailsafeKeysForAllUsers;
+		
+		// If not enough random data available, exit out
+		if (extractedRandomDataHex.length < lengthOfAllKeys)
+		{
+			return false;
+		}
+		
+		var startIndex = 0;
+		var endIndex = 0;
+		var numOfDatabaseKeys = databaseKeys.length;
+		var allKeys = {};
+		var keyName = '';
+		
+		// Get the individual database keys from the random data
+		for (var i = 0; i < numOfDatabaseKeys; i++)
+		{
+			// Get unused random bits for each key and store it under the key's name in the allKeys array
+			endIndex = endIndex + databaseKeys[i].length;
+			keyName = databaseKeys[i].name;
+			allKeys[keyName] = extractedRandomDataHex.substring(startIndex, endIndex);
+			startIndex = endIndex;
+		}
+		
+		var userFailsafeRngKeys = {};
+		var userCallsign = '';
+				
+		// Collect encryption keys for each user that will be used for the failsafe Salsa20 CSPRNG
+		for (var i = 0; i < numOfUsers; i++)
+		{
+			// Get a fresh 256 bits and store it under the user's callsign
+			endIndex = startIndex + failsafeRngKeyLength;
+			userCallsign = common.userList[i];
+			userFailsafeRngKeys[userCallsign] = extractedRandomDataHex.substring(startIndex, endIndex);
+			startIndex = endIndex;
+		}
+		
+		// Return keys to be used, including the unused random data
+		allKeys.userFailsafeRngKeys = userFailsafeRngKeys;
+		allKeys.extractedRandomDataHex = extractedRandomDataHex.substring(startIndex);
+				
+		return allKeys;
 	},
 
 	/**
@@ -487,7 +559,8 @@ var exportPads = {
 		var encryptedPads = workerData.encryptedPads;
 		var encryptedDatabaseKeysAndMac = workerData.encryptedDatabaseKeysAndMac;
 		var padIndexMacs = workerData.padIndexMacs;
-				
+		var userFailsafeRngKeys = workerData.userFailsafeRngKeys;
+		
 		// Clone database scheme
 		var padData = db.clone(db.padDataSchema);
 				
@@ -538,6 +611,12 @@ var exportPads = {
 			// Set the user so each loop will export pads under a different user then there is no 
 			// accidental pad re-use from users using the same pads. Then encrypt and MAC the pad info.
 			userPadData.info.user = userCallSign;
+			
+			// Each user also gets a unique key which is used to seed the Salsa20 failsafe CSPRNG
+			userPadData.info.failsafeRngKey = userFailsafeRngKeys[userCallSign];
+			userPadData.info.failsafeRngNonce = 0;
+			
+			// Encrypt and authenticate the pad info for the user
 			userPadData.info = dbCrypto.encryptAndMacPadInfo(aesKey, salsaKey, keccakMacKey, skeinMacKey, userPadData.info);
 			
 			// Convert to JSON for export to clipboard or text file

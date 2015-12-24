@@ -901,9 +901,13 @@ class Api
 			return false;
 		}
 		
+		// Get a random 512 bits from /dev/urandom
+		$randomBytes = mcrypt_create_iv(64, MCRYPT_DEV_URANDOM);
+		$randomBytesHex = bin2hex($randomBytes);
+		
 		// Convert to binary
-		$binaryKeyAndStringA = pack("H*", $this->serverKey . $stringA);
-		$binaryKeyAndStringB = pack("H*", $this->serverKey . $stringB);
+		$binaryKeyAndStringA = pack("H*", $this->serverKey . $randomBytesHex . $stringA);
+		$binaryKeyAndStringB = pack("H*", $this->serverKey . $randomBytesHex . $stringB);
 		
 		// Perform a hash using skein-512 to randomise the byte order of the strings. This prevents a 
 		// timing attack when an attacker submits arbitrary data to the server to guess the server key.

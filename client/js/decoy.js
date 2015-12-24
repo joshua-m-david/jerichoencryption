@@ -37,8 +37,8 @@ var decoy = {
 	// The time a message was last received from any another user
 	lastMessageReceivedTimestamp: null,
 	
-	// Time window in seconds to determine if a user is online (double the maximum time window)
-	userOnlineTimestampWindow: 180,	// 180 seconds (3 minutes)
+	// Time window in seconds to determine if a user is online
+	userOnlineTimestampWindow: 300,	// 300 seconds (5 minutes)
 	
 	// Timer ID for the decoy timer to send decoy messages
 	timerId: null,
@@ -48,6 +48,12 @@ var decoy = {
 	 */
 	startDecoyMessageTimer: function()
 	{
+		// If a one-time pad database is not loaded, exit out
+		if (db.padData.info.user === null)
+		{
+			return false;
+		}
+		
 		// Get random number between 1000 milliseconds (1 second) and x milliseconds
 		var triggerTimeMilliseconds = common.getRandomIntInRange(decoy.minTimeWindow, decoy.maxTimeWindow);
 		
@@ -65,10 +71,10 @@ var decoy = {
 				// pad identifier won't be mistaken for a real message, so now we can safely send it as a decoy message.
 				if (padData.padIndex === null)
 				{
-					// Get the remaining random bits for the pad
-					var remainingPadBits = common.totalPadSizeBinary - common.padIdentifierSizeBinary;
-					var remainingRandomPad = common.getRandomBits(remainingPadBits, 'hexadecimal');
-					var decoyMessage = randomPadIdentifier + remainingRandomPad;
+					// Get the remaining random bits for the decoy message
+					var lengthOfMessageBits = common.totalPadSizeBinary - common.padIdentifierSizeBinary;
+					var messageBits = common.getRandomBits(lengthOfMessageBits, 'hexadecimal');
+					var decoyMessage = randomPadIdentifier + messageBits;
 
 					// Send the decoy message to the server
 					decoy.sendDecoyMessageToServer(randomPadIdentifier, decoyMessage, triggerTimeMilliseconds);
@@ -138,14 +144,15 @@ var decoy = {
 		{
 			common.showStatus('error', "No pads have been loaded into this device's database.");
 			decoy.stopTimerForDecoyMessages();
+			
 			return false;
 		}
 
 		// Package the data to be sent to the server
 		var data = {
-			'user': db.padData.info.user,
-			'apiAction': 'sendMessage',
-			'msg': decoyMessage
+			user: db.padData.info.user,
+			apiAction: 'sendMessage',
+			msg: decoyMessage
 		};
 
 		// Send the message off to the server
@@ -175,8 +182,7 @@ var decoy = {
 			else {
 				// Most likely cause is user has incorrect server url or key entered.
 				// Another alternative is the attacker modified their request while en route to the server
-				common.showStatus('error', 'Error contacting server. Check: 1) you are connected to the network, 2) the client/server configurations are correct, and 3) client/server system clocks are up to date. If everything is correct, the data may have been tampered with by an attacker.');
-				decoy.stopTimerForDecoyMessages();
+				common.showStatus('error', 'Error sending decoy message to server. Check: 1) you are connected to the network, 2) the client/server configurations are correct, and 3) client/server system clocks are up to date. If everything is correct, the data may have been tampered with by an attacker.');
 			}
 		});
 	},
