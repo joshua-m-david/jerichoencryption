@@ -1,0 +1,73 @@
+==================================================================
+https://keybase.io/joshua_m_david
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://jerichocomms.ml
+  * I am joshua_m_david (https://keybase.io/joshua_m_david) on keybase.
+  * I have a public key with fingerprint CF3F 79EE 0114 59BA 0A59  9E9C DC76 8471 C467 B6D0
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "01018d644ae8be8e9adc4359b1fc3b62cfc2d0a703bc66c3eb7a20caff1a3c1cb8710a",
+            "fingerprint": "cf3f79ee011459ba0a599e9cdc768471c467b6d0",
+            "host": "keybase.io",
+            "key_id": "dc768471c467b6d0",
+            "kid": "01018d644ae8be8e9adc4359b1fc3b62cfc2d0a703bc66c3eb7a20caff1a3c1cb8710a",
+            "uid": "5684e19a4140790c5cf0cf8a66343119",
+            "username": "joshua_m_david"
+        },
+        "service": {
+            "hostname": "jerichocomms.ml",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1460185670,
+    "expire_in": 157680000,
+    "prev": "6722d203e4c1688444fedbd9c13871801f247909e95251ba114746cef0b74aa3",
+    "seqno": 4,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: GnuPG v1
+
+owGtUmtMHFUYXV4tkuIWJNFgK3EkRQsh89p5bCGAgIV2+7CxtKnCMnPnDkxhd5ad
+3S2PIgQtkaYPKthgEyEhcSMvMeXRjVCCBAUsRkAjYkESJEKFNgG3aRFR7xL7z5/e
+Pzf33nPOPef7vtrQAJ2/36zr3aLhvN4Jvzv3RN2p4NaiMkxUpRLMWIYVwO0NFkpQ
+c5gLFAkzYjiBE5zE0LQAORFykBckQFMGXiRkQIkMCWRASrjA4pQIGAZQUGQFEgeC
+LBMCBQggciyBC1gcJivWPGi32RWrA8kCmZJZHkKcIGgkJuCCgechDyTAMhzNEoBm
+WJGRcETMVzUfA5kTBQ3GKyq6Qwfztr3/wP/Pvp3bcgb0CyR4gSZonOVxYAAyDmRO
+YBiKpgiC9wE1aLcKFojQZ1Ut3ymYLWZJcCF6eRyG3lwKgL7y+vI8wUG7AvJVoFos
+WrylEInY7KoDnQvRY77DYTP6uI4Smw98Dormf2XMomKVUD0RwQXtmqJaMSOBkMCh
++HQJmkHhDQyLx2Gw2KbYoVnxIQyoVjhavm+gCzPmYgxLkhKJU5AGBMNxNE3LUBIl
+HhAUys/hhEzSKC7qjIE0EKKAusXSDIAyLrK0IFCYL1mRVcWMNPIp5CGbmpJnFRxO
+O8TKQ2r89wTq/Px1O4L8fZOmC3lq95PxWz+k/9sUE7rVq1KttRWPgxKuZF/viNY9
+qk3uaebG+tPClgpva69mHjvM62IN+7wFe8LGg1rMK2HTu6JegGMfCisVCam5m18e
+7RgdHIbgF2iNNYXIhqrAAy89/Oz5w+TSmU8OJm6s9Hj6Li/qT2ePL4vu8OABsfS5
+M2RK0qEHnZEy0bjMz8X2tV3LfD9s03u/88hxbbN9rTF0NGfXVH1pxhybVX2xe2Mm
+5ps2JXxoNaayeIf79U+TqzOS33ttseEV0+NEsfWtP7qrT0fd9fSnfnH+0ur9VXet
+/mO64fyd4fSW77LSuo4f/Kr2g5qUv64W3pgp6Hp64VZTyq9DalN2P7E21ax24c75
+F29m/NbOR5QcmZ126sc82gHnhZKGsWM9IztrMvmoiH3Gjzq8s6Tx5Ziis66O3JPT
+C96tut6r9UMnB4tH0pao5LiWz1u9P0ZExkQuNFW9056+c7gS9m3lXJ7oGVhZjjXt
+Te623VWOMnJ6ZUDeuYeLic9uNWZlz490yAnNk9dPyd/W3bi112u/2NfZ3DZH//5m
+1oP6S/eSaL/RxWsZI49M7rJ10253kr1CqtqKLpjwGD3rf96sZko3yMnbzFpb5WDc
+ha+zAksUbKAhamLu5zXnM+FTP8nfj+tT37Am1njmqypOeKstnL4XcwT0RbY7ynNO
+zJT/EL9/MTp4cn+/ru7tfwA=
+=bABO
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/joshua_m_david
+
+==================================================================
