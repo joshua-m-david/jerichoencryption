@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2015  Joshua M. David
+	Copyright (c) 2013-2016  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -58,23 +58,23 @@
 					<h1 class="nonPrintable">Technical design</h1>
 					<p class="nonPrintable">
 						This page is printable and can be downloaded as a 
-						<a href="files/jericho-v1.5.1.pdf">PDF white paper</a><sup><a href="files/jericho-v1.5.1.pdf.asc">[sig]</a></sup>.
+						<a href="files/jericho-v1.5.2.pdf">PDF white paper</a><sup><a href="files/jericho-v1.5.2.pdf.asc">[sig]</a></sup>.
 					</p>
 					
 					
 					<div class="printableHeader printable">
 						<div class="title">Jericho Comms&trade;</div>
-						<div class="version">Version 1.5.1</div>
-						<div class="date">24 December 2015</div>
+						<div class="version">Version 1.5.2</div>
+						<div class="date">17 June 2016</div>
 						<div class="author">Joshua M. David</div>
                         <div class="email">joshua.m.david [at] tutanota.de</div>
 					</div>
 					<div class="printableAbstract">
 						<h2 id="abstract"><span>1</span> Abstract</h2>						
 						<p>
-							This document describes the design of an encrypted group text communications program 
-							which provides <a href="#ref25">information-theoretic security<sup>[25]</sup></a> for all 
-							messages that are sent and received.
+							This document describes the design of an end-to-end encrypted, group text communications 
+							program which provides <a href="#ref25">information-theoretic security<sup>[25]</sup></a> 
+							for all messages that are sent and received.
 							
 							The goal is to deliver a high assurance, encrypted communications program with 
 							<a href="#ref34">plausible deniability<sup>[34]</sup></a> for activists, human rights lawyers, 
@@ -87,7 +87,7 @@
 							regardless of advances in computing power, cryptanalysis, mathematics or quantum physics.
 						</p>
 						<p>
-							To accomplish this goal, the program uses a 
+							To accomplish the program's design goals, the software uses a 
 							<a href="#ref22">True Random Number Generator<sup>[22]</sup></a> (TRNG), the 
 							<a href="#ref23">One-Time Pad<sup>[23]</sup></a> (OTP) cipher for message encryption 
 							and a one-time <a href="#ref24">Message Authentication Code<sup>[24]</sup></a> (MAC) for 
@@ -95,9 +95,9 @@
 							
 							To provide additional protection of the one-time pad database during the 
 							<a href="#ref26">initial key exchange<sup>[26]</sup></a> between users, a 
-							strong <a href="#ref27">password/passphrase<sup>[27]</sup></a> and 
+							strong <a href="#ref27">passphrase<sup>[27]</sup></a> and 
 							<a href="#ref66">keyfile<sup>[66]</sup></a> can be used. The program will then use a cascade 
-							of password <a href="#ref28">Key Derivation Functions<sup>[28]</sup></a> (KDFs), 
+							of <a href="#ref28">Password Based Key Derivation Functions<sup>[28]</sup></a> (PBKDFs), 
 							<a href="#ref29">stream ciphers<sup>[29]</sup></a> and MACs to encrypt and authenticate the 
 							database.
 							
@@ -111,10 +111,12 @@
 							they are somewhat inconvenient to use. This means they have generally only been reserved for 
 							truly important communications such as the 
 							<a href="#ref64">highest-level Allied communications in World War II<sup>[64]</sup></a> 
-							or the <a href="#ref30">Washington-Moscow hotline<sup>[30]</sup></a>.
+							or the <a href="#ref30">Washington-Moscow hotline<sup>[30]</sup></a>. They are 
+							still used by the US government where 
+							<a href="#ref218">heavily armoured trucks transport random numbers to the Pentagon<sup>[218]</sup></a>.
 							
-							The main problems are that you need to collect a lot of truly random data and the one-time 
-							pads must be exchanged through a secure channel (e.g. delivered in person) before 
+							The main problems are that the user needs to collect a lot of truly random data and the 
+							one-time pads must be exchanged through a secure channel, e.g. delivered in person, before 
 							communication can take place. These are not insurmountable problems and the design of this 
 							software solves the main issues which make using one-time pads too impractical. The whole 
 							system is very simple to set up and use, including generating truly random key material, 
@@ -122,7 +124,7 @@
 							
 							The program itself can be <a href="#ref31">downloaded from the project's website<sup>[31]</sup></a> 
 							and the full source code, which is available on <a href="#ref32">GitHub<sup>[32]</sup></a>, 
-							is released under the <a href="#ref33">General Public License Version 3.0<sup>[33]</sup></a>.
+							is released under the <a href="#ref33">General Public License, Version 3.0<sup>[33]</sup></a>.
 						</p>
 					</div>
 					
@@ -132,6 +134,7 @@
 						<ol>
 							<li><a href="#abstract">Abstract</a></li>
 							<li><a href="#introduction">Introduction</a></li>
+							<li><a href="#advantages">Advantages</a></li>
 							<li><a href="#notation">Formulas and notation</a></li>
 							<li><a href="#overall-network-architecture">Overall network architecture</a></li>
 							<li><a href="#how-it-works">How it works</a></li>
@@ -150,12 +153,12 @@
 							<li><a href="#using-tls">Using TLS/HTTPS</a></li>
 							<li><a href="#trng-custom">User Chosen TRNG</a></li>
 							<li>
-								<a href="#trng-photo">Included Photo Based TRNG</a>
+								<a href="#trng">Included TRNG</a>
 								<ol>
-									<li><a href="#quality-photo-selection">Selecting a quality photograph</a></li>
-									<li><a href="#photo-processing-algorithm">TRNG photo processing algorithm</a></li>
-									<li><a href="#output-testing">Testing the TRNG random output</a></li>
-									<li><a href="#trng-test-analysis">TRNG tests and analysis</a></li>
+									<li><a href="#quality-photo-selection">Selecting quality photographs</a></li>
+									<li><a href="#photo-processing-algorithm">TRNG design</a></li>
+									<li><a href="#output-testing">TRNG testing tools</a></li>
+									<li><a href="#trng-test-analysis">TRNG analysis and test results</a></li>
 								</ol>
 							</li>
 							<li><a href="#pad-storage-export">Pad storage and exporting data</a></li>
@@ -201,10 +204,10 @@
 					
 					<h2 id="introduction"><span>2</span> Introduction</h2>
 					<p>
-						In the wake of the <a href="#ref1">global surveillance disclosures<sup>[1]</sup></a> it has 
-						become apparent that the majority of our computer systems and communications are no longer secure. The 
-						<a href="#ref2">NSA<sup>[2]</sup></a> and its spy agency partners are actively 
-						<a href="#ref3">collecting<sup>[3]</sup></a> and 
+						In the wake of the <a href="#ref1">global surveillance disclosures<sup>[1]</sup></a> 
+						(Snowden revelations) it has become apparent that the majority of our computer systems and 
+						communications are no longer secure. The <a href="#ref2">NSA<sup>[2]</sup></a> and its spy 
+						agency partners are actively <a href="#ref3">collecting<sup>[3]</sup></a> and 
 						<a href="#ref4">storing<sup>[4]</sup></a> 
 						the whole world's communications as it transits their networks. Any data passing through 
 						the <a href="#ref5">Five Eyes<sup>[5]</sup></a> and partner countries (Australia, 
@@ -243,9 +246,8 @@
 						It is classed as <a href="#ref10">Exceptionally Compartmented Information (ECI)<sup>[10]</sup></a>, 
 						which very few people have access to within the NSA. In other words, the information is available 
 						only on a need to know basis. We can assume this is likely only their top cryptanalysts and 
-						agency directors. This is similar to how the Enigma cipher was broken but the 
-						knowledge of this was known only to a few and 
-						<a href="#ref11">kept secret for decades afterwards<sup>[11]</sup></a>. 
+						agency directors. This is similar to how the Enigma cipher was broken but the knowledge of this 
+						was known only to a few and <a href="#ref11">kept secret for decades afterwards<sup>[11]</sup></a>. 
 						Unfortunately Snowden did not have access to all their cryptanalytic capabilities 
 						so we do not know what the NSA's true code breaking abilities are and which ciphers they 
 						can break. <a href="#ref12">Edward Snowden once stated<sup>[12]</sup></a>:
@@ -257,14 +259,14 @@
 					<p>
 						However no-one can actually qualify that statement to say <i>which</i> encryption is actually 
 						strong and which is not. Snowden never had access to the highly sensitive, compartmentalised 
-						information at the NSA in the first place. We are also unsure about which standards that the 
-						NSA have compromised or weakened. We know that the 
+						cryptanalysis information at the NSA in the first place. We are also unsure about which 
+						standards that the NSA have compromised or weakened. We know that the 
 						<a href="#ref13">Dual EC DRBG standard<sup>[13]</sup></a> and the 
 						<a href="#ref14">NIST curves<sup>[14]</sup></a> appear very	suspect. However through their 
 						control and manipulation of the <a href="#ref15">NIST<sup>[15]</sup></a> and 
 						<a href="#ref16">IETF<sup>[16]</sup></a> standards it is entirely 
-						possible that most public domain cryptography has been subtly influenced, weakened or corrupted to 
-						some degree. To be protected from the NSA, it makes sense to take a conservative approach and 
+						possible that most public domain cryptography has been subtly influenced, weakened or corrupted 
+						to some degree. To be protected from the NSA, it makes sense to take a conservative approach and 
 						trust no single algorithm on its own. This means at a minimum using 
 						<a href="#ref17">cascading ciphers and algorithms<sup>[17]</sup></a> to hedge against 
 						the NSA exploiting flaws in the algorithms that 
@@ -273,21 +275,22 @@
 						cryptographers and security experts with no affiliation to the US government. It is even better if 
 						these cryptographers are vocal with their criticisms about surveillance and government overreach such as 
 						<a href="#ref19">Daniel J. Bernstein<sup>[19]</sup></a> or 
-						<a href="#ref20">Bruce Schneier<sup>[20]</sup></a> so you can be assured they are not likely to 
-						intentionally backdoor their algorithms.
+						<a href="#ref20">Bruce Schneier<sup>[20]</sup></a> so people can be assured they are not likely 
+						to intentionally backdoor their algorithms.
 					</p>
 					<p>
 						The main problem with public key cryptosystems currently in common use is that they are particularly 
 						<a href="#ref35">vulnerable to quantum computers<sup>[35]</sup></a>. We know that the NSA are 
 						<a href="#ref36">close to building one<sup>[36]</sup></a>. They will not make a public 
 						announcement when they do get one and they may get one well before they become publicly 
-						available especially with their large budget of 
-						<a href="#ref37">$1 Billion per annum for cryptanalysis and exploitation services<sup>[37]</sup></a>.
+						available, especially with their large budget of 
+						<a href="#ref37">one billion USD per annum for cryptanalysis and exploitation services<sup>[37]</sup></a>.
 						An <a href="#ref38">announcement from the NSA<sup>[38]</sup></a> in September 2015 has 
 						recommended a plan to transition to quantum resistant algorithms in the very near future. Some 
-						argue that this is a hint that they consider RSA or Elliptic Curve cryptography is   
-						<a href="#ref39">no longer safe to use<sup>[39]</sup></a><a href="#ref40"><sup>[40]</sup></a>. Even 
-						with quantum safe public key algorithms there is no general consensus about 
+						argue that this is a hint that they consider RSA or Elliptic Curve cryptography will be    
+						<a href="#ref39">no longer safe to use<sup>[39]</sup></a><a href="#ref40"><sup>[40]</sup></a> 
+						in the very near future. 
+						Even with quantum safe public key algorithms there is no general consensus about 
 						which algorithms are actually secure against quantum computers or what key sizes will be 
 						sufficient. A lot more public cryptanalysis and research in the area of post quantum cryptography 
 						really needs to be done before this becomes a viable option. 
@@ -297,11 +300,11 @@
 						design of this program and given an equal 7,667,855 bits of truly random data, this program 
 						would split the data into separate one-time pads of 1536 bits each, achieving perfect secrecy 
 						for 4992 chat messages at 115 bytes of plaintext per message. This is essentially a years worth 
-						of communication with another person but you get proven information-theoretic security instead 
-						of an unproven scheme.
+						of communication with another person but the user gets proven information-theoretic security 
+						instead of an unproven scheme.
 					</p>
 					<p>
-						Another problem with public key cryptography is that if you want to do it securely, users 
+						Another problem with public key cryptography is that to do it securely, users 
 						need to meet and verify public key fingerprints in person. Verifying by voice over the phone 
 						was once recommended, but <a href="#ref42">new research has shown<sup>[42]</sup></a> that given 
 						a few audio samples of someone's voice, an attacker can use software that automates speech 
@@ -322,86 +325,135 @@
 						<a href="#ref45">which have a multitude of problems<sup>[45]</sup></a><a href="#ref46"><sup>[46]</sup></a><a href="#ref47"><sup>[47]</sup></a> 
 						and are not considered secure against nation state adversaries.
 						If users need to meet physically to manually compare fingerprints to achieve reasonable security, 
-						then it is no less difficult to exchange a memory card full of one-time pads instead which would 
-						allow communication for years into the future with perfect secrecy.
+						then it is no less difficult to exchange a small memory card full of one-time pads instead which 
+						would allow communication for years into the future with perfect secrecy.
 						
 						With one-time pads, there is no fear, uncertainty or doubt about which algorithms are safe, which 
 						key sizes are sufficient and which algorithms are truly safe from quantum computers. Users can 
-						focus on operational security which is something they can control, rather than relying on 
-						unproven cryptographic algorithms and hoping that they are sufficiently secure against an 
-						adversary such as the NSA. With one-time pads a whole class of cryptanalytic 
-						attacks is ruled out completely.
+						focus on operational security which is something they can realistically control, rather than 
+						relying on unproven cryptographic algorithms and hoping that they are sufficiently secure 
+						against an adversary such as the NSA.
+					</p>
+					<p>
+						With a focus on ease of use, understanding, configuring and using this program is much easier 
+						for the average user than complicated systems like <a href="#ref245">GnuPG<sup>[245]</sup></a>. 
+						The only minor inconvenience is the key exchange before use. Everything else which is 
+						complicated can be simplified and mostly automated using well written software and a well 
+						designed user interface.
 					</p>
 					
-                    <h2 id="notation"><span>3</span> Formulas and notation</h2>
+					
+					<h2 id="advantages"><span>3</span> Advantages</h2>
 					<p>
-						The notation used in this document will use limited mathematical and cryptographic 
+						Since the Snowden revelations starting in June 2013, there have been a number of secure messaging 
+						solutions released. This software was one of the earliest counter-offensives to these revelations 
+						with a fully functional prototype release in August 2013. This software has a number of 
+						strong advantages compared to other secure messaging solutions whose designers have not accounted 
+						for or understood the entire breadth and depth of the revelations. Most of them aim for mass 
+						market, average grade security and do not adequately protect their users against the full 
+						capabilities of the 
+						<a href="#ref2">NSA<sup>[2]</sup></a>, <a href="#ref220">GCHQ<sup>[220]</sup></a> and 
+						<a href="#ref221">TAO<sup>[221]</sup></a>.
+					</p>
+					<p>
+						The advantages of this software are:
+					</p>
+					<ul class="advantagesList">
+						<li><b>Fully open source</b> &ndash; anyone can freely contribute, distribute, download, modify and use the software.</li>
+						<li><b>Simple to understand and use</b> &ndash; anyone can use including journalists and novice computer users.</li>
+						<li><b>Runs on fully open source environments</b> &ndash; no need to trust a closed source operating system.</li>						
+						<li><b>End-to-end encrypted</b> &ndash; no service provider in the middle with ability to read user messages.</li>
+						<li><b>Forward secrecy</b> &ndash; compromise of a message or key does not compromise past or future messages.</li>
+						<li><b>Plausible deniability</b> &ndash; users under duress can provide a key that decrypts to a plausible message.</li>
+						<li><b>Secure against quantum computers</b> &ndash; secure against future advances in physics and computing.</li>
+						<li><b>Information-theoretically secure</b> &ndash; messages remain secure even against unlimited computing power.</li>
+						<li><b>Automated decoy messages</b> &ndash; hides the real number of messages being sent across the network.</li>
+						<li><b>Limited network metadata</b> &ndash; hinders traffic fingerprinting, analysis and automated remote exploits.</li>
+						<li><b>Not wholly reliant on NIST</b> &ndash; standards are combined with algorithms from trusted cryptographers.</li>
+						<li><b>Full design whitepaper</b> &ndash; design is verifiable and auditable for cryptographers and security researchers.</li>
+						<li><b>Critical code is unit tested</b> &ndash; strong confidence that the cryptography and software works correctly.</li>
+						<li><b>Code is well written and commented</b> &ndash; easily verifiable for security researchers and other developers.</li>
+						<li><b>Code is written to secure coding guidelines</b> &ndash; coded defensively with knowledge of common pitfalls.</li>
+						<li><b>Code is written in memory safe languages</b> &ndash; limited attack surface for buffer overflows and exploits.</li>
+						<li><b>Code is developed on an air-gapped system</b> &ndash; prevents subtle infiltration of the code repository.</li>
+						<li><b>Code and releases are signed with GnuPG</b> &ndash; users can trust in the code's authenticity and integrity.</li>
+						<li><b>Signing key fingerprint published on a blockchain</b> &ndash; solid verification of the author's true public key.</li>
+						<li><b>Signed warrant canary with every release</b> &ndash; alerts users if the author is under duress or court order.</li>
+						<li><b>Not developed in the United States</b> &ndash; author cannot be threatened with National Security Letters.</li>
+						<li><b>Not government or defense agency funded</b> &ndash; author has no questionable affiliations or loyalties.</li>
+						<li><b>Simple user guide and installation instructions</b> &ndash; prevents user error and misconfiguration issues.</li>
+					</ul>
+					
+					
+                    <h2 id="notation"><span>4</span> Formulas and notation</h2>
+					<p>
+						The notation used in this document will use only limited mathematical and cryptographic 
                         formulas and will tend towards explaining the design in plain English rather than mathematical 
                         formulas so that the content is more accessible and understandable by a wider audience.
 					</p>
                     <table class="formulas notation">
 						<tr>
 							<th>&oplus;</th>
-							<td>
+							<th>
 								Bitwise <a href="#ref48">Exclusive OR<sup>[48]</sup></a> (XOR) operator. E.g.<br>
 								<code>0 &oplus; 0 = 0</code><br>
 								<code>0 &oplus; 1 = 1</code><br>
 								<code>1 &oplus; 0 = 1</code><br>
 								<code>1 &oplus; 1 = 0</code>
-							</td>
+							</th>
                         </tr>
 						<tr>
 							<th>+</th>
-							<td>
+							<th>
 								Regular addition. E.g.<br>
 								<code>2 + 2 = 4</code>.
-							</td>
+							</th>
                         </tr>
 						<tr>
 							<th>&otimes;</th>
-							<td>
+							<th>
 								Regular multiplication. E.g.<br>
 								<code>5 &otimes; 5 = 25</code>.
-							</td>
+							</th>
                         </tr>
 						<tr>
 							<th>%</th>
-							<td>
+							<th>
 								The <a href="#ref58">modulo<sup>[58]</sup></a> operation (mod). E.g.<br>
 								<code>5 % 2 = 1</code><br>
 								<code>9 % 3 = 0</code>.
-							</td>
+							</th>
                         </tr>
 						<tr>
 							<th>||</th>
-							<td>
+							<th>
 								String <a href="#ref108">concatenation<sup>[108]</sup></a>. Inputs will be in the same 
 								type and format before being concatenated together. E.g.<br>
 								<code>72fa270d || 9148a82c = 72fa270d9148a82c</code>
-							</td>
+							</th>
                         </tr>
 						<tr>
 							<th>&#8592;</th>
-							<td>
+							<th>
 								The variable <a href="#ref107">assignment<sup>[107]</sup></a> statement. E.g.<br>
 								<code><i>c</i> &#8592; <i>a</i> + <i>b</i></code>
-							</td>
+							</th>
                         </tr>
 						<tr>
 							<th>===</th>
-							<td>
+							<th>
 								The <a href="#ref111">strict equality<sup>[111]</sup></a> operator. E.g.<br>
 								<code>if ($var === 37)<br>
 									{<br>
 									&nbsp;&nbsp;&nbsp; return true;<br>
 									}
 								</code>
-							</td>
+							</th>
                         </tr>
                     </table>
                     
                     
-					<h2 id="overall-network-architecture"><span>4</span> Overall network architecture</h2>
+					<h2 id="overall-network-architecture"><span>5</span> Overall network architecture</h2>
 					<p>
 						The following will outline the entire design of the application and how it works. Exact 
 						implementation details can be found in the source code which is provided with every download.
@@ -416,7 +468,7 @@
 							The program uses a simple <a href="#ref49">star network<sup>[49]</sup></a> design. One particular 
 							point about this client-server architecture is that the clients are the only devices which 
 							have the one-time pads (encryption keys). The server effectively only contains encrypted 
-							data. The clients operate on a request, response basis. For this reason the clients 
+							data. The clients operate on a request, response basis. Because of this, the clients 
 							which have the sensitive encryption keys should have their firewalls configured to block <b>all</b> 
 							incoming traffic by default and only receive incoming data as responses to outgoing requests 
 							that they have specifically made to the server. The responses from the server are always 
@@ -441,14 +493,13 @@
 					</ul>
 					
 					
-					<h2 id="how-it-works"><span>5</span> How it works</h2>
+					<h2 id="how-it-works"><span>6</span> How it works</h2>
 					<ul>
 						<li>
-							The first user will run a True Random Number Generator. They can use their own or the one 
-							included with the software. This random data is then broken up into separate one-time pads. 
-							It is possible to generate enough data for a few thousand messages in under a minute. 
-							A few thousand messages is enough for 6-12 months of communication at a reasonable frequency 
-							of messages sent per day.
+							The first user will run a TRNG. They can use their own or the one included with the 
+							software. This random data is then divided into separate one-time pads. It is possible to 
+							generate enough data for a few thousand messages in under a minute. A few thousand messages 
+							is enough for 6-12 months of communication at a reasonable frequency of messages sent per day.
 						</li>
 						<li>
 							Each user will be assigned specific one-time pads for sending messages. This prevents re-use 
@@ -459,11 +510,11 @@
 						<li>
 							Once the one-time pads are generated, the program can export them for each user to encrypted 
 							text files. These should be saved directly onto removable flash media such as MicroSD card, 
-							SD card, USB thumbdrive, CD, DVD, Blu-Ray Disc or portable hard drive. The program allows for 
-							requires the one-time pad database to be encrypted and protected with a password.
+							SD card, USB thumbdrive, CD, DVD, Blu-Ray Disc or portable hard drive. The program requires 
+							the one-time pad database to be encrypted and protected with a password.
 							
 							This adds additional protection so users do not need to securely erase the pads or physically 
-							destroy the storage media after the one-time pads have been transferred unless they have very 
+							destroy the storage media after the one-time pads have been transferred, unless they have very 
 							high security requirements. If the users need plausible deniability that they are even 
 							carrying one-time pads in the first place then there are some other precautions such as 
 							creating a hidden <a href="#ref53">TrueCrypt<sup>[53]</sup></a> volume on the storage media 
@@ -474,35 +525,42 @@
 							This is to create a <a href="#ref54">secure channel<sup>[54]</sup></a> or 
 							<a href="#ref55">air gap<sup>[55]</sup></a> to deliver the one-time pads which ensures the 
 							encryption keys are not intercepted or compromised by transferring them over an insecure 
-							network like the Internet. Key exchange is considered out of scope for the program itself as 
-							this is the user's responsibility. The best method is to hide in plain sight. Here are a 
-							few solutions that will usually work:
+							network like the Internet. Key exchange is the user's responsibility and the best method is 
+							to hide in plain sight. There are a few solutions that will usually work:
 							<ul>
 								<li>
-									Meeting the users in person for a coffee/drink/lunch/dinner provides an innocent cover for 
-									the exchange of encryption keys. If you are going about your daily activities this is the 
-									least suspicious option and the most likely to succeed.
+									Meeting the other user/s in person for a coffee, drink, lunch or dinner provides an 
+									innocent cover for the exchange of encryption keys. If a user is going about their 
+									daily activities this is the least suspicious option and the most likely to succeed.
 								</li>
 								<li>
 									A <a href="#ref56">dead drop<sup>[56]</sup></a>. Arrange the time and place 
 									of the dead drop in person or using another method, but do not arrange this over an 
-									insecure channel like the phone or Internet.
+									insecure channel.
 								</li>
 								<li>
-									If your country does not inspect internal mail you can hand sign a sealed / tamperproof 
-									courier envelope and send it with reasonable assurance that it won't be compromised. 
-									If the package appears to be opened on delivery, consider the encryption keys 
-									compromised and do not use them. International mail is sometimes opened by 
-									<a href="#ref57">Customs<sup>[57]</sup></a> so it is not a reliable method. It would 
-									not be difficult to hide an encrypted MicroSD within something else though.
+									If the country a user is residing in does not inspect internal mail, a sealed 
+									(tamperproof) courier envelope can be hand signed and sent with reasonable assurance 
+									that it won't be compromised. If the package appears to be opened on delivery, the 
+									encryption keys must be considered compromised and not used. International mail is 
+									sometimes opened by <a href="#ref57">Customs<sup>[57]</sup></a> so it is not a 
+									reliable method. It would not be difficult to hide an encrypted MicroSD within 
+									something else though.
 								</li>
 								<li>
-									It is not difficult to get a laptop, portable hard drive, MicroSD card, or SD card 
-									through Customs at national or international airports. You can also hide them in 
-									your carry-on luggage or on your person. If your government sometimes scans personal 
-									phones or computers as people are going through Customs you may need to use 
-									<a href="#ref59">steganography<sup>[59]</sup></a> to hide the 
-									one-time pads within your vacation photos, videos or other files.
+									Usually it is not difficult to get a laptop, portable hard drive, MicroSD card, or 
+									SD card through Customs at national or international airports. Users can also hide 
+									them in their carry-on luggage or on their person. If the government is allowed to scan 
+									personal phones or computers as people are going through Customs then they may need 
+									to use <a href="#ref59">steganography<sup>[59]</sup></a> to hide the one-time pads 
+									within their vacation photos, videos or other files. If Customs request a closer 
+									look at the contents of their devices by 
+									<a href="#ref251">forcing them to disclose their passwords or encryption keys<sup>[251]</sup></a>, 
+									then the user must keep an eye on exactly what they are doing and that the device is 
+									visible at all times. If Customs take the device to an area where it is no longer 
+									visible to the user, or they insert any other devices into the laptop such as a USB 
+									drive, then they could have loaded malware onto it. These devices must then be 
+									considered compromised and discarded.
 								</li>
 								<li>
 									Governments and diplomats also have the option of using a 
@@ -519,14 +577,7 @@
 							Some people complain about having to deliver the one-time pads physically as if this is some 
 							impossible, arduous task. This line of thought is entirely devoid of reality. There is no 
 							actual difficulty in storing some data on a portable memory stick and visiting someone in 
-							person apart from a basic computer knowledge.
-							
-							If users are serious about taking their privacy back, they need to use encryption 
-							which the NSA absolutely and unequivocally cannot break. If they are willing to trade 
-							security for convenience and blindly use the NSA's recommended encryption 
-							algorithms then they will only receive the amount of privacy that the NSA wants 
-							them to have. The NSA does <u>not</u> have anyone's best interests at heart, they 
-							want to monitor all communications and they will do that by whatever means necessary.
+							person to give it to them.
 						</li>
 						<li>					
 							As the one-time pads are in transit it is important to keep them secured on one's person at 
@@ -546,7 +597,7 @@
 					</ul>
 					
 					
-					<h2 id="configuring-own-server"><span>6</span> Server configuration</h2>
+					<h2 id="configuring-own-server"><span>7</span> Server configuration</h2>
 					<p>
 						The server basically functions as a temporary database store for the encrypted messages. One user leaves encrypted 
 						messages on the server and the other users can retrieve them when they are able. If both users are 
@@ -594,7 +645,7 @@
 					</p>
 					
 					
-					<h2 id="server-authentication-protocol"><span>7</span> Server authentication protocol</h2>
+					<h2 id="server-authentication-protocol"><span>8</span> Server authentication protocol</h2>
 					<p>
 						A symmetric key based authentication protocol is used to securely authenticate the requests and 
 						responses with the server API. This replaces TLS which secured the server API credentials 
@@ -609,7 +660,7 @@
 						<a href="#ref100">iOS<sup>[100]</sup></a> which have led to a loss in confidence in these 
 						programs which have poor code quality and may be hiding other NSA backdoors.
 					</p>
-					<h3 id="design-goals"><span>7.1</span> Design goals</h3>
+					<h3 id="design-goals"><span>8.1</span> Design goals</h3>
 					<ul>
 						<li>
 							Authenticate all API requests to the server to verify they are from valid server users.
@@ -636,7 +687,7 @@
 						</li>
 					</ul>
 					
-					<h3 id="limitations"><span>7.2</span> Limitations</h3>
+					<h3 id="limitations"><span>8.2</span> Limitations</h3>
 					<ul>
 						<li>
 							The server administrator will control the server and be a user of the chat group's operating on that 
@@ -685,7 +736,7 @@
 						</li>
 					</ul>
 					
-					<h3 id="initial-setup"><span>7.3</span> Initial setup</h3>
+					<h3 id="initial-setup"><span>8.3</span> Initial setup</h3>
 					<ul class="formulas">
 						<li>
 							A random 512 bit <i>API Key</i> is created using the TRNG included with the program and entered 
@@ -710,7 +761,7 @@
 						</li>
 					</ul>
 					
-					<h3 id="send-and-verify-api-request"><span>7.4</span> Client API request</h3>
+					<h3 id="send-and-verify-api-request"><span>8.4</span> Client API request</h3>
 					<ul class="formulas">
 						<li>
 							User creates a random 512 bit per request <a href="#ref106"><i>Nonce</i><sup>[106]</sup></a>. 
@@ -805,7 +856,7 @@
 						</li>
 					</ul>
 					
-					<h3 id="server-api-response"><span>7.5</span> Server API response</h3>
+					<h3 id="server-api-response"><span>8.5</span> Server API response</h3>
 					<ul class="formulas">
 						<li>
 							On any valid server requests, the server signs the response with the <i>API Key</i> so that 
@@ -815,7 +866,7 @@
 							<i>API Key</i> to make a valid request. All invalid requests respond with the server 
 							pretending it is unable to find what the attacker is looking for. This is similar to 
 							standard firewall behaviour by just failing to respond at all when an attacker is scanning 
-							for open ports on your machine, rather than responding with a distinct 'closed' response 
+							for open ports on a machine, rather than responding with a distinct 'closed' response 
 							which indicates there is something there.
 						</li>
 						<li>
@@ -843,7 +894,7 @@
 					</ul>
 					
 					
-					<h2 id="frustrating-traffic-analysis"><span>8</span> Preventing information leakage and traffic analysis</h2>
+					<h2 id="frustrating-traffic-analysis"><span>9</span> Preventing information leakage and traffic analysis</h2>
 					<p>
 						The program ends decoy messages at random intervals to other users in 
 						the chat group to prevent 
@@ -864,8 +915,8 @@
 					<p>						
 						The program will then check if these 56 bits exist as a pad identifier in their own set of 
 						one-time pads. If that pad identifier already exists, which is quite rare, then it will skip 
-						sending a decoy message for this interval, generate a new random 
-						number and try again after that many seconds have elapsed. If the pad identifier does not already 
+						sending a decoy message for this interval, generate a new random number and try again after 
+						that many milliseconds have elapsed. If the pad identifier does not already 
 						exist, then the program will send a decoy message to the other users in the chat group. The other 
 						chat group users will safely ignore the decoy message as the pad identifier does not exist in 
 						their copy of the one-time pad database for the user that is sending the message. To send a 
@@ -906,7 +957,7 @@
 					</p>
 					
 					
-					<h2 id="using-tls"><span>9</span> Using Transport Layer Security (TLS) / HTTPS</h2>
+					<h2 id="using-tls"><span>10</span> Using Transport Layer Security (TLS) / HTTPS</h2>
 					<p>
 						Because of the new server authentication protocol in version 1.3, using TLS is not mandatory anymore. 
 						However it can be added as an optional layer of security to help mitigate monitoring from 
@@ -935,7 +986,7 @@
 					</p>
 					
 					
-					<h2 id="trng-custom"><span>10</span> User Chosen TRNG</h2>
+					<h2 id="trng-custom"><span>11</span> User Chosen TRNG</h2>
 					<p>
 						The software allows a user to import truly random data directly from their own trusted entropy 
 						source. This could be a <a href="#ref22">hardware RNG<sup>[22]</sup></a>, physical entropy source 
@@ -960,395 +1011,728 @@
 					</p>
 					
 					
-					<h2 id="trng-photo"><span>11</span> Included Photo Based TRNG</h2>
+					<h2 id="trng"><span>12</span> Included TRNG</h2>
 					<p>
-						Nature is random, unpredictable and always changing. For example, the sand on the 
-						seashore changes every time the tide rolls in. Wave crests and currents change with the weather and tides. 
-						Deciduous trees change depending on the season of the year. Trees and leaves move in the wind. The sun 
-						strikes things in different angles and intensity throughout the day, casting shadows in various directions. 
-						The variance of cloud cover and light conditions alters the appearance of everything in different ways.
+						The new design of the True Random Number Generator (TRNG) included in version 1.5.2 onwards 
+						improves on the previous versions with new inspiration from two very good papers: 
+						<a href="#ref215">The Sources of Randomness in Mobile Devices<sup>[215]</sup></a> and 
+						<a href="#ref216">Towards True Random Number Generation in Mobile Environments<sup>[216]</sup></a>.
 					</p>
 					<p>
-						This section describes the True Random Number Generator (TRNG) included with the program which gathers 
-						the entropy contained in the <a href="#ref71">shot noise<sup>[71]</sup></a> of a high 
-						resolution photograph from a digital camera to obtain truly random data, then it runs a randomness extractor 
-						on the data to ensure a uniform distribution. The shot noise contains random data because the act of capturing 
-						something, converting it from analog to digital, and storing it in 24 bit values creates randomness due 
-						to the fact that the process creates noise on the 
-						<a href="#ref72">least significant bits<sup>[72]</sup></a>. 
-						Randomness tests are run on the random data after the randomness extractor has run to 
-						verify the quality.
+						This section describes the TRNG included with the program which gathers 
+						the entropy contained in the <a href="#ref71">shot noise<sup>[71]</sup></a> noise 
+						from a digital camera. The collected entropy is run through a 
+						<a href="#ref252">randomness extraction<sup>[252]</sup></a> process to ensure a uniformly 
+						distributed random data.
+					</p>
+					<p>
+						In the papers mentioned above, their testing was done against the optical sensor noise by 
+						capturing frames from the view finder with the lense cap still on. Independent testing of their 
+						results shows that this does give some entropy in the resulting data. Through more 
+						extensive testing described further on it is shown that even better entropy can be 
+						obtained by taking high resolution photographs of the natural environment.
+					</p>
+					<p>
+						To prevent interference or bias by software noise reduction and compression, a digital camera's 
+						<a href="#ref74">RAW mode<sup>[74]</sup></a> should be used. The RAW image file should then be
+						converted as-shot (without post-processing) to a lossless format like 
+						<a href="#ref75">PNG<sup>[75]</sup></a> or <a href="#ref76">BMP<sup>[76]</sup></a> for the TRNG 
+						program to process. This can be done with Photoshop or using free software such as 
+						<a href="#ref224">Shotwell photo manager<sup>[224]</sup></a>. This process best retains and 
+						preserves the optical sensor noise.
+					</p>
+					<p>
+						Saving in a lossy algorithm like <a href="#ref77">JPEG<sup>[77]</sup></a> may have unintended 
+						side effects from performing optimisations on the photograph. Users can however verify the 
+						random data from each step in the process, export the data and check if it passes various 
+						statistical tests such as <a href="#ref124">FIPS 140-2 Power-Up Tests<sup>[124]</sup></a>, 
+						<a href="#ref248">NIST SP 800-22<sup>[248]</sup></a>, <a href="#ref249">ENT<sup>[249]</sup></a> 
+						and <a href="#ref250">Diehard<sup>[250]</sup></a>.
+					</p>
+					<p>
+						Not all users will have a camera capable of taking photographs in RAW format, so the program 
+						also includes a tool to capture camera frames directly from a webcam using the native 
+						<a href="#ref253">HTML5 getUserMedia()<sup>[253]</sup></a> API. The user can then save 
+						the captured photographs as lossless PNG files which can be loaded separately into the TRNG. 
+						If their webcam does not produce large enough photographs and random 
+						data for a substantial number of one-time pads, then there is another tool provided to help 
+						with this. The user can then load multiple sets of random data produced by the TRNG and 
+						concatenate it together and convert it into a single binary file. That binary file of random 
+						data can then be loaded into the program and it will create the one-time pads from it.
+					</p>
+										
+					<h3 id="quality-photo-selection"><span>12.1</span> Selecting quality photographs</h3>
+					<p>
+						Nature is random, unpredictable and always changing. For example, the sand on the seashore 
+						changes every time the tide rolls in. Wave crests and currents change with the weather and tides. 
+						Deciduous trees change depending on the season of the year. Trees and leaves move in the wind. 
+						The sun strikes things in different angles and intensity throughout the day, casting shadows in 
+						various directions. The variance of cloud cover and light conditions alters the appearance of 
+						everything in different ways.
 					</p>
 					<p>
 						From a photographer's position they have a unique viewpoint of a scene in nature. They can take 
-						a photo of anything in nature, giving an infinite number of possible photographs. The proposed 
-						method is to take a photograph of something that is random in nature such as a 
-						<a href="#ref73">macro<sup>[73]</sup></a> (extreme close-up) shot of 
-						sand on a beach, grass, rocks, flowers. Or a regular photo of bushes, trees blowing in the wind, 
-						wave crests in the ocean, or waves crashing against the sea shore. The photo should be taken 
-						with high resolution and in focus using a standalone digital camera. 
-					</p>
-					
-										
-					<h3 id="quality-photo-selection"><span>11.1</span> Selecting a quality photograph</h3>
-					<p>
-						The best results are obtained capturing the photograph using a digital camera's 
-						<a href="#ref74">RAW mode<sup>[74]</sup></a> then converting the RAW image file  
-						as-shot (without post-processing) to a lossless format like 
-						<a href="#ref75">PNG<sup>[75]</sup></a> or 
-						<a href="#ref76">BMP<sup>[76]</sup></a> 
-						for the TRNG program to process. 
-						Saving in a lossy algorithm like <a href="#ref77">JPEG<sup>[77]</sup></a> may have unintended 
-						side effects from performing optimisations on the photograph. Modern digital cameras in cellular phones may not 
-						be suitable as they usually compress the photo using JPEG. Users can however verify the processed results 
-						and check if the random data passes the required randomness tests.
+						a photo of <i>anything</i> in nature, giving an infinite number of possible photographs. They 
+						can take photographs of things that are random in nature such as a 
+						<a href="#ref73">macro<sup>[73]</sup></a> (extreme close-up) shot of sand on a beach, grass, 
+						rocks or flowers. Or a regular photos of bushes, trees blowing in the wind, wave crests in the 
+						ocean, or waves crashing against the sea shore.
 					</p>
 					<p>
 						Photographs should be taken of things in nature e.g. sand, rocks, flowers, bushes and trees. 
-						For smaller items like sand, macro mode should be used. All photographs should be in focus.
-					</p>
-					<p>
-						Photographs should always be erased after one-time pads have been created from them and not left 
-						on any storage device.
+						For smaller items like sand, macro mode should be used. For best results, all photographs should 
+						be in focus as much as possible and taken with good exposure. Care should be taken to avoid 
+						direct sunlight or overexposure in certain areas of the photograph. Photographs should always 
+						be erased after one-time pads have been created from them and not left on any storage device.
 					</p>
 					
 
-					<h3 id="photo-processing-algorithm"><span>11.2</span> TRNG photo processing algorithm</h3>
+					<h3 id="photo-processing-algorithm"><span>12.2</span> TRNG design</h3>
 					<p>
-						The algorithm is a randomness extractor which extracts random data from a photograph. 
-						This full algorithm is explained below:
+						This full design is explained below:
 					</p>
 					<ol>
 						<li>
-							Load the user's photograph into memory as a sequential array of pixels. The top left pixel 
-							would be the first element in the array, followed by the rest of the pixels in that row 
-							(left to right), followed by the pixels in the rows below and so on.
-							Each pixel in the photograph contains 24 bits of colour information, encoded as 
-							separate red, green and blue (RGB) integer values. Each colour channel has 8 bits of 
-							information, represented as a number from 0 to 255. The data should be loaded in a 
-							format similar to:<br>
-							[ [<b>120, 234, 123</b>], [<b>57, 23, 254</b>], [<b>14, 255, 0</b>], ... ].<br>
-							or more simply:<br>
+							The user selects two high resolution photographs of good quality. Ideally their photos should 
+							be taken in <a href="#ref74">RAW mode<sup>[74]</sup></a> from a standalone digital camera 
+							(if available), then converted as-shot (without post-processing) to a lossless format such 
+							as PNG. There are a number of open source tools available for the conversion.
+						</li>
+						<li>
+							The program then loads the photographs into memory as sequential arrays of pixels. The top 
+							left pixel would be the first element in the array, followed by the rest of the pixels in 
+							that row (left to right), followed by the pixels in the rows below and so on. Each pixel in 
+							the photograph contains 24 bits of colour information, encoded as separate Red, Green, Blue 
+							and Alpha (RGBA) integer values. The alpha channel data is not used and is discarded. For 
+							each remaining colour channel (RGB) they have 8 bits of information, represented as a number 
+							from 0 to 255. If each pixel contained its own array of values, all the data in the 
+							photograph would be represented in a format similar to:<br>
+							<b>[ [ 120, 234, 123 ], [ 57, 23, 254 ], [ 14, 255, 0 ], ... ]</b>.<br>
+							<br>
+							For easier processing, this is converted to a sequential array format similar to:<br>
 							[ <b>120, 234, 123, 57, 23, 254, 14, 255, 0, ... </b>].<br>
 						</li>
 						<li>
-							Loop through all the pixels in the image i.e. groups of 3 RGB integer values at a time. 
-							Compare each current pixel to the previous one.
-							Remove sequentially repeating black pixels [<b>0, 0, 0</b>], sequentially repeating white 
-							pixels [<b>255, 255, 255</b>] and pixels that are exactly the same colour as the previous one 
-							e.g. [ [<b>120, 234, 123</b>], [<b>120, 234, 123</b>] ]. This removes sections of the 
-							photograph with underexposed pixels, overexposed pixels and those that have have very little 
-							entropy. Generally it is very rare to have adjacent pixels that are exactly the same colour 
-							unless there is a hardware failure, or that section of the photo is under/overexposed. 
-							Usually in a good quality photograph there are at least very slight variations in the colour 
-							channels for adjacent pixels. This step removes these low entropy areas.
-						</li>
-						<li>
-							By default, the program estimates that there is 1 bit of input entropy per 24 bit pixel. 
-							This is a very conservative estimate. Users can safely increase this estimate in the 
-							settings to 3 bits per 24 bit pixel which would account for the entropy in the 
-							<a href="#ref72">least significant bit<sup>[72]</sup></a> 
-							of each colour channel. Collect an estimated 512 bits of entropy from the array of pixels. 
-							For an estimate of 1 bit per pixel, this would be 512 RGB pixels (1536 integer values). 
-							If users have increased the estimate setting to 3 bits per pixel, collect 171 RGB pixels 
-							(513 integer values) for the same estimated input entropy of 512 bits. It is critical for 
-							the program to remember a current index value in the pixel array, which is used to mark  
-							the point at which pixels have already been collected. For example, if 512 pixels were 
-							collected, the index would currently be at 511 (in a 0 based array). The next collection of 
-							entropy would start from array index 512. This is so previous pixels are not re-used.
-						</li>
-						<li>
-							Convert the pixels from their RGB integer values to their hexadecimal representation. For 
-							example, [ [<b>120, 234, 123</b>], [<b>57, 23, 254</b>] ] becomes 
-							[ [<b>78ea7b</b>], [<b>3917fe</b>] ].
-						</li>
-						<li>
-							Concatenate the hexadecimal data together, for example, <b>78ea7b3917fe</b>. Input the data 
-							into a cryptographic hash function with a 512 bit output 
-							digest. The program defaults to the <a href="#ref109">Skein-512<sup>[109]</sup></a> 
-							hash function. The user can also choose to use 
-							<a href="#ref118">Keccak-512<sup>[118]</sup></a><a href="#ref119"><sup>[119]</sup></a>  
-							with the capacity set at 1024 bits. Both these hash functions are very strong finalists from 
-							the <a href="#ref120">NIST hash function competition<sup>[120]</sup></a>. 
-							Store this hash output of 512 bits as the initial temporary seed.
-						</li>						
-						<li>Start a program <a href="#ref121">while loop<sup>[121]</sup></a>:
-							<ol class="roman">								
+							<ol class="roman">
 								<li>
-									Check there is enough new input entropy in the pixel array for the new hash, or 
-									break out of the loop.
+									For the first image, the first 3 colour channel values representing a single RGB 
+									pixel are collected e.g. <b>[ 120, 234, 123 ]</b>. These values are then converted to 
+									binary format:<br>
+									<b>[ 01111000, 11101010, 01111011 ]</b>.
 								</li>
 								<li>
-									Get the temporary seed from earlier.
+									In <a href="#ref215">the paper<sup>[215]</sup></a> mentioned earlier, the minimum 
+									entropy estimate was approximately 1-3 bits per colour channel. This program takes 
+									a conservative approach using the lower estimate of 1 bit of entropy per colour 
+									channel. The program then collects the 
+									<a href="#ref72">least significant bit<sup>[72]</sup></a> (rightmost bit) of each 
+									colour value:<br>
+									<b>[ 0, 0, 1 ]</b>.
 								</li>
 								<li>
-									Collect 512 bits of fresh entropy from the pixel array and convert it to hexadecimal 
-									format. For an estimate of 1 bit per pixel, this would be 512 RGB pixels (1536 
-									integer values). The program should use the current index value so it does not 
-									collect already used entropy.
+									These 3 bits are then XORed together e.g. <b>0 &oplus; 0 &oplus; 1</b> which results in the 
+									single bit <b>1</b>. This bit is then stored by appending it to an output stream of 
+									bits obtained from this image.
 								</li>
 								<li>
-									Concatenate the temporary seed and input entropy together. Then hash them using: 
-									<span class="formulas"><i>Hash</i>( <i>temporary seed</i> || <i>input entropy</i> )</span>.
-								</li>
-								<li>
-									Append the first 256 bits of the hash function's output digest to the output random 
-									data.
-								</li>								
-								<li>
-									Update the temporary seed to be the last 256 bits of the hash function's output 
-									digest.
-								</li>
-								<li>
-									Update the current index position which marks which pixels have been used in the 
-									array. This is so that next time new entropy is collected it does not collect 
-									previously used pixels.
-								</li>
-								<li>
-									Return to start of the loop.
+									The previous 3 steps (i - iii) are then repeated for the remaining pixels in the 
+									first photo. This produces a full output stream of bits from the pixels in the first 
+									image.
 								</li>
 							</ol>
 						</li>
 						<li>
-							Erase the original photograph from the camera's memory card and the computer's hard disk. 
-							If full disk encryption is used, only a regular deletion is needed.
+							Step 3 is then repeated for the second image which produces a full output stream of bits 
+							from the pixels in the second image.
 						</li>
 						<li>
-							Use the output random data and split it into separate one-time pads of 1536 bits each.
+							The two output streams from the first and second images are then XORed together to create a 
+							combined output stream. In testing, occasionally one photo might have small sections where 
+							the output was not uniformly random. The bits from the second image help provide protection 
+							against faults in the first image and vice versa. This can happen when there is a small 
+							section that is overexposed to sunlight e.g. a reflection or a small gap through the leaves 
+							of a tree. If the two photos were of different sizes then the output from this step will 
+							be truncated to the same number of bits from the smallest photo.
+						</li>
+						<li>
+							The <a href="#ref217">Basic Von Neumann Extractor<sup>[217]</sup></a> is then run on the 
+							combined output stream in step 5 which is the final random data. This simple theoretic 
+							extractor is used to ensure a uniformly distributed output in the combined output stream. 
+							This is better than using a cryptographic hash function for extraction e.g. SHA-3 as these 
+							are not known to be perfect or information-theoretically secure.
+						</li>
+						<li>
+							The data from steps 3, 4, 5 and 6 are then run through randomness tests. Black and white and 
+							also colour bitmaps of the output can be displayed to the user for visual analysis. If any 
+							failures occur the user can delete the images and try again with a fresh set. The testing 
+							process is described in the next section.
+						</li>
+						<li>
+							After successful processing and test analysis, the user should erase the original 
+							photographs from the camera's memory card and the computer's hard disk. If full disk 
+							encryption is used, only a regular deletion is needed.
+						</li>
+						<li>
+							The final random data is then split it into separate one-time pads of 1536 bits each.
 						</li>
 					</ol>
 					<p>
-						Using an initial temporary seed of 512 bits and combining this with 512 bits of fresh input 
-						entropy in the hash function makes the first output digest very strong. Only the first 256 bits 
-						of this is used as the random data for the one-time pads. The remaining 256 bits is used as a 
-						temporary seed for the next hash. The purpose of the temporary seed in each loop is so that if 
-						there is a section of low entropy in the photograph (blue sky, white clouds etc), then the 
-						output random data still has at least 256 bits of good entropy from the temporary seed.
-					</p>
-					<p>
 						It is important to note that this algorithm does not use this collected entropy to seed a   
-						<a href="#ref122">psuedo-random number generator<sup>[122]</sup></a> 
-						to give an unlimited amount of random data. The program aims to be a true random number generator so 
-						only quality randomness is wanted and each uniformly random bit must be used solely to encrypt one 
-						bit of the plaintext. It's assumed that most psuedo-random number generators or even 
-						<a href="#ref123">CSPRNGs<sup>[123]</sup></a> that stretch out the entropy could produce 
-						a subtle bias in the output and allow the NSA or other governments to decrypt part or all of a 
-						message. With this program the aim is to avoid stretching the available entropy over more bits.
+						<a href="#ref122">PRNG, DRBG<sup>[122]</sup></a> or <a href="#ref123">CSPRNG<sup>[123]</sup></a> 
+						to give an unlimited amount of random data. The aim is to avoid stretching the available 
+						entropy over more bits. The program aims to be a <i>true</i> random number generator so only 
+						high quality randomness is used. Each uniformly random bit must be used to encrypt only one bit 
+						of the plaintext otherwise the security proof of the one-time pad is lost.
 					</p>
 										
 					
-					<h3 id="output-testing"><span>11.3</span> Testing the TRNG random output</h3>
+					<h3 id="output-testing"><span>12.3</span> TRNG testing tools</h3>
 					<p>
-						An important part of a random number generator is the ability to test the output. A few methods have been 
-						provided for this:
+						An important part of a random number generator is the ability to test the output. A few methods 
+						have been provided for this:
 					</p>
 					<ul>
 						<li>
-							Extracting the random data in various formats (binary file, hexadecimal & Base64) gives users 
-							the opportunity to verify the data with another randomness testing program. That will allow them to 
-							run additional tests and assure them of the quality of the random data.
+							The program allows the user to extract the random data from each step in the processing to 
+							various formats i.e. binary file, ASCII binary text file, ASCII hexadecimal text file and 
+							ASCII Base64 text file. Because the TRNG only outputs data from two images at a time, there 
+							is also another tool to combine the random data from multiple text files and output a single 
+							binary file. This gives users the opportunity to verify the data with external randomness 
+							testing programs e.g. <a href="#ref248">NIST SP 800-22<sup>[248]</sup></a>, 
+							<a href="#ref249">ENT<sup>[249]</sup></a> and <a href="#ref250">Diehard<sup>[250]</sup></a>. 
+							That will allow them to run additional tests and assure them of the quality of the random 
+							data.
 						</li>
 						<li>
-							For testing the random data there are some statistical random number generator tests included from 
-							<a href="#ref124">FIPS 140-2<sup>[124]</sup></a>. These 
-							include: The Monobit Test, The Poker Test, The Runs Test and The Long Run Test. The goal is to add 
-							more automated tests in the future to prove the quality of the program and improve on it in future 
-							versions of the software. The FIPS 140-2 test suite is run on every 20,000 bits in the extracted 
-							random data. If any of the tests fail after this, then the original source photograph was 
-							definitely not good enough and another one will need to be used.
+							For testing the random data within the program there are some simple statistical random number 
+							generator tests included from <a href="#ref124">FIPS 140-2 - Power-Up Tests<sup>[124]</sup></a>. 
+							These include: The Monobit Test, The Poker Test, The Runs Test and The Long Run Test. The 
+							goal is to add more automated tests in the future to prove the quality of the program and 
+							improve on it in future versions of the software. The FIPS 140-2 test suite is run on every 
+							20,000 bits of the random data at each step of the process.
 						</li>
 						<li>
-							The output of the TRNG can also be viewed as a <a href="#ref125">bitmap<sup>[125]</sup></a> 
-							image which lets a user do a simple visual analysis of the output. 
-							<a href="#ref126">Random.org explains<sup>[126]</sup></a> that people are really good at 
-							spotting patterns and visualising the random data allows them to use their eyes and brain 
-							for this purpose. It also gives a rough impression of the TRNG's performance.<br>
+							If any of the tests fail after this, then one or both of the original source photographs 
+							may not be good enough and different ones might need to be used. Although the pass intervals 
+							for these tests is quite strict and <a href="#ref219">can sometimes give false positives<sup>[219]</sup></a>, 
+							it is still a good indicator to rule out very bad source photographs. The following 
+							example shows an example of the test result summary:
 							<br>
-							To produce this, all the random data is converted to binary and rendered as a bitmap. A 
-							black pixel indicates a '1' bit and white pixel indicates a '0' bit. The output should look 
-							something like the image below at 100% zoom.
+							<a href="img/trng-processed-images.png">
+								<img class="listImage" src="img/trng-processed-images.png" alt="TRNG test results">
+							</a>
+						</li>
+						<li>
+							Looking at these results, the second image which was based on a JPEG image failed the tests 
+							on the unconditioned least significant bits. This may not be a problem though as a closer 
+							look at the tests might reveal it just failed one of the tests on a 20,000 bit segment by 
+							being slightly outside of the accepted intervals. If a lot of the tests across multiple 
+							20,000 bit segments were failing then this would be a very clear warning that the photograph 
+							is not of good quality and another should be used.
+						</li>
+						<li>
+							The aim of the TRNG is that if one photo does not produce very good random test results, then 
+							there is a second photo as a failsafe. Looking at the results after XORing the least 
+							significant bits from the two images together, the tests are shown as passing. The final Von 
+							Neumann extraction step ensures that the data is uniformly random. The users should check 
+							that the final two steps which XOR the least significant bits of both images together and 
+							the Von Neumann extraction step succeed or the photos should be discarded. It does not 
+							matter so much if the unconditioned least significant bits from either image fail slightly. 
+							These minor failures can be recovered from with the final two steps. If the user finds two 
+							images that pass all the tests at every step, then this is the best possible outcome.
+						</li>
+						<li>
+							The output from each step of the TRNG can also be viewed as a black and white 
+							<a href="#ref125">bitmap<sup>[125]</sup></a> image or colour bitmap image which lets a user 
+							do a simple visual analysis of the output. 
+							<a href="#ref126">People are very good at spotting patterns<sup>[126]</sup></a> and 
+							visualising the random data allows them to use their eyes and brain for this purpose. If 
+							there is any structure in the image this indicates a poor image source. It also gives a basic 
+							visual picture of the TRNG's output.<br>
+							<br>
+							To produce a black and white bitmap image, all the random data is converted to binary and 
+							rendered as a bitmap. A black pixel with RGB values of [0, 0, 0] indicates a <b>1</b> bit 
+							and a white pixel with RGB values [255, 255, 255] indicates a <b>0</b> bit. The height and 
+							width of the image is determined by the square root of the number of bits that can be output. 
+							This produces a square image and each pixel is rendered sequentially to fill the image row 
+							by row. The output should look something like the image below at 100% zoom.<br>
+							<br>
+							<div class="bitmapExamples">
+								<div class="bitmap">
+									Good image<br>
+									22,500 pixels (22,500 bits)<br>
+									<img src="img/random-bitmap-good-example.png" alt="Random bitmap good example">
+								</div>
+								<div class="bitmap">
+									Bad image<br>
+									22,500 pixels (22,500 bits)<br>
+									<img src="img/random-bitmap-bad-example.png" alt="Random bitmap bad example">
+								</div>
+							</div>
+							<br>
+							To produce a colour bitmap image, all the random data is converted to binary. For each 8 
+							bits, this is converted to a decimal value from 0 - 255. Then for every 3 decimal values 
+							this represents the RGB values of a single pixel. The height and width of the image is 
+							determined by the square root of the number of full pixels that can be output. This produces 
+							a square image and each pixel is rendered sequentially to fill the image row by row. The 
+							output should look something like the image below at 100% zoom.<br>
+							<br>							
+							<div class="bitmapExamples">
+								<div class="bitmap">
+									Good image<br>
+									22,500 pixels (540,000 bits)<br>
+									<img src="img/random-colour-bitmap-good-example.png" alt="Random colour bitmap good example">
+								</div>
+								<div class="bitmap">
+									Bad image<br>
+									22,500 pixels (540,000 bits)<br>
+									<img src="img/random-colour-bitmap-bad-example.png" alt="Random colour bitmap bad example">
+								</div>
+							</div>
 						</li>
 					</ul>
-					<p class="diagram">
-						<img src="img/random-bitmap-example.png" alt="Random bitmap example">
-					</p>
 					
 										
-					<h3 id="trng-test-analysis"><span>11.4</span> TRNG tests and analysis</h2>
+					<h3 id="trng-test-analysis"><span>12.4</span> TRNG analysis and test results</h3>
 					<p>
-						For testing a 12 MP 
-						<a href="#ref127">Canon PowerShot G9<sup>[127]</sup></a> 
-						digital camera was used. This camera is a high-end compact digital camera and allows taking 
-						photographs in <a href="#ref128">RAW file format<sup>[128]</sup></a>. 
-						Photos were taken in manual mode using the RAW file format. The photos were then loaded into 
-						Photoshop, converted as is to PNG which avoided using the camera's default lossy JPEG file 
-						format. Then tests were run by taking photographs of various places and things, processing the 
-						photos with the TRNG and running the test suite on everything. The results are presented below.
+						For testing, a 12 MP <a href="#ref127">Canon PowerShot G9<sup>[127]</sup></a> 
+						digital camera was used. This is a 2008 model, high-end compact digital 
+						camera which allows taking photographs in <a href="#ref128">RAW file format<sup>[128]</sup></a>. 
+						Photos were taken in manual mode using the RAW file format to avoid using the camera's default 
+						lossy JPEG file format. The RAW files were loaded into the open source 
+						<a href="#ref224">Shotwell photo manager<sup>[224]</sup></a> program, 
+						then converted as-shot to PNG. The original camera images were 4032 x 3024 pixels.
+					</p>
+										
+					<h4 id="fips-test-suite-results">FIPS test suite results</h4>
+					<p>
+						Tests were run by taking photographs of different patches of sand at a beach in macro mode. 
+						These photos were then processed with the TRNG. The FIPS 140-2 tests were run on all the outputs 
+						at each stage. An example of two photos of sand that were used in the processing is presented 
+						below. The reference links contain the full size images and results.
+					</p>
+					<div class="testResultsTable">
+						<div class="row header">
+							<div class="cell">
+								Image 1<a href="#ref228"><sup>[228]</sup></a>
+							</div>
+							<div class="cell">
+								Image 1 LSBs B&amp;W<a href="#ref229"><sup>[229]</sup></a>
+							</div>
+							<div class="cell">
+								Image 1 LSBs Colour<a href="#ref230"><sup>[230]</sup></a>
+							</div>
+							<div class="cell">
+								Image 1 LSBs Test Results<a href="#ref231"><sup>[231]</sup></a>
+							</div>
+						</div>
+						<div class="row">
+							<div class="cell">								
+								<img src="img/randomness-tests/v1.5.2-sand-first-image-preview.png">
+							</div>
+							<div class="cell">								
+								<img src="img/randomness-tests/v1.5.2-sand-first-image-lsbs-bw-bitmap-preview.png">
+							</div>
+							<div class="cell">								
+								<img src="img/randomness-tests/v1.5.2-sand-first-image-lsbs-colour-bitmap-preview.png">
+							</div>
+							<div class="cell">								
+								<span class="testSuccess">Pass</span>
+							</div>
+						</div><br>
+						
+						<div class="row header">
+							<div class="cell">
+								Image 2<a href="#ref232"><sup>[232]</sup></a>
+							</div>
+							<div class="cell">
+								Image 2 LSBs B&amp;W<a href="#ref233"><sup>[233]</sup></a>
+							</div>
+							<div class="cell">
+								Image 2 LSBs Colour<a href="#ref234"><sup>[234]</sup></a>
+							</div>
+							<div class="cell">
+								Image 2 LSBs Test Results<a href="#ref235"><sup>[235]</sup></a>
+							</div>
+						</div>
+						<div class="row">
+							<div class="cell">								
+								<img src="img/randomness-tests/v1.5.2-sand-second-image-preview.png">
+							</div>
+							<div class="cell">								
+								<img src="img/randomness-tests/v1.5.2-sand-second-image-lsbs-bw-bitmap-preview.png">
+							</div>
+							<div class="cell">								
+								<img src="img/randomness-tests/v1.5.2-sand-second-image-lsbs-colour-bitmap-preview.png">
+							</div>
+							<div class="cell">								
+								<span class="testSuccess">Pass</span>
+							</div>
+						</div>
+					</div><br>
+					<p>
+						Next the least significant bits of both images were XORed together. This step does not improve 
+						the results too much both original images are of very good quality. However it can be a very 
+						good improvement if one of the images is poor quality.
+					</p>
+					<div class="testResultsTable">
+						<div class="row header">
+							<div class="cell">
+								LSBs XORed B&amp;W<a href="#ref236"><sup>[236]</sup></a>
+							</div>
+							<div class="cell">
+								LSBs XORed Colour<a href="#ref237"><sup>[237]</sup></a>
+							</div>
+							<div class="cell">
+								LSBs XORed Test Results<a href="#ref238"><sup>[238]</sup></a>
+							</div>
+						</div>
+						<div class="row">
+							<div class="cell">								
+								<img src="img/randomness-tests/v1.5.2-sand-both-images-xored-bw-bitmap-preview.png">
+							</div>
+							<div class="cell">								
+								<img src="img/randomness-tests/v1.5.2-sand-both-images-xored-colour-bitmap-preview.png">
+							</div>
+							<div class="cell">								
+								<span class="testSuccess">Pass</span>
+							</div>
+						</div>
+					</div><br>
+					<p>
+						Next the resulting bits were run through the Basic Von Neumann Extractor. After this step the 
+						data should be uniformly random.
+					</p>
+					<div class="testResultsTable">
+						<div class="row header">
+							<div class="cell">
+								VNE B&amp;W<a href="#ref239"><sup>[239]</sup></a>
+							</div>
+							<div class="cell">
+								VNE Colour<a href="#ref240"><sup>[240]</sup></a>
+							</div>
+							<div class="cell">
+								VNE Test Results<a href="#ref241"><sup>[241]</sup></a>
+							</div>
+						</div>
+						<div class="row">
+							<div class="cell">								
+								<img src="img/randomness-tests/v1.5.2-sand-both-images-xored-vne-bw-bitmap-preview.png">
+							</div>
+							<div class="cell">								
+								<img src="img/randomness-tests/v1.5.2-sand-both-images-xored-vne-colour-bitmap-preview.png">
+							</div>
+							<div class="cell">								
+								<span class="testSuccess">Pass</span>
+							</div>
+						</div>
+					</div><br>
+										
+					<h4 id="nist-test-suite-results">NIST test suite results</h4>
+					<p>
+						Next, over 40 photographs of sand were tested. A few of the photographs that did not pass the 
+						initial FIPS 140-2 tests for all steps were replaced. The ones that did pass the tests were 
+						combined together into larger binary files of approximately 15 MB each.
 					</p>
 					<p>
-						<i>
-							The original camera images were 4000 x 3000 pixels, then have been cropped to 1000 x 750 pixels 
-							for faster processing and to save bandwidth. The photos were processed with the Skein 512 bit hash 
-							algorithm and an estimate of 1 bit per pixel entropy input.<br>
-							<br>
-							<span class="nonPrintable">Click on the thumbnail images below to see a bigger image.</span>
-						</i>
+						The first test suite was <a href="#ref248">NIST SP 800-22<sup>[248]</sup></a>. The tests were 
+						done on the least significant bits (LSBs), the least significant bits of images XORed together 
+						(XORed LSBs) and the results after Basic Von Neumann extraction (VNE). The results are presented 
+						below:
 					</p>
-					
-					
-					<h3>Macro shot of sand at a beach</h3>
+					<table class="testResultsTable">
+						<tr>
+							<th>&nbsp;</th>
+							<th>LSBs</th>
+							<th>XORed LSBs</th>
+							<th>VNE</th>
+						</tr>
+						<tr>
+							<th>Full results</th>
+							<td><a href="#ref242">link<sup>[242]</sup></a></td>
+							<td><a href="#ref243">link<sup>[243]</sup></a></td>
+							<td><a href="#ref244">link<sup>[244]</sup></a></td>
+						</tr>
+						<tr>
+							<th>Total bits tested</th>
+							<td>121927680</td>
+							<td>121927680</td>
+							<td>112787840</td>								
+						</tr>
+						<tr>
+							<th>Total of 0 and 1 bits</th>
+							<td>60944569 &ndash; 60983111</td>
+							<td>60964217 &ndash; 60963463</td>
+							<td>56393688 &ndash; 56394152</td>
+						</tr>
+						<tr>
+							<th>Number of bits difference</th>
+							<td>38542</td>
+							<td>754</td>
+							<td>464</td>
+						</tr>
+						<tr>
+							<th>Percentage of 0 and 1 bits</th>
+							<td>0.499841 &ndash; 0.500158</td>
+							<td>0.500003 &ndash; 0.499996</td>
+							<td>0.499997 &ndash; 0.500002</td>
+						</tr>
+					</table><br>
 					<p>
-						This is an example of the TRNG output from processing a macro shot of sand at a beach. 
-						<span class="nonPrintable">
-							See the full test results output <a href="img/randomness-tests/sand-test-results.txt">here</a> as a text file.
-						</span> 
-						This passes all the randomness tests and is one of the best photograph sources.
+						For testing the unconditioned least significant bits the full number of bits was divided into 8 
+						bitstreams. Of these bits only a few of the bitstreams had failures. For most, 8/8 bitstreams 
+						passed, however there were a few that had 7/8 bitstreams pass and a couple with 5/8 or 6/8 
+						bitstreams that passed. For the results in the XORed least significant bits, this was tested as 
+						one bitstream and mostly passed except for a few minor failures in the NonOverlappingTemplate 
+						test. After the Basic Von Neumann extraction which was tested on one bitstream, the results were 
+						the strongest.
 					</p>
-					<div class="testOutput">
-						<h4>Original photo</h4>
-						<a href="img/randomness-tests/sand-original-photo.png">
-							<img class="nonPrintable" src="img/randomness-tests/sand-original-photo-preview.png" alt="Sand">
-							<img class="printable" src="img/randomness-tests/sand-original-photo.png" alt="Sand">
-						</a>						
-					</div>					
-					<div class="testOutput">
-						<h4>Extracted entropy</h4>
-						<a href="img/randomness-tests/sand-extracted-entropy.png">
-							<img class="nonPrintable" src="img/randomness-tests/sand-extracted-entropy-preview.png" alt="Sand">
-							<img class="printable" src="img/randomness-tests/sand-extracted-entropy.png" alt="Sand">
-						</a>
-						<div class="results">Extracted entropy FIPS 140-2 tests: <span class="pass">Pass</span></div>
-					</div>
-					
-					
-					<h3>Macro shot of grass</h3>
+										
+					<h4 id="ent-and-diehard-test-suite-results">ENT and Diehard test suite results</h4>
 					<p>
-						This is an example of the TRNG output from processing a macro shot of grass in a field. 
-						<span class="nonPrintable">
-							See the full test results output <a href="img/randomness-tests/grass-test-results.txt">here</a> as a text file.
-						</span> 
-						This passes all the randomness tests and is one of the best photograph sources.
+						For the next tests. the binary files were uploaded to the CAcert Research Lab 
+						<a href="#ref222">Random Number Generator Analysis site<sup>[222]</sup></a>.
+						
+						This site performed an independent test of the random data against the 
+						<a href="#ref223">ENT and Diehard test suites<sup>[223]</sup></a>. It was important to test 
+						the data at each step of the TRNG, including the unconditioned and conditioned data. The site 
+						required a minimum of 12 MB of random data in order to process the files so enough photos were 
+						processed to meet this requirement. The results are presented below:
 					</p>
-					<div class="testOutput">
-						<h4>Original photo</h4>
-						<a href="img/randomness-tests/grass-original-photo.png">
-							<img class="nonPrintable" src="img/randomness-tests/grass-original-photo-preview.png" alt="Grass">
-							<img class="printable" src="img/randomness-tests/grass-original-photo.png" alt="Grass">
-						</a>						
-					</div>
-					<div class="testOutput">
-						<h4>Extracted entropy</h4>
-						<a href="img/randomness-tests/grass-extracted-entropy.png">
-							<img class="nonPrintable" src="img/randomness-tests/grass-extracted-entropy-preview.png" alt="Grass">
-							<img class="printable" src="img/randomness-tests/grass-extracted-entropy.png" alt="Grass">
-						</a>
-						<div class="results">Extracted entropy FIPS 140-2 tests: <span class="pass">Pass</span></div>
-					</div>
-					
-					
-					<h3>Photo of trees</h3>
+					<table class="testResultsTable">
+						<tr>
+							<th>&nbsp;</th>
+							<th>LSBs</th>
+							<th>XORed LSBs</th>
+							<th>VNE</th>
+						</tr>
+						<tr>
+							<th>CAcert full results</th>
+							<td><a href="#ref225">link<sup>[225]</sup></a></td>
+							<td><a href="#ref226">link<sup>[226]</sup></a></td>
+							<td><a href="#ref225">link<sup>[227]</sup></a></td>
+						</tr>
+						<tr>
+							<th>Entropy (->8)</th>
+							<td>7.999989</td>
+							<td>7.999989</td>
+							<td>7.999989</td>
+						</tr>
+						<tr>
+							<th>Birthday Spacing</th>
+							<td>0.124069</td>
+							<td>0.785778</td>
+							<td>0.090422</td>
+						</tr>
+						<tr>
+							<th>Matrix Ranks</th>
+							<td>0.135</td>
+							<td>0.718</td>
+							<td>0.149</td>
+						</tr>
+						<tr>
+							<th>6x8 Matrix Ranks</th>
+							<td>0.039</td>
+							<td>0.073</td>
+							<td>0.456</td>
+						</tr>
+						<tr>
+							<th>Minimum Distance Test</th>
+							<td>0.535812</td>
+							<td>0.560551</td>
+							<td>0.894059</td>
+						</tr>
+						<tr>
+							<th>Random Spheres Test</th>
+							<td class="potentiallyDeterministic">0.008233</td>
+							<td>0.816425</td>
+							<td>0.646940</td>
+						</tr>
+						<tr>
+							<th>The Squeeze Test</th>
+							<td>0.069099</td>
+							<td>0.343447</td>
+							<td>0.375119</td>
+						</tr>
+						<tr>
+							<th>Overlapping Sums Test</th>
+							<td>0.431508</td>
+							<td>0.010005</td>
+							<td>0.707685</td>
+						</tr>
+					</table><br>
+					<ul>
+						<li>
+							<b>LSBs</b> &ndash; This was the result from Step 3 of the TRNG. This was the unconditioned 
+							least significant bits of 10 images concatenated together into a 15 MB binary file.
+						</li>
+						<li>
+							<b>XORed LSBs</b> &ndash; This was the result from Step 4 and 5 of the TRNG. This was the 
+							least significant bits of 10 unique images concatenated together and then XORed with the least 
+							significant bits of another 10 unique images concatenated together. These 20 images produced 
+							a 15 MB binary file.
+						</li>
+						<li>
+							<b>VNE</b> &ndash; This was the result from Step 6 of the TRNG. This was the least 
+							significant bits of 20 unique images concatenated together and then XORed with the least 
+							significant bits of another 20 unique images concatenated together. The resulting data was 
+							then run through the Basic Von Neumann Extractor. These 40 images produced a 15 MB binary 
+							file.
+						</li>
+					</ul>
 					<p>
-						This is an example of the TRNG output from processing a photo of trees. 
-						<span class="nonPrintable">
-							See the full test results output <a href="img/randomness-tests/trees-test-results.txt">here</a> as a text file.
-						</span> 
-						This is not a particularly good photograph due to it being overexposed with some of the bright cloud 
-						showing through the trees, thus the overexposed sections will be a single repeated colour. The 
-						algorithm will remove these overexposed sections and the extracted output still passes the tests, 
-						however there is less usable random data than normal.
+						There was a minor note on the Random Spheres Test after testing the unconditioned least 
+						significant bits. This was detected as 'potentially deterministic', however the test did not 
+						fail completely. All of the files passed all the other statistical tests without any problems.
 					</p>
-					<div class="testOutput">
-						<h4>Original photo</h4>
-						<a href="img/randomness-tests/trees-original-photo.png">
-							<img class="nonPrintable" src="img/randomness-tests/trees-original-photo-preview.png" alt="Trees">
-							<img class="printable" src="img/randomness-tests/trees-original-photo.png" alt="Trees">
-						</a>						
-					</div>
-					<div class="testOutput">
-						<h4>Extracted entropy</h4>
-						<a href="img/randomness-tests/trees-extracted-entropy.png">
-							<img class="nonPrintable" src="img/randomness-tests/trees-extracted-entropy-preview.png" alt="Trees">
-							<img class="printable" src="img/randomness-tests/trees-extracted-entropy.png" alt="Trees">
-						</a>
-						<div class="results">Extracted entropy FIPS 140-2 tests: <span class="pass">Pass</span></div>
-					</div>
-					
-					
-					<h3>Photo of water</h3>
+										
+					<h4 id="other-photograph-options">Other photograph options</h4>
 					<p>
-						This is an example of the TRNG output from processing a photo of water in a harbour. 
-						<span class="nonPrintable">
-							See the full test results output <a href="img/randomness-tests/water-test-results.txt">here</a> as a text file.
-						</span>
+						Tests were also run on various other things in nature. All the unconditioned least significant 
+						bits from these photographs passed the FIPS 140-2 tests. These are the best options for 
+						photographs as they are constantly changing. Examples of these are shown below:
 					</p>
-					<div class="testOutput">
-						<h4>Original photo</h4>
-						<a href="img/randomness-tests/water-original-photo.png">
-							<img class="nonPrintable" src="img/randomness-tests/water-original-photo-preview.png" alt="water">
-							<img class="printable" src="img/randomness-tests/water-original-photo.png" alt="water">
-						</a>						
-					</div>					
-					<div class="testOutput">
-						<h4>Extracted entropy</h4>
-						<a href="img/randomness-tests/water-extracted-entropy.png">
-							<img class="nonPrintable" src="img/randomness-tests/water-extracted-entropy-preview.png" alt="water">
-							<img class="printable" src="img/randomness-tests/water-extracted-entropy.png" alt="water">
-						</a>
-						<div class="results">Extracted entropy FIPS 140-2 tests: <span class="pass">Pass</span></div>
-					</div>
-					
-					
-					<h3>Photo of clouds</h3>
+					<div class="testImages">
+						<div class="image">
+							Bark<br>
+							<img src="img/randomness-tests/bark-preview.png">
+						</div>
+						<div class="image">
+							Berries<br>
+							<img src="img/randomness-tests/berries-preview.png">
+						</div>
+						<div class="image">
+							Clouds<br>
+							<img src="img/randomness-tests/clouds-preview.png">
+						</div>
+						<div class="image">
+							Flower<br>
+							<img src="img/randomness-tests/flower-preview.png">
+						</div>
+						<div class="image">
+							Grass<br>
+							<img src="img/randomness-tests/grass-preview.png">
+						</div>
+						<div class="image">
+							Leaves<br>
+							<img src="img/randomness-tests/leaves-preview.png">
+						</div>
+						<div class="image">
+							Plants<br>
+							<img src="img/randomness-tests/plants-preview.png">
+						</div>
+						<div class="image">
+							Rocks<br>
+							<img src="img/randomness-tests/rocks-preview.png">
+						</div>
+						<div class="image">
+							Sand<br>
+							<img src="img/randomness-tests/sand-preview.png">
+						</div>
+						<div class="image">
+							Shore<br>
+							<img src="img/randomness-tests/shore-preview.png">
+						</div>
+						<div class="image">
+							Water<br>
+							<img src="img/randomness-tests/water-preview.png">
+						</div>
+						<div class="image">
+							Waves<br>
+							<img src="img/randomness-tests/waves-preview.png">
+						</div>
+						
+					</div><br>
 					<p>
-						This is an example of the TRNG output from processing a photo of clouds. 
-						<span class="nonPrintable">
-							See the full test results output <a href="img/randomness-tests/clouds-test-results.txt">here</a> as a text file.
-						</span> 
-						Clouds are generally not a good source photograph as there are a lot of repeating colours. These 
-						do get stripped out with the algorithm, but in the end you are left with less random data. The 
-						extracted output will still pass the FIPS 140-2 tests, however it may be wiser to use another 
-						source image.
+						Taking photographs of static things also worked well and the unconditioned least 
+						significant bits passed all the FIPS 140-2 tests. These are less optimal photograph sources 
+						however as they are static, which means only the lighting conditions and direction of the 
+						photograph will vary in subsequent photographs. Examples of these are shown below:
 					</p>
-					<div class="testOutput">
-						<h4>Original photo</h4>
-						<a href="img/randomness-tests/clouds-original-photo.png">
-							<img class="nonPrintable" src="img/randomness-tests/clouds-original-photo-preview.png" alt="clouds">
-							<img class="printable" src="img/randomness-tests/clouds-original-photo.png" alt="clouds">
-						</a>						
-					</div>
-					<div class="testOutput">
-						<h4>Extracted entropy</h4>
-						<a href="img/randomness-tests/clouds-extracted-entropy.png">
-							<img class="nonPrintable" src="img/randomness-tests/clouds-extracted-entropy-preview.png" alt="clouds">
-							<img class="printable" src="img/randomness-tests/clouds-extracted-entropy.png" alt="clouds">
-						</a>
-						<div class="results">Extracted entropy FIPS 140-2 tests: <span class="pass">Pass</span></div>
-					</div>
+					<div class="testImages">
+						<div class="image">
+							Carpet<br>
+							<img src="img/randomness-tests/carpet-preview.png">
+						</div>
+						<div class="image">
+							Concrete<br>
+							<img src="img/randomness-tests/concrete-preview.png">
+						</div>						
+						<div class="image">
+							Roughcast<br>
+							<img src="img/randomness-tests/roughcast-preview.png">
+						</div>						
+						<div class="image">
+							Stone<br>
+							<img src="img/randomness-tests/stone-preview.png">
+						</div>
+						<div class="image">
+							Wood<br>
+							<img src="img/randomness-tests/wood-preview.png">
+						</div>
+					</div><br>
 					
+					<h4 id="dark-frame-options">Dark frame options</h4>
+					<p>
+						Results that did not work very well were dark frames where photographs were taken with the 
+						lense covered to simulate a lense cap being on. The data was not strong enough to pass most of 
+						the FIPS 140-2 tests. In testing there was some noise on the least significant bits and the 
+						pixels were not completely black (0, 0, 0), but the resulting data was far from uniformly random. 
+						An example is shown below:
+					</p>
+					<div class="testImages">
+						<div class="image">
+							Dark frame<br>
+							<img src="img/randomness-tests/dark-frame-preview.png">
+						</div>
+					</div><br>
+					<p>
+						In testing it required the least significant bits from four dark frame photographs to be XORed 
+						together to be strong enough to pass the FIPS 140-2 tests. Comparing this to the regular 
+						photographs tested above, they only required the least significant bits of a single photograph 
+						to pass the tests so they should be preferred compared to dark frame photographs.
+					</p>
+					<p>
+						These results differ from the results in the 
+						two papers<a href="#ref215"><sup>[215]</sup></a><a href="#ref216"><sup>[216]</sup></a> mentioned 
+						earlier which suggested using a dark frame to capture the thermal noise in the camera. This can 
+						likely be attributed to the different methodology. It can be shown that letting in a small 
+						amount of light into the frame and taking a photograph of a static cream painted wall was good 
+						enough to let more noise onto the camera sensor and produce a strong result for a single frame 
+						that passed the FIPS 140-2 tests. An example is shown below:
+					</p>
+					<div class="testImages">
+						<div class="image">
+							Painted wall<br>
+							<img src="img/randomness-tests/painted-wall-preview.png">
+						</div>
+					</div><br>
+					<p>
+						Testing was also done by taking photographs with a Logitech C920, which is a high end webcam 
+						capable of recording video in high definition (1080P). A regular laptop webcam with 2MP was also 
+						tested. In both cases, the test results were similar to the Canon G9 and the least significant 
+						bits of all images passed the FIPS 140-2 tests.
+					</p>
 					
 					<h3>Summary</h3>
 					<p>
 						In summary, the best results are achieved using the macro mode on a digital camera and taking close-up 
-						shots of things like sand or grass. Shooting a variety of things like rocks, trees or water can also 
-						work. Users can experiment taking photos of various things in nature on their own. Users should take 
-						care to verify the extracted random data passes the tests from FIPS 140-2. This will give 
-						reasonable confidence for using it as one-time pads. With this TRNG and a single 12 MP photo, it 
-						can produce enough random data for approximately 3900 messages (depending on the source photograph 
-						quality).
+						shots of things like sand. Shooting a variety of things like rocks, trees or water can also give 
+						good results. Users can experiment taking photos of various things in nature on their own. Users 
+						should take care to verify the unconditioned random data passes the tests from FIPS 140-2. This 
+						will give reasonable confidence for using it as one-time pads.. 
 					</p>
 					<p>
-						The safest method is to use a photo from a standalone digital camera that has been captured in 
-						the camera's raw image format, transferred to a computer by USB cable (or SD card), 
-						then losslessly converted to PNG (or BMP) file format. Users should avoid using a mobile phone as 
-						they generally have poor security and the contents can be secretly collected from them at any 
-						time due to the <a href="#ref129">closed baseband processor<sup>[129]</sup></a>. 
-						The user should always erase the original photo after the one-time pads have been created from 
-						it. To be completely secure, users should run the TRNG program from a non-networked 
-						(<a href="#ref130">air gapped<sup>[130]</sup></a>) computer.
-					</p>
-										
+						With this TRNG and a single 12 MP photo, it is possible to produce enough random data for 
+						approximately 1980 messages. For a group of two people this would be 990 messages per person 
+						which is enough to last for a reasonable period of time. If more messages are required then 
+						users can can generate multiple sets of one-time pads and load additional sets as necessary when 
+						they run out. It is also possible to concatenate the random data from multiple sets together 
+						using a tool included in the program. The only limit will be the amount of local storage that 
+						can be used in the browser.
+					</p>		
 															
-					<h2 id="pad-storage-export"><span>12</span> Pad storage and exporting data</h2>
+					<h2 id="pad-storage-export"><span>13</span> Pad storage and exporting data</h2>
 					<p>
 						After the one-time pads have been created, they must be exported separately for each user. Part of this 
 						process automatically determines who will be sending with what one-time pads. The one-time pads are divided 
@@ -1383,22 +1767,21 @@
 							same protocol and different servers, then it makes traffic analysis even more difficult.
 						</li>
 						<li>
-							There are 3 export options for using the one-time pads with the program. <b>Export to clipboard</b> 
-							lets you copy/paste the pads from memory into wherever you want to put them. <b>Export to text file</b> 
-							pops up a save dialog to save the pads to a text file on your filesystem or portable storage media. 
-							Exporting to the <b>browser's local database</b> is if you want to export the created pads for that 
-							user into the local storage of that device/computer browser directly and start chatting immediately.
+							There are 2 export options for using the one-time pads with the program. <b>Export to clipboard</b> 
+							lets the user copy/paste the pads from memory into wherever they want to put them. 
+							<b>Export to text file</b> pops up a save dialog to save the pads to a text file on their 
+							filesystem or portable storage media.
 						</li>
 						<li>
 							Saving to removable media such as a CD, DVD, MicroSD, SD card or USB drive will be convenient and 
-							portable. Flash memory is at least small and compact which means you can conceal, destroy or 
+							portable. Flash memory is at least small and compact which means the user can conceal, destroy or 
 							get rid of it quickly and easily. The most secure option may be to use CDs/DVDs which can be 
 							written once, transferred to each user, then destroyed. The most convenient option is to get 
-							a USB thumbdrive, with a portable version of 
-							<a href="#ref79">Firefox<sup>[79]</sup></a> loaded on it. 
-							Save the one-time pads in there as well. Load up Firefox and then load the one-time pads from 
-							inside it. Now the program is portable and you can take it with you on your keyring, run it 
-							from any trusted computer (e.g. home or work) and stay in contact wherever you are.
+							a USB thumbdrive, with a portable version of <a href="#ref79">Firefox<sup>[79]</sup></a> 
+							loaded on it. Then save the one-time pads in there as well. Load up Firefox and then load 
+							the one-time pads from inside it. Now the program is portable and the user can take it with 
+							them on a keyring, run it from any trusted computer (e.g. home or work) and stay in contact 
+							wherever they are.
 						</li>
 						<li>
 							Hard drives and flash memory <a href="#ref131">are difficult<sup>[131]</sup></a> to remove 
@@ -1427,7 +1810,7 @@
 					</ul>
 					
 					
-					<h2 id="database-encryption"><span>13</span> One-time pad database encryption and authentication</h2>
+					<h2 id="database-encryption"><span>14</span> One-time pad database encryption and authentication</h2>
 					<p>
 						The program can encrypt and authenticate the one-time pad database prior to export and 
 						transportation to other chat group users. The program uses a cascade of two strong stream ciphers 
@@ -1470,12 +1853,12 @@
 						provide any steganography for transporting the database, so if this is needed in the near future 
                         it is advised to use a 
 						<a href="#ref132">TrueCrypt 7.1a hidden volume<sup>[132]</sup></a><a href="#ref133"><sup>[133]</sup></a> 
-                        and store the one-time pad database inside it. If an attacker forces you to reveal the password 
-						you can reveal the outer volume password which would reveal decoy files, and you would still 
+                        and store the one-time pad database inside it. If an attacker forces the user to reveal the password 
+						they can reveal the outer volume password which would reveal decoy files, and they would still 
 						have plausible deniability that a hidden volume containing the one-time pads does not exist.
 					</p>
 					
-					<h3 id="cascade-database-encryption"><span>13.1</span> Cascade database encryption</h3>
+					<h3 id="cascade-database-encryption"><span>14.1</span> Cascade database encryption</h3>
 					<p>
 						To encrypt each one-time pad in the database a cascade of two strong, reputable stream 
                         ciphers is used. The ciphers are the 
@@ -1580,13 +1963,13 @@
 							database keys, but the static 96 bit nonce <code>ffffffffffffffffffffffff</code> in hexadecimal 
 							for AES-CTR and the static 64 bit nonce <code>ffffffffffffffff</code> for Salsa20 is used for 
 							encryption. Because each pad index number is converted to a nonce and in the language being 
-							used integers cannot exceed 2<sup>53 - 1</sup> (9007199254740991), this nonce cannot be 
+							used integers cannot exceed 2<sup>53 - 1</sup> (9,007,199,254,740,991), this nonce cannot be 
 							accidentally be re-used for encrypting a pad, therefore it is used it to encrypt the pad 
 							database information.
 						</li>
 					</ul>
 					
-					<h3 id="cascade-database-authentication"><span>13.2</span> Cascade database authentication</h3>
+					<h3 id="cascade-database-authentication"><span>14.2</span> Cascade database authentication</h3>
 					<p>
                         Using the safe principles of 
 						<a href="#ref142">Encrypt then MAC<sup>[142]</sup></a><a href="#ref143"><sup>[143]</sup></a>, 
@@ -1650,7 +2033,7 @@
 						</li>
 					</ul>
 					
-					<h3 id="database-index-authentication"><span>13.3</span> Database index authentication</h3>
+					<h3 id="database-index-authentication"><span>14.3</span> Database index authentication</h3>
 					<p>
 						The program also creates a MAC of the database index for each user's set of one-time pads 
 						by combining the pad index numbers for each row and then creating a cascade MAC. This 
@@ -1690,7 +2073,7 @@
 					</ul>
 					
 					
-					<h2 id="database-key-wrapping"><span>14</span>Protection of database encryption and authentication keys</h2>
+					<h2 id="database-key-wrapping"><span>15</span>Protection of database encryption and authentication keys</h2>
 					<p>
 						The actual database encryption and authentication keys which were generated by the TRNG are 
 						stored in inside the database with the rest of the other information. To protect these keys 
@@ -1698,45 +2081,52 @@
                         construction is used.
 					</p>
 					
-					<h3 id="database-pbkdf"><span>14.1</span>Database master key derivation</h3>
+					<h3 id="database-pbkdf"><span>15.1</span>Database master key derivation</h3>
 					<p>
 						To encrypt the actual database encryption and authentication keys, a master key is created 
-						by deriving it from a password, two salts and two separate PBKDFs. The current PBKDFs are a 
-						temporary measure until there is library support for 
+						by deriving it from a password, two salts and two separate 
+						<a href="#ref28">Password Based Key Derivation Functions (PBKDFs)<sup>[28]</sup></a>. The current 
+						PBKDFs are a temporary measure until there is library support for 
 						<a href="#ref151">Argon2<sup>[151]</sup></a> which was the winner in the 
 						<a href="#ref152">Password Hashing Competition<sup>[152]</sup></a>. A good fallback 
 						solution would have been to use <a href="#ref153">bcrypt<sup>[153]</sup></a> or 
-						<a href="#ref154">scrypt<sup>[154]</sup></a> which use lots of memory as well but there is no 
+						<a href="#ref154">scrypt<sup>[154]</sup></a> which use a lot of memory as well but there is no 
 						verifiable library support for these functions in the programming language being used.<br>
 						<br>						
 						The following describes the cascade PBKDF construction:
 					</p>
 					<div class="formulas">
+						<b>PBKDF-Keccak</b> &#8592; A PBKDF based on the Keccak hash function with a 512 bit output<br>
+						<b>PBKDF-Skein</b> &#8592; A different PBKDF based on the Skein hash function with a 512 bit output<br>
 						<b>Password</b> &#8592; A strong password/passphrase entered by the user<br>
-						<b>Salt<sub>1</sub></b> &#8592; A 768 bit random salt generated by the TRNG to be used with the Keccak PBKDF<br>
-						<b>Salt<sub>2</sub></b> &#8592; A different 768 bit random salt generated by the TRNG to be used with the Skein PBKDF<br>
+						<b>Salt</b> &#8592; A 1536 bit random salt generated by the TRNG<br>
 						<b>Keccak Iterations</b> &#8592; The number of iterations to be performed by the Keccak PBKDF with the default set at 10,000<br>
 						<b>Skein Iterations</b> &#8592; The number of iterations to be performed by the Skein PBKDF with the default set at 10,000<br>
 						<br>
-						<b>Intermediate Key</b> &#8592; PBKDF2-Keccak-512( <i>Password</i>, ( <i>Salt<sub>1</sub></i> || <i>Keccak Iterations</i> ), <i>Keccak Iterations</i> )<br>
-						<b>Master Key</b> &#8592; PBKDF-Skein-512( <i>Intermediate Key</i>, ( <i>Salt<sub>2</sub></i> || <i>Skein Iterations</i> ), <i>Skein Iterations</i> )
+						<b>Keccak Salt</b> &#8592; <i>Salt</i> || <i>Keccak iterations</i><br>
+						<b>Skein Salt</b> &#8592; <i>Salt</i> || <i>Skein iterations</i><br>
+						<b>Derived Key A</b> &#8592; <i>PBKDF-Keccak</i>( <i>Password</i>, <i>Keccak Salt</i> )<br>
+						<b>Derived Key B</b> &#8592; <i>PBKDF-Skein</i>( <i>Password</i> || <i>Derived Key A</i>, <i>Skein Salt</i> )<br>
+						<b>Master Key</b> &#8592; <i>Derived Key A</i> &oplus; <i>Derived Key B</i>
 					</div>
 					<ul>
 						<li>
                             The first PBKDF is <a href="#ref146">PBKDF2<sup>[146]</sup></a> with the 
-                            Keccak-512 hash function. The output key size is set at 512 bits, the default number of 
-							iterations is set at 10,000 and a 768 bit random salt which was generated by the TRNG is 
-							used.
+                            Keccak-512 hash function. The output key size is set at 512 bits. A 1536 bit random salt 
+							which was generated by the TRNG is used. The default number of iterations is set at 10,000 
+							which takes about 8 seconds to compute on a single core of an Intel Core i5 running at 3.3 
+							GHz.
 						</li>
 						<li>
-                            <a href="#ref147">Keccak can be used in conjunction with HMAC<sup>[147]</sup></a> 
+                            Note that <a href="#ref147">Keccak can be used in conjunction with HMAC<sup>[147]</sup></a> 
                             which is what PBKDF2 uses internally. The reason to use Keccak instead of 
-                            <a href="#ref148">SHA-2<sup>[148]</sup></a> is because it is a 
+                            <a href="#ref148">SHA-2<sup>[148]</sup></a> or SHA-1 is because it is a 
                             newer hash function and it is not designed by the NSA. Anything designed by the NSA is avoided 
                             by this program in case it has deliberate secret weaknesses that are unknown to the academic 
                             community. An algorithm designer is in the best position to design an algorithm 
-							with a subtle weakness. In the case of SHA-2 a weakness may not be discovered for many years if 
-                            academia is well behind the state of the art in cryptography.
+							with a subtle weakness. In the case of SHA-2 a weakness may not be discovered for many years 
+							if academia is well behind the state of the art in cryptography. For SHA-1 it barely lasted 
+							a few years before needing to be phased out due to significant flaws.
 							
 							We know at one point <a href="#ref149">the NSA were 20 years ahead in cryptography<sup>[149]</sup></a> 
                             when they knew about differential cryptanalysis before anyone else. They are likely still 
@@ -1754,10 +2144,10 @@
 							physical access to the encrypted database so they might not even bother trying.
 						</li>
 						<li>
-							The second PBKDF uses the Skein hash function. The output key size is set at 512 bits, the 
-							default number of iterations/repetitions is set at 10,000 and a separate 768 bit random salt 
-							which was generated by the TRNG is used. The resulting 512 bit <i>Intermediate Key</i> from 
-							the previous PBKDF2-Keccak function is passed in as the <i>Password</i> for this function.
+							The second PBKDF uses the Skein hash function. The output key size is set at 512 bits. The 
+							same 1536 bit random salt which was generated by the TRNG is used. The default number of 
+							iterations is set at 10,000 which takes about 5 seconds to compute on a single core of an 
+							Intel Core i5 running at 3.3 GHz.							
 						</li>
 						<li>
                             The Skein PBKDF method is described in 
@@ -1771,44 +2161,71 @@
 							block has a different tweak and is thus processed differently."</i>
 						</li>
 						<li>
+							There are important reasons for this cascade construction, in particular the aim is to 
+							protect against failures in at least one of the algorithms for true long term security:<br>
+							<ul>
+								<li>
+									An adversary cannot parallelize the workload by computing both derived keys at the 
+									same time because <i>Derived Key B</i> depends on the result of <i>Derived Key A</i>.
+								</li>
+								<li>
+									The entropy in the <i>Master Key</i> is not lowered if PBKDF-Keccak is weak because 
+									the <i>Password</i> and <i>Salt</i> are also included in PBKDF-Skein.
+								</li>
+								<li>
+									The entropy in the <i>Master Key</i> is not lowered if PBKDF-Skein is weak because 
+									it is XORed with <i>Derived Key A</i>.
+								</li>
+								<li>
+									The <i>Master Key</i> is at least as strong as the strongest function and retains 
+									the entropy in the <i>Password</i> and <i>Salt</i> even if one of the functions is 
+									weak or compromised.
+								</li>
+								<li>
+									It is hard to perform cryptanalysis on the output of each function individually 
+									because the output is XORed by random data from the other function.
+								</li>
+								<li>
+									The user can choose not store the number of Keccak or Skein iterations with the rest of 
+									the database. The user would remember the iterations or write them down separately on a 
+									piece of paper. This may be useful if passing through international airport security and 
+									there is a high likelihood of the data being confiscated and copied. This forces an attacker 
+									with only the database to try every iteration count for every password permutation. To 
+									counter an attacker simply caching the results of previous iteration counts and running the 
+									PBKDF on one password at a time, the number of iterations are appended to the end of the 
+									<i>Salt</i> at runtime. This forces the attacker to do the full PBKDF iterations for every 
+									reasonable iteration count the user could have chosen e.g. 1 - 10,000+ then repeat that for 
+									all possible password permutations.
+								</li>
+							</ul>
+						</li>												
+						<li>
 							For added security an option exists in the user interface to use custom iteration counts. 
 							The user can decrease the number of iterations for slower portable devices and use a longer 
 							password to compensate. The user may also choose to increase the iteration counts to make 
 							the database more resilient to attack. The default of 10,000 iterations for each of the 
 							PBKDFs is a good balance between strength and slow speed of the JavaScript runtime engine.
+						</li>						
+						<li>
+							The total length of the <i>Salt</i> is the same length of all the database keys (256 bits 
+							AES-CTR encryption key + 256 bits Salsa20 encryption key + 512 bits Keccak MAC key + 512 
+							bits Skein MAC key) which adds up to 1536 bits. Normally passwords do not contain much 
+							entropy, so the <i>Salt</i> which was randomly generated by the TRNG is used as a backup to 
+							add additional entropy to safely secure the database keys.
 						</li>
 						<li>
-							The user can also choose not store the number of Keccak or Skein iterations with the rest of 
-							the database. The user would remember the iterations or write them down separately on a 
-							piece of paper. This may be useful if passing through airport security and there is a high 
-							likelihood of the data being confiscated and copied. This forces an attacker with only the 
-							database to try every iteration count for every password permutation. To counter an attacker 
-							simply caching the results of previous iteration counts and running the PBKDF on one password 
-							at a time, the number of iterations are appended to the end of the salt at runtime. This 
-							forces the attacker to do the full PBKDF iterations for every reasonable iteration count 
-							the user could have chosen e.g. 1 - 10,000+ then repeat that for all possible password 
-							permutations.
-						</li>
-						<li>
-							The total length of the two salts is the same length of all the database keys (256 bits 
-							AES-CTR + 256 bits Salsa20 + 512 bits Keccak + 512 bits Skein) which adds up to 1536 bits. 
-							Each 768 bit salt is fed into a different PBKDF. Normally passwords do not contain much 
-							entropy, so the salts which are randomly generated by the TRNG are used as a backup to add 
-							additional entropy to safely secure the database keys.
-						</li>
-						<li>
-							Another option exists in the user interface to store the two 768 bit salts (1536 bits 
-							concatenated together) as a separate keyfile. The advantage of this is to store the 
-							keyfile on a separate storage device (e.g. MicroSD card) or written down on a piece of paper 
-							which can be easily hidden if the database is at risk of being compromised in transit. If 
-							an attacker can confiscate or steal the primary device (e.g. notebook PC) which has the 
-							encrypted database but can't find the keyfile as well then it is practically impossible to 
-							crack the database encryption in any reasonable timeframe. Future versions may allow this 
-							keyfile to be hidden inside an image file using steganography.
+							Another option exists in the user interface to store the 1536 bit <i>Salt</i> as a separate 
+							keyfile. The advantage of this is to store the keyfile on a separate storage device (e.g. 
+							MicroSD card) or written down on a piece of paper which can be easily hidden if the database 
+							is at risk of being compromised in transit. If an attacker can confiscate or steal the 
+							primary device (e.g. notebook PC) which has the encrypted database but cannot find the 
+							keyfile as well then it is practically impossible to crack the database encryption in any 
+							reasonable timeframe. Future versions may allow this keyfile to be hidden inside an image 
+							file using steganography.
 						</li>
 					</ul>
 					
-					<h3 id="subkey-derivation"><span>14.2</span>Sub key derivation</h3>
+					<h3 id="subkey-derivation"><span>15.2</span>Sub key derivation</h3>
 					<p>
 						Four sub keys are derived from the master key and are used to encrypt the actual database 
                         encryption and authentication keys. This is basically a simple 
@@ -1849,7 +2266,7 @@
 						</li>
 					</ul>
 					
-					<h3 id="encryption-and-authentication-of-database-keys"><span>14.3</span> Encryption and authentication of database keys</h3>
+					<h3 id="encryption-and-authentication-of-database-keys"><span>15.3</span> Encryption and authentication of database keys</h3>
 					<p>
 						The following describes the encryption and authentication of the actual database keys using the 
 						derived keys from earlier:
@@ -1883,11 +2300,11 @@
 					</ul>
 															
 					
-					<h2 id="using-html5"><span>15</span> Using HTML5</h2>
+					<h2 id="using-html5"><span>16</span> Using HTML5</h2>
 					<p>
 						Thomas Ptacek's article, <a href="#ref158">Javascript Cryptography Considered Harmful<sup>[158]</sup></a> 
 						raises a valid point about JavaScript code being delivered by the web server being insecure 
-						against MITM attacks. The article in general however is now outdated and blanket statements 
+						against MITM attacks. The article in general however is now outhated and blanket statements 
 						saying that all JavaScript cryptography is harmful is misleading and inaccurate. In reality, 
 						there are <a href="#ref159">sensible<sup>[159]</sup></a> and 
 						<a href="#ref160">secure<sup>[160]</sup></a> solutions to the problems raised and all of 
@@ -1897,9 +2314,10 @@
 					<p>
 						In summary, most points they made are not applicable for this program due to the fact that the 
 						source code is downloaded as a signed <a href="#ref162">.tar.gz<sup>[162]</sup></a> 
-						archive file and users are expected to verify the file's GPG signature with the one from this website to 
-						ensure its authenticity. From there the code should be run <i>locally</i> from the machine by going to 
-						the directory and running index.html which will load the website and code into the browser. This means all 
+						archive file and users are expected to verify the file's <a href="#ref245">GnuPG<sup>[245]</sup></a> 
+						signature with the one from this website to ensure its authenticity. From there the code should 
+						be run <i>locally</i> from the machine by going to the directory and running index.html which 
+						will load the website and code into the browser. This means all 
 						code is always running locally from the local hard drive and the web address will be similar to 
 						<code>file:///media/truecrypt1/jericho/client/index.html</code>. All the executable code is self 
 						contained and does not rely on any server delivered JavaScript at all. It essentially becomes a 
@@ -1915,15 +2333,18 @@
 						<a href="#ref165">file management<sup>[165]</sup></a>. Browsers are first in line for security 
 						updates and the best ones are open source and trustworthy. People rely on browsers to have good security 
 						to do their Internet banking and shopping online. The source code does not need to be compiled. 
-						You can verify the source code being run live in the browser using Chromium or Firefox built-in Web 
-						Development tools or with browser add-ons like <a href="#ref166">Firebug<sup>[166]</sup></a>. This 
-						allows you to verify the code is doing exactly what it should be. HTML5 is cross platform, one 
-						code base can literally run on Windows, Linux, Mac, phones and tablets simply with the latest 
-						web browser. One of the goals of the project is to get a truly secure chat program functioning 
-						on an open hardware platform and an open operating system like 
-						<a href="#ref167">Firefox OS<sup>[167]</sup></a>. This is a true open source OS for 
-						smartphones and tablets from a reputable organisation that believes that 
-						<a href="#ref168">individuals' security and privacy on the Internet is fundamental<sup>[168]</sup></a>.
+						Users or security researchers can verify the source code being run live in the browser using 
+						Chromium or Firefox built-in Web Development tools or with browser add-ons like 
+						<a href="#ref166">Firebug<sup>[166]</sup></a>. This allows them to verify the code is doing 
+						exactly what it should be. HTML5 is cross platform, one code base can literally run on Windows, 
+						Linux, Mac, phones and tablets simply with the latest web browser. Newer projects such as 
+						<a href="#ref246">Electron<sup>[246]</sup></a> or <a href="#ref247">PhoneGap<sup>[247]</sup></a> 
+						allow the packaging of HTML5 code into a native app for various platforms. One of 
+						the goals of the project is to get a truly secure chat program functioning on an open hardware 
+						platform and an open operating system like <a href="#ref167">Firefox OS<sup>[167]</sup></a>. 
+						This is a true open source OS for smartphones and tablets from a reputable organisation that 
+						believes that <a href="#ref168">individuals' security and privacy on the Internet is 
+						fundamental<sup>[168]</sup></a>.
 					</p>
 					<p>
 						Currently this program has been tested to work in the latest versions of the open source browsers 
@@ -1938,7 +2359,8 @@
 						Firefox is still preferred in comparison to Chromium as 
 						<a href="#ref172">Google were recently caught out<sup>[172]</sup></a> trying to backdoor it 
 						with a closed source binary which captured audio from the microphone. There's nothing stopping 
-						them from trying similar stunts in future unless users are watching closely for these issues.
+						them from trying similar acts of subversion in future unless users are watching closely for 
+						these issues.
 					</p>
 					<p>
 						It is recommended to <a href="#ref173">create a new browser profile<sup>[173]</sup></a> inside a 
@@ -1958,7 +2380,7 @@
 					</p>
 					
 					
-					<h2 id="json-rest-api"><span>16</span> REST API using JSON</h2>
+					<h2 id="json-rest-api"><span>17</span> REST API using JSON</h2>
 					<ul>
 						<li>
 							The client browsers communicate to and from the server using JSON and the 
@@ -1991,7 +2413,7 @@
 						A summary of the request/response protocols are shown below:
 					</p>
 					
-					<h3 id="api-send-message"><span>16.1</span> Send message</h3>
+					<h3 id="api-send-message"><span>17.1</span> Send message</h3>
 					<p>
 						This is the request the client makes when sending a message.
 					</p>
@@ -1999,7 +2421,7 @@
 						<img class="listImage" src="img/api-send-message-json.png">
 					</p>
 					
-					<h3 id="api-send-message-response"><span>16.2</span> Send message server response</h3>
+					<h3 id="api-send-message-response"><span>17.2</span> Send message server response</h3>
 					<p>
 						This is the response the server makes after it has received a request to send a message.
 					</p>
@@ -2007,7 +2429,7 @@
 						<img class="listImage" src="img/api-send-message-server-response-json.png">
 					</p>
 					
-					<h3 id="api-receive-messages"><span>16.3</span> Receive messages request</h3>
+					<h3 id="api-receive-messages"><span>17.3</span> Receive messages request</h3>
 					<p>
 						This is the request each client makes every 3 seconds. This will get any new messages from the server 
 						for the user making the request.
@@ -2016,7 +2438,7 @@
 						<img class="listImage" src="img/api-receive-messages-json.png">
 					</p>
 					
-					<h3 id="api-receive-messages-response"><span>16.4</span> Receive messages response</h3>
+					<h3 id="api-receive-messages-response"><span>17.4</span> Receive messages response</h3>
 					<p>
 						This is the response the server will make after receiving a request from a client for retrieving new messages.
 					</p>
@@ -2024,7 +2446,7 @@
 						<img class="listImage" src="img/api-receive-messages-response-json.png">
 					</p>
 					
-					<h3 id="api-auto-nuke"><span>16.5</span> Initiate self destruct request</h3>
+					<h3 id="api-auto-nuke"><span>17.5</span> Initiate self destruct request</h3>
 					<p>
 						This is the request a client makes if they want to wipe the all the other chat group user's 
 						local one-time pad databases. It is very disruptive and designed for use only in an emergency. 
@@ -2041,7 +2463,7 @@
 						database of one-time pads will then be wiped and their screen cleared.
 					</p>
 					
-					<h3 id="api-auto-nuke-response"><span>16.6</span> Self destruct initiated response</h3>
+					<h3 id="api-auto-nuke-response"><span>17.6</span> Self destruct initiated response</h3>
 					<p>
 						If a chat group user is checking for new messages and an authentic message comes through with the 
 						code <code>init auto nuke</code>, instead of continuing to receive and process new messages, the 
@@ -2057,7 +2479,7 @@
 					</p>
 					
 					
-					<h2 id="message-encoding"><span>17</span> Message encoding</h2>
+					<h2 id="message-encoding"><span>18</span> Message encoding</h2>
 					<p>
 						Each one-time pad is made up of 192 bytes which is 384 hexadecimal symbols or 1536 binary digits. See the 
 						table below for more information:
@@ -2082,7 +2504,7 @@
 						<li>
 							At the moment the program only supports messages typed using the 
 							<a href="#ref182">ASCII printable character set<sup>[182]</sup></a>. 
-							This is all the characters you can see on a standard US keyboard. In practicality 
+							This is all the characters that can be seen on a standard US keyboard. In practicality 
 							this limits the languages that can be used to English and ones that use the 
 							<a href="#ref183">basic Latin alphabet<sup>[183]</sup></a> e.g. Dutch, German, French, 
 							Indonesian, Portuguese and Spanish but without the 
@@ -2156,7 +2578,7 @@
 					</ul>
 					
 					
-					<h2 id="encryption-process"><span>18</span> Message encryption process</h2>
+					<h2 id="encryption-process"><span>19</span> Message encryption process</h2>
 					<ul>
 						<li>
 							The program first receives the plaintext message from the user from the text box when they click the 
@@ -2226,7 +2648,7 @@
 					</ul>
 					
 					
-					<h2 id="decryption-process"><span>19</span> Message decryption process</h2>
+					<h2 id="decryption-process"><span>20</span> Message decryption process</h2>
 					<p>
 						The user first checks for encrypted messages on the server that are not sent by them and have not been 
 						read already by them. This will retrieve all other messages sent by users in the same chat group. 
@@ -2272,7 +2694,7 @@
 					</ul>
 	
 					
-					<h2 id="message-authentication"><span>20</span> Message Authentication Code</h2>
+					<h2 id="message-authentication"><span>21</span> Message Authentication Code</h2>
 					<p>
 						The one-time pad is vulnerable to a <a href="#ref195">bit-flipping attack<sup>[195]</sup></a> if 
 						not authenticated with a MAC. Therefore the program calculates and sends a secure MAC with each 
@@ -2339,7 +2761,7 @@
 					</ul>
 					
 					
-					<h2 id="failsafe-csprng"><span>21</span> Failsafe CSPRNG</h2>
+					<h2 id="failsafe-csprng"><span>22</span> Failsafe CSPRNG</h2>
 					<p>
 						For some functions of the program, general random bits or random numbers are needed. For these 
 						functions it is not critical to have true randomness so a strong 
@@ -2385,7 +2807,7 @@
 					</p>
 					
 					
-					<h2 id="auto-nuke-process"><span>22</span> Self destruct process</h2>
+					<h2 id="auto-nuke-process"><span>23</span> Self destruct process</h2>
 					<p>
 						The protocol normally erases the one-time pad as soon as a message is sent. The one-time pad is 
 						also removed from a receiver's database after they have successfully received and authenticated 
@@ -2415,7 +2837,7 @@
 					</p>
 					
 					
-					<h2 id="extra-security-considerations"><span>23</span> Extra security considerations</h2>
+					<h2 id="extra-security-considerations"><span>24</span> Extra security considerations</h2>
 					<p>
 						There are a number of potential attacks which are more around 
 						<a href="#ref205">social engineering<sup>[205]</sup></a>, side channel attacks, 
@@ -2443,7 +2865,8 @@
 						<li>
 							An attacker could steal/copy the one-time pads as they are being delivered to the other person. 
 							The encrypted one-time pad database should be kept on a small MicroSD card, SD card or USB 
-							drive with the person at all times. Securing it in a zipped up pocket can prevent pickpockets. 
+							drive with the person at all times. Securing it in a zipped up pocket can help prevent 
+							pickpockets.
 							If plausible deniability is needed, the one-time pads should be stored inside an encrypted 
 							hidden volume with Truecrypt or other software. If the one-time pads have been misplaced they 
 							have not been in the user's possession for a certain amount of time, they must be assumed to be 
@@ -2502,21 +2925,26 @@
 							<a href="#ref213">rubber-hose cryptanalysis<sup>[213]</sup></a> or 
 							<a href="#ref214">beaten with a wrench<sup>[214]</sup></a>. While quite unlikely it could be 
 							possible in some countries.
-							The software makes sure that after a message is sent, the one-time pad is deleted from the device. 
-							Then when the other user retrieves the message from the server, the encrypted message is deleted from 
-							the server. Also when it has been decrypted on the other user's device, it is deleted from their local 
-							database as well. This leaves no way to decrypt past messages. It also gives the user plausible 
+							The software makes sure that after a message is sent, the one-time pad is deleted from the 
+							device so it can never be re-used. Then when the other user retrieves the message from the 
+							server, the encrypted message is deleted from the server. In a group scenario, all users of 
+							the group must have read the message before it gets deleted from the server. When a message 
+							has been decrypted on the other user's device, it is deleted from their local database as 
+							well. This leaves no way to decrypt past messages. It also gives the user plausible 
 							deniability that they can decrypt past messages again or remember exactly what was said. To 
 							clear messages from the screen one simply needs to refresh the page using the F5 key on their 
 							keyboard. To clear everything in an emergency, the self destruct should be initiated. This 
-							option is available from the main menu. It will delete the one-time pads from all connected 
-							devices. It will also clear sent messages on the screen of each device. This should be reserved 
-							for an actual emergency because it is time consuming to recreate and deliver new one-time pads.
+							option is available from the main menu. It will delete the one-time pads from all devices 
+							connected to the server. If one of the users is offline, as soon as they come online the will 
+							receive the self destruct command and it will forcefully clear the database as well. If users 
+							are currently online it will also clear sent messages on the screen of each device. This 
+							should be reserved for an actual emergency because it is time consuming to recreate and 
+							deliver new one-time pads.
 						</li>
 					</ul>
 					
 					
-					<h2 id="references"><span>23</span> References</h2>
+					<h2 id="references"><span>25</span> References</h2>
 					<ul class="references">
 						<li id="ref1">
 							1. Wikipedia - Global surveillance disclosures<br>
@@ -3374,6 +3802,162 @@
 							214. xkcd - Security<br>
 							<a href="https://xkcd.com/538/">https://xkcd.com/538/</a>
 						</li>
+						<li id="ref215">
+							215. Jan Krhovjak, Petr Svenda, Vaclav Matyas - The Sources of Randomness in Mobile Devices<br>
+							<a href="https://www.fi.muni.cz/usr/matyas/RNG_nordsec07_cameraReady.pdf">https://www.fi.muni.cz/usr/matyas/RNG_nordsec07_cameraReady.pdf</a>
+						</li>
+						<li id="ref216">
+							216. Jan Bouda, Jan Krhovjak, Vashek Matyas, and Petr Svenda - Towards True Random Number Generation in Mobile Environments<br>
+							<a href="https://www.fi.muni.cz/~xsvenda/docs/RNGExtractor_NordSec09.pdf">https://www.fi.muni.cz/~xsvenda/docs/RNGExtractor_NordSec09.pdf</a>
+						</li>
+						<li id="ref217">
+							217. Wikipedia - Bernoulli process - Basic Von Neumann extractor<br>
+							<a href="https://en.wikipedia.org/wiki/Bernoulli_process#Basic_Von_Neumann_extractor">https://en.wikipedia.org/wiki/Bernoulli_process#Basic_Von_Neumann_extractor</a>
+						</li>
+						<li id="ref218">
+							218. Boston University - Research - Quantum Code Master - Using the strange laws of quantum mechanics to encrypt the world's most secret messages<br>
+							<a href="http://www.bu.edu/research/articles/secure-quantum-key-distribution-encryption">http://www.bu.edu/research/articles/secure-quantum-key-distribution-encryption</a>
+						</li>
+						<li id="ref219">
+							219. Crypto StackExchange - Randomness test question from FIPS 140-1 and comparison with 140-2<br>
+							<a href="https://crypto.stackexchange.com/questions/15052/randomness-test-question-from-fips-140-1-and-comparison-with-140-2">https://crypto.stackexchange.com/questions/15052/randomness-test-question-from-fips-140-1-and-comparison-with-140-2</a>
+						</li>
+						<li id="ref220">
+							220. Wikipedia - Government Communications Headquarters<br>
+							<a href="https://en.wikipedia.org/wiki/Government_Communications_Headquarters">https://en.wikipedia.org/wiki/Government_Communications_Headquarters</a>
+						</li>
+						<li id="ref221">
+							221. Wikipedia - Tailored Access Operations<br>
+							<a href="https://en.wikipedia.org/wiki/Tailored_Access_Operations">https://en.wikipedia.org/wiki/Tailored_Access_Operations</a>
+						</li>
+						<li id="ref222">
+							222. CAcert Research Lab - Random Number Generator Analysis<br>
+							<a href="http://www.cacert.at/random/">http://www.cacert.at/random/</a>
+						</li>
+						<li id="ref223">
+							223. University of Oulu - Psuedo Random Number Generators<br>
+							<a href="https://ee.oulu.fi/research/ouspg/Frontier_Whitepaper-prng">https://ee.oulu.fi/research/ouspg/Frontier_Whitepaper-prng</a>
+						</li>
+						<li id="ref224">
+							224. GNOME - Shotwell<br>
+							<a href="https://wiki.gnome.org/Apps/Shotwell">https://wiki.gnome.org/Apps/Shotwell</a>
+						</li>
+						<li id="ref225">
+							225. CAcert Research Lab - Random Number Generator Results - JC v1.5.2 - LSBs<br>
+							<a href="http://www.cacert.at/cgi-bin/rngresults#14243">http://www.cacert.at/cgi-bin/rngresults#14243</a>
+						</li>
+						<li id="ref226">
+							226. CAcert Research Lab - Random Number Generator Results - JC v1.5.2 - LSBs XORed<br>
+							<a href="http://www.cacert.at/cgi-bin/rngresults#3628">http://www.cacert.at/cgi-bin/rngresults#3628</a>
+						</li>
+						<li id="ref227">
+							227. CAcert Research Lab - Random Number Generator Results - JC v1.5.2 - LSBs XORed VNE<br>
+							<a href="http://www.cacert.at/cgi-bin/rngresults#3628">http://www.cacert.at/cgi-bin/rngresults#2458</a>
+						</li>
+						<li id="ref228">
+							228. Original test image 1 - Beach sand - 4032 x 3024 px - 292,626,432 bits (22.8 MB compressed PNG)<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-first-image.png">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-first-image.png</a>
+						</li>
+						<li id="ref229">
+							229. Original test image 1 - Beach sand - Least significant bits - Black and white bitmap - 3491 x 3491 px - 12,192,768 bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-first-image-lsbs-bw-bitmap.png">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-first-image-lsbs-bw-bitmap.png</a>
+						</li>
+						<li id="ref230">
+							230. Original test image 1 - Beach sand - Least significant bits - Colour bitmap - 712 x 712 px - 12,192,768 bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-first-image-lsbs-colour-bitmap.png">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-first-image-lsbs-colour-bitmap.png</a>
+						</li>
+						<li id="ref231">
+							231. Original test image 1 - Beach sand - Least significant bits - FIPS 140-2 Test tesults - 12,192,768 bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-first-image-lsbs-test-results.txt">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-first-image-lsbs-test-results.txt</a>
+						</li>
+						<li id="ref232">
+							232. Original test image 2 - Beach sand - 4032 x 3024 px - 292,626,432 bits (22.8 MB compressed PNG)<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-second-image.png">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-second-image.png</a>
+						</li>
+						<li id="ref233">
+							233. Original test image 2 - Beach sand - Least significant bits - Black and white bitmap - 3491 x 3491 px - 12,192,768 bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-second-image-lsbs-bw-bitmap.png">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-second-image-lsbs-bw-bitmap.png</a>
+						</li>
+						<li id="ref234">
+							234. Original test image 2 - Beach sand - Least significant bits - Colour bitmap - 712 x 712 px - 12,192,768 bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-second-image-lsbs-colour-bitmap.png">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-second-image-lsbs-colour-bitmap.png</a>
+						</li>
+						<li id="ref235">
+							235. Original test image 2 - Beach sand - Least significant bits - FIPS 140-2 Test tesults - 12,192,768 bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-second-image-lsbs-test-results.txt">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-second-image-lsbs-test-results.txt</a>
+						</li>
+						<li id="ref236">
+							236. Least significant bits of both images XORed together - Black and white bitmap - 3491 x 3491 px - 12,192,768 bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-both-images-xored-bw-bitmap.png">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-both-images-xored-bw-bitmap.png</a>
+						</li>
+						<li id="ref237">
+							237. Least significant bits of both images XORed together - Colour bitmap - 712 x 712 px - 12,192,768 bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-both-images-xored-colour-bitmap.png">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-both-images-xored-colour-bitmap.png</a>
+						</li>
+						<li id="ref238">
+							238. Least significant bits of both images XORed together - FIPS 140-2 Test tesults - 12,192,768 bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-both-images-xored-test-results">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-both-images-xored-test-results</a>
+						</li>
+						<li id="ref239">
+							239. After Basic Von Neumann Extraction of the XORed least significant bits - Black and white bitmap - 1746 x 1746 px - 3,049,484 bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-both-images-xored-vne-bw-bitmap.png">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-both-images-xored-vne-bw-bitmap.png</a>
+						</li>
+						<li id="ref240">
+							240. After Basic Von Neumann Extraction of the XORed least significant bits - Colour bitmap - 356 x 356 px - 3,049,484 bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-both-images-xored-vne-colour-bitmap.png">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-both-images-xored-vne-colour-bitmap.png</a>
+						</li>
+						<li id="ref241">
+							241. After Basic Von Neumann Extraction of the XORed least significant bits - FIPS 140-2 Test tesults - 3,049,484 bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-both-images-xored-vne-test-results.txt">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-sand-both-images-xored-vne-test-results.txt</a>
+						</li>						
+						<li id="ref242">
+							242. NIST SP 800-22 - Test results - Least significant bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-nist-sp-800-22-final-analysis-report-lsbs.txt">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-nist-sp-800-22-final-analysis-report-lsbs.txt</a>
+						</li>
+						<li id="ref243">
+							243. NIST SP 800-22 - Test results - Least significant bits of both images XORed together<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-nist-sp-800-22-final-analysis-report-lsbs-xored.txt">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-nist-sp-800-22-final-analysis-report-lsbs-xored.txt</a>
+						</li>
+						<li id="ref244">
+							244. NIST SP 800-22 - Test results - After Basic Von Neumann Extraction of the XORed least significant bits<br>
+							<a href="https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-nist-sp-800-22-final-analysis-report-lsbs-xored-vne.txt">https://joshua-m-david.github.io/jerichoencryption/img/randomness-tests/v1.5.2-nist-sp-800-22-final-analysis-report-lsbs-xored-vne.txt</a>
+						</li>
+						<li id="ref245">
+							245. The GNU Privacy Guard<br>
+							<a href="https://www.gnupg.org">https://www.gnupg.org</a>
+						</li>
+						<li id="ref246">
+							246. Electron<br>
+							<a href="http://electron.atom.io">http://electron.atom.io</a>
+						</li>
+						<li id="ref247">
+							247. PhoneGap<br>
+							<a href="http://phonegap.com">http://phonegap.com</a>
+						</li>
+						<li id="ref248">
+							248. National Institute of Standards and Technology - Special Publication 800-22 - Revision 1a - A Statistical Test Suite for Random and Pseudorandom Number Generators for Cryptographic Applications<br>
+							<a href="http://csrc.nist.gov/publications/nistpubs/800-22-rev1a/SP800-22rev1a.pdf">http://csrc.nist.gov/publications/nistpubs/800-22-rev1a/SP800-22rev1a.pdf</a>
+						</li>
+						<li id="ref249">
+							249. ENT - A Psuedorandom Number Sequence Test Program<br>
+							<a href="http://www.fourmilab.ch/random/">http://www.fourmilab.ch/random/</a>
+						</li>
+						<li id="ref250">
+							250. Wikipedia - Diehard tests<br>
+							<a href="https://en.wikipedia.org/wiki/Diehard_tests">https://en.wikipedia.org/wiki/Diehard_tests</a>
+						</li>
+						<li id="ref251">
+							251. New Zealand Herald - NZ Customs wants new powers to see passwords<br>
+							<a href="http://nzherald.co.nz/nz/news/article.cfm?c_id=1&objectid=11412237">http://nzherald.co.nz/nz/news/article.cfm?c_id=1&objectid=11412237</a>
+						</li>
+						<li id="ref252">
+							252. Wikipedia - Randomness extractor<br>
+							<a href="https://en.wikipedia.org/wiki/Randomness_extractor">https://en.wikipedia.org/wiki/Randomness_extractor</a>
+						</li>
+						<li id="ref253">
+							253. HTML5 Rocks - Capturing Audio and Video in HTML5<br>
+							<a href="http://www.html5rocks.com/en/tutorials/getusermedia/intro/">http://www.html5rocks.com/en/tutorials/getusermedia/intro/</a>
+						</li>
 					</ul>
 				</div>
 				<div class="clear"></div>
@@ -3416,7 +4000,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2015 Joshua M. David
+				Copyright &copy; 2013 - 2016 Joshua M. David
 			</div>
 		</div>
 	</body>

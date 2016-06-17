@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2015  Joshua M. David
+	Copyright (c) 2013-2016  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -241,10 +241,10 @@
 					<p>
 						Now that Linux, Apache, MySQL and PHP are running it's time to install get the server code running. The easiest way to get it 
 						onto the server would be to use the command line:<br>
-						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-v1.5.1.tar.gz</code><br>
+						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-v1.5.2.tar.gz</code><br>
 						<br>
 						You also need to download the signature file to verify that the download is authentic:<br>
-						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-v1.5.1.tar.gz.asc</code><br>
+						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-v1.5.2.tar.gz.asc</code><br>
 						<br>
 						This will download the two files and put them inside your current working directory. You can list them with <code>ls -l</code>. 
 						If the files are there you can skip to the next step.<br>
@@ -257,7 +257,7 @@
 						earlier with PuTTY. Then it's a basic drag and drop operation.<br>
 						<br>
 						If wanting to transfer the files from your Linux machine to the server you can use the following command:<br>
-						<code>scp /path/on/local/machine/jericho-v1.5.1.tar.gz username@ipaddress:~</code><br>
+						<code>scp /path/on/local/machine/jericho-v1.5.2.tar.gz username@ipaddress:~</code><br>
 						<br>
 						Be sure to swap out <code>username</code> for the username on the server and swap out <code>ipaddress</code> for the IP address 
 						of the server. It should prompt you for the password. The <code>~</code> character will put the file in the home directory for 
@@ -274,10 +274,10 @@
 					<h3>Verifying by file hashes</h3>
 					<p>
 						First verify that the file was downloaded correctly using the hashes found on the <a href="download.html">download page</a>:<br>
-						<code>sha384sum jericho-v1.5.1.tar.gz | grep "ad5586e073131c019c3af5996dd123f1cf29de1817d5d1b65fc9cfcd6f00441139a3556dce38f434329d95303ae58965"</code><br>
+						<code>sha384sum jericho-v1.5.2.tar.gz | grep "ad5586e073131c019c3af5996dd123f1cf29de1817d5d1b65fc9cfcd6f00441139a3556dce38f434329d95303ae58965"</code><br>
 						<br>
 						If the checksum matches it will display the matching hash output on a line on the command line, for example:<br>
-						<code>ad5586e073131c019c3af5996dd123f1cf29de1817d5d1b65fc9cfcd6f00441139a3556dce38f434329d95303ae58965 &nbsp;jericho-v1.5.1.tar.gz</code><br>
+						<code>ad5586e073131c019c3af5996dd123f1cf29de1817d5d1b65fc9cfcd6f00441139a3556dce38f434329d95303ae58965 &nbsp;jericho-v1.5.2.tar.gz</code><br>
 						<br>
 						You can also verify using <a href="https://en.wikipedia.org/wiki/SHA-2">SHA-2 512</a> and 
 						<a href="https://en.wikipedia.org/wiki/Whirlpool_%28cryptography%29">Whirlpool</a> hashes on the download page by using 
@@ -289,7 +289,7 @@
 						You can try downloading it from another source such as FreeNet as well (see the 
 						<a href="download.html">download page</a> for a link).
 					</p>
-					<h3>Verifying by GPG signature</h3>
+					<h3>Verifying by GnuPG signature</h3>
 					<p>
 						This will verify that the download was actually created by us. The key ID for each download is listed on the 
 						<a href="download.html">download page</a>. Import our public key which can be used to verify the file:<br>
@@ -305,27 +305,34 @@
 							sub &nbsp;&nbsp;4096R/BE456DA7 2013-09-25 [expires: 2016-09-24]
 						</code><br>
 						<br>
-						Then run <code>gpg --verify jericho-v1.5.1.tar.gz.asc jericho-v1.5.1.tar.gz</code> to verify the signature. This should give you a 
+						Then run <code>gpg --verify jericho-v1.5.2.tar.gz.asc jericho-v1.5.2.tar.gz</code> to verify the signature. This should give you a 
 						message saying <b>Good signature</b> similar to the following:<br>
 						<br>
 						<code>
-							gpg: Signature made on {date} using RSA key ID C467B6D0<br>
+							gpg: Signature made Fri 17 Jun 2016 {time}<br>
+							gpg: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;using RSA key 0xDC768471C467B6D0<br>
 							gpg: Good signature from "Joshua M. David (Jericho Encryption) &lt;jerichoencryption@rediffmail.com&gt;"<br>
 							gpg: WARNING: This key is not certified with a trusted signature!<br>
 							gpg: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There is no indication that the signature belongs to the owner.<br>
 							Primary key fingerprint: CF3F 79EE 0114 59BA 0A59  9E9C DC76 8471 C467 B6D0
 						</code><br>
 						<br>
-						It will likely offer up a warning because you have not assigned a trust index to this person. This means that GnuPG 
-						verified that the key made that signature, but it's up to you to decide if that key really belongs to the developer. The best 
-						method is usually to meet the developer in person and exchange key fingerprints. Sometimes this isn't possible so just 
-						verify that the fingerprint matches the image above.
+						It will likely offer up a warning because you have not assigned a trust index to this person. 
+						This means that GnuPG verified that the key made that signature, but it's up to you to decide 
+						if that key really belongs to the developer. The best method is usually to meet the developer 
+						in person and exchange key fingerprints. Sometimes this is not possible, however you can also 
+						check the fingerprint on <a href="https://onename.com/joshua_m_david">onename.com</a> and 
+						<a href="https://keybase.io/joshua_m_david">keybase.io</a>. Both of these identities and 
+						fingerprints are published on the Bitcoin blockchain. Do not rely on what you see on the 
+						websites alone which is only protected by TLS and can be easily altered in real-time by the 
+						Five Eyes agencies. Make sure you download the client apps to verify the public keys on the 
+						blockchain.
 					</p>
 					
 					<h2 id="extracting-server-files">Extracting the server files</h2>
 					<p>
-						Now you need to extract files from inside the jericho-v1.5.1.tar.gz archive file. This can be done using:<br>
-						<code>tar -zxvf jericho-v1.5.1.tar.gz</code><br>
+						Now you need to extract files from inside the jericho-v1.5.2.tar.gz archive file. This can be done using:<br>
+						<code>tar -zxvf jericho-v1.5.2.tar.gz</code><br>
 						<br>
 						That will extract the files inside your current working directory. Now we need to copy the server files 
 						to the web directory <code>/var/www/html/</code> so that Apache can serve the files. The server files are 
@@ -432,7 +439,7 @@
 						works, then Connect.<br>
 						<br>
 						Once inside the main program you can go to <b>File</b> -> <b>Open...</b> then select the <code>createtables.sql</code> file on 
-						your hard drive. If you have extracted the files from <code>jericho-v1.5.1.tar.gz</code> using <a href="http://www.7-zip.org/">7-Zip</a> it 
+						your hard drive. If you have extracted the files from <code>jericho-v1.5.2.tar.gz</code> using <a href="http://www.7-zip.org/">7-Zip</a> it 
 						should be in the <code>jericho/server/</code> directory.<br>
 						<br>
 						Now select all the SQL querry text with the mouse or <code>Ctrl</code> + <code>A</code>. Then you can click the <b>Execute Current Query</b> 
@@ -661,8 +668,8 @@
 					<p>
 						Now we can test the connection to the server. The client program will do that automatically for you. If 
 						you still have the Export dialog open from earlier you can enter your server IP address and the matching 
-						server key from the config file then click <b>Test connection</b>. If you closed the page from earlier, 
-						there is also a <b>Test connection</b> button on the main menu.<br>
+						server key from the config file then click <b>Test server connection</b>. If you closed the page from earlier, 
+						there is also a <b>Test server connection</b> button on the main menu.<br>
 						<br>
 						If it is still not working, you can try setting the <code>testResponseHeaders</code> key to <code>true</code> 
 						in the <code>$applicationConfig</code> array of the <code>/var/www/html/config/config.php</code> file. This 
@@ -757,7 +764,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2015 Joshua M. David
+				Copyright &copy; 2013 - 2016 Joshua M. David
 			</div>
 		</div>
 	</body>

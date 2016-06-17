@@ -1,6 +1,6 @@
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2015  Joshua M. David
+ * Copyright (c) 2013-2016  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -191,6 +191,10 @@ code, pre {
 	list-style-type: disc;
 	margin-bottom: 14px;
 }
+/* Nested list */
+.page .information ul li > ul li {
+	list-style-type: square;
+}
 .page .information p {
 	margin-bottom: 14px;
 }
@@ -219,6 +223,17 @@ sub {
 	font-size: 75%;
 }
 .page .diagram {	
+	text-align: center;
+}
+.bitmapExamples {
+	overflow: auto;
+	text-align: center;
+}
+.bitmapExamples .bitmap {
+	display: inline-block;
+	font-size: 13px;
+	font-weight: bold;
+	padding: 10px 7px;
 	text-align: center;
 }
 .page .diagram img {
@@ -256,11 +271,15 @@ sub {
 /*	3. HOME PAGE SPECIFIC
 /* --------------------------------------- */
 
+.homePage .information {
+	float: left;
+	max-width: 627px;
+}
 .homePage .news {
-	padding: 28px 28px 28px 0;
-	width: 200px;
 	float: left;
 	font-size: 12px;
+	padding: 28px 28px 28px 0;
+	width: 200px;
 }
 .homePage .news h3 {
 	text-align: left;
@@ -303,6 +322,9 @@ sub {
 	right: 0;
 	top: -7px;
 }
+.homePage .advantagesList {
+	font-size: 13px;
+}
 
 /* --------------------------------------- */
 /*	4. TECHNICAL DESIGN PAGE SPECIFIC
@@ -344,6 +366,12 @@ sub {
 	color: red;
 	font-weight: bold;
 }
+.infoPage .advantagesList {
+	font-size: 14px;
+}
+.infoPage .advantagesList b {
+	font-style: italic;
+}
 .infoPage .formulas {
 	margin-bottom: 14px;
 }
@@ -366,7 +394,7 @@ sub {
 .infoPage .formulas.notation th {
 	font-size: 17px;
 	padding-right: 14px;
-	text-align: center;
+	text-align: left;
 }
 .infoPage .formulas.notation th,
 .infoPage .formulas.notation td {
@@ -404,7 +432,64 @@ sub {
 .infoPage .printableAbstract {
 	margin-top: 40px;
 }
-
+.infoPage .testResultsTable {
+	margin: 0 auto;
+}
+.infoPage .testResultsTable th,
+.infoPage .testResultsTable td {
+	padding: 3px 10px;
+	text-align: center;
+}
+.infoPage .testResultsTable th:first-child,
+.infoPage .testResultsTable td:first-child {
+	padding-left: 0;
+	text-align: left;
+}
+.infoPage .testResultsTable td.potentiallyDeterministic {
+	background-color: #fadede;
+}
+.infoPage .testResultsTable th {
+	font-weight: bold;
+}
+.infoPage .testResultsTable {
+	margin: 0 auto;
+	display: table;
+}
+.infoPage .testResultsTable .row {
+	display: table-row;
+}
+.infoPage .testResultsTable .cell {
+	display: table-cell;
+	font-weight: bold;
+	padding: 5px 10px;
+	text-align: center;
+	vertical-align: top;
+}
+.infoPage .testResultsTable .row.header .cell {
+	padding-bottom: 0;
+	padding-top: 0;
+	vertical-align: bottom;
+}
+.infoPage .testResultsTable .cell a {
+	font-weight: normal;
+}
+.infoPage .testResultsTable .cell .testSuccess {
+	color: green;
+	font-weight: normal;
+	display: block;
+	line-height: 150px;
+	vertical-align: middle;
+}
+.infoPage .testImages {
+	margin: 0 auto;
+	max-width: 850px;
+}
+.infoPage .testImages .image {
+	display: inline-block;
+	font-weight: bold;
+	padding: 5px 10px;
+	text-align: center;
+}
 
 /* --------------------------------------- */
 /*	5. DOWNLOAD PAGE SPECIFIC
@@ -532,8 +617,10 @@ sub {
 		display: block;
 		padding: 3px 0;
 	}
-	.page .information {
+	.homePage .information {
+		max-width: none;
 		padding: 28px 28px 14px;
+		float: none;
 	}
 	.homePage .news {
 		float: none;
@@ -542,6 +629,20 @@ sub {
 	}
 	.page .information .tableOfContents ol li {
 		margin-left: 0;
+	}
+	.infoPage .testResultsTable .cell {
+		display: block;
+	}
+	.infoPage .testResultsTable .cell .testSuccess {
+		line-height: 20px;
+		margin-bottom: 20px;
+	}
+	.infoPage table.testResultsTable {
+		font-size: 11px;		
+	}
+	.infoPage table.testResultsTable th,
+	.infoPage table.testResultsTable td {
+		vertical-align: middle;
 	}
 }
 

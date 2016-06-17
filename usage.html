@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2015  Joshua M. David
+	Copyright (c) 2013-2016  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -65,8 +65,8 @@
 					<ol class="tableOfContents">
 						<li><a href="#start-program">Run the program</a></li>
 						<li><a href="#run-unit-tests">Run the unit tests</a></li>
-						<li><a href="#open-generate-page">Open the Generate pads page</a></li>
-						<li><a href="#photo-selection">Selecting a photo</a></li>
+						<li><a href="#open-generate-page">Open the Create one-time pads page</a></li>
+						<li><a href="#photo-selection">Selecting photos</a></li>
 						<li><a href="#processing-entropy">Processing the entropy</a></li>
 						<li><a href="#testing-collected-data">Testing the collected data</a></li>
 						<li><a href="#exporting-pads-for-testing">Exporting the random data for external testing</a></li>
@@ -100,7 +100,7 @@
 					
 					<h2 id="run-unit-tests">2. Run the unit tests</h2>
 					<p>
-						Click the <b>Code tests</b> button.
+						Click the <b>Run code tests</b> button.
 					</p>
 					<p class="diagram">
 						<img src="img/run-tests.png" alt="Unit tests">
@@ -113,11 +113,11 @@
 						screenshot of the error.
 					</p>
 					
-					<h2 id="open-generate-page">3. Open the Generate pads page</h2>
+					<h2 id="open-generate-page">3. Open the Create one-time pads page</h2>
 					<p>
-						Click the <b>Back</b> button on your browser to go back to the main screen and click on the <b>Generate pads</b> button. You
+						Click the <b>Back</b> button on your browser to go back to the main screen and click on the <b>Create one-time pads</b> button. You
 						should be taken to an introductory screen that explains how the True Random Number Generator (TRNG) works. 
-						After you have read this, click <b>Launch photo TRNG</b>. This takes you to a mostly blank screen with 
+						After you have read this, click <b>Launch TRNG</b>. This takes you to a mostly blank screen with 
 						buttons along the top. All the actions to perform are numbered according the order things should be done. 
 						The buttons will be disabled until you complete the tasks in the correct order. Here you will generate the 
 						random data required for the one-time pads:
@@ -127,36 +127,43 @@
 					</p>
 					
 										
-					<h2 id="photo-selection">4. Selecting a photo</h2>
+					<h2 id="photo-selection">4. Selecting photos</h2>
 					<p>
-						Click the <b>Browse...</b> button and select a photograph from your hard drive. For high quality results, 
-						use a photo from a standalone digital camera or DSLR that has been captured in your camera's raw image 
+						Click the <b>Browse...</b> button and select two photographs from your hard drive. For high quality results, 
+						use photos from a standalone digital camera or DSLR that has been captured in your camera's raw image 
 						format and converted to PNG or BMP. Avoid JPEG and other lossy compression algorithms if possible as they 
-						may affect the output in predictable ways.<br>
+						may affect the output in predictable ways. Avoid taking photographs of anything with strong sunlight 
+						hitting it as this may over-expose certain areas in the photograph.<br>
 						<br>
-						This photo should never have been uploaded to the internet, shared on social media or anywhere. It will 
-						have been taken specifically for this purpose and you will delete it immediately after the one-time pads 
-						have been generated. For example, do not use your wedding photos.<br>
+						The photos should never have been uploaded to the internet, shared on social media or anywhere else. It must 
+						be taken specifically for this purpose and you will delete it immediately after the one-time pads 
+						have been generated. Do not use your wedding photos.<br>
 						<br>
-						Use a photo of something that is generally random in nature. Photos taken in macro mode of sand at a beach 
-						or grass work very well. Trees, rocks and ocean waves work reasonably well. Clouds tend not to work too 
-						well. You can see the results of testing on various photographs 
-						<a href="information.html#trng-test-analysis">here</a>.
+						Use photos of something that is generally random in nature. Photos taken in macro mode of sand at a beach 
+						or grass work very well. Bushes, flowers, trees, rocks and ocean waves also work well. You can 
+						see the results of testing on various photographs <a href="information.html#trng-test-analysis">here</a>.
 					</p>
 					
 					<h2 id="processing-entropy">5. Processing the entropy</h2>
 					<p>
-						Once you have uploaded the photo it will be shown in the screen. Click the <b>Process</b> button. This 
-						process the entropy in the photo according to the algorithm explained 
+						Once you have uploaded the photos it will be shown in the screen.<br>
+						<br>
+						<img class="listImage" src="img/trng-photos-loaded.png" alt="Photos loaded">
+						<br>	
+						Click the <b>Process</b> button. This 
+						processes the entropy in the photo according to the algorithm explained 
 						<a href="information.html#photo-processing-algorithm">here</a>.<br>
 						<br>
 						It should display a brief status message after a few seconds. The processing may take about a minute to 
 						process the photograph depending on the speed of your CPU, the hash algorithm and how large the photo is.
 					</p>
 					<p>
-						After this you should see the entropy displayed as a black and white image and the remaining buttons will 
-						have now been activated. You should also see a status bar along the top of how many bits were collected, 
-						how many one-time pads were created and whether all the tests passed.
+						After this you should see the results displayed and the Export button will have now been 
+						activated. You should also see how many bits were collected, how many one-time pads were 
+						created and whether all the randomness tests passed.
+						<br>
+						<img class="listImage" src="img/trng-processed-images.png" alt="Photos processed">
+						<br>
 					</p>
 					
 					<h2 id="testing-collected-data">6. Testing the collected data</h2>
@@ -165,43 +172,40 @@
 					</p>
 					<ul>
 						<li>							
-							Click the <b>View extracted image</b> button. This will show a bitmap image on the screen allowing 
-							you to visualize the random data after the randomness extractor has run and see if it looks random. 
-							If it looks like there are discernable patterns then it means the random data is not uniformly 
-							distributed and you may be better off finding another photograph. You can use the mouse to scroll up/down 
-							and left/right to see the full image. If you have a good photograph, it should look something like this:<br>
+							Click the <b>View bitmap</b> or <b>View colour bitmap</b> buttons. This will show a bitmap 
+							image on the screen allowing you to visualize the random data after it has been processed and 
+							see if it looks random. If it looks like there are discernable patterns then it means the 
+							random data is not uniformly distributed and you may be better off finding another photograph. 
+							You can use the mouse to scroll up/down and left/right to see the full image. If you have a 
+							good photograph, it should look something like this:<br>
 							<br>
-							<img class="listImage" src="img/random-bitmap-example.png" alt="Random bitmap example">
+							<img class="listImage" src="img/random-bitmap-good-example.png" alt="Random bitmap example">
+							
+							<img class="listImage" src="img/random-colour-bitmap-good-example.png" alt="Random colour bitmap example">
+							<br>
 						</li>
 						<li>
-							Click the <b>View extracted tests</b> button. This will run some basic statistical random number 
-							tests on the output which are from <a href="http://csrc.nist.gov/publications/fips/fips140-1/fips1401.pdf">FIPS 140-2</a>. 
+							Click the <b>View test results</b> buttons. This shows the results of some basic statistical random number 
+							tests on the output which are from <a href="http://csrc.nist.gov/publications/fips/fips140-2/fips1402.pdf">FIPS 140-2</a>. 
 							This tests every 20,000 bits of the random data. This will give you a summary of the randomnesses 
-							test results. If the test results have failed at this point then you should use another image. 
-							Click the <b>Restart</b> button to do this.
+							test results. If all the tests pass at each step then you have the best possible results and 
+							very good source photographs. If the earlier tests have failed, that does not matter too 
+							much. It may just be small sections of the photograph that are not uniformly random. The 
+							important thing is that the tests on the last line, the extracted bits, passes. 
+							If this does not pass you should click the <b>Restart</b> button and use some different 
+							photographs.
 						</li>
 						<li>
 							Generally for a good photograph, e.g. close-up of sand at a beach, the extracted tests 
 							should pass. This will give excellent, truly random one-time pads. If the extracted entropy 
 							tests pass then it is a good indication that the randomness extracter worked and the data is 
-							now uniformly distributed and safe to use. Absolutely avoid using the data if the FIPS 140-2 
-							extracted entropy tests fail.
+							now uniformly distributed and safe to use. Absolutely avoid using the data if the final 
+							tests fail.
 						</li>
 					</ul>
+										
 					
-					
-					<h2 id="exporting-pads-for-testing">7. Exporting the random data for external testing</h2>
-					<p>
-						If you would like to test the output of the TRNG in an external testing program, click the <b>Export</b> button. 
-						This will bring up a dialog with some options. Down the bottom where it says <b>Export to</b> you can 
-						click the dropdown menu and it will bring up a list of options to export. You can choose to export the raw 
-						and extracted random data. The options are exporting to Base64 string, hexadecimal string and binary file.<br>
-						<br>
-						<img class="listImage" src="img/export-test-data.png" alt="Export test data">
-					</p>
-					
-					
-					<h2 id="exporting-pads">8. Exporting the one-time pads for use</h2>
+					<h2 id="exporting-pads">7. Exporting the one-time pads for use</h2>
 					<p>
 						Now that the one-time pads have been created you need to export them separately for each user. This means 
 						each user gets allocated specific one-time pads to prevent re-use from another user. You definitely do not 
@@ -216,10 +220,9 @@
 							There are multiple ways to export the pads. Generally the text file method (default) is the 
 							easiest. This will export the one-time pads to a text file which you can load into the program 
 							later. You can also export to the clipboard and then manually copy and paste into a text file. 
-							Or if you are	going to be using that particular computer to chat, you can load 
-							the one-time pads directly into the local database. Version 2.0 will include a method to 
-							export to an image file so the file can be easily imported on tablet and mobile devices 
-							which add restrictions to only allow importing from images.
+							Version 2.0 will include a method to export to an image file so the file can be easily 
+							imported on tablet and mobile devices which add restrictions to only allow importing from 
+							images.
 						</li>
 						<li>
 							Next to <b>Export to</b> select option 
@@ -240,7 +243,7 @@
 							server configuration file. See instructions for editing that <a href="installation-server.html#edit-config-file">here</a>.
 						</li>
 						<li>
-							Click the <b>Test connection</b> button. This should show a success message on the screen. If a 
+							Click the <b>Test server connection</b> button. This should show a success message on the screen. If a 
 							successful connection cannot be made you may have the URL wrong, the key may be incorrect or the 
 							server side is not configured correctly. If you are having trouble there are some troubleshooting steps 
 							<a href="installation-server.html#test-server-code">here</a>.
@@ -313,7 +316,7 @@
 						</li>
 					</ul>
 					
-					<h2 id="delivering-pads">9. Delivering the one-time pads</h2>
+					<h2 id="delivering-pads">8. Delivering the one-time pads</h2>
 					<p>
 						At this point you should have the generated one-time pads on a USB drive or other removable/portable media. 
 						To get the one-time pads to the other users, ideally they will arrange a physical meetup. 
@@ -375,10 +378,10 @@
 					</p>
 					
 					
-					<h2 id="loading-pads">10. Loading the one-time pads</h2>
+					<h2 id="loading-pads">9. Loading the one-time pads</h2>
 					<p>
 						By now each user should have a copy of the one-time pads and be back at their separate locations. Each user should open the 
-						main screen of the program. Click the <b>Load pads</b> button. This will open up the following screen:						
+						main screen of the program. Click the <b>Load one-time pads</b> button. This will open up the following screen:						
 					</p>
 					<p class="diagram">
 						<img src="img/load-pads-page.png" alt="Load screen">
@@ -398,7 +401,7 @@
 					</p>
 					
 					
-					<h2 id="using-chat-application">11. Using the chat application</h2>
+					<h2 id="using-chat-application">10. Using the chat application</h2>
 					<p>
 						Using the chat application is very simple to send and receive messages.
 					</p>
@@ -421,7 +424,7 @@
 						your own <a href="http://en.wikipedia.org/wiki/WAV">WAV</a> file.
 					</p>
 					
-					<h2 id="backup-pads">12. Backing up the one-time pads</h2>
+					<h2 id="backup-pads">11. Backing up the one-time pads</h2>
 					<p>
 						Each time a message is sent or received the one-time pad is deleted from each device. The messages will only stay on the screen 
 						until the user closes the browser tab/window. If you need to move the pads to a different device you should export the pads 
@@ -436,7 +439,7 @@
 						local database. This means you only have one copy of the pads and there's no chance of accidental re-use.
 					</p>
 					
-					<h2 id="auto-nuke">13. Emergency self destruct</h2>
+					<h2 id="auto-nuke">12. Emergency self destruct</h2>
 					<p>
 						To clear everything in an emergency, initiate the auto nuke. This will delete the one-time pads from all 
 						connected devices and delete remaining encrypted messages from the server once everyone has received 
@@ -458,7 +461,7 @@
 						<code>mysql -u root -p &lt; /var/www/html/createtables.sql</code>
 					</p>
 					
-					<h2 id="final-notes">14. Final notes</h2>
+					<h2 id="final-notes">13. Final notes</h2>
 					<p>
 						Remember to read the <a href="information.html#extra-security-considerations">extra security precautions</a>.
 					</p>
@@ -503,7 +506,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2015 Joshua M. David
+				Copyright &copy; 2013 - 2016 Joshua M. David
 			</div>
 		</div>
 	</body>

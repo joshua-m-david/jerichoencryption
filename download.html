@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2015  Joshua M. David
+	Copyright (c) 2013-2016  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -58,40 +58,164 @@
 					<h1>Download</h1>
 					<p>
 						The following links have been provided to download the software. All downloads contain the source code, 
-						which is all that is needed to run the program. In the event of this site being taken down, which may 
-						eventually happen, you can still find the files by searching on <a href="https://freenetproject.org/">Freenet</a>. 
-						For now, software questions, feedback and suggestions can be made 
+						which is all that is needed to run the program locally in the browser. In the event of this site 
+						being taken down you can still find the files by searching on 
+						<a href="https://freenetproject.org/">Freenet</a>. For now, software questions, feedback and 
+						suggestions can be made 
 						<a href="https://github.com/joshua-m-david/jerichoencryption/issues">on GitHub</a>.
 					</p>
 					<h3 class="important">Important:</h3>
 					<p>
-						It is absolutely critical to verify the downloaded file with the GPG signature. This is 
-						to prevent anyone from modifying the source code which could weaken/break the encryption and 
-						then distributing those copies around the internet pretending to be the real thing. You can verify the 
-						file integrity using the file hashes and with  
-						<a href="http://www.mydigitallife.info/hash-calculator-to-get-compute-and-calculate-md5-and-sha1-file-checksum-or-hash-value/">tools for Windows</a> or
-						<a href="http://sourceforge.net/projects/quickhash/">Linux</a>. You can verify the authenticity 
-						of the file by verifying the GnuPG signature with 
-						<a href="http://gpg4win.org">gpg4win</a> (Windows) or <a href="http://www.gnupg.org/">GnuPG</a> (Linux). 
-						<a href="installation-server.html#verify-signature">See this guide</a> for how to verify the signature.
+						It is absolutely critical to verify the downloaded file. This is to prevent anyone from intercepting 
+						the file download and serving you a modified version of the source code with weakened/broken 
+						encryption. To prevent against accidental file corruption you can verify the downloaded file's 
+						integrity using the file hashes. You should also verify the authenticity of the file by verifying 
+						the <a href="https://www.gnupg.org">GnuPG</a> signature. 
+						<a href="installation-server.html#verify-signature">See our guide</a> for 
+						how to verify the signature.						
+					<p>
+						While this signature is not secure against quantum computers, it 
+						will be secure until there is one that can break 4096 bit RSA. Since the NSA are not likely to 
+						publish a press release when they have a functioning quantum computer and tip everyone off to 
+						their new capability, it is <i>always</i> worth it read and verify the source code yourself 
+						before using it. If you cannot do that yourself, ask someone that you trust and who is knowledgeable 
+						in web programming and cryptography. It can also help to download it from multiple sources and 
+						compare the hash digests. If you have reason to believe you may be under close surveillance, you 
+						can try avoiding targeted attacks by downloading it via <a href="https://www.torproject.org">Tor</a>, 
+						<a href="https://geti2p.net">I2P</a> or <a href="https://freenetproject.org">Freenet</a>.
+					</p>
+					<p>						
+						For stronger verification of our public key you should also confirm the public key is a match on 
+						<a href="https://onename.com/joshua_m_david">onename.com</a> and 
+						<a href="https://keybase.io/joshua_m_david">keybase.io</a>. Both of these identies are published 
+						on the Bitcoin blockchain. Do not rely on what you see on the websites alone which is only 
+						protected by TLS and can be easily altered in real-time by the Five Eyes agencies. Make 
+						sure you download the client apps to verify the public keys on the blockchain.
 					</p>
 					<p>
-						Please also see and verify our <a href="faq.html#warrant-canary">warrant canary</a> for each release using 
-						the same GPG signature listed below.
+						Please also see and verify our <a href="faq.html#warrant-canary">warrant canary</a> for each 
+						release using the same GnuPG signature listed below.
 					</p>
 					<br>
 					
 					
-					<h2 id="release1.5.1">Jericho Comms version 1.5.1 downloads (Windows, Linux and UNIX based systems)</h2>
+					<h2 id="release1.5.2">Jericho Comms version 1.5.2 downloads (for Firefox or Chromium based browsers)</h2>
+					<p>
+                        This update mainly improves the information-theoretic security of the TRNG and the security of 
+						the one-time pad database for transport.
+					</p>
+					<p>
+                        This release may also be the last version before version 2.0 where the program will need to be 
+						converted to a single page application so that the one-time pads can be encrypted at all times 
+						in client side storage and decrypted only as needed. This will be a considerable amount of work 
+						so there may be a longer delay leading up to the 2.0 version.
+					</p>
+					<p>
+						Some of the changes will make it backwards incompatible with version 1.5.1. You will need to 
+						replace the client code and generate new one-time pads.
+					</p>
+					<b>Changes in v1.5.2</b><br>
+					<ul class="changeLog">
+						<li>Improved TRNG algorithm to be have better information-theoretic security and remove reliance on imperfect hash based primitives, see <a href="information.html#trng">the improved design</a>.</li>
+						<li>Improved the cascade construction of the PBKDF which is used when encrypting the one-time pads for transport, <a href="information.html#database-pbkdf">see the improved design</a>.</li>
+						<li>Ability to test and export random data from all stages of the TRNG process.</li>
+						<li>Ability to view black and white bitmaps and also colour bitmaps of the random data in all stages.</li>
+						<li>Ability to capture images from a connected webcam.</li>
+						<li>Ability to combine exported random data from multiple photos together into a single large file.</li>
+						<li>Improved the whitepaper and usage instructions.</li>
+					</ul>
+					<table class="downloadLinks">
+						<tr>
+							<th>Mirror</th>
+							<th>Program download</th>
+							<th>Signature</th>
+						</tr>
+						<tr>
+							<td>Freenet</td>
+							<td><a href="http://127.0.0.1:8889/SSK@AfSzZxzh90onKKKDWyf6hpqhJ6UFh3k0M8A4MNl0SOE,myrtoNg7HiaxJBwlVmovp6cl5Qo~-8LoyNMwj2cnHl8,AQACAAE/jericho-v1.5.2.tar.gz">jericho-v1.5.2.tar.gz</a></td>
+							<td><a href="http://127.0.0.1:8889/SSK@wW9cdT3Nb916aZp9xJSYFkoe25bZiKraV8DcgRmlFys,VSgn40Ix5r04eacqA8hNBnWOMFhdtyCVnL1EIma8J5s,AQACAAE/jericho-v1.5.2.tar.gz.asc">jericho-v1.5.2.tar.gz.asc</a></td>
+						</tr>
+						<tr>
+							<td>Mega</td>
+							<td><a href="https://mega.nz/#!NV9ClRLA!0Jn9yoFPffyxbaxkcxRrdi84wm7y5_CJSO_lGGtr1YQ">jericho-v1.5.2.tar.gz</a></td>
+							<td><a href="https://mega.nz/#!Qd9gCY6K!MGCqUUMRvNgCC3tferzSeymDLN11preElmZ9Q64iCr4">jericho-v1.5.2.tar.gz.asc</a></td>
+						</tr>
+						<tr>
+							<td>This site</td>
+							<td><a href="files/jericho-v1.5.2.tar.gz">jericho-v1.5.2.tar.gz</a></td>
+							<td><a href="files/jericho-v1.5.2.tar.gz.asc">jericho-v1.5.2.tar.gz.asc</a></td>
+						</tr>
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th>Mirror</th>
+							<th>White paper</th>
+							<th>Signature</th>
+						</tr>
+						<tr>
+							<td>Mega</td>
+							<td><a href="https://mega.nz/#!YJ9wAApZ!guDMeidf6JL2IvxLV95pE_ls5ihBVu42tU7UAp64pt8">jericho-v1.5.2.pdf</a></td>
+							<td><a href="https://mega.nz/#!0AsWAJYZ!bg4TAX2pxMCPCDhKdV6-UgjQpaQHgoG4RcJPZ1Ve3RY">jericho-v1.5.2.pdf.asc</a></td>
+						</tr>
+						<tr>
+							<td>This site</td>
+							<td><a href="files/jericho-v1.5.2.pdf">jericho-v1.5.2.pdf</a></td>
+							<td><a href="files/jericho-v1.5.2.pdf.asc">jericho-v1.5.2.pdf.asc</a></td>
+						</tr>
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th colspan="2">GnuPG signing key details for authenticity verification</th>
+						</tr>
+						<tr>
+							<td>Key server</td>
+							<td>x-hkp://pool.sks-keyservers.net</td>
+						</tr>
+						<tr>							
+							<td>Key ID</td>
+							<td>DC768471C467B6D0</td>
+						</tr>
+						<tr>
+							<td>Fingerprint</td>
+							<td>CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0</td>
+						</tr>
+						<tr>
+							<td>Public key from this site</td>
+							<td><a href="files/pubkey.txt">pubkey.txt</a></td>
+						</tr>
+						<tr>
+							<td>Blockchain identity on onename.com</td>
+							<td><a href="https://onename.com/joshua_m_david">https://onename.com/joshua_m_david</a></td>
+						</tr>
+						<tr>
+							<td>Blockchain identity on keybase.io</td>
+							<td><a href="https://keybase.io/joshua_m_david">https://keybase.io/joshua_m_david</a></td>
+						</tr>
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th colspan="2">File hashes of jericho-v1.5.2.tar.gz for integrity verification</th>
+						</tr>
+						<tr>
+							<td>SHA384 digest</td>
+							<td class="hash">b76f658b815fc709a6d1534c230afb8815d0b920c476df82b7b7cbb6e5a7953e582c7222afa7c88814d15c5ca3d04866</td>
+						</tr>
+						<tr>
+							<td>SHA512 digest</td>
+							<td class="hash">48b04aeebda64c11761d07f8024a5ab90fb7955ada69dd1eaceb43d1237bbc35398e454d5d9baf6407042698ec4a99b4ac3db237f983c57b3a70474f5ae13a39</td>
+						</tr>
+						<tr>
+							<td>Whirlpool digest</td>
+							<td class="hash">2a9f55053fabae4c29cfa62c2f37b232122bed24e41ce98937d91581433d0e94a6eb3905f99e2dd1a70548dc39f721dcc379f8dce212019d0a96bb8b3e9ecaba</td>
+						</tr>
+					</table>
+					
+					
+					<h2 id="release1.5.1">Jericho Comms version 1.5.1 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
 						This update mainly makes the client and server more resilent to attack and recovers automatically 
 						from network dropouts or disconnections.
                     </p>
-                    <p>
-                        This release may also be the last version before version 2.0 where the program will need to be converted 
-                        to a single page application so that the one-time pads can be encrypted at all times in client 
-                        side storage and decrypted only as needed.
-					</p>
 					<p>
 						Some of the changes will make it backwards incompatible with version 1.5. You will need to 
 						replace the client code, the server code and generate new one-time pads. If you want to keep 
@@ -110,92 +234,20 @@
 						<li>Made the main website responsive so it is more easily viewable on mobile devices.</li>
 						<li>Added a list of references to the white paper and <a href="information.html">technical documentation</a> and improved the quality in general.</li>
 					</ul>
-					<table class="downloadLinks">
-						<tr>
-							<th>Mirror</th>
-							<th>Program download</th>
-							<th>Signature</th>
-						</tr>
-						<tr>
-							<td>Freenet</td>
-							<td><a href="http://127.0.0.1:8888/SSK@eHb5PjSjVrsSa2V95qXNPXnIJW0ayqxE8glvgppd9GA,EcYOOtd7YVebaA-8zdczzwfe0ePJS442yX6VbpucQXg,AQACAAE/jericho-v1.5.1.tar.gz">jericho-v1.5.1.tar.gz</a></td>
-							<td><a href="http://127.0.0.1:8888/SSK@P5bPgROsgd80hAfSAT~3SRrTQahi3DGdRoSTL6PPHzA,8Nsb0HbmarFiqXA8j2K~Q6ID0mcPCbJ8A21zf9XSdWU,AQACAAE/jericho-v1.5.1.tar.gz.asc">jericho-v1.5.1.tar.gz.asc</a></td>
-						</tr>
-						<tr>
-							<td>Mega</td>
-							<td><a href="https://mega.nz/#!1cUyWKIb!_7Pa2dBoeQRZM2OMrV2NS7i9l9i5oc13s7x3WvS5-qQ">jericho-v1.5.1.tar.gz</a></td>
-							<td><a href="https://mega.nz/#!UZcjCQ6a!E8tIhqfjEZvvApM9wNNQVERmzHfblgyXTRZPooVA3cw">jericho-v1.5.1.tar.gz.asc</a></td>
-						</tr>
-						<tr>
-							<td>This site</td>
-							<td><a href="files/jericho-v1.5.1.tar.gz">jericho-v1.5.1.tar.gz</a></td>
-							<td><a href="files/jericho-v1.5.1.tar.gz.asc">jericho-v1.5.1.tar.gz.asc</a></td>
-						</tr>
-					</table>
-					<table class="downloadLinks">
-						<tr>
-							<th>Mirror</th>
-							<th>White paper</th>
-							<th>Signature</th>
-						</tr>
-						<tr>
-							<td>Mega</td>
-							<td><a href="https://mega.nz/#!AANizRwa!cM-pZbTa5_lAAd7wp87-roDK8ZRdPzYdOXY43V5Vjyw">jericho-v1.5.1.pdf</a></td>
-							<td><a href="https://mega.nz/#!YUc2BSrK!e7IdJ_t1XlxmnL_ySwZDy-gOSO1fiL2LQyDpOGtOZps">jericho-v1.5.1.pdf.asc</a></td>
-						</tr>
-						<tr>
-							<td>This site</td>
-							<td><a href="files/jericho-v1.5.1.pdf">jericho-v1.5.1.pdf</a></td>
-							<td><a href="files/jericho-v1.5.1.pdf.asc">jericho-v1.5.1.pdf.asc</a></td>
-						</tr>
-					</table>
-					<table class="downloadLinks">
-						<tr>
-							<th colspan="2">GPG signing key details for authenticity verification</th>
-						</tr>
-						<tr>
-							<td>Key server</td>
-							<td>x-hkp://pool.sks-keyservers.net</td>
-						</tr>
-						<tr>							
-							<td>Key ID</td>
-							<td>DC768471C467B6D0</td>
-						</tr>
-						<tr>
-							<td>Fingerprint</td>
-							<td>CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0</td>
-						</tr>
-					</table>
-					<table class="downloadLinks">
-						<tr>
-							<th colspan="2">File hashes of jericho-v1.5.1.tar.gz for integrity verification</th>
-						</tr>
-						<tr>
-							<td>SHA384 digest</td>
-							<td class="hash">ad5586e073131c019c3af5996dd123f1cf29de1817d5d1b65fc9cfcd6f00441139a3556dce38f434329d95303ae58965</td>
-						</tr>
-						<tr>
-							<td>SHA512 digest</td>
-							<td class="hash">7d7cb9b696e00f856b37c1307e332d88cf6a9abe689e1bd52dccb2a88af74157d2e47faa49973009f4e4787700a605bb49e31d688a824dffab374cadfed439b9</td>
-						</tr>
-						<tr>
-							<td>Whirlpool digest</td>
-							<td class="hash">d40682629b714514a2403bb4430c21a228d7ede070b8a747bc62f98c76a698b0f7d19cd54400bdf00ba74875b26c85a2a1ebd905569a84101927aed1b8c594e9</td>
-						</tr>
-					</table>
 					
 					
-					<h2 id="release1.5">Jericho Comms version 1.5 downloads (Windows, Linux and UNIX based systems)</h2>
+					<h2 id="release1.5">Jericho Comms version 1.5 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
 						There are quite a few large changes in this release which is why it has taken almost a year 
                         to develop. With the uncertainty surrounding 
                         <a href="https://en.wikipedia.org/wiki/TrueCrypt#End_of_life_announcement">the future of Truecrypt</a>,
-                        which was most likely a triggered <a href="https://en.wikipedia.org/wiki/Warrant_canary">warrant canary</a>, 
-                        the main change in this release was the cascade encryption and authentication of the one-time pad database 
-                        to protect the one-time pads with a strong passphrase they are transported. You should of course continue 
-                        to use version 7.1a of TrueCrypt if you need the plausible deniability features that a hidden volume offers. 
-                        TrueCrypt version 7.1a has had a reasonably clean bill of health 
-                        <a href="http://istruecryptauditedyet.com/">after an audit of the code</a>.
+                        which was most likely a triggered <a href="https://en.wikipedia.org/wiki/Warrant_canary">warrant canary</a>
+						or <a href="https://en.m.wikipedia.org/wiki/Dead_man%27s_switch#Software">dead-mans switch</a>, 
+						the main change in this release was the cascade encryption and authentication 
+						of the one-time pad database to protect the one-time pads with a strong passphrase when they are 
+						transported. You should of course continue to use version 7.1a of TrueCrypt if you need the 
+						plausible deniability features that a hidden volume offers. TrueCrypt version 7.1a has had a 
+						reasonably clean bill of health <a href="http://istruecryptauditedyet.com/">after an audit of the code</a>.
                     </p>
 					<p>
 						Many of the changes will make it backwards incompatible with version 1.41. You will need to 
@@ -213,11 +265,11 @@
 						<li>Added functionality for clients to automatically <a href="information.html#frustrating-traffic-analysis">send decoy messages</a> at random intervals to hinder traffic analysis.</li>
 						<li>The auto nuke command is now sent covertly via the secure and authenticated message channel rather than as a separate API request.</li>
 						<li>Added desktop alert notifications for incoming chat messages so users can see they have a new message when the browser is not in focus.</li>
-						<li>Base64 encoded the server protocol data packets in preparation of the next v2.0 release which will encrypt all meta data.</li>						
+						<li>Base64 encoded the server protocol data packets in preparation of the v2.0 release which will encrypt all meta data.</li>						
 					</ul>
 										
 					
-					<h2 id="release1.41">Jericho Chat version 1.41 downloads (Windows, Linux and Unix based systems)</h2>
+					<h2 id="release1.41">Jericho Chat version 1.41 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
 						This version fixed a small bug in the user interface. This version is compatible with v1.4 and v1.3.
 					</p>
@@ -227,7 +279,7 @@
 					</ul>
 										
 					
-					<h2 id="release1.4">Jericho Chat version 1.4 downloads (Windows, Linux and Unix based systems)</h2>
+					<h2 id="release1.4">Jericho Chat version 1.4 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
 						This version modified the main TRNG algorithm after a review of the design and also added ability for 
 						you to upload your own random data into the program, which is then split into multiple one-time pads 
@@ -235,12 +287,12 @@
 					</p>
 					<b>Changes in v1.4</b><br>
 					<ul class="changeLog">
-						<li>Modified <a href="information.html#trng-photo">photo TRNG</a> algorithm.</li>
+						<li>Modified <a href="information.html#trng">TRNG</a> algorithm.</li>
 						<li>Added ability to <a href="information.html#trng-custom">load custom random data</a> into the program.</li>
 					</ul>
 										
 					
-					<h2 id="release1.3">Jericho Chat version 1.3 downloads (Windows, Linux and Unix based systems)</h2>
+					<h2 id="release1.3">Jericho Chat version 1.3 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
 						This version has had a major overhaul of the code. Many of the changes will make it backwards incompatible 
 						with version 1.2. You will need to replace the client code, the server code and generate new one-time pads. 
@@ -251,7 +303,7 @@
 					</p>
 					<b>Changes in v1.3</b><br>
 					<ul class="changeLog">
-						<li><a href="information.html#trng-photo">New TRNG</a> using shot noise from a digital camera.</li>
+						<li><a href="information.html#trng">New TRNG</a> using shot noise from a digital camera.</li>
 						<li>Added group chat functionality, users can now communicate in a group of 2 - 7 people.</li>
 						<li>Added a secure <a href="information.html#server-authentication-protocol">server API authentication protocol</a> to remove reliance on TLS for connecting with the API.</li>						
 						<li>Removed HMAC in message authentication and the <a href="information.html#message-authentication">MAC now uses Skein or Keccak</a> in a secure construction.</li>
@@ -261,7 +313,7 @@
 					</ul>
 					
 					
-					<h2 id="release1.2">Jericho Chat version 1.2 downloads (Windows, Linux and Unix based systems)</h2>
+					<h2 id="release1.2">Jericho Chat version 1.2 downloads (for Firefox or Chromium based browsers)</h2>
 					<b>Changes in v1.2</b><br>					
 					<ul class="changeLog">
 						<li>Renamed the program to Jericho Chat to simplify the name.</li>
@@ -274,7 +326,7 @@
 					</ul>
 					
 					
-					<h2 id="release1.1">Jericho Encrypted Chat version 1.1 downloads (Windows, Linux and Unix based systems)</h2>
+					<h2 id="release1.1">Jericho Encrypted Chat version 1.1 downloads (for Firefox or Chromium based browsers)</h2>
 					<b>Changes in v1.1</b><br>
 					<ul class="changeLog">
 						<li>Server and client installation guide completed.</li>
@@ -285,7 +337,7 @@
 					</ul>
 					
 					
-					<h2 id="release1.0">Jericho Encrypted Chat version 1.0 downloads (Windows, Linux and Unix based systems)</h2>
+					<h2 id="release1.0">Jericho Encrypted Chat version 1.0 downloads (for Firefox or Chromium based browsers)</h2>
 					<b>Initial release</b><br>
 				</div>
 				<div class="clear"></div>
@@ -328,7 +380,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2015 Joshua M. David
+				Copyright &copy; 2013 - 2016 Joshua M. David
 			</div>
 		</div>
 	</body>

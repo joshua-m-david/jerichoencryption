@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2015  Joshua M. David
+	Copyright (c) 2013-2016  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 			<link rel="stylesheet" href="css/ie8.css" type="text/css">
 		<![endif]-->
 	</head>
-	<body>
+	<body>		
 		<div class="topSection">
 			<div class="topBanner">
 				<a class="logo" href="index.html" title="Homepage"></a>			
@@ -55,6 +55,111 @@
 		<div class="content">
 			<div class="page homePage">
 				<div class="information">
+					<h2 id="introducing-jericho-encryption">Introducing Jericho Comms</h2>
+					<p>
+						Jericho Comms is an end-to-end encrypted, group text communications 
+						program which provides information-theoretic security 
+						for all messages that are sent and received.
+
+						The goal is to deliver a high assurance, encrypted communications program with 
+						plausible deniability for activists, human rights lawyers, 
+						journalists, whistleblowers and citizens of the world that need high assurances that their 
+						communications are free of censorship, control and eavesdropping from the world's 
+						governments and intelligence agencies.
+					</p>
+					<p>
+						To defeat the world's top intelligence agencies, citizens of every country need to raise 
+						their communications security to a level where no-one can ever hope to break the encryption, 
+						regardless of advances in computing power, cryptanalysis, mathematics or quantum physics.
+					</p>
+										
+					
+					<h2>Advantages in using Jericho Comms</h2>
+					<p>
+						Since the 
+						<a href="https://en.wikipedia.org/wiki/Global_surveillance_disclosures_(2013-present)">global surveillance disclosures</a> 
+						(Snowden revelations) starting in June 2013, there have been a number of secure messaging 
+						solutions released. This software was one of the earliest counter-offensives to these revelations 
+						with a fully functional prototype release in August 2013. This software has a number of strong 
+						advantages compared to other secure messaging solutions whose designers have not accounted for 
+						or understood the entire breadth and depth of the revelations. Most of them aim for mass market, 
+						average grade security and do not adequately protect their users against the full capabilities 
+						of the <a href="https://en.wikipedia.org/wiki/National_Security_Agency">NSA</a>, 
+						<a href="https://en.wikipedia.org/wiki/Government_Communications_Headquarters">GCHQ</a> and 
+						<a href="https://en.wikipedia.org/wiki/Tailored_Access_Operations">TAO</a>.
+					</p>
+					<p>
+						The advantages of this software are:
+					</p>
+					<ul class="advantagesList">
+						<li><b>Fully open source</b> &ndash; anyone can freely contribute, distribute, download, modify and use the software.</li>
+						<li><b>Simple to understand and use</b> &ndash; anyone can use including journalists and novice computer users.</li>
+						<li><b>Runs on fully open source environments</b> &ndash; no need to trust a closed source operating system.</li>						
+						<li><b>End-to-end encrypted</b> &ndash; no service provider in the middle with ability to read user messages.</li>
+						<li><b>Forward secrecy</b> &ndash; compromise of a message or key does not compromise past or future messages.</li>
+						<li><b>Plausible deniability</b> &ndash; users under duress can provide a key that decrypts to a plausible message.</li>
+						<li><b>Secure against quantum computers</b> &ndash; secure against future advances in physics and computing.</li>
+						<li><b>Information-theoretically secure</b> &ndash; messages remain secure even against unlimited computing power.</li>
+						<li><b>Automated decoy messages</b> &ndash; hides the real number of messages being sent across the network.</li>
+						<li><b>Limited network metadata</b> &ndash; hinders traffic fingerprinting, analysis and automated remote exploits.</li>
+						<li><b>Not wholly reliant on NIST</b> &ndash; standards are combined with algorithms from trusted cryptographers.</li>
+						<li><b>Full design whitepaper</b> &ndash; design is verifiable and auditable for cryptographers and security researchers.</li>
+						<li><b>Critical code is unit tested</b> &ndash; strong confidence that the cryptography and software works correctly.</li>
+						<li><b>Code is well written and commented</b> &ndash; easily verifiable for security researchers and other developers.</li>
+						<li><b>Code is written to secure coding guidelines</b> &ndash; coded defensively with knowledge of common pitfalls.</li>
+						<li><b>Code is written in memory safe languages</b> &ndash; limited attack surface for buffer overflows and exploits.</li>
+						<li><b>Code is developed on an air-gapped system</b> &ndash; prevents subtle infiltration of the code repository.</li>
+						<li><b>Code and releases are signed with GnuPG</b> &ndash; users can trust in the code's authenticity and integrity.</li>
+						<li><b>Signing key fingerprint published on a blockchain</b> &ndash; solid verification of the author's true public key.</li>
+						<li><b>Signed warrant canary with every release</b> &ndash; alerts users if the author is under duress or court order.</li>
+						<li><b>Not developed in the United States</b> &ndash; author cannot be threatened with National Security Letters.</li>
+						<li><b>Not government or defense agency funded</b> &ndash; author has no questionable affiliations or loyalties.</li>
+						<li><b>Simple user guide and installation instructions</b> &ndash; prevents user error and misconfiguration issues.</li>
+					</ul>
+					
+					
+					<h2>Design summary</h2>
+					<p>
+						To accomplish the program's design goals, the software uses a 
+						True Random Number Generator (TRNG), the 
+						One-Time Pad (OTP) cipher for message encryption 
+						and a one-time Message Authentication Code (MAC) for 
+						message authenticity.
+
+						To provide additional protection of the one-time pad database during the 
+						initial key exchange between users, a 
+						strong password/passphrase and 
+						keyfile can be used. The program will then use a cascade 
+						of password Key Derivation Functions (KDFs), 
+						stream ciphers and MACs to encrypt and authenticate the 
+						database.
+
+						Other features of the program include a strong MAC for authentication between the clients 
+						and the server, a decoy messaging system to frustrate 
+						traffic analysis and a self 
+						destruct mechanism which can wipe all the client databases in case of an emergency.
+					</p>
+					<p>
+						One-time pads are not frequently used outside of government and military networks because 
+						they are somewhat inconvenient to use. This means they have generally only been reserved for 
+						truly important communications such as the 
+						highest-level Allied communications in World War II 
+						or the Washington-Moscow hotline. They are still used by the US government where heavily 
+						armoured trucks transport random numbers to the Pentagon.
+
+						The main problems are that the user needs to collect a lot of truly random data and the 
+						one-time pads must be exchanged through a secure channel, e.g. delivered in person, before 
+						communication can take place. These are not insurmountable problems and the design of this 
+						software solves the main issues which make using one-time pads too impractical. The whole 
+						system is very simple to set up and use, including generating truly random key material, 
+						exchanging the one-time pads securely, key management and communicating securely.
+
+						The program itself can be downloaded from the project's website 
+						and the full source code, which is available on GitHub, 
+						is released under the General Public License Version 3.0.
+					</p>
+					
+					
 					<h2>Enforce your right to privacy</h2>
 					<p>
 						In the wake of the <a href="https://www.eff.org/nsa-spying">NSA spying revelations</a> it is clear that 
@@ -87,57 +192,7 @@
 					<p>
 						It is time to enforce your right to privacy by using encryption the spies can never crack.
 					</p>
-					
-					
-					<h2 id="introducing-jericho-encryption">Introducing Jericho Comms</h2>
-					<p>
-						Jericho Comms is an encrypted group text communications program which provides 
-						<a href="http://en.wikipedia.org/wiki/Information_theoretic_security">information-theoretic security</a> 
-						for all messages that are sent and received.
-
-						The goal is to deliver a high assurance, encrypted communications program with 
-						plausible deniability for activists, human rights lawyers, 
-						journalists, whistleblowers and citizens of the world that need high assurances that their 
-						communications are free of censorship, control and eavesdropping from the world's 
-						governments and intelligence agencies.
-
-						To defeat the world's top intelligence agencies, citizens of every country need to raise 
-						their communications security to a level where no-one can ever hope to break the encryption, 
-						regardless of advances in computing power, cryptanalysis, mathematics or quantum physics.
-					</p>
-					<p>
-						To accomplish this goal, the program uses a 
-						True Random Number Generator (TRNG), the One-Time Pad (OTP) cipher for message encryption 
-						and a one-time Message Authentication Code (MAC) for message authenticity.
-
-						To provide additional protection of the one-time pad database during the 
-						initial key exchange between users, a strong password/passphrase and 
-						keyfile can be used. The program will then use a cascade of password Key Derivation Functions
-						(KDFs), stream ciphers and MACs to encrypt and authenticate the database.
-
-						Other features of the program include a strong MAC for authentication between the clients 
-						and the server, a decoy messaging system to frustrate 
-						traffic analysis and a self destruct mechanism which can wipe all the client databases in case 
-						of an emergency.
-					</p>
-					<p>
-						One-time pads are not frequently used outside of government and military networks because 
-						they are somewhat inconvenient to use. This means they have generally only been reserved for 
-						truly important communications such as the highest-level Allied communications in World War II
-						or the Washington-Moscow hotline.
-
-						The main problems are that you need to collect a lot of truly random data and the one-time 
-						pads must be exchanged through a secure channel (e.g. delivered in person) before 
-						communication can take place. These are not insurmountable problems and the design of this 
-						software solves the main issues which make using one-time pads too impractical. The whole 
-						system is very simple to set up and use, including generating truly random key material, 
-						exchanging the one-time pads securely, key management and communicating securely.
-
-						The program itself can be downloaded from the project's website 
-						and the full source code, which is available on GitHub, 
-						is released under the General Public License Version 3.0.
-					</p>
-					
+										
 					
 					<h2>What about other types of encryption?</h2>
 					<p>
@@ -274,7 +329,7 @@
 						for any security weaknesses. It will be important to remain vigilant against the NSA or other governments who may try to corrupt 
 						the code base, <a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">introduce weaknesses</a> or 
 						attempt to water down the security of the program. Contributions are welcome if you truly believe in the 
-						mission and are not trying to undermine the security of the software.
+						project and are not trying to undermine the security of the software.
 					</p>
 					<p>
 						The project is essentially non profit and the program is being developed for free. However we 
@@ -291,6 +346,14 @@
 						</a>
 					</h3>
 					<ol>
+						<li>
+							<a href="download.html#release1.5.2">
+								<b>Version 1.5.2 released</b><br>								
+								Jericho Comms version 1.5.2 released with improved TRNG design and stronger cascaded key 
+								derivation for encrypting the one-time pad database for transport.
+								<div class="date">17 Jun 2016</div>
+							</a>
+						</li>
 						<li>
 							<a href="download.html#release1.5.1">
 								<b>Version 1.5.1 released</b><br>								
@@ -348,8 +411,8 @@
 						</li>
 						<li>
 							<a href="download.html#release1.0">
-								<b>Jericho Comms Launched</b><br>															
-								Jericho Encrypted Chat v1.0 with unbreakable one-time pad encryption is now freely available for everyone.
+								<b>Jericho Encrypted Chat Launched</b><br>															
+								Jericho Encrypted Chat v1.0 with information-theoretically secure encryption is now freely available for everyone.
 								<div class="date">28 Aug 2013</div>
 							</a>
 						</li>
@@ -395,7 +458,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2015 Joshua M. David
+				Copyright &copy; 2013 - 2016 Joshua M. David
 			</div>
 		</div>
 	</body>

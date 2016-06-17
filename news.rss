@@ -5,7 +5,13 @@
     <link>http://joshua-m-david.github.io/jerichoencryption/</link>
     <description>Site and software updates for Jericho Comms</description>
     <language>en-gb</language>
-    <copyright>2013 - 2015 Joshua M. David</copyright>
+    <copyright>2013 - 2016 Joshua M. David</copyright>
+	<item>
+      <title>Version 1.5.2 released</title>
+      <pubDate>Fri 16 Jun 2016 11:00:00 GMT</pubDate>
+	  <link>http://joshua-m-david.github.io/jerichoencryption/download.html#release1.5.2</link>
+      <description><![CDATA[Jericho Comms version 1.5.2 released with improved TRNG, ability to capture photographs from a webcam and improved randomness testing tools.]]></description>
+    </item>
 	<item>
       <title>Version 1.5.1 released</title>
       <pubDate>Wed 24 Dec 2015 11:00:00 GMT</pubDate>
@@ -49,10 +55,10 @@
       <description><![CDATA[Version 1.1 released with a few minor improvements also new server and client installation guides.]]></description>
     </item>
     <item>
-      <title>Jericho Comms Launched</title>
+      <title>Jericho Encrypted Chat Launched</title>
       <pubDate>Wed, 28 Aug 2013 17:30:00 GMT</pubDate>
       <link>http://joshua-m-david.github.io/jerichoencryption/download.html#release1.0</link>
-      <description><![CDATA[Jericho Encrypted Chat v1.0 with unbreakable one-time pad encryption is now freely available for everyone.]]></description>
+      <description><![CDATA[Jericho Encrypted Chat v1.0 with information-theoretically secure encryption is now freely available for everyone.]]></description>
     </item>
   </channel>
 </rss>

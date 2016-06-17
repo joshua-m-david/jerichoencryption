@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2015  Joshua M. David
+	Copyright (c) 2013-2016  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@
 						connecting countries. If a message is passively intercepted at any point from when it leaves the user's 
 						computer, through their ISP to the other users on the other side of the world, this will be impossible to 
 						crack even with unlimited time and computing power. Trying every possible key would simply reveal every 
-						possible plausible plaintext, and NSA/GCHQ would have no idea what the real message was. Defeating this 
+						possible plausible plaintext. NSA/GCHQ would have no idea what the real message was. Defeating this 
 						mass collection of data from all over the world is the main aim of the software.
 					</p>
 					<p>
@@ -288,8 +288,11 @@
                         0xDC768471C467B6D0 and <b>Fingerprint:</b> CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0. 
                         There are instructions <a href="installation-server.html#verify-signature">here</a> for verifying 
                         our signatures for file downloads and you can easily tailor this to verify the code signatures. 
-                        We are also looking at putting our GnuPG fingerprint in <a href="https://namecoin.info/">Namecoin</a> 
-                        in the immediate future.
+						For stronger verification of our public key you should also confirm the public key is a match on 
+						<a href="https://onename.com/joshua_m_david">onename.com</a> and 
+						<a href="https://keybase.io/joshua_m_david">keybase.io</a>. Both of these identies are published 
+						on the Bitcoin blockchain. The GnuPG fingerprint may also be added to 
+						<a href="https://namecoin.info/">Namecoin</a> in the immediate future.
                     </p>
 					
 					
@@ -313,7 +316,8 @@
 						 mass surveillance and human rights violations. For other developers contributing to this software, please 
 						 do not base yourself in the US. The reason for this is that if you develop a trusted reputation within 
 						 the project team, then you are given a National Security Letter or gag order, we will not know 
-						 and it could compromise the security of the project. 
+						 and it could compromise the security of the project. There may be an exception for US citizens wanting 
+						 to contribute if they have their own personal warrant canary and it is signed with their GnuPG key.
 					</p>
 					
 					
@@ -322,23 +326,24 @@
 						Like all critical cryptography software 
 						<a href="https://threatpost.com/of-truecrypt-and-warrant-canaries">these days</a>, we provide a 
 						<a href="https://en.wikipedia.org/wiki/Warrant_canary">warrant canary</a>. This is a text file signed by 
-						the author's GPG key which will be updated <i>after</i> every release to say that we have <u>not</u> received 
+						the author's GnuPG key which will be updated <i>after</i> every release to say that we have <u>not</u> received 
 						a warrant, National Security Letter, subpoena, been captured, blackmailed or forced into weakening or 
 						inserting a backdoor into the software. It is a passive way to tell you if future versions of the 
-						software are compromised and may be our only way of telling you without violating the secret court order 
-						or being tortured. The private GPG key is also stored offline, in secret location and encrypted so no-one 
-						else can use it. At the first sign of trouble the author will destroy the private GPG key to prevent future 
+						software are compromised and may be our only way of telling you without violating a secret court order 
+						or being tortured. The private GnuPG key is also stored offline, in a secret location and encrypted so no-one 
+						else can use it. At the first sign of trouble the author will destroy the private GnuPG key to prevent future 
 						releases being compromised.
 					</p>
 					<p>
-						This means any software released prior to the date in the warrant canary text file is verified to be from 
-						us and we are not under duress of any kind. Should a release appear <i>after</i> the date specified in the 
-						warrant canary, then this would indicate we are under duress and you should not use any software 
-						released after the last valid warrant canary. Likewise if the warrant canary text file is unavailable, or 
-						does not match the GPG signature then that also indicates that something is wrong. At that point your 
-						option is to fork the last valid version of the project which was made before the last valid signed warrant 
-						canary, or use some other software. Also remember to validate each release using the GPG key to ensure it 
-						is legitimate.
+						This means any software released on or prior to the date in the signed warrant canary text file is 
+						verified to be from us and we are not under duress of any kind. Should a release appear <i>after</i> 
+						the date specified in the warrant canary, then this would indicate we are under duress and you 
+						should not use any software released after the last valid warrant canary. Likewise if the warrant 
+						canary text file is unavailable, or does not match the GnuPG signature of the warrant canary text 
+						file then that also indicates that something is wrong. At that point your option is to fork the 
+						last valid version of the project which was made before the last valid signed warrant canary, or 
+						switch to using some other software. Also remember to validate the software of each release using 
+						the GnuPG key to ensure it is legitimate.
 					</p>
 					<p>
 						<a href="warrant-canary.txt">Current warrant canary</a><br>
@@ -369,9 +374,9 @@
 							to steal trade secrets and company information to benefit US military and industry. They seem to be 
 							only concerned that their government had turned the system on them and has been breaching their Fourth 
 							Amendment rights. Well actually, the rest of the world do not deserve the NSA spying on them either. 
-							The US and UK governments are running an Orwellian, oppressive, undemocratic and undiplomatic regime 
-							designed to destroy everyone's privacy. The US government has no right to steal ideas and trade secrets 
-							from other nations for the benefit of US corporations or government. The US government is in breach of 
+							The US are running an Orwellian, oppressive, undemocratic and undiplomatic regime 
+							designed to destroy everyone's privacy. They have no right to steal ideas and trade secrets 
+							from other nations for the benefit of their corporations or government. They are in breach of 
 							our human rights, not just the Constitution of the United States.
 						</li>
 						<li>
@@ -390,16 +395,19 @@
                             agents on most cryptography/security forums discouraging its 
 							use due to "insurmountable practical issues" and telling people to use 
 							<a href="https://en.wikipedia.org/wiki/NSA_Suite_B_Cryptography">government sanctioned cryptography</a> 
-							instead. That way the government stays in control and can secretly decrypt the world's communications by 
-							backdooring and weakening the very standards they claim are safe. In reality with a program like this 
-							the only minor inconvenience is the initial setup and exchanging one-time pads with your chat partner 
-							in person.
+							instead. They have particular pre-defined talking points and scripts about one-time pads which 
+							they use. It is easy to notice a pattern in that they try divert the reader to just use a 
+							NIST standard instead. That way the government stays in control and can secretly decrypt the 
+							world's communications by backdooring and weakening the very standards they claim are safe. 
+							In reality with a program like this the only minor inconvenience is the initial setup and 
+							exchanging one-time pads with your chat partner in person. After that you can chat for years 
+							in the future.
 						</li>
 						<li>
 							The software currently only uses the 
 							<a href="http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters">ASCII printable character set</a> 
 							so that limits its use to English speaking users. Languages like Arabic won't be able to be used so 
-							that limits the use from real terrorist groups that don't speak English for now. This 
+							that limits the use from some terrorist groups that don't speak English for now. This 
 							limitation was mainly just for ease of development in early versions of the project. UTF-8 support will 
 							be coming soon however as all citizens in every country deserve to have strong cryptography and avoid 
 							oppressive global surveillance networks. The price of freedom and privacy for the good people, is 
@@ -554,40 +562,21 @@
 					
 					<h2 id="meaning-behind-name">What's the meaning behind the name?</h2>
 					<p>
-						<a href="https://www.biblegateway.com/passage/?search=Joshua+6&version=MSG">Jericho</a> 
-						was a seemingly impenetrable fortress with high walls surrounding the city. We can liken this city 
-                        to the seemingly impervious <a href="http://en.wikipedia.org/wiki/UKUSA_Agreement">Five Eyes</a> 
-                        global surveillance system. 
-                        <a href="http://www.spiegel.de/international/world/nsa-secret-toolbox-ant-unit-offers-spy-gadgets-for-every-need-a-941006.html">They've infected everything</a> 
-                        from BIOS chips, firmware, hardware, operating systems, and applications. 
-                        <a href="http://www.spiegel.de/international/germany/inside-the-nsa-s-war-on-internet-security-a-1010361.html">They have added backdoors and weaknesses</a> 
-                        in various software and systems so they 
-						can hack anyone at any time. They create and promote the cryptography standards which everyone 
-                        is supposed to use, but secretly they have 
-                        <a href="http://www.spiegel.de/international/germany/bild-1010361-793640.html">weaknesses known only to the NSA</a>, 
-                        similar to how the Enigma cipher was broken but the knowledge of this was
-                        <a href="https://en.wikipedia.org/wiki/Enigma_machine#Breaking_Enigma">not publically known for decades afterwards</a>. 
-                        They use <a href="http://techcrunch.com/2014/05/18/the-nsa-cisco-and-the-issue-of-interdiction/">interdiction</a> 
-                        to implant malware in everything they can't access 
-                        remotely. <a href="https://en.wikipedia.org/wiki/National_security_letter">They use the law</a> 
-                        in dubious ways to force companies to hand over encryption keys, 
-						give the intelligence agencies secret access to their data or install backdoors in their software.
+						The name is based on the 
+						<a href="https://www.youtube.com/watch?v=YBC1Qob27sM">Jericho Missile</a>. 
+						Jericho Comms is a secure communications program which targets the NSA's core cryptanalytic and 
+						traffic analysis capabilities by launching thousands of undecryptable messages across the 
+						internet. NSA's comprehensive fibre optic cable taps and ISP interception equipment inevitably 
+						collect these data transmissions however their systems are rendered completely useless and they 
+						are unable to perform any useful analysis on them.
 					</p>
 					<p>
-						Continuing this analogy, in order to enter the promised land and have a society that is free 
-						of censorship, control, oppression and mass surveillance, the Five Eyes intelligence network 
-						needs to be eliminated. Jericho Comms is a secure communications tool which 
-						<a href="https://www.youtube.com/watch?v=YBC1Qob27sM">launches thousands of undecryptable messages</a> 
-						into the heart of their surveillance network, designed to annihilate their core cryptanalytic 
-						and traffic analysis capabilities.
-					</p>
-					<p>
-						When the program is feature complete and fully audited, users should have confidence that the spy 
-                        agencies will <a href="information.html#encryption-process">never know the content of messages</a>, 
+						When the program is feature complete and fully audited, the world's spy agencies will 
+						<a href="information.html#encryption-process">never know the content of messages</a>, 
                         <a href="information.html#message-authentication">never be able to forge messages</a>, 
                         <a href="information.html#frustrating-traffic-analysis">never know when real or fake messages are actually being sent</a>, 
-                        never be able to easily determine who is talking to who and never be able to easily disrupt the communications of this 
-						program.
+                        never be able to easily determine who is talking to who and never be able to disrupt the 
+						communications of users using this program.
 					</p>
 															
 					
@@ -1001,7 +990,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2015 Joshua M. David
+				Copyright &copy; 2013 - 2016 Joshua M. David
 			</div>
 		</div>
 	</body>

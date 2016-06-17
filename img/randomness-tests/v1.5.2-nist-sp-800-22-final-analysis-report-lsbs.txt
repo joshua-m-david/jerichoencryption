@@ -1,0 +1,208 @@
+------------------------------------------------------------------------------
+RESULTS FOR THE UNIFORMITY OF P-VALUES AND THE PROPORTION OF PASSING SEQUENCES
+------------------------------------------------------------------------------
+   generator is </media/truecrypt1/stuff/Jericho/v1.5.2testing/v1.5.2-10images-15240960B-14.535MB-LSBs.bin>
+------------------------------------------------------------------------------
+ C1  C2  C3  C4  C5  C6  C7  C8  C9 C10  P-VALUE  PROPORTION  STATISTICAL TEST
+------------------------------------------------------------------------------
+  2   0   0   3   0   1   1   1   0   0     ----       7/8       Frequency
+  1   1   0   0   2   0   1   2   0   1     ----       7/8       BlockFrequency
+  2   0   0   1   2   0   0   1   1   1     ----       7/8       CumulativeSums
+  2   0   1   1   1   1   1   0   1   0     ----       7/8       CumulativeSums
+  1   1   1   1   1   1   1   1   0   0     ----       8/8       Runs
+  3   0   0   0   2   1   0   0   0   2     ----       6/8    *  LongestRun
+  1   0   3   1   0   1   1   1   0   0     ----       8/8       Rank
+  2   1   0   1   1   0   1   1   1   0     ----       8/8       FFT
+  0   1   0   1   1   0   1   2   1   1     ----       8/8       NonOverlappingTemplate
+  0   1   0   0   2   0   0   4   0   1     ----       8/8       NonOverlappingTemplate
+  0   2   1   1   1   2   0   0   0   1     ----       8/8       NonOverlappingTemplate
+  0   1   0   1   0   2   1   1   1   1     ----       8/8       NonOverlappingTemplate
+  1   0   2   0   1   2   0   1   0   1     ----       7/8       NonOverlappingTemplate
+  1   1   0   0   1   1   1   0   2   1     ----       8/8       NonOverlappingTemplate
+  0   1   1   1   0   2   0   1   1   1     ----       8/8       NonOverlappingTemplate
+  1   1   0   0   0   3   1   1   0   1     ----       8/8       NonOverlappingTemplate
+  1   1   1   0   0   1   0   2   2   0     ----       8/8       NonOverlappingTemplate
+  0   0   3   0   0   1   2   0   1   1     ----       8/8       NonOverlappingTemplate
+  3   2   0   0   0   2   0   0   0   1     ----       8/8       NonOverlappingTemplate
+  1   2   1   0   0   1   0   2   1   0     ----       8/8       NonOverlappingTemplate
+  1   1   3   0   1   0   0   1   1   0     ----       8/8       NonOverlappingTemplate
+  2   1   0   0   0   2   0   1   2   0     ----       8/8       NonOverlappingTemplate
+  1   1   0   1   1   1   1   1   1   0     ----       8/8       NonOverlappingTemplate
+  0   2   1   0   1   0   1   0   2   1     ----       8/8       NonOverlappingTemplate
+  1   0   1   2   0   0   2   1   0   1     ----       8/8       NonOverlappingTemplate
+  0   4   0   1   0   0   0   1   1   1     ----       8/8       NonOverlappingTemplate
+  1   0   1   0   2   2   0   1   0   1     ----       8/8       NonOverlappingTemplate
+  0   2   2   1   1   0   0   1   1   0     ----       8/8       NonOverlappingTemplate
+  1   1   1   0   0   1   2   1   0   1     ----       8/8       NonOverlappingTemplate
+  1   0   1   1   0   1   1   1   1   1     ----       8/8       NonOverlappingTemplate
+  2   0   1   0   0   2   0   3   0   0     ----       8/8       NonOverlappingTemplate
+  0   2   1   2   0   2   1   0   0   0     ----       8/8       NonOverlappingTemplate
+  1   1   1   2   0   1   0   1   1   0     ----       8/8       NonOverlappingTemplate
+  0   0   2   1   1   0   1   1   0   2     ----       8/8       NonOverlappingTemplate
+  0   1   1   1   0   1   2   2   0   0     ----       8/8       NonOverlappingTemplate
+  0   1   2   1   0   1   1   1   0   1     ----       8/8       NonOverlappingTemplate
+  0   0   0   2   0   0   2   1   2   1     ----       8/8       NonOverlappingTemplate
+  1   0   0   0   2   2   1   1   0   1     ----       8/8       NonOverlappingTemplate
+  1   0   1   1   1   0   0   2   1   1     ----       8/8       NonOverlappingTemplate
+  1   1   1   1   0   1   0   0   0   3     ----       8/8       NonOverlappingTemplate
+  1   0   0   0   1   1   0   2   1   2     ----       8/8       NonOverlappingTemplate
+  0   1   3   1   0   1   0   0   0   2     ----       8/8       NonOverlappingTemplate
+  0   0   2   2   0   1   1   1   0   1     ----       8/8       NonOverlappingTemplate
+  1   0   1   1   1   1   1   1   0   1     ----       8/8       NonOverlappingTemplate
+  2   3   0   0   0   0   1   0   0   2     ----       8/8       NonOverlappingTemplate
+  0   1   1   2   1   1   1   1   0   0     ----       8/8       NonOverlappingTemplate
+  0   0   2   2   1   1   1   0   1   0     ----       8/8       NonOverlappingTemplate
+  1   1   1   2   0   0   3   0   0   0     ----       8/8       NonOverlappingTemplate
+  1   1   1   1   3   1   0   0   0   0     ----       8/8       NonOverlappingTemplate
+  0   2   2   1   0   0   1   1   0   1     ----       8/8       NonOverlappingTemplate
+  0   1   1   0   2   0   1   1   1   1     ----       8/8       NonOverlappingTemplate
+  0   0   0   2   1   1   2   1   1   0     ----       8/8       NonOverlappingTemplate
+  0   1   1   1   2   1   0   1   0   1     ----       8/8       NonOverlappingTemplate
+  0   1   1   0   1   2   0   2   1   0     ----       8/8       NonOverlappingTemplate
+  0   1   2   1   1   1   0   1   1   0     ----       8/8       NonOverlappingTemplate
+  2   1   0   1   0   0   1   1   1   1     ----       8/8       NonOverlappingTemplate
+  0   0   4   0   0   0   1   2   0   1     ----       8/8       NonOverlappingTemplate
+  1   0   0   2   0   1   1   1   2   0     ----       8/8       NonOverlappingTemplate
+  0   1   2   2   0   0   0   0   2   1     ----       8/8       NonOverlappingTemplate
+  2   0   1   1   1   1   1   0   0   1     ----       7/8       NonOverlappingTemplate
+  0   0   0   1   0   3   0   1   2   1     ----       8/8       NonOverlappingTemplate
+  0   1   2   1   1   0   0   1   0   2     ----       8/8       NonOverlappingTemplate
+  1   1   1   0   1   2   0   0   0   2     ----       8/8       NonOverlappingTemplate
+  0   2   1   1   0   0   2   0   1   1     ----       8/8       NonOverlappingTemplate
+  2   1   0   0   0   0   0   0   4   1     ----       8/8       NonOverlappingTemplate
+  1   0   1   3   1   0   0   1   0   1     ----       7/8       NonOverlappingTemplate
+  1   0   1   0   0   2   0   2   2   0     ----       8/8       NonOverlappingTemplate
+  1   1   2   0   0   2   1   0   0   1     ----       7/8       NonOverlappingTemplate
+  1   1   0   1   1   1   2   1   0   0     ----       8/8       NonOverlappingTemplate
+  0   0   2   1   1   1   0   0   2   1     ----       8/8       NonOverlappingTemplate
+  1   2   0   0   0   2   2   0   0   1     ----       8/8       NonOverlappingTemplate
+  0   1   1   2   1   1   0   0   0   2     ----       8/8       NonOverlappingTemplate
+  1   1   0   1   1   0   1   2   1   0     ----       8/8       NonOverlappingTemplate
+  1   0   2   0   2   0   0   0   2   1     ----       8/8       NonOverlappingTemplate
+  1   0   2   0   2   0   2   1   0   0     ----       8/8       NonOverlappingTemplate
+  0   0   2   2   0   0   0   3   1   0     ----       8/8       NonOverlappingTemplate
+  1   0   0   1   0   0   0   2   2   2     ----       8/8       NonOverlappingTemplate
+  0   0   2   1   1   0   1   0   1   2     ----       8/8       NonOverlappingTemplate
+  1   2   0   1   0   2   0   0   2   0     ----       8/8       NonOverlappingTemplate
+  0   1   1   0   1   3   1   1   0   0     ----       8/8       NonOverlappingTemplate
+  0   2   2   1   1   0   0   0   1   1     ----       8/8       NonOverlappingTemplate
+  2   0   0   0   1   0   3   2   0   0     ----       7/8       NonOverlappingTemplate
+  0   1   0   1   1   0   1   2   1   1     ----       8/8       NonOverlappingTemplate
+  1   1   1   2   0   0   0   1   0   2     ----       8/8       NonOverlappingTemplate
+  0   0   0   0   1   1   1   1   0   4     ----       8/8       NonOverlappingTemplate
+  3   0   1   2   1   1   0   0   0   0     ----       8/8       NonOverlappingTemplate
+  2   1   2   1   0   0   2   0   0   0     ----       8/8       NonOverlappingTemplate
+  0   0   1   0   0   2   3   1   1   0     ----       8/8       NonOverlappingTemplate
+  0   0   2   1   0   3   1   0   1   0     ----       8/8       NonOverlappingTemplate
+  1   0   1   0   3   0   1   0   0   2     ----       8/8       NonOverlappingTemplate
+  1   0   0   0   2   1   0   1   3   0     ----       8/8       NonOverlappingTemplate
+  1   0   1   0   2   1   0   1   2   0     ----       8/8       NonOverlappingTemplate
+  0   1   1   1   3   0   0   1   1   0     ----       8/8       NonOverlappingTemplate
+  0   2   0   0   1   2   1   0   2   0     ----       8/8       NonOverlappingTemplate
+  1   0   0   0   4   1   1   1   0   0     ----       8/8       NonOverlappingTemplate
+  2   1   2   0   1   0   0   1   1   0     ----       8/8       NonOverlappingTemplate
+  1   0   2   0   1   0   0   1   0   3     ----       8/8       NonOverlappingTemplate
+  1   2   0   1   0   0   2   0   2   0     ----       7/8       NonOverlappingTemplate
+  2   0   2   0   1   2   0   0   0   1     ----       7/8       NonOverlappingTemplate
+  1   1   0   1   1   0   1   2   1   0     ----       8/8       NonOverlappingTemplate
+  1   0   0   0   1   1   0   1   2   2     ----       8/8       NonOverlappingTemplate
+  0   2   1   1   0   1   0   2   1   0     ----       8/8       NonOverlappingTemplate
+  0   0   3   1   1   0   0   2   0   1     ----       8/8       NonOverlappingTemplate
+  0   0   0   1   2   0   3   0   1   1     ----       8/8       NonOverlappingTemplate
+  0   1   1   0   1   0   1   1   1   2     ----       8/8       NonOverlappingTemplate
+  1   0   0   2   0   1   1   1   1   1     ----       8/8       NonOverlappingTemplate
+  1   0   1   0   0   3   0   0   2   1     ----       8/8       NonOverlappingTemplate
+  0   2   0   0   1   0   1   1   3   0     ----       8/8       NonOverlappingTemplate
+  1   3   1   0   1   0   0   0   2   0     ----       8/8       NonOverlappingTemplate
+  0   0   0   3   1   1   2   0   1   0     ----       8/8       NonOverlappingTemplate
+  1   0   1   2   0   1   1   2   0   0     ----       7/8       NonOverlappingTemplate
+  1   1   1   2   1   0   0   1   1   0     ----       8/8       NonOverlappingTemplate
+  0   2   1   1   1   1   0   0   1   1     ----       8/8       NonOverlappingTemplate
+  1   0   0   1   1   1   0   1   1   2     ----       8/8       NonOverlappingTemplate
+  0   1   2   0   1   1   0   2   0   1     ----       8/8       NonOverlappingTemplate
+  1   1   1   1   1   1   1   0   0   1     ----       8/8       NonOverlappingTemplate
+  0   0   1   2   0   0   2   1   1   1     ----       8/8       NonOverlappingTemplate
+  1   0   0   2   2   0   1   0   2   0     ----       8/8       NonOverlappingTemplate
+  1   0   0   0   3   0   1   1   0   2     ----       8/8       NonOverlappingTemplate
+  1   1   1   4   0   0   0   0   0   1     ----       7/8       NonOverlappingTemplate
+  1   1   1   1   0   2   1   0   1   0     ----       8/8       NonOverlappingTemplate
+  1   0   0   0   2   2   0   1   0   2     ----       8/8       NonOverlappingTemplate
+  0   0   1   0   2   0   1   2   2   0     ----       8/8       NonOverlappingTemplate
+  1   0   1   0   2   2   0   1   1   0     ----       8/8       NonOverlappingTemplate
+  2   1   0   1   0   0   2   0   0   2     ----       7/8       NonOverlappingTemplate
+  0   1   0   2   0   0   0   3   2   0     ----       8/8       NonOverlappingTemplate
+  3   0   1   0   3   0   0   0   0   1     ----       8/8       NonOverlappingTemplate
+  0   0   1   2   2   2   0   0   1   0     ----       8/8       NonOverlappingTemplate
+  0   1   1   1   1   2   0   1   1   0     ----       8/8       NonOverlappingTemplate
+  1   0   2   1   0   1   2   1   0   0     ----       8/8       NonOverlappingTemplate
+  0   0   1   0   1   2   0   3   0   1     ----       8/8       NonOverlappingTemplate
+  0   0   1   2   0   2   0   1   2   0     ----       8/8       NonOverlappingTemplate
+  0   1   2   1   2   0   0   2   0   0     ----       8/8       NonOverlappingTemplate
+  0   0   0   1   0   3   1   1   0   2     ----       8/8       NonOverlappingTemplate
+  2   0   1   0   2   1   1   0   1   0     ----       8/8       NonOverlappingTemplate
+  0   1   1   0   0   1   2   1   1   1     ----       8/8       NonOverlappingTemplate
+  1   3   3   0   0   0   0   0   0   1     ----       8/8       NonOverlappingTemplate
+  1   2   1   1   0   0   0   0   2   1     ----       8/8       NonOverlappingTemplate
+  1   2   0   2   0   1   0   0   2   0     ----       7/8       NonOverlappingTemplate
+  0   3   1   1   0   1   0   1   0   1     ----       8/8       NonOverlappingTemplate
+  0   0   3   1   0   0   2   2   0   0     ----       8/8       NonOverlappingTemplate
+  0   0   2   3   0   1   1   0   0   1     ----       8/8       NonOverlappingTemplate
+  0   0   0   0   4   2   0   0   2   0     ----       8/8       NonOverlappingTemplate
+  1   0   1   1   1   0   2   1   1   0     ----       8/8       NonOverlappingTemplate
+  1   1   0   2   1   0   0   1   1   1     ----       8/8       NonOverlappingTemplate
+  0   0   1   2   1   0   0   0   2   2     ----       8/8       NonOverlappingTemplate
+  2   1   1   1   0   0   1   1   0   1     ----       8/8       NonOverlappingTemplate
+  1   3   0   2   0   0   0   2   0   0     ----       8/8       NonOverlappingTemplate
+  1   1   1   2   0   0   0   2   1   0     ----       8/8       NonOverlappingTemplate
+  0   2   0   0   1   0   4   1   0   0     ----       8/8       NonOverlappingTemplate
+  2   2   1   1   1   0   0   0   1   0     ----       8/8       NonOverlappingTemplate
+  2   0   2   0   0   1   1   0   0   2     ----       8/8       NonOverlappingTemplate
+  1   2   2   0   1   0   1   0   1   0     ----       7/8       NonOverlappingTemplate
+  1   1   0   0   0   2   1   1   0   2     ----       8/8       NonOverlappingTemplate
+  3   0   1   2   0   0   2   0   0   0     ----       7/8       NonOverlappingTemplate
+  2   0   0   0   1   0   3   2   0   0     ----       7/8       NonOverlappingTemplate
+  6   0   1   0   0   0   0   1   0   0     ----       5/8    *  OverlappingTemplate
+  4   0   0   1   0   1   0   0   1   1     ----       8/8       Universal
+  2   1   1   3   0   0   1   0   0   0     ----       7/8       ApproximateEntropy
+  0   1   0   0   1   2   2   1   1   0     ----       8/8       RandomExcursions
+  0   0   0   1   1   2   1   1   0   2     ----       8/8       RandomExcursions
+  2   0   0   0   0   3   0   1   1   1     ----       8/8       RandomExcursions
+  0   1   0   0   1   2   1   2   1   0     ----       8/8       RandomExcursions
+  2   1   1   1   0   0   1   0   2   0     ----       7/8       RandomExcursions
+  2   1   1   1   0   1   1   0   1   0     ----       8/8       RandomExcursions
+  1   0   0   3   3   0   1   0   0   0     ----       7/8       RandomExcursions
+  1   1   3   0   2   0   0   0   0   1     ----       8/8       RandomExcursions
+  1   2   1   0   1   0   0   2   1   0     ----       8/8       RandomExcursionsVariant
+  0   1   2   1   1   0   0   1   0   2     ----       8/8       RandomExcursionsVariant
+  0   1   0   2   1   0   2   0   1   1     ----       8/8       RandomExcursionsVariant
+  0   2   1   1   0   0   2   1   1   0     ----       8/8       RandomExcursionsVariant
+  0   1   2   1   0   1   0   0   1   2     ----       8/8       RandomExcursionsVariant
+  0   0   2   0   1   2   1   0   1   1     ----       8/8       RandomExcursionsVariant
+  0   0   2   1   1   0   0   0   4   0     ----       8/8       RandomExcursionsVariant
+  0   1   0   1   2   0   1   2   1   0     ----       8/8       RandomExcursionsVariant
+  0   0   0   2   1   2   1   0   0   2     ----       8/8       RandomExcursionsVariant
+  2   1   1   0   0   1   1   1   0   1     ----       7/8       RandomExcursionsVariant
+  2   0   0   1   0   1   1   1   2   0     ----       7/8       RandomExcursionsVariant
+  1   1   0   0   0   3   0   0   2   1     ----       7/8       RandomExcursionsVariant
+  1   1   1   1   0   1   0   2   1   0     ----       7/8       RandomExcursionsVariant
+  1   2   1   1   0   0   1   1   1   0     ----       7/8       RandomExcursionsVariant
+  1   2   1   1   0   0   0   1   1   1     ----       7/8       RandomExcursionsVariant
+  2   0   2   1   0   0   0   1   1   1     ----       7/8       RandomExcursionsVariant
+  2   1   0   1   1   0   0   0   2   1     ----       7/8       RandomExcursionsVariant
+  2   0   2   0   0   0   0   1   3   0     ----       7/8       RandomExcursionsVariant
+  1   4   1   1   0   0   0   1   0   0     ----       8/8       Serial
+  2   1   0   2   1   1   1   0   0   0     ----       8/8       Serial
+  0   1   1   0   0   2   4   0   0   0     ----       8/8       LinearComplexity
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+The minimum pass rate for each statistical test with the exception of the
+random excursion (variant) test is approximately = 7 for a
+sample size = 8 binary sequences.
+
+The minimum pass rate for the random excursion (variant) test
+is approximately = 7 for a sample size = 8 binary sequences.
+
+For further guidelines construct a probability table using the MAPLE program
+provided in the addendum section of the documentation.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
