@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2015  Joshua M. David
+	Copyright (c) 2013-2016  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation in version 3 of the License.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -40,23 +35,22 @@
 				<h1>
 					Jericho Comms <span class="programVersion"></span>
 				</h1>
-				<ul class="menu">
+				<ul class="menu">										
 					<li>
-						<a href="tests.html" class="blueButton">Code tests</a>
-					</li>					
-					<li>
-						<a class="blueButton btnOpenGeneratePadsMenu">Generate pads</a>
+						<a class="blueButton btnOpenGeneratePadsMenu">Create one-time pads</a>
 					</li>
-
-					<li class="spacer">
-						<a href="import.html" class="blueButton">Load pads</a>
+					<li>
+						<a href="import.html" class="blueButton">Load one-time pads</a>
 					</li>
 					<li>
 						<a href="chat.html" class="blueButton">Chat</a>
 					</li>
 					
 					<li class="spacer">
-						<a href="connection.html" class="blueButton">Test connection</a>
+						<a href="tests.html" class="blueButton">Run code tests</a>
+					</li>
+					<li>
+						<a href="connection.html" class="blueButton">Test server connection</a>
 					</li>
 					<li>
 						<a href="backup.html" class="blueButton">Backup or restore</a>
@@ -77,43 +71,83 @@
 						<span class="message"></span>
 					</div>
 				</div>
-				<h2>Generate pads</h2>
+				<h2>Create one-time pads</h2>
 				<div class="information">
-					You need truly random data for perfectly secure communication using one-time pads. This program provides a True 
-					Random Number Generator (TRNG).<br>
+					You need truly random data for information-theoretically secure communications using one-time pads. 
+					This program provides a True Random Number Generator (TRNG).<br>
 					<br>
-					Entropy is extracted from a photograph that you provide. For high quality results, use a photo from a 
-					standalone digital camera that has been captured in your camera's raw image format, transferred to 
-					your computer by USB cable (or SD card), then losslessly converted to PNG (or BMP) file format. Avoid JPEG 
-					and other lossy compression algorithms where possible as they may affect the output in predictable ways. 
-					Avoid using your mobile phone as they generally have poor security and the contents can be secretly 
-					collected from them at any time due to the closed baseband processor.<br>
+					Entropy is extracted from two images that you provide. For best results, use photographs from a 
+					standalone digital camera or digital SLR that have been captured in your camera's RAW image format. 
+					This best preserves the original data when the shot was taken. You should then transfer them directly 
+					to your computer by USB cable or SD memory card. Then convert them as-is (without post processing) 
+					to a lossless image format e.g. PNG or BMP. Avoid JPEG and other lossy compression formats where 
+					possible as they may affect the output in predictable ways. Avoid using your mobile phone as they 
+					generally have poor security and the contents can be secretly collected from them at any time due to 
+					the closed baseband processor.<br>
 					<br>
-					Take a photo of something that is generally random in nature. Photos taken in macro mode of sand at a 
-					beach, grass and gravel work best. Trees, rocks and ocean waves also work reasonably well. Avoid clouds 
-					and studio photography with plain backgrounds.<br>
+					Take photos of something that is generally random in nature. Photos taken in macro mode of sand at a 
+					beach, grass and gravel work best. Trees, bushes, rocks and ocean waves also work well. Avoid 
+					studio photography with plain backgrounds. The photos should be clear and in focus as much as possible.<br>
 					<br>
 					The program will run randomness tests on the data after it has been run through the randomness extractor. 
-					Check that all of the tests pass otherwise you may need to try a different photo. Be sure to delete 
-					the original photo after the one-time pads have been created from it. To be extra safe, run this program 
-					from a non-networked (air gapped) computer.<br>
+					Check that all of the tests pass otherwise you may need to try different photos. Be sure to permanently 
+					delete the original photos from the camera and your computer after the one-time pads have been created 
+					from them. To be absolutely safe, run this program from a non-networked (air gapped) computer. On 
+					export, the one-time pads will be encrypted for transport and use.<br>
 					<br>
-					This process should be run from a PC as it is very resource intensive and the page is not mobile optimised. 
-					The website has details about how the algorithm processes and extracts the random data from the photo.<br>
+					This process should be run from a desktop or laptop PC as it is resource intensive and the page is 
+					not mobile optimised. The website has details about how the algorithm processes and extracts the 
+					random data from the photo.<br>
 					<br>
-					Alternatively you may import your own truly random data (at your own risk) which will be split it into 
-					separate one-time pads for use with the program. Do not use data generated from a PRNG or even a 
-					CSPRNG as it will not be strong enough for one-time pads and will reduce the security to that of a 
-					stream cipher.
-				</div>
-				<ul class="menu">
-					<li>
-						<a href="trng-photo.html" class="blueButton">Launch photo TRNG</a>
-					</li>
-					<li>
+					<div class="centerMenuButton">
+						<a href="trng.html" class="blueButton">Launch TRNG</a>
+					</div>
+					<br>
+					<br>
+					Alternatively you can import your own truly random data which will be split it into separate 
+					one-time pads for use with the program. This is at your own risk. Do not use data generated from a 
+					PRNG or even a CSPRNG as it will not be strong enough for one-time pads and will reduce the security 
+					to that of a stream cipher.<br>
+					<br>
+					<div class="centerMenuButton">
 						<a href="trng-custom.html" class="blueButton">Load custom random data</a>
-					</li>
-				</ul>
+					</div>
+					<br>
+					<br>
+					<h2>Other tools</h2>
+					This tool is useful if you do not have a standalone digital camera capable of RAW mode and wish to 
+					capture photographs using your webcam. After you have saved two photographs you can process them in 
+					the TRNG. If the webcam photograph capture does not provide enough random data you can always export 
+					and combine the extracted random data together from multiple sets of images into a larger file, 
+					then load the file as custom random data and create the one-time pads from it.
+					<br>
+					<br>
+					<div class="centerMenuButton">
+						<a href="trng-capture.html" class="blueButton">Webcam photograph capture</a>
+					</div>
+					<br>
+					<br>
+					This tool is useful if you have processed multiple sets of images with the TRNG and you want to 
+					concatenate all the files of random data together and convert it into a single binary file for 
+					testing in an external tool. In the TRNG you should have exported the random data as text files 
+					containing only ASCII hexadecimal symbols. Then use this tool to combine the data from all the files 
+					and output a single binary file. This has been tested to only work in Firefox at the moment.
+					<br>
+					<br>
+					<div class="centerMenuButton">
+						<a href="trng-combiner.html" class="blueButton">Combine random data by concatenation</a>
+					</div>
+					<br>
+					<br>
+					This tool is useful if you have processed multiple sets of images with the TRNG and you want to 
+					XOR all the files of random data together and convert it into a single binary file for 
+					testing in an external tool. In the TRNG you should have exported the random data as text files 
+					containing only ASCII hexadecimal symbols. Then use this tool to combine the data from all the files 
+					and output a single binary file.
+					<div class="centerMenuButton">
+						<a href="trng-xor-combiner.html" class="blueButton">Combine random data by XOR</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</body>

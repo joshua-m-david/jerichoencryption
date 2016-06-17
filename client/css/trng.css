@@ -1,0 +1,225 @@
+/**
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2016  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	TRNG PHOTO PAGE
+/* --------------------------------------- */
+
+body.trngImagePage {
+	background-color: #eee;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 100%;
+}
+
+/* Fixed header section */
+.trngImagePage .header {
+	background-color: #eee;
+	display: block;
+	left: 0;
+	padding: 5px 0 20px 0;
+	right: 0;
+	top: -1px;
+	z-index: 1;
+}
+
+/* Buttons along the top */
+.trngImagePage .pageNavigation {
+	margin-bottom: 20px;
+	width: 100%;
+}
+.trngImagePage .pageNavigation .blueButton {
+	text-align: center;
+}
+.trngImagePage .pageNavigation td:first-child {
+	padding-left: 5px;
+	vertical-align: top;
+}
+.trngImagePage .pageNavigation td:nth-child(2) {
+	padding-left: 5px;
+	vertical-align: top;
+}
+.trngImagePage .pageNavigation td:nth-child(3) {
+	text-align: center;
+	width: 100%;
+}
+.trngImagePage .pageNavigation td:nth-child(4) {
+	text-align: center;
+	vertical-align: top;
+}
+.trngImagePage .pageNavigation td:last-child {
+	padding-left: 5px;
+	padding-right: 5px;
+	text-align: center;
+	vertical-align: top;
+	width: 97px;
+}
+.trngImagePage .programTitle {
+	margin: 14px 0;
+}
+.trngImagePage .testingButtons {
+	opacity: 0.5;
+}
+.trngImagePage .testingButtons.active {
+	opacity: 1;
+}
+.trngImagePage .fileInfo {
+	margin-top: 7px;
+	text-align: center;
+}
+.trngImagePage .fileInfo:first-of-type {
+	margin-top: 15px;
+}
+
+/* Extraction settings dialog */
+.trngImagePage .extractionSettings {
+	text-align: center;
+}
+.trngImagePage .extractionSettings label {
+	display: block;
+	font-weight: bold;
+	margin: 20px 0 5px 0;
+	text-align: center;
+}
+.trngImagePage .extractionSettings .slider {
+	display: inline-block;
+	width: 130px;
+}
+.trngImagePage .extractionSettings .sliderAmount {
+	display: inline-block;
+	margin-left: 7px;
+	text-align: left;
+}
+.trngImagePage .extractionSettings select {
+	text-transform: capitalize;
+}
+.trngImagePage .ui-dialog .ui-dialog-content {
+	background: #eee;
+}
+.trngImagePage .ui-slider .ui-slider-handle {
+	background: #f7ae37; /* Old browsers */
+	background: -moz-linear-gradient(top, #f7ae37 0%, #f8b74e 100%); /* FF3.6+ */
+	background: -webkit-linear-gradient(top, #f7ae37 0%,#f8b74e 100%); /* Chrome10+,Safari5.1+ */
+	background: linear-gradient(to bottom, #f7ae37 0%,#f8b74e 100%); /* W3C */
+	border: 1px solid #E78F08;
+}
+
+/* Hide extra long filename for uploaded image */
+.trngImagePage .imageLoader {
+	display: none;
+}
+
+/* Display status of currently collected entropy */ 
+.trngImagePage .collectionAmounts {
+	display: none;
+	font-size: 12px;
+	line-height: 12px;
+	margin: 7px auto 0 auto;
+}
+.trngImagePage .collectionLabel {
+	padding-left: 7px;
+}
+.trngImagePage .totalsLabel {
+	font-weight: bold;
+	padding-left: 14px;	
+}
+.trngImagePage .statusBox,
+.trngImagePage .fileInfo span {
+	background-color: #dadada;
+	border-radius: 3px;
+	color: #000;
+	display: block;
+	font-weight: bold;
+	margin-left: 1px;
+	min-width: 14px;
+	padding: 2px 5px;
+	text-align: center;
+	text-transform: capitalize;
+}
+.trngImagePage .collectionAmounts a {
+	background-color: #2ca0ca;
+	border-radius: 3px;	
+	color: #fff;
+	cursor: pointer;
+	display: block;
+	margin-left: 5px;
+	padding: 2px 5px;
+	text-decoration: none;
+}
+.trngImagePage .fileInfo .fileTypeA,
+.trngImagePage .fileInfo .fileTypeB {
+	text-transform: uppercase;
+}
+.trngImagePage .fileTypeA.warning,
+.trngImagePage .fileTypeB.warning {
+	background-color: #ff7a00;
+	color: #fff;
+	cursor: help;
+}
+.trngImagePage .collectionAmounts .statusBox.passed {
+	background-color: green;
+	color: #fff;
+}
+.trngImagePage .collectionAmounts .statusBox.failed {
+	background-color: red;
+	color: #fff;
+}
+/* If there is failure in one of the LSB tests, or the XORed LSBS this is not critical so show orange */
+.trngImagePage .collectionAmounts.imageA .statusBox.failed,
+.trngImagePage .collectionAmounts.imageB .statusBox.failed,
+.trngImagePage .collectionAmounts.xored .statusBox.failed {
+	background-color: #ff7a00;
+}
+
+/* Put status in middle */
+.trngImagePage .statusMessage {
+	margin-top: 20px;
+	text-align: center;
+}
+
+/* Start of processed output and results */
+.trngImagePage .outputAndResults {
+	padding: 5px;
+}
+
+/* Output headings */
+.trngImagePage .originalImage,
+.trngImagePage .output,
+.trngImagePage .results {
+	display: none;
+}
+.trngImagePage h3 {
+	font-size: 12px;
+	font-weight: bold;
+	margin: 5px 0;
+	padding-top: 5px;
+	position: relative;
+}
+/* Anchor tag offset because of fixed header */
+.trngImagePage h3 span {
+	position: absolute;
+	top: -157px;
+}
+
+/* Add margin to bottom of each image */
+.trngImagePage canvas {
+	display: block;
+	margin-bottom: 20px;
+}
+
+/* Randomness test styles */
+.trngImagePage .testSuccess {
+	color: green;
+}
+.trngImagePage .testFailure {
+	color: red;
+}

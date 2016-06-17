@@ -1,0 +1,82 @@
+/**
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2016  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	TRNG CAPTURE PHOTO PAGE
+/* --------------------------------------- */
+
+body.trngCapturePage {
+	background-color: #eee;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 100%;
+}
+
+/* Fixed header section */
+.trngCapturePage .header {
+	background-color: #eee;
+	display: block;
+	left: 0;
+	padding: 5px;
+	right: 0;
+	top: -1px;
+	z-index: 1;
+	padding-bottom: 20px;
+}
+
+/* Buttons along the top */
+.trngCapturePage .pageNavigation {
+	margin-bottom: 20px;
+	width: 100%;
+}
+.trngCapturePage .pageNavigation .blueButton {
+	text-align: center;
+}
+.trngCapturePage .pageNavigation td:first-child {
+	vertical-align: top;
+}
+.trngCapturePage .pageNavigation td:nth-child(2) {
+	padding-left: 5px;
+	text-align: center;
+	vertical-align: top;
+	width: 100%;
+}
+.trngCapturePage .pageNavigation td:last-child {
+	padding-left: 5px; 
+	text-align: center;
+	vertical-align: top;
+}
+.trngCapturePage .programTitle {
+	margin: 14px 0;
+}
+.trngCapturePage .testingButtons {
+	opacity: 0.5;
+}
+.trngCapturePage .testingButtons.active {
+	opacity: 1;
+}
+.trngCapturePage h3 {
+	font-size: 12px;
+	font-weight: bold;
+	margin: 5px 0;
+	padding-top: 5px;
+}
+.trngCapturePage .videoStream,
+.trngCapturePage .capturedPhotograph {
+	display: none;
+}
+
+/* Put status in middle */
+.trngCapturePage .statusMessage {
+	margin-top: 20px;
+	text-align: center;
+}

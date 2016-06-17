@@ -1,15 +1,10 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2015  Joshua M. David
+ * Copyright (c) 2013-2016  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation in version 3 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -23,7 +18,33 @@
  */
 var exportPads = {
 	
-	$exportDialog: null,
+	/** Cached jQuery selector for the Export Pads dialog */
+	$dialog: null,
+		
+	/** The least significant bits in the first image from the TRNG */
+	randomBitsFirstImageBinary: '',
+	randomBitsFirstImageHex: '',
+	
+	/** The least significant bits in the second image from the TRNG  */
+	randomBitsSecondImageBinary: '',
+	randomBitsSecondImageHex: '',
+	
+	/** Get the least significant bits from both images XORed together from the TRNG */
+	randomBitsXoredBinary: '',
+	randomBitsXoredHex: '',
+	
+	/** Get the final bits after randomness extraction from the TRNG */
+	randomBitsExtractedBinary: '',
+	randomBitsExtractedHex: '',
+		
+	/**
+	 * This is an estimate for the number of random bits that are needed when exporting the one-time pads so that the 
+	 * database is encrypted and authenticated and the users have a server key and the failsafe RNG keys. This is 
+	 * calculated as:  the PBKDF salt (1536 bits) + AES database encryption key (256 bits) + Salsa20 database encryption 
+	 * key (256 bits) + Keccak database MAC key (512 bits) + Skein database MAC key (512 bits) + server API key 
+	 * (512 bits) + failsafe RNG keys per user (256 bits * 7 users). The total comes to 5376 bits.
+	 */
+	bitLengthOfKeysRequiredForExport: 5376,
 	
 	/**
 	 * Configure the Export Pads dialog to open and all functionality within
@@ -31,18 +52,20 @@ var exportPads = {
 	initExportPadsDialog: function()
 	{
 		// Cache to prevent extra DOM lookups
-		exportPads.$exportDialog = $('#exportPadsSettings');
+		this.$dialog = $('#exportPadsSettings');
 		
 		// Configure button to open export dialog
 		$('#btnOpenExportPadsSettings').click(function()
 		{
 			// Hide previous status messages and open the dialog
 			common.hideStatus();
-			exportPads.$exportDialog.dialog('open');
+			
+			// Open jQueryUI dialog
+			exportPads.$dialog.dialog('open');
 		});
 
-		// Configure entropy collection settings dialog
-		exportPads.$exportDialog.dialog(
+		// Configure entropy collection settings dialog using jQueryUI
+		this.$dialog.dialog(
 		{
 			autoOpen: false,
 			create: function (event)
@@ -63,15 +86,16 @@ var exportPads = {
 		this.initExportPadsButton();
 		this.initTestServerConnectionButton();
 		this.initPassphraseStrengthCalculator();
+		this.initShowAdvancedOptionsButton();
 	},
 	
 	/**
-	 * Repositions the export dialog to the center of the window because some options
-	 * e.g. number of users or export method change the amount of information in the dialog
+	 * Repositions the export dialog to the center of the window because some options e.g. 
+	 * the number of users or export method change the amount of information in the dialog
 	 */
 	repositionDialogToCenter: function()
 	{
-		exportPads.$exportDialog.dialog('option', 'position', { my : 'center', at: 'center', of: window });
+		exportPads.$dialog.dialog('option', 'position', { my : 'center', at: 'center', of: window });
 	},
 	
 	/**
@@ -87,7 +111,7 @@ var exportPads = {
 			var nicknames = '';
 
 			// Build list of users so the user can edit the user nicknames
-			for (var i=0; i < numOfUsers; i++)
+			for (var i = 0; i < numOfUsers; i++)
 			{
 				// Build the HTML to be rendered inside the dialog
 				var nicknameCapitalised = common.capitaliseFirstLetter(common.userList[i]);
@@ -109,30 +133,32 @@ var exportPads = {
 	hideOptionsDependingOnExportMethod: function()
 	{
 		// On dropdown change
-		exportPads.$exportDialog.find('#exportMethod').change(function()
+		exportPads.$dialog.find('#exportMethod').change(function()
 		{
 			var exportMethod = $(this).val();		
 
 			// If the pads will be exported for actual use show the Export for User option
 			if ((exportMethod === 'textFile') || (exportMethod === 'clipboard'))
 			{
-				exportPads.$exportDialog.find('.helpExplanation .oneTimePads').show();
-				exportPads.$exportDialog.find('.helpExplanation .randomData').hide();
-				exportPads.$exportDialog.find('.serverDetails').show();
-				exportPads.$exportDialog.find('.chatGroupDetails').show();
-				exportPads.$exportDialog.find('.databaseEncryptionPassword').show();
-				exportPads.$exportDialog.find('.advancedOptions').show();
-				exportPads.$exportDialog.find('#btnExportPads').val('3. Export one-time pads');
+				exportPads.$dialog.find('.helpExplanation .oneTimePads').show();
+				exportPads.$dialog.find('.helpExplanation .randomData').hide();
+				exportPads.$dialog.find('.serverDetails').show();
+				exportPads.$dialog.find('.chatGroupDetails').show();
+				exportPads.$dialog.find('.databaseEncryptionPassword').show();
+				exportPads.$dialog.find('.buttonShowAdvancedOptions').show();
+				exportPads.$dialog.find('.advancedOptions').hide();
+				exportPads.$dialog.find('#btnExportPads').val('3. Export one-time pads');
 			}
 			else {
 				// Otherwise export for testing so hide the one-time pad export options
-				exportPads.$exportDialog.find('.helpExplanation .oneTimePads').hide();
-				exportPads.$exportDialog.find('.helpExplanation .randomData').show();
-				exportPads.$exportDialog.find('.serverDetails').hide();
-				exportPads.$exportDialog.find('.chatGroupDetails').hide();
-				exportPads.$exportDialog.find('.databaseEncryptionPassword').hide();
-				exportPads.$exportDialog.find('.advancedOptions').hide();
-				exportPads.$exportDialog.find('#btnExportPads').val('3. Export random data');
+				exportPads.$dialog.find('.helpExplanation .oneTimePads').hide();
+				exportPads.$dialog.find('.helpExplanation .randomData').show();
+				exportPads.$dialog.find('.serverDetails').hide();
+				exportPads.$dialog.find('.chatGroupDetails').hide();
+				exportPads.$dialog.find('.databaseEncryptionPassword').hide();
+				exportPads.$dialog.find('.buttonShowAdvancedOptions').hide();
+				exportPads.$dialog.find('.advancedOptions').hide();
+				exportPads.$dialog.find('#btnExportPads').val('3. Export random data');
 			}
 			
 			// Reposition the dialog to center of screen
@@ -149,16 +175,16 @@ var exportPads = {
 		$('#btnCreateServerKey').click(function()
 		{
 			// Check there is enough data to create a 512 bit key (128 hexadecimal symbols)
-			if (common.randomDataHexadecimal.length < 128)
+			if (exportPads.randomBitsExtractedHex.length < 128)
 			{
 				common.showStatus('error', 'Not enough bits remaining to create a full 512 bit key.', true);
 			}
 			else {
 				// Take the first 512 bits of the extracted data and convert it to hexadecimal
-				var serverKeyHex = common.randomDataHexadecimal.slice(0, 128);
+				var serverKeyHex = exportPads.randomBitsExtractedHex.slice(0, 128);
 
 				// After removing the first 512 bits, use the remainder of the bits for the one-time pads
-				common.randomDataHexadecimal = common.randomDataHexadecimal.slice(128);
+				exportPads.randomBitsExtractedHex = exportPads.randomBitsExtractedHex.slice(128);
 
 				// Put it in the text field
 				$('#serverKey').val(serverKeyHex);
@@ -189,6 +215,24 @@ var exportPads = {
 	},
 	
 	/**
+	 * Shows advanced options when they click to see more
+	 */
+	initShowAdvancedOptionsButton: function()
+	{
+		$('.buttonShowAdvancedOptions').click(function() {
+			
+			// Show the advanced options
+			$('.advancedOptions').show();
+			
+			// Hide the button
+			$(this).hide();
+			
+			// Reposition dialog to center after expanding the other options
+			exportPads.repositionDialogToCenter();
+		});
+	},
+	
+	/**
 	 * Initialise the button to export the one-time pads or random data for external testing
 	 */
 	initExportPadsButton: function()
@@ -212,53 +256,99 @@ var exportPads = {
 					common.showStatus('processing', 'Creating and encrypting the one-time pads...', true);
 			
 					// Create, encrypt and export the one-time pads
-					exportPads.preparePadsForExport(exportOptions, common.randomDataHexadecimal);
+					exportPads.preparePadsForExport(exportOptions, exportPads.randomBitsExtractedHex);
 				}
 			}
 			else {
 				// Otherwise export the random data for testing using external methods
-				exportPads.prepareRandomDataForExternalTesting(exportMethod, common.randomDataHexadecimal);
+				exportPads.prepareRandomDataForExternalTesting(exportMethod);
 			}
 		});
 	},
-		
+	
 	/**
 	 * Exports the random data to the clipboard in various formats or to a binary file
-	 * @param {String} exportMethod How to export the data e.g. 'testExportBase64', 'testExportHexadecimal', 'testExportBinaryFile' or 'testExportBinaryString'
-	 * @param {String} extractedRandomDataHexadecimal The extracted entropy bits in hexadecimal
+	 * @param {String} exportMethod The value from the exportMethod select box which says how the data should be 
+	 *                              exported e.g. 'testExportEntropyExtractedHexadecimal' will export the final 
+	 *                              extracted random data to an ASCII text file with hexadecimal symbols in it.
 	 */
-	prepareRandomDataForExternalTesting: function(exportMethod, extractedRandomDataHexadecimal)
-	{
-		// Instructions for the popup prompt
-		var instructions = 'Copy to clipboard (Ctrl + C) then paste into a plain text file';
-
-		// Export to Base 64
-		if (exportMethod.indexOf('Base64') !== -1)
+	prepareRandomDataForExternalTesting: function(exportMethod)
+	{		
+		var entropyBinary = '';
+		var entropyHex = '';
+		var output = '';
+		var filename = '';
+		
+		// Get the entropy relevant to which option they have chosen in the 'Export to' select box
+		if (exportMethod.indexOf('EntropyFirstImage') !== -1)
 		{
-			// Convert to WordArray objects for CryptoJS to use
-			var words = CryptoJS.enc.Hex.parse(extractedRandomDataHexadecimal);
-			var output = CryptoJS.enc.Base64.stringify(words);
+			// Get the least significant bits in the first image
+			entropyBinary = exportPads.randomBitsFirstImageBinary;
+			entropyHex = exportPads.randomBitsFirstImageHex;
+		}
+		else if (exportMethod.indexOf('EntropySecondImage') !== -1)
+		{
+			// Get the least significant bits in the second image
+			entropyBinary = exportPads.randomBitsSecondImageBinary;
+			entropyHex = exportPads.randomBitsSecondImageHex;
+		}
+		else if (exportMethod.indexOf('EntropyXored') !== -1)
+		{
+			// Get the least significant bits from both images XORed together
+			entropyBinary = exportPads.randomBitsXoredBinary;
+			entropyHex = exportPads.randomBitsXoredHex;
+		}
+		else if (exportMethod.indexOf('EntropyExtracted') !== -1)
+		{
+			// Get the final bits after randomness extraction
+			entropyBinary = exportPads.randomBitsExtractedBinary;
+			entropyHex = exportPads.randomBitsExtractedHex;
+		}
+		
+		// Export to binary file. This format can be used by the NIST SP 800-22 tool.
+		if (exportMethod.indexOf('BinaryFile') !== -1)
+		{
+			// Convert to hexadecimal then WordArray objects for CryptoJS to use
+			var words = CryptoJS.enc.Hex.parse(entropyHex);
+			var outputBase64 = CryptoJS.enc.Base64.stringify(words);
 			
-			// Export the Base64 to a dialog which lets the user copy from there to a text file
-			window.prompt(instructions, output);
+			// Output the binary file and prompt the user to save it
+			location.href = 'data:application/octet-stream;base64,' + outputBase64;
+			
+			// Finished, exit early
+			return true;
+		}
+		
+		// Export to Base 64
+		else if (exportMethod.indexOf('Base64') !== -1)
+		{
+			// Convert to WordArray objects for CryptoJS to use			
+			var words = CryptoJS.enc.Hex.parse(entropyHex);
+			
+			// Set the filename and encode to Base64
+			filename = 'ascii-base64.txt';
+			output = CryptoJS.enc.Base64.stringify(words);
 		}
 		
 		// Export to hexadecimal string
 		else if (exportMethod.indexOf('Hexadecimal') !== -1)
-		{			
-			window.prompt(instructions, extractedRandomDataHexadecimal);
+		{
+			filename = 'ascii-hexadecimal.txt';
+			output = entropyHex;
 		}
 		
-		// Export to binary file
-		else if (exportMethod.indexOf('BinaryFile') !== -1)
+		// Export to ASCII binary string e.g. '01011100...'. This format can be used by the NIST SP 800-22 tool.
+		else if (exportMethod.indexOf('Binary') !== -1)
 		{
-			// Convert to hexadecimal then WordArray objects for CryptoJS to use
-			var words = CryptoJS.enc.Hex.parse(extractedRandomDataHexadecimal);
-			var output = CryptoJS.enc.Base64.stringify(words);
-			
-			// Output the binary file for the user to save
-			location.href = 'data:application/octet-stream;base64,' + output;
+			filename = 'ascii-binary.txt';
+			output = entropyBinary;			
 		}
+		
+		// Create a Binary Large Object (BLOB)
+		var blob = new Blob([output], { type: 'text/plain;charset=utf-8' });
+		
+		// Pop up a save dialog for the user to save to a text file
+		saveAs(blob, filename);
 	},
 	
 	/**
@@ -269,25 +359,25 @@ var exportPads = {
 	{
 		// Get data from the dialog inputs
 		var options = {
-			exportMethod: exportPads.$exportDialog.find('#exportMethod').val(),
+			exportMethod: exportPads.$dialog.find('#exportMethod').val(),
 			
 			// Server details
-			serverAddressAndPort: exportPads.$exportDialog.find('#serverAddressAndPort').val(),
-			serverKey: exportPads.$exportDialog.find('#serverKey').val().toLowerCase(),
+			serverAddressAndPort: exportPads.$dialog.find('#serverAddressAndPort').val(),
+			serverKey: exportPads.$dialog.find('#serverKey').val().toLowerCase(),
 			
 			// Chat group details
-			numOfUsers: parseInt(exportPads.$exportDialog.find('#numOfUsers').val()),
+			numOfUsers: parseInt(exportPads.$dialog.find('#numOfUsers').val()),
 			userNicknames: {},
 			
 			// Database encryption password
-			passphrase: exportPads.$exportDialog.find('#passphrase').val(),
-			passphraseRepeat: exportPads.$exportDialog.find('#passphraseRepeat').val(),
+			passphrase: exportPads.$dialog.find('#passphrase').val(),
+			passphraseRepeat: exportPads.$dialog.find('#passphraseRepeat').val(),
 						
 			// Advanced options			
-			createSeparateKeyfile: exportPads.$exportDialog.find('#storeKeyfileSeparately').is(':checked'),
-			enterPbkdfIterationsOnDecrypt: exportPads.$exportDialog.find('#enterPbkdfIterationsOnDecrypt').is(':checked'),
-			pbkdfKeccakIterations: exportPads.$exportDialog.find('#pbkdfKeccakIterations').val(),
-			pbkdfSkeinIterations: exportPads.$exportDialog.find('#pbkdfSkeinIterations').val()
+			createSeparateKeyfile: exportPads.$dialog.find('#storeKeyfileSeparately').is(':checked'),
+			enterPbkdfIterationsOnDecrypt: exportPads.$dialog.find('#enterPbkdfIterationsOnDecrypt').is(':checked'),
+			pbkdfKeccakIterations: exportPads.$dialog.find('#pbkdfKeccakIterations').val(),
+			pbkdfSkeinIterations: exportPads.$dialog.find('#pbkdfSkeinIterations').val()
 		};
 		
 		// Validate the server key is hex and correct length (in case they entered it themselves)
@@ -319,7 +409,7 @@ var exportPads = {
 		}
 		
 		// Check that the random data generated has enough for the salt and at least 1 message
-		else if (common.randomDataHexadecimal.length < (common.saltLengthHex + common.totalPadSizeHex))
+		else if (exportPads.randomBitsExtractedHex.length < (common.saltLengthHex + common.totalPadSizeHex))
 		{
 			common.showStatus('error', 'Not enough random data generated.', true);
 			return false;
@@ -330,7 +420,7 @@ var exportPads = {
 		{
 			// Get the user, nickname, then filter the nickname field so only A-z and 0-9 characters allowed
 			var user = common.userList[i];
-			var nickname = exportPads.$exportDialog.find('#nickname-' + user).val();
+			var nickname = exportPads.$dialog.find('#nickname-' + user).val();
 				nickname = nickname.replace(/[^A-Za-z0-9]/g, '');
 			
 			// If the nickname field has nothing, then use the default user name e.g. Alpha, Bravo
@@ -715,17 +805,17 @@ var exportPads = {
 	initPassphraseStrengthCalculator: function()
 	{
 		// Add keyup event to the passphrase and number of iterations
-		exportPads.$exportDialog.find('#passphrase, #pbkdfKeccakIterations, #pbkdfSkeinIterations').keyup(function()
+		exportPads.$dialog.find('#passphrase, #pbkdfKeccakIterations, #pbkdfSkeinIterations').keyup(function()
 		{
 			// Get passphrase and number of iterations
-			var passphrase = exportPads.$exportDialog.find('#passphrase').val();
-			var pbkdfKeccakIterations = exportPads.$exportDialog.find('#pbkdfKeccakIterations').val();
-			var pbkdfSkeinIterations = exportPads.$exportDialog.find('#pbkdfSkeinIterations').val();
+			var passphrase = exportPads.$dialog.find('#passphrase').val();
+			var pbkdfKeccakIterations = exportPads.$dialog.find('#pbkdfKeccakIterations').val();
+			var pbkdfSkeinIterations = exportPads.$dialog.find('#pbkdfSkeinIterations').val();
 			
 			// Get the display fields in the dialog
-			var $passphraseStrength = exportPads.$exportDialog.find('.passphraseStrength');
-			var $passphraseText = exportPads.$exportDialog.find('.passphraseStrength .text');
-			var $passphraseBits = exportPads.$exportDialog.find('.passphraseStrength .bits');
+			var $passphraseStrength = exportPads.$dialog.find('.passphraseStrength');
+			var $passphraseText = exportPads.$dialog.find('.passphraseStrength .text');
+			var $passphraseBits = exportPads.$dialog.find('.passphraseStrength .bits');
 						
 			// Calculate strength of passphrase
 			var bitStrength = dbCrypto.calculatePassphraseStrengthInBits(passphrase, pbkdfKeccakIterations, pbkdfSkeinIterations);

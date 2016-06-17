@@ -1,15 +1,10 @@
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2015  Joshua M. David
+ * Copyright (c) 2013-2016  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation in version 3 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -39,7 +34,7 @@
 /* Heading and version */
 .homePage h1 {
 	font-size: 14px;
-	margin: 3px 0 10px 0;
+	margin: 10px 0 20px;
 	text-align: center;
 }
 .homePage h1 .programVersion {
@@ -75,7 +70,7 @@
 
 /* Buttons to same width */
 .homePage .menu a {
-	width: 170px;
+	width: 190px;
 }
 
 /* Menu to show the TRNG sub menu */
@@ -88,13 +83,8 @@
 	text-align: center;
 }
 
-/* Push the buttons down more */
-.generatePadsSubMenu .menu {
-	margin-top: 30px;
-}
-
-.generatePadsSubMenu .menu a {
-	width: 207px;
+.centerMenuButton {
+	text-align: center;
 }
 
 /* Make the link appear clickable */

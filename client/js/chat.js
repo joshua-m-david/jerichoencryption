@@ -1,15 +1,10 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2015  Joshua M. David
+ * Copyright (c) 2013-2016  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation in version 3 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -648,7 +643,7 @@ var chat = {
 		});
 		
 		// Loop through the indexes to be erased
-		for (var i=0, length = padIndexesToErase.length; i < length; i++)
+		for (var i = 0, length = padIndexesToErase.length; i < length; i++)
 		{
 			// Get the pad to erase
 			var pad = padIndexesToErase[i];
@@ -689,7 +684,7 @@ var chat = {
 		var htmlMessages = '';
 		
 		// For each message build the HTML to be rendered
-		for (var i=0, length = decryptedMessages.length; i < length; i++)
+		for (var i = 0, length = decryptedMessages.length; i < length; i++)
 		{
 			// Get the HTML display for this message
 			var html = chat.prepareMessageForDisplay(decryptedMessages[i]);
@@ -770,7 +765,7 @@ var chat = {
 		text = common.htmlEncodeEntities(text);
 		
 		// Put the escaped URLs back in by replacing the placeholders with the URLs from the array
-		for (var i=0; i < urls.length; i++)
+		for (var i = 0; i < urls.length; i++)
 		{
 			text = text.replace('|' + i + '|', urls[i]);
 		}
@@ -857,7 +852,8 @@ var chat = {
 		var icon = (db.padData.info.custom.enableWebNotifications === true) ? 'fa-toggle-on' : 'fa-toggle-off';
 		
 		// Set the icon
-		$('.enableDisableWebNotifications').removeClass('fa-toggle-on fa-toggle-off').addClass(icon).prop('title', 'Web notifications currently ' + onOrOff);
+		$('.enableDisableWebNotifications').removeClass('fa-toggle-on fa-toggle-off').addClass(icon);
+		$('.enableDisableWebNotifications').prop('title', 'Web notifications currently ' + onOrOff);
 		$('.enableDisableWebNotificationsIcon').prop('title', 'Web notifications currently ' + onOrOff);
 		
 		// Enable click event to toggle the notifications on or off
@@ -880,7 +876,8 @@ var chat = {
 			db.savePadDataToDatabase();
 			
 			// Change icon to volume off
-			$('.enableDisableAudio').removeClass('fa-toggle-on').addClass('fa-toggle-off').prop('title', 'Audible notifications currently off');
+			$('.enableDisableAudio').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+			$('.enableDisableAudio').prop('title', 'Audible notifications currently off');
 			$('.enableDisableAudioIcon').prop('title', 'Audible notifications currently off');
 		}
 		else {
@@ -889,7 +886,8 @@ var chat = {
 			db.savePadDataToDatabase();
 			
 			// Change icon to volume on
-			$('.enableDisableAudio').removeClass('fa-toggle-off').addClass('fa-toggle-on').prop('title', 'Audible notifications currently on');
+			$('.enableDisableAudio').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+			$('.enableDisableAudio').prop('title', 'Audible notifications currently on');
 			$('.enableDisableAudioIcon').prop('title', 'Audible notifications currently on');
 		}
 	},
@@ -907,7 +905,8 @@ var chat = {
 			db.savePadDataToDatabase();
 			
 			// Change icon to vibration off
-			$('.enableDisableVibration').removeClass('fa-toggle-on').addClass('fa-toggle-off').prop('title', 'Vibration currently off');
+			$('.enableDisableVibration').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+			$('.enableDisableVibration').prop('title', 'Vibration currently off');
 			$('.enableDisableVibrationLightningIcon').prop('title', 'Vibration currently off');
 		}
 		else {
@@ -916,7 +915,8 @@ var chat = {
 			db.savePadDataToDatabase();
 			
 			// Change icon to vibration on
-			$('.enableDisableVibration').removeClass('fa-toggle-off').addClass('fa-toggle-on').prop('title', 'Vibration currently on');
+			$('.enableDisableVibration').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+			$('.enableDisableVibration').prop('title', 'Vibration currently on');
 			$('.enableDisableVibrationLightningIcon').prop('title', 'Vibration currently on');
 		}
 	},	
@@ -934,7 +934,8 @@ var chat = {
 			db.savePadDataToDatabase();
 			
 			// Change icon to Web Notifications off
-			$('.enableDisableWebNotifications').removeClass('fa-toggle-on').addClass('fa-toggle-off').prop('title', 'Web Notifications currently off');
+			$('.enableDisableWebNotifications').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+			$('.enableDisableWebNotifications').prop('title', 'Web Notifications currently off');
 			$('.enableDisableWebNotificationsIcon').prop('title', 'Web Notifications currently off');
 		}
 		else {
@@ -943,7 +944,8 @@ var chat = {
 			db.savePadDataToDatabase();
 			
 			// Change icon to Web Notifications on
-			$('.enableDisableWebNotifications').removeClass('fa-toggle-off').addClass('fa-toggle-on').prop('title', 'Web Notifications currently on');
+			$('.enableDisableWebNotifications').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+			$('.enableDisableWebNotifications').prop('title', 'Web Notifications currently on');
 			$('.enableDisableWebNotificationsIcon').prop('title', 'Web Notifications currently on');
 		}
 	}

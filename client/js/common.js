@@ -1,15 +1,10 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2015  Joshua M. David
+ * Copyright (c) 2013-2016  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation in version 3 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -23,8 +18,8 @@
  */
 var common = {
 	
-	// Current program version to help with importing from old versions later
-	programVersion: '1.5.1',
+	// Current program version as an indicator to the user and to help with automatic importing from old versions later
+	programVersion: '1.5.2',
 	
 	// Define lengths of message attributes in bytes
 	padIdentifierSize: 7,		// Size of the pad identifier in bytes. The first 7 bytes of pad are used only to identify which pad was used
@@ -74,10 +69,6 @@ var common = {
 	
 	// Start timer
 	startTime: null,
-			
-	// Random data collected or loaded from TRNG
-	randomDataBinary: '',
-	randomDataHexadecimal: '',
 	
 	// A timer for hiding the status messages
 	statusTimeoutId: null,
@@ -307,7 +298,7 @@ var common = {
 		var macBinary = common.convertHexadecimalToBinary(mac);	
 		
 		// Perform the encryption/decryption then convert the result back to hexadecimal
-		var xoredMacBinary = common.encryptOrDecrypt(padForMacBinary, macBinary);
+		var xoredMacBinary = common.xorBits(padForMacBinary, macBinary);
 		var xoredMacHex = common.convertBinaryToHexadecimal(xoredMacBinary);
 		
 		return xoredMacHex;
@@ -410,31 +401,58 @@ var common = {
 	},
 	
 	/**
-	 * Function to encrypt or decrypt data by doing a bitwise exclusive or (XOR) on the one-time pad (key) and the plaintext.
-	 * The pad and the plaintext/ciphertext being passed in should be the same length.
-	 * To encrypt, pass in the one-time pad and the plaintext in binary
-	 * To decrypt, pass in the one-time pad and the ciphertext in binary
-	 * @param {String} binaryPad The pad/key (as a binary string) without the pad identifier
-	 * @param {String} binaryText The plaintext or ciphertext as a binary string
-	 * @returns {String} A binary string containing the XOR of the pad and text
+	 * This function does a bitwise exclusive or (XOR) operation on two bitstreams. This can be used to encrypt or 
+	 * decrypt data by doing a XOR on the key and the plaintext. The two bitstreams should be of the same length.
+	 * @param {String} bitsA The first stream of bits e.g.  '01010101'
+	 * @param {String} bitsB The second stream of bits e.g. '00001111'
+	 * @returns {String} A binary string containing the XOR of the first and second bitstreams e.g. '01011010'
 	 */
-	encryptOrDecrypt: function(binaryPad, binaryText)
+	xorBits: function(bitsA, bitsB)
 	{
-		var length = binaryText.length;
+		// Get the lengths of the two bitstreams
+		var lengthBitsA = bitsA.length;
+		var lengthBitsB = bitsB.length;
+		
+		// If the lengths of each stream of bits is different then this could be a serious problem e.g. the whole 
+		// message does not get encrypted properly. This is added as a basic defense against possible coding error
+		if (lengthBitsA !== lengthBitsB)
+		{
+			throw new Error('Serious failure, trying to XOR bitstreams of different lengths!\n' + new Error().stack);
+		}
+		
 		var output = '';
 
 		// For each binary character in the message
-		for (var i=0; i < length; i++)
+		for (var i = 0; i < lengthBitsA; i++)
 		{
-			// Get binary number of the pad and plaintext
-			var binaryPadChar = binaryPad.charAt(i);
-			var binaryTextChar = binaryText.charAt(i);
+			// Get binary number of the two bitstreams at the same position
+			var binaryDigitA = bitsA.charAt(i);
+			var binaryDigitB = bitsB.charAt(i);
 
 			// XOR the binary character of the pad and binary text character together and append to output
-			output += binaryPadChar ^ binaryTextChar;
+			output += (binaryDigitA ^ binaryDigitB);
 		}
 
 		return output;
+	},
+	
+	/**
+	 * A function to XOR two hexadecimal strings together
+	 * @param {String} hexStringA The first string of hexadecimal symbols e.g. 'a7d9'
+	 * @param {String} hexStringB The second string of hexadecimal symbols e.g. 'c72a'
+	 * @returns {String} The result of the strings XORed together e.g. '60f3'
+	 */
+	xorHex: function(hexStringA, hexStringB)
+	{
+		// Convert the hexadecimal to binary
+		var bitsA = common.convertHexadecimalToBinary(hexStringA);
+		var bitsB = common.convertHexadecimalToBinary(hexStringB);
+		
+		// XOR the bit strings together and convert back to hexadecimal
+		var xoredBits = common.xorBits(bitsA, bitsB);
+		var xoredBitsHex = common.convertBinaryToHexadecimal(xoredBits);
+		
+		return xoredBitsHex;
 	},
 	
 	/**
@@ -510,7 +528,7 @@ var common = {
 		var j = 0;
 
 		// For each 8 binary characters convert to ASCII
-		for (var i=0; i < binaryText.length; i = j)
+		for (var i = 0; i < binaryText.length; i = j)
 		{
 			// Get 8 characters from string
 			j += 8;
@@ -546,7 +564,7 @@ var common = {
 		var output = '';
 
 		// For every character in the input text
-		for (var i=0; i < inputText.length; i++)
+		for (var i = 0; i < inputText.length; i++)
 		{
 			// Convert character to get the ASCII code in decimal, then convert it to a binary value
 			var binary = inputText[i].charCodeAt(0).toString(2);
@@ -622,7 +640,7 @@ var common = {
 		var output = '';
 		
 		// For every 4 bits in the binary string
-		for (var i=0; i < binaryString.length; i += 4)
+		for (var i = 0; i < binaryString.length; i += 4)
 		{
 			// Grab a chunk of 4 bits
 			var bytes = binaryString.substr(i, 4);
@@ -648,7 +666,7 @@ var common = {
 		var output = '';
 		
 		// For each hexadecimal character
-		for (var i=0; i < hexString.length; i++)
+		for (var i = 0; i < hexString.length; i++)
 		{
 			// Convert to decimal
 			var decimal = parseInt(hexString.charAt(i), 16);
@@ -666,7 +684,7 @@ var common = {
 	/**
 	 * Left pad a string with a certain character to a total number of characters
 	 * @param {String} inputString The string to be padded
-	 * @param {String} padCharacter The character that the string should be padded with
+	 * @param {String} padCharacter The character/s that the string should be padded with
 	 * @param {Number} totalCharacters The length of string that's required
 	 * @returns {String} A string with characters appended to the front of it
 	 */
@@ -676,13 +694,13 @@ var common = {
 		inputString = inputString.toString();
 		
 		// If the string is already the right length, just return it
-		if (!padCharacter || inputString.length >= totalCharacters)
+		if (!padCharacter || (inputString.length >= totalCharacters))
 		{
 			return inputString;
 		}
 
 		// Work out how many extra characters we need to add to the string
-		var charsToAdd = (totalCharacters - inputString.length)/padCharacter.length;
+		var charsToAdd = (totalCharacters - inputString.length) / padCharacter.length;
 
 		// Add padding onto the string
 		for (var i = 0; i < charsToAdd; i++)
@@ -694,14 +712,15 @@ var common = {
 	},
 	
 	/**
-	 * Round a number to specified decimal places
-	 * @param {Number} num The number to be rounded
-	 * @param {Number} decimals The number of decimal places to round to (use 0 for none)
-	 * @returns {Number} The number round to the specified decimal places
+	 * Round a number to specified decimal places, 0-4 round down, 5-9 round up
+	 * @param {Number} num The number to be rounded e.g. 123.456
+	 * @param {Number} decimals The number of decimal places to round to (use 0 for none) e.g. 1
+	 * @returns {Number} The number round to the specified decimal places e.g. 123.5
 	 */
 	roundNumber: function(num, decimals)
 	{
 		var newNum = new Number(num + '').toFixed(parseInt(decimals));
+		
 		return parseFloat(newNum);
 	},
 			
@@ -738,7 +757,7 @@ var common = {
 		var padMessagePartsBinary = common.getPadMessageParts(padBinary);
 		
 		// Encrypt the message, combine the pad and ciphertext, then convert to hex for transport
-		var encryptedMessagePartsBinary = common.encryptOrDecrypt(padMessagePartsBinary, messagePartsReversedBinary);
+		var encryptedMessagePartsBinary = common.xorBits(padMessagePartsBinary, messagePartsReversedBinary);
 		var completeCiphertextBinary = common.combinePadIdentifierAndCiphertext(padIdentifier, encryptedMessagePartsBinary);
 		var ciphertextHex = common.convertBinaryToHexadecimal(completeCiphertextBinary);
 		
@@ -821,7 +840,7 @@ var common = {
 		var padMessagePartsBinary = common.getPadMessageParts(padBinary);
 		
 		// Decrypt the message parts, and reverse the message parts depending on the second last byte of the pad
-		var decryptedMessagePartsBinary = common.encryptOrDecrypt(padMessagePartsBinary, ciphertextMessageParts);
+		var decryptedMessagePartsBinary = common.xorBits(padMessagePartsBinary, ciphertextMessageParts);
 		var decryptedReversedMessagePartsBinary = common.reverseMessageParts(pad, decryptedMessagePartsBinary);
 		
 		// Find out the actual plaintext and time the message was sent
@@ -954,7 +973,7 @@ var common = {
 		var pad = null;
 		
 		// For each pad in memory for the user find the first one that we can send
-		for (var i=0; i < numOfPads; i++)
+		for (var i = 0; i < numOfPads; i++)
 		{
 			// If the pad id matches the one in the local database
 			if (padIdentifier === db.padData.pads[fromUser][i].padIdentifier)
@@ -1033,7 +1052,7 @@ var common = {
 		var $statusMessage = $('.statusMessage');
 		
 		// Remove existing CSS classes, add the class depending on the type of message and set the message
-		$statusMessage.removeClass('success error processing').addClass(type);
+		$statusMessage.removeClass('success warning error processing').addClass(type);
 		$statusMessage.find('.message').text(message);
 		
 		// Clear previous timeout so that new status messages being shown don't get prematurely 
@@ -1605,20 +1624,26 @@ var common = {
 	},
 	
 	/**
-	 * Some boilerplate code to start a web worker. Using the ID of the worker it will find the code within the 
-	 * <script> tags of the HTML page and initialise the HTML5 Web Worker with that code
+	 * Some boilerplate code to start an inline HTML5 Web Worker. This can be used to do CPU intensive tasks and 
+	 * prevent the main UI thread from being blocked. Using the ID of the worker it will find the code within the 
+	 * <script id="worker-id" type="javascript/worker"><script> tag of the HTML page and initialise the web worker 
+	 * with that code. This inline web worker avoids the same origin policy restrictions when loading a web worker 
+	 * from a different file path in Chromium.
+	 * See: http://stackoverflow.com/a/18490502
+	 * and: http://www.html5rocks.com/en/tutorials/workers/basics/#toc-inlineworkers
 	 * @param {String} workerId The CSS ID of the worker to be loaded e.g. 'export-pads-worker'
-	 * @returns {Worker} Returns the handle to the web worker
+	 * @returns {Worker} Returns the web worker object
 	 */
 	startWebWorker: function(workerId)
 	{
 		// Convert the base URL so the web worker can import the common.js script
 		// Also load the JavaScript code on the HTML page which is what the worker will run
 		var baseUrl = window.location.href.replace(/\\/g, '/').replace(/\/[^\/]*$/, '');
-        var array = ['var baseUrl = "' + baseUrl + '";' + $('#' + workerId).html()];
+		var workerJavaScript = $('#' + workerId).html();
+        var array = ['var baseUrl = "' + baseUrl + '";' + workerJavaScript];
 		
 		// Create a Blob to hold the JavaScript code and send it to the inline worker
-        var blob = new Blob(array, { type: "text/javascript" });
+        var blob = new Blob(array, { type: 'text/javascript' });
 		var blobUrl = window.URL.createObjectURL(blob);
 		var worker = new Worker(blobUrl);
 		
@@ -1632,6 +1657,7 @@ var common = {
 		// Free up memory
 		window.URL.revokeObjectURL(blobUrl);
 		
+		// Return the worker object so custom listeners can be added
 		return worker;
 	},
 		

@@ -1,15 +1,10 @@
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2015  Joshua M. David
+ * Copyright (c) 2013-2016  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation in version 3 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -22,30 +17,31 @@
 /* Button styles */
 .blueButton {
 	background-color: #3bb3e0;
-	display: inline-block;
-	padding: 12px;
-	position: relative;
-	font-family: sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-	text-decoration: none;
-	color: #fff;
-	border: solid 1px #186f8f;
 	background-image: -o-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
 	background-image: -moz-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
 	background-image: -webkit-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
 	background-image: -ms-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
 	background-image: -webkit-gradient(linear, left bottom,	left top, color-stop(0, rgb(44,160,202)), color-stop(1, rgb(62,184,229)));
 	background-image: linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
-	-webkit-box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
-	-moz-box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
-	box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
 	-webkit-border-radius: 7px;
 	-moz-border-radius: 7px;
 	border-radius: 7px;
+	border: solid 1px #186f8f;	
+	-webkit-box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	-moz-box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	color: #fff;
+	cursor: pointer;
+	display: inline-block;
+	font-family: sans-serif;
+	font-size: 12px;
+	font-weight: bold;	
+	padding: 12px;
+	position: relative;
+	text-decoration: none;
 	-webkit-user-select: none;
 	-moz-user-select: none;
-	user-select: none;
+	user-select: none;	
 }
 .ui-widget-content a.blueButton {
 	color: #fff;
@@ -54,16 +50,37 @@
 	font-size: 13px;
 }
 .blueButton:active {
-	top: 1px;
 	background-image: -o-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
 	background-image: -moz-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
 	background-image: -webkit-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
 	background-image: -ms-linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
 	background-image: -webkit-gradient(linear, left bottom,	left top, color-stop(0, rgb(62,184,229)), color-stop(1, rgb(44,160,202)));
 	background-image: linear-gradient(bottom, rgb(62,184,229) 0%, rgb(44,160,202) 100%);
+	top: 1px;
 }
 .blueButton:disabled {
 	opacity: 0.5;
+}
+.blueButton:disabled:active {
+	background-image: -o-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -webkit-gradient(linear, left bottom,	left top, color-stop(0, rgb(44,160,202)), color-stop(1, rgb(62,184,229)));
+	background-image: linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	top: 0;
+}
+/* Extra disabled state for the label on the TRNG image page */
+.blueButton.disabled {
+	cursor: default;	
+	background-image: -o-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	background-image: -webkit-gradient(linear, left bottom,	left top, color-stop(0, rgb(44,160,202)), color-stop(1, rgb(62,184,229)));
+	background-image: linear-gradient(bottom, rgb(44,160,202) 0%, rgb(62,184,229) 100%);
+	opacity: 0.5;
+	top: 0;
 }
 
 /* Text and select box entry styles so is consistent on Firefox and Chrome */
@@ -126,12 +143,16 @@ h2 {
 .error {
 	color: #ff0000;
 }
+.warning {
+	color: #ff9100;
+}
 .success {
 	color: #008000;
 }
 .processing {
 	color: #2da2cc;
 }
+
 
 
 /* Style the Export Pads and Server Settings dialog */
@@ -179,6 +200,16 @@ h2 {
 }
 .exportPadsSettings .passphraseStrength .text.good {
 	color: #008000;
+}
+.exportPadsSettings .buttonShowAdvancedOptions {
+	color: #3399cc;
+	cursor: pointer;
+	font-weight: bold;
+	margin-bottom: 30px;
+	text-indent: 11px;
+}
+.exportPadsSettings .advancedOptions {
+	display: none;
 }
 .exportPadsSettings legend {
 	color: #3399cc;

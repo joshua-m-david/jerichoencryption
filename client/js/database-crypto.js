@@ -1,15 +1,10 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2015  Joshua M. David
+ * Copyright (c) 2013-2016  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation in version 3 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -44,7 +39,7 @@ var dbCrypto = {
 		var userPadNumbersHex = '';
 				
 		// Loop through the user's one-time pads and put all the pad numbers (in the order they appear) into a single string
-		for (var i=0, numOfPads = userPads.length; i < numOfPads; i++)
+		for (var i = 0, numOfPads = userPads.length; i < numOfPads; i++)
 		{
 			// Get the pad number, convert it to hexadecimal
 			userPadNumbersHex += userPads[i].padNum.toString(16);
@@ -252,8 +247,8 @@ var dbCrypto = {
 		var dataBinary = common.convertHexadecimalToBinary(data);
 		
 		// Combine the two keystreams by XORing them together, then XOR the combined keystream with the data
-		var combinedKeystreamBinary = common.encryptOrDecrypt(aesKeystreamBinary, salsaKeystreamBinary);
-		var encryptedDataBinary = common.encryptOrDecrypt(combinedKeystreamBinary, dataBinary);
+		var combinedKeystreamBinary = common.xorBits(aesKeystreamBinary, salsaKeystreamBinary);
+		var encryptedDataBinary = common.xorBits(combinedKeystreamBinary, dataBinary);
 		var encryptedDataHex = common.convertBinaryToHexadecimal(encryptedDataBinary);
 				
 		return encryptedDataHex;
@@ -280,7 +275,7 @@ var dbCrypto = {
 		var skeinMacBinary = common.convertHexadecimalToBinary(skeinMac);
 		
 		// XOR the Skein and Keccak digests together then convert back to hex
-		var cascadeMacBinary = common.encryptOrDecrypt(keccakMacBinary, skeinMacBinary);
+		var cascadeMacBinary = common.xorBits(keccakMacBinary, skeinMacBinary);
 		var cascadeMacHex = common.convertBinaryToHexadecimal(cascadeMacBinary);
 				
 		return cascadeMacHex;
@@ -374,19 +369,20 @@ var dbCrypto = {
 	
 	/**
 	 * Generate a key derived from a password using PBKDF2 with the Keccak hash function instead of SHA2
-	 * @param {String} password A strong password as an ASCII string
+	 * @param {String} passwordHex A strong password as a hexadecimal string
 	 * @param {String} saltHex A random salt in hexadecimal
 	 * @param {Number} numOfIterations The number of iterations to perform
 	 * @returns {String} Returns a derived key of length 512 bits in hexadecimal
 	 */
-	keccakPasswordDerivation: function(password, saltHex, numOfIterations)
+	keccakPasswordDerivation: function(passwordHex, saltHex, numOfIterations)
 	{
 		// Set the input parameters
-		var salt = CryptoJS.enc.Hex.parse(saltHex);
+		var passwordWords = CryptoJS.enc.Hex.parse(passwordHex);
+		var salt = CryptoJS.enc.Hex.parse(saltHex);		
 		var options = { keySize: 512/32, hasher: CryptoJS.algo.SHA3, iterations: numOfIterations };
 		
 		// Generate the derived key using PBKDF2
-		var derivedKey = CryptoJS.PBKDF2(password, salt, options);
+		var derivedKey = CryptoJS.PBKDF2(passwordWords, salt, options);
 		var derivedKeyHex = derivedKey.toString(CryptoJS.enc.Hex);
 		
 		return derivedKeyHex;
@@ -423,18 +419,32 @@ var dbCrypto = {
 	},
 	
 	/**
-	 * Perform a cascaded Password Based Key Derivation Function by running PBKDF2 with the Keccak hash function then 
-	 * feeding the derived key from that into the Skein PBKDF. The salt is split into two halves. The first half of the 
-	 * salt is fed into the PBKDF2-Keccak function and the second half of the salt is used with the Skein PBKDF 
-	 * function. The resulting string will be 512 bits long.
+	 * Perform a cascaded Password Based Key Derivation Function using the following construction:
 	 * 
-	 * For added security an option exists in the UI to use custom iteration counts. The user can also choose not store 
-	 * the number of Keccak or Skein iterations with the rest of the database. The user would remember the iterations or 
-	 * write them down separately. This forces an attacker with only the database to try every iteration count for every 
-	 * password permutation. To counter an attacker simply caching the results of previous iteration counts and running 
-	 * the PBKDF on one password at a time, the iterations are appended to the end of the salt at runtime. This forces 
-	 * the attacker to do the full PBKDF iterations for every reasonable iteration count the user could have chosen e.g. 
-	 * 1 - 100,000 then repeat that for all possible password permutations.
+	 * FunctionA = PBKDF2-Keccak-512
+	 * FunctionB = PBKDF-Skein-512
+	 * KeccakSalt = Salt || Keccak iterations
+	 * SkeinSalt = Salt || Skein iterations
+	 * KeyA = FunctionA(Password, KeccakSalt)
+	 * KeyB = FunctionB(Password || KeyA, SkeinSalt)
+	 * FinalDerivedKey = KeyA XOR KeyB
+	 * 
+	 * The reason for this construction is:
+	 * - An adversary can't parallelize an attack because KeyB depends on the result of KeyA.
+	 * - The entropy in the FinalDerivedKey is not lowered if FunctionA is weak because the Password is also included 
+	 *   in FunctionB.
+	 * - The entropy in the FinalDerivedKey is not lowered if FunctionB is weak because it is XORed with KeyA.
+	 * - The FinalDerivedKey is at least as strong as the strongest function and retains the entropy in the Password 
+	 *   and Salt even if one of the functions is weak.
+	 * - It is hard to perform cryptanalysis on the output of each function individually because the output is XORed by 
+	 *   random data from the other function.
+	 * - For added security an option exists in the UI to use custom iteration counts. The user can also choose not 
+	 *   store the number of Keccak or Skein iterations with the rest of the database. The user would remember the 
+	 *   iterations or write them down separately. This forces an attacker with only the database to try every iteration 
+	 *   count for every password permutation. To counter an attacker simply caching the results of previous iteration 
+	 *   counts and running the PBKDF on one password at a time, the iterations are appended to the end of the salt at 
+	 *   runtime. This forces the attacker to do the full PBKDF iterations for every reasonable iteration count the user 
+	 *   could have chosen e.g. 1 - 100,000 then repeat that for all possible password permutations.
 	 * 
 	 * @param {String} password A strong password as an ASCII string
 	 * @param {String} saltHex A random salt/seed in hexadecimal
@@ -444,20 +454,20 @@ var dbCrypto = {
 	 */
 	cascadePasswordDerivation: function(password, saltHex, keccakNumOfIterations, skeinNumOfIterations)
 	{
-		// Split the salt into two equal length strings
-		var halfOfSaltLength = saltHex.length / 2;
-		var keccakSaltHex = saltHex.substr(0, halfOfSaltLength);
-		var skeinSaltHex = saltHex.substr(halfOfSaltLength);
+		// Convert the ASCII/UTF-8 password to hexadecimal so it can be input into both functions
+		var passwordBytes = Salsa20.core.util.utf8StringToBytes(password);
+		var passwordHex = Salsa20.core.util.bytesToHex(passwordBytes);
 		
 		// Add the number of iterations to the end of the salt
-		keccakSaltHex += common.convertIntegerToHex(keccakNumOfIterations);
-		skeinSaltHex += common.convertIntegerToHex(skeinNumOfIterations);		
-				
-		// Run the Keccak PBKDF then feed the derived key from that into the Skein PBKDF
-		var keccakDerivedKey = dbCrypto.keccakPasswordDerivation(password, keccakSaltHex, keccakNumOfIterations);
-		var derivedMasterKey = dbCrypto.skeinPasswordDerivation(keccakDerivedKey, skeinSaltHex, skeinNumOfIterations);
+		var keccakSaltHex = saltHex + common.convertIntegerToHex(keccakNumOfIterations);
+		var skeinSaltHex = saltHex + common.convertIntegerToHex(skeinNumOfIterations);		
 		
-		return derivedMasterKey;
+		// Compute both derived keys and XOR them together
+		var keccakDerivedKeyHex = dbCrypto.keccakPasswordDerivation(passwordHex, keccakSaltHex, keccakNumOfIterations);
+		var skeinDerivedKeyHex = dbCrypto.skeinPasswordDerivation(passwordHex + keccakDerivedKeyHex, skeinSaltHex, skeinNumOfIterations);
+		var finalDerivedKeyHex = common.xorHex(keccakDerivedKeyHex, skeinDerivedKeyHex);
+		
+		return finalDerivedKeyHex;
 	},
 	
 	/**
@@ -485,7 +495,7 @@ var dbCrypto = {
 			var keyBinaryB = common.convertHexadecimalToBinary(keyB);
 
 			// XOR the two keys together and convert back to hexadecimal
-			var xoredKeyBinary = common.encryptOrDecrypt(keyBinaryA, keyBinaryB);
+			var xoredKeyBinary = common.xorBits(keyBinaryA, keyBinaryB);
 			var xoredKeyHex = common.convertBinaryToHexadecimal(xoredKeyBinary);
 			
 			// Add derived key to array

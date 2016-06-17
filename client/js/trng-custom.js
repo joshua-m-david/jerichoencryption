@@ -1,15 +1,10 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2015  Joshua M. David
+ * Copyright (c) 2013-2016  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation in version 3 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -19,7 +14,7 @@
 'use strict';
 
 /**
- * True Random Number Generator (TRNG) to extract random data from photographs
+ * A program to load custom random data from the user then create the one-time pads for use with the program
  */
 var trngCustom = {
 	
@@ -111,32 +106,32 @@ var trngCustom = {
 					var arrayView = new Uint8Array(e.target.result);
 					
 					// Create the binary and hexadecimal
-					for (var i=0, length = arrayView.length; i < length; i++)
+					for (var i = 0, length = arrayView.length; i < length; i++)
 					{
-						common.randomDataHexadecimal += common.leftPadding(arrayView[i].toString(16), '0', 2);
-						common.randomDataBinary  += common.leftPadding(arrayView[i].toString(2), '0', 8);						
+						exportPads.randomBitsExtractedHex += common.leftPadding(arrayView[i].toString(16), '0', 2);
+						exportPads.randomBitsExtractedBinary  += common.leftPadding(arrayView[i].toString(2), '0', 8);						
 					}					
 				}
 				
 				// Normalise the hexadecimal symbols to lowercase and convert to binary as well
 				else if (fileType === 'hexadecimal')
-				{					
-					common.randomDataHexadecimal = e.target.result.toLowerCase();
-					common.randomDataBinary  = common.convertHexadecimalToBinary(common.randomDataHexadecimal);
+				{
+					exportPads.randomBitsExtractedHex = e.target.result.toLowerCase();
+					exportPads.randomBitsExtractedBinary  = common.convertHexadecimalToBinary(exportPads.randomBitsExtractedHex);
 				}
 				
 				// Convert from base64 to hexadecimal and binary
 				else if (fileType === 'base64')
 				{					
 					var words  = CryptoJS.enc.Base64.parse(e.target.result);
-					common.randomDataHexadecimal = CryptoJS.enc.Hex.stringify(words);
-					common.randomDataBinary  = common.convertHexadecimalToBinary(common.randomDataHexadecimal);
+					exportPads.randomBitsExtractedHex = CryptoJS.enc.Hex.stringify(words);
+					exportPads.randomBitsExtractedBinary  = common.convertHexadecimalToBinary(exportPads.randomBitsExtractedHex);
 				}
 								
 				// Update the number of random bits uploaded
-				var numberOfRandomBits = common.randomDataBinary .length;
+				var numberOfRandomBits = exportPads.randomBitsExtractedBinary.length;
 				    numberOfRandomBits = common.formatNumberWithCommas(numberOfRandomBits);
-				$('#totalRandomBits .collectionStatusBox').html(numberOfRandomBits);
+				$('#totalRandomBits .statusBox').html(numberOfRandomBits);
 				
 				// Show current status
 				common.showProcessingMessage('Random data loaded successfully. ' + fileInfo + ' Starting randomness tests...', true);
@@ -203,20 +198,30 @@ var trngCustom = {
 	startRandomnessTests: function()
 	{
 		// Run the randomness tests in FIPS 140-2 on the extracted data
-		randomTests.init(common.randomDataBinary , 'testsOverallResult', 'testsOverallResultLog', 'FIPS-140-2', function()
+		trngTests.init(exportPads.randomBitsExtractedBinary, function(overallResults)
 		{			
 			// On completion of the tests, display the test results
-			trngCustom.displayProccessingStats();
+			trngCustom.displayTestResults(overallResults, 'extractedTestsPass', 'extractedBitsOverallResultLog');
 		});
 	},
 		
 	/**
-	 * Show the number of extracted bits and number of messages
+	 * Show the number of bits and number of messages
+	 * @param {Object} overallResults Contains 'overallResult' pass/fail boolean, and the 'overallResultLog' which is the HTML test results
+	 * @param {String} overallResultOutputId Where the overall result will be rendered after the tests are complete
+	 * @param {String} overallResultLogOutputId Where the overall result logs will be rendered after the tests are complete
 	 */
-	displayProccessingStats: function()
+	displayTestResults: function(overallResults, overallResultOutputId, overallResultLogOutputId)
 	{
+		// Determine the CSS class
+		var result = (overallResults.overallResult) ? 'passed' : 'failed';
+		
+		// Update the overall result in the header and display the test result logs on the page
+		$('#' + overallResultOutputId).addClass(result).text(result);
+		$('#' + overallResultLogOutputId).html(overallResults.overallResultLog);
+		
 		// Calculate the collected data
-		var totalRandomBits = common.randomDataBinary .length;
+		var totalRandomBits = exportPads.randomBitsExtractedBinary.length;
 		var totalNumOfMessages = Math.floor(totalRandomBits / common.totalPadSizeBinary);
 		
 		// Format the values with the thousands separator
@@ -224,8 +229,8 @@ var trngCustom = {
 		totalNumOfMessages = common.formatNumberWithCommas(totalNumOfMessages);
 		
 		// Show the other headings and update the totals
-		$('#totalRandomBits .collectionStatusBox').html(totalRandomBits);
-		$('#totalNumOfMessages .collectionStatusBox').html(totalNumOfMessages);
+		$('#totalRandomBits .statusBox').html(totalRandomBits);
+		$('#totalNumOfMessages .statusBox').html(totalNumOfMessages);
 				
 		// Show current status
 		common.showProcessingMessage('Completed randomness extraction and tests. Now rendering bitmap image...', true);
@@ -239,56 +244,13 @@ var trngCustom = {
 		// Make sure the status has updated, then render the image which can take a while if it is large
 		setTimeout(function()
 		{
-			// Render the extracted data to a new HTML5 canvas
-			trngCustom.fillCanvasWithData('imageCanvas', common.randomDataBinary );
+			// Render the extracted data to a new HTML5 canvases in black and white and in colour
+			trngTests.fillCanvasWithBlackWhite('extractedBitsBlackWhite', exportPads.randomBitsExtractedBinary);
+			trngTests.fillCanvasWithColour('extractedBitsColour', exportPads.randomBitsExtractedBinary);
 
 			// Final status
 			common.showStatus('success', 'Data import and testing complete.', true);
 			
 		}, 500);
-	},			
-
-	/**
-	 * Fills the HTML5 canvas with random bits, 0 bits are coloured white, 1 bits are coloured black.
-	 * @param {String} canvasId The id to render the binary data into
-	 * @param {String} randomBits Random binary data
-	 */
-	fillCanvasWithData: function(canvasId, randomBits)
-	{
-		// Dynamically work out the size of the square image (x & y axis)
-		var numRandomBits = randomBits.length;
-		var squareRoot = Math.sqrt(numRandomBits);
-		var axisLength = Math.floor(squareRoot);
-
-		// Set new canvas dimensions
-		$('#' + canvasId).prop(
-		{
-			width: axisLength,
-			height: axisLength
-		});
-
-		// Create the canvas
-		var ctx = document.getElementById(canvasId).getContext('2d');
-
-		// Fill everything with white first
-		ctx.fillStyle = "#FFF";
-		ctx.fillRect(0, 0, axisLength, axisLength);
-		
-		// Change to black
-		ctx.fillStyle = "#000";
-
-		// Loop through each binary char
-		for (var i=0; i < axisLength; i++)
-		{
-			for (var j=0; j < axisLength; j++)
-			{
-				// If the character is a binary 1
-				if (randomBits[i * axisLength + j] === '1')
-				{
-					// Colour that pixel black
-					ctx.fillRect(i, j, 1, 1);
-				}
-			}
-		}
 	}
 };

@@ -12,7 +12,7 @@
 -->
 <html>
 	<head>
-		<title>Jericho Comms - TRNG Custom data upload</title>
+		<title>Jericho Comms - TRNG</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		
 		<link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
@@ -21,7 +21,7 @@
 		<link rel="stylesheet" href="css/lib/normalize.css">
 		<link rel="stylesheet" href="css/lib/ui-lightness/jquery-ui.css">
 		<link rel="stylesheet" href="css/common.css">
-		<link rel="stylesheet" href="css/trng-custom.css">
+		<link rel="stylesheet" href="css/trng.css">
 		
 		<script src="js/lib/jquery.js"></script>
 		<script src="js/lib/jquery-ui.js"></script>
@@ -43,15 +43,34 @@
 		<script src="js/database.js"></script>
 		<script src="js/database-crypto.js"></script>
 		<script src="js/common.js"></script>
-		<script src="js/export.js"></script>				
-		<script src="js/trng-custom.js"></script>
-		<script src="js/trng-tests.js"></script>		
+		<script src="js/export.js"></script>
+		<script src="js/trng.js"></script>
+		<script src="js/trng-tests.js"></script>
 		<script type="text/javascript">
 			$(function()
-			{				
-				trngCustom.init();
-			});	
-		</script>		
+			{
+				trng.init();
+			});
+		</script>
+		<script id="trng-extraction-worker" type="javascript/worker">
+			// Use ECMAScript 5's strict mode
+			'use strict';
+			
+			// Import scripts to be used
+			importScripts(baseUrl + '/js/common.js');
+			importScripts(baseUrl + '/js/trng-worker.js');
+
+			// Get data from the process which started the worker thread
+			this.addEventListener('message', function(event)
+			{
+				// Run the extractor on the entropy (inside web worker)
+				var randomData = trngWorker.process(event.data.dataImageA, event.data.dataImageB);
+				
+				// Send it back to the main thread
+				this.postMessage(randomData);
+				
+			}, false);
+		</script>
 		<script id="randomness-tests-worker" type="javascript/worker">
 			// Use ECMAScript 5's strict mode
 			'use strict';
@@ -107,7 +126,7 @@
 			}, false);			
 		</script>
 	</head>
-	<body class="trngCustomPage">
+	<body class="trngImagePage">
 		<div class="header">
 			<table class="pageNavigation">
 				<tr>
@@ -115,80 +134,288 @@
 						<a id="btnHome" href="index.html" class="blueButton">Home</a>
 					</td>
 					<td>
-						<input id="btnOpenUploadSettings" class="blueButton" type="button" value="Settings"><br>
-						<input id="btnStartOver" class="blueButton bottomButton" type="button" value="Restart" disabled="disabled">
+						<input id="btnStartOver" class="blueButton" type="button" value="Restart" disabled="disabled">
 					</td>
 					<td>
-						<label>1. <span id="fileUploadInstructions"></span></label><br>
-						<input id="fileLoader" class="fileLoader" type="file" name="fileLoader">
+						<label id="imageLoaderLabel" class="imageLoaderLabel blueButton" for="imageLoader">1. Select images</label><br>
+						<input id="imageLoader" class="imageLoader" type="file" name="imageLoader" multiple="multiple" accept="image/*">						
 					</td>
 					<td>
-						<input id="btnOpenExportPadsSettings" class="blueButton" type="button" value="2. Export" disabled="disabled">
+						<input id="processImage" class="blueButton" type="button" value="2. Process" disabled="disabled">
 					</td>
-					<td class="testingButtons">
-						<a class="blueButton" href="#testResultsCanvasAnchor">View bitmap images</a><br>
-						<a class="blueButton bottomButton" href="#testsOverallResultAnchor">View test results</a>
-					</td>
-				</tr>				
-			</table>
-
-			<!-- Current amount of entropy collected -->
-			<table class="collectionAmounts">
-				<tr>					
-					<td class="collectionLabel totalsLabel">
-						<b>Totals:</b>
-					</td>
-					<td class="collectionLabel">
-						Random bits:
-					</td>
-					<td id="totalRandomBits">
-						<div class="statusBox">0</div>
-					</td>
-					<td class="collectionLabel">
-						Messages:
-					</td>
-					<td id="totalNumOfMessages">
-						<div class="statusBox">0</div>
-					</td>
-					<td class="collectionLabel">
-						Tests:
-					</td>
-					<td>
-						<div id="extractedTestsPass" class="statusBox">N/A</div>
+					<td>						
+						<input id="btnOpenExportPadsSettings" class="blueButton" type="button" value="3. Export" disabled="disabled">
 					</td>
 				</tr>
 			</table>
 			
+			<!-- Upload image information for the first image -->
+			<table class="collectionAmounts fileInfo">
+				<tr>
+					<td class="collectionLabel">
+						<b>Image 1:</b>
+					</td>
+					<td class="collectionLabel">
+						Name:
+					</td>
+					<td class="totalPhotoPixels">
+						<span class="fileNameA">N/A</span>
+					</td>
+					<td class="collectionLabel">
+						Size:
+					</td>
+					<td class="totalEntropyInputBits">
+						<span class="fileSizeA">0</span>
+					</td>
+					<td class="collectionLabel">
+						Type:
+					</td>
+					<td class="inputEntropyTestsPass">
+						<span class="fileTypeA">N/A</span>
+					</td>
+					<td>
+						<a id="btnViewOriginalImageA">View image</a>
+					</td>
+				</tr>
+			</table>
+			
+			<!-- Upload image information for the second image -->
+			<table class="collectionAmounts fileInfo">
+				<tr>
+					<td class="collectionLabel">
+						<b>Image 2:</b>
+					</td>
+					<td class="collectionLabel">
+						Name:
+					</td>
+					<td class="totalPhotoPixels">
+						<span class="fileNameB">N/A</span>
+					</td>
+					<td class="collectionLabel">
+						Size:
+					</td>
+					<td class="totalEntropyInputBits">
+						<span class="fileSizeB">0</span>
+					</td>
+					<td class="collectionLabel">
+						Type:
+					</td>
+					<td class="inputEntropyTestsPass">
+						<span class="fileTypeB">N/A</span>
+					</td>
+					<td>
+						<a id="btnViewOriginalImageB">View image</a>
+					</td>
+				</tr>
+			</table>
+			
+			<!-- Current amount of entropy collected for the first image -->
+			<table class="collectionAmounts imageA">
+				<tr>
+					<td class="collectionLabel totalsLabel">
+						<b>Image 1 least significant bits:</b>
+					</td>
+					<td class="collectionLabel">
+						Image pixels:
+					</td>
+					<td class="totalPhotoPixels">
+						<div class="statusBox">0</div>
+					</td>
+					<td class="collectionLabel">
+						Input entropy bits:
+					</td>
+					<td class="totalEntropyInputBits">
+						<div class="statusBox">0</div>
+					</td>
+					<td class="collectionLabel">
+						Entropy tests:
+					</td>
+					<td class="inputEntropyTestsPass">
+						<div id="inputEntropyTestsPassImageA" class="statusBox">N/A</div>
+					</td>
+					<td>
+						<a id="btnViewLeastSigBitsBitmapImageA">View bitmap</a>
+					</td>
+					<td>
+						<a id="btnViewLeastSigBitsColourBitmapImageA">View colour bitmap</a>
+					</td>
+					<td>
+						<a id="btnViewLeastSigBitsTestResultsImageA">View test results</a>
+					</td>
+				</tr>
+			</table>
+			
+			<!-- Current amount of entropy collected for the second image -->
+			<table class="collectionAmounts imageB">
+				<tr>
+					<td class="collectionLabel totalsLabel">
+						<b>Image 2 least significant bits:</b>
+					</td>
+					<td class="collectionLabel">
+						Image pixels:
+					</td>
+					<td class="totalPhotoPixels">
+						<div class="statusBox">0</div>
+					</td>
+					<td class="collectionLabel">
+						Input entropy bits:
+					</td>
+					<td class="totalEntropyInputBits">
+						<div class="statusBox">0</div>
+					</td>
+					<td class="collectionLabel">
+						Entropy tests:
+					</td>
+					<td class="inputEntropyTestsPass">
+						<div id="inputEntropyTestsPassImageB" class="statusBox">N/A</div>
+					</td>
+					<td>
+						<a id="btnViewLeastSigBitsBitmapImageB">View bitmap</a>
+					</td>
+					<td>
+						<a id="btnViewLeastSigBitsColourBitmapImageB">View colour bitmap</a>
+					</td>
+					<td>
+						<a id="btnViewLeastSigBitsTestResultsImageB">View test results</a>
+					</td>
+				</tr>
+			</table>
+			
+			<!-- Total amount of entropy collected -->
+			<table class="collectionAmounts xored">
+				<tr>
+					<td class="collectionLabel totalsLabel">
+						<b>XORed least significant bits of both images:</b>
+					</td>
+					<td class="collectionLabel">
+						Entropy bits:
+					</td>
+					<td class="xoredEntropyBits">
+						<div class="statusBox">0</div>
+					</td>
+					<td class="collectionLabel">
+						Entropy tests:
+					</td>
+					<td class="xoredEntropyTestsPass">
+						<div id="xoredEntropyTestsPass" class="statusBox">N/A</div>
+					</td>
+					<td>
+						<a id="btnViewLeastSigBitsXoredBitmap">View bitmap</a>
+					</td>
+					<td>
+						<a id="btnViewLeastSigBitsXoredColourBitmap">View colour bitmap</a>
+					</td>
+					<td>
+						<a id="btnViewLeastSigBitsXoredTestResults">View test results</a>
+					</td>
+				</tr>
+			</table>
+			<table class="collectionAmounts final">
+				<tr>
+					<td class="collectionLabel totalsLabel">
+						<b>Final Totals:</b>
+					</td>					
+					<td class="collectionLabel">
+						Extracted bits:
+					</td>
+					<td class="totalExtractedBits">
+						<div class="statusBox">0</div>
+					</td>
+					<td class="collectionLabel">
+						Extracted tests:
+					</td>
+					<td class="extractedTestsPass">
+						<div id="extractedTestsPass" class="statusBox">N/A</div>
+					</td>
+					<td class="collectionLabel">
+						Estimated Number of OTP messages:
+					</td>
+					<td class="totalNumOfMessages">
+						<div class="statusBox">0</div>
+					</td>
+					<td>
+						<a id="btnViewExtractedBitsBitmap">View bitmap</a>
+					</td>
+					<td>
+						<a id="btnViewExtractedBitsColourBitmap">View colour bitmap</a>
+					</td>
+					<td>
+						<a id="btnViewExtractedBitsTestResults">View test results</a>
+					</td>
+				</tr>
+			</table>
+			
+			<!-- General status messages -->
 			<div class="navItem statusMessage">
 				<span class="icon"></span>
 				<span class="message"></span>
 			</div>
 		</div>
 		
-		<!-- Headings hidden and shown with JavaScript -->
-		<div class="outputAndResults">
-			<h3 class="originalHeading"><span id="testResultsCanvasAnchor"></span>Random bits (coloured pixels)</h3>
-			<canvas id="extractedBitsColour"></canvas>
+		<!-- Headings hidden and shown with JavaScript. The most recent processing results are shown at the top. -->
+		<div class="outputAndResults">					
+			<div id="extractedBitsColourBitmap" class="output extractedBitsColour">
+				<h3>Random bits after Von Neumann extraction (coloured pixels)</h3>
+				<canvas id="extractedBitsColour"></canvas>
+			</div>
+			<div id="extractedBitsBitmap" class="output extractedBitsBlackWhite">
+				<h3>Random bits after Von Neumann extraction (black and white pixels)</h3>
+				<canvas id="extractedBitsBlackWhite"></canvas>
+			</div>
+			<div id="extractedBitsTestResults" class="results extractedBits">
+				<h3>Random bits after Von Neumann extraction test results</h3>
+				<div id="extractedBitsOverallResultLog"></div>
+			</div>
 			
-			<h3 class="originalHeading">Random bits (black and white pixels)</h3>
-			<canvas id="extractedBitsBlackWhite"></canvas>
+			<div id="leastSigBitsXoredColourBitmap" class="output leastSigBitsXoredColour">
+				<h3>Least significant bits from both images XORed together (coloured pixels)</h3>
+				<canvas id="leastSigBitsXoredColour"></canvas>
+			</div>
+			<div id="leastSigBitsXoredBitmap" class="output leastSigBitsXoredBlackWhite">
+				<h3>Least significant bits from both images XORed together (black and white pixels)</h3>
+				<canvas id="leastSigBitsXoredBlackWhite"></canvas>
+			</div>
+			<div id="leastSigBitsXoredTestResults" class="results leastSigBitsXored">
+				<h3>Least significant bits from both images XORed together test results</h3>
+				<div id="leastSigBitsXoredOverallResultLog"></div>
+			</div>
 			
-			<h3 class="processedHeading"><span id="testsOverallResultAnchor"></span>Test results</h3>
-			<div id="extractedBitsOverallResultLog"></div>
+			<div id="leastSigBitsColourBitmapImageB" class="output leastSigBitsColour imageB">
+				<h3>Least significant bits second image (coloured pixels)</h3>
+				<canvas id="leastSigBitsColourImageB"></canvas>
+			</div>
+			<div id="leastSigBitsBitmapImageB" class="output leastSigBitsBlackWhite imageB">
+				<h3>Least significant bits second image (black and white pixels)</h3>
+				<canvas id="leastSigBitsBlackWhiteImageB"></canvas>
+			</div>
+			<div id="leastSigBitsTestResultsImageB" class="results leastSigBits imageB">
+				<h3>Least significant bits second image test results</h3>
+				<div id="leastSigBitsOverallResultLogImageB"></div>
+			</div>
+			
+			<div id="leastSigBitsColourBitmapImageA" class="output leastSigBitsColour imageA">
+				<h3>Least significant bits first image (coloured pixels)</h3>
+				<canvas id="leastSigBitsColourImageA"></canvas>
+			</div>
+			<div id="leastSigBitsBitmapImageA" class="output leastSigBitsBlackWhite imageA">
+				<h3>Least significant bits first image (black and white pixels)</h3>
+				<canvas id="leastSigBitsBlackWhiteImageA"></canvas>
+			</div>
+			<div id="leastSigBitsTestResultsImageA" class="results leastSigBits imageA">
+				<h3>Least significant bits first image test results</h3>
+				<div id="leastSigBitsOverallResultLogImageA"></div>
+			</div>
+			
+			<div id="originalImageHeaderB" class="originalImage imageB">
+				<h3>Original second image</h3>
+				<canvas id="imageCanvasB"></canvas>
+			</div>
+			<div id="originalImageHeaderA" class="originalImage imageA">
+				<h3>Original first image</h3>
+				<canvas id="imageCanvasA"></canvas>
+			</div>
 		</div>
-		
-		<!-- Dialog for the randomness extractor settings -->
-		<div id="uploadSettings" class="uploadSettings" title="Import settings">
-			<div class="helpExplanation">Set the parameters for the random data import</div>
-						
-			<label>Format of random data for file upload</label>
-			<select id="fileUploadType">
-				<option value="binary">binary file containing random data encoded in binary</option>
-				<option value="hexadecimal">plain text file containing random data encoded in hexadecimal e.g. 7af4cb3</option>
-				<option value="base64">plain text file containing random data encoded in Base64 e.g. c3VyS74=</option>				
-			</select>
-		</div>
-		
+				
 		<!-- Dialog for exporting pads and testing the server connection -->
 		<div id="exportPadsSettings" class="exportPadsSettings" title="Export">			
 			<table class="exportMethodTable">

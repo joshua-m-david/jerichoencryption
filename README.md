@@ -1,5 +1,5 @@
 ### Jericho Comms - Information-theoretically secure communications
-#### Copyright (c) 2013-2015  Joshua M. David
+#### Copyright (c) 2013-2016  Joshua M. David
 
 
 Jericho Comms is an encrypted communications program built on the principles of information-theoretic security using true random number generation and one-time pads. The goal is to deliver a free, open source, encrypted communications program for journalists, lawyers, activists and citizens of the world that need high assurances that their communications are free of censorship, control, oppression, totalitarian governments and eavesdropping from the world's most powerful intelligence agencies. To defeat the world's best intelligence agencies, you need to lift your game to their level. That means using encryption that they can never, ever break, regardless of advances in mathematics, quantum physics, cryptanalysis or technology.
@@ -36,13 +36,14 @@ Road map / To do list:
 
 Some tips for developers:
 - Download the original source code from the website or Freenet and verify the file using the GPG signature (Key ID 0xDC768471C467B6D0 and Fingerprint CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0).
+- Verify the fingerprint on https://onename.com/joshua_m_david and https://keybase.io/joshua_m_david.
 - Read Clean Code by Robert C. Martin.
 - Keep code in the same style throughout the project.
 - Tabs for indentation, spaces for alignment.
 - Do not write obfuscated code or submit minified code. Use meaningful variable names.
 - Aim for quality comments every 2-3 lines explaining exactly what the code is doing and why.
 - Comments are a critical part of the code, keep them up to date with the code.
-- The project uses QUnit and PHPUnit for unit testing. Make sure any new feature or function you write has corresponding unit test cases.
+- The project currently uses QUnit and PHPUnit for unit testing. Make sure any new feature or function you write has corresponding unit test cases.
 - Ideally submit small changes with corresponding unit tests if necessary.
 - All existing unit tests must still pass and the program must still be fully functional.
 - Sign your commits with your GnuPG key.

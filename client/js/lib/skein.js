@@ -9,7 +9,7 @@
  * Licence: This algorithm and source code is released to the public domain.
  * Modifications:
  *  - Put code into the 'skein' namespace.
- *  - Use javaScript Strict mode.
+ *  - Use JavaScript Strict mode.
  *  - Strict mode fix as noted in code comment.
  */
 

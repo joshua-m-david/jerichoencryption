@@ -1,15 +1,10 @@
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2015  Joshua M. David
+ * Copyright (c) 2013-2016  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation in version 3 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -31,8 +26,7 @@ body.trngCustomPage {
 	background-color: #eee;
 	display: block;
 	left: 0;
-	padding: 5px;
-	position: fixed;
+	padding: 5px 0 20px 0;
 	right: 0;
 	top: -1px;
 	z-index: 1;
@@ -76,7 +70,7 @@ body.trngCustomPage {
 	text-align: center;
 }
 .trngCustomPage .pageNavigation td:last-child .blueButton {
-	width: 159px;
+	width: 170px;
 }
 .trngCustomPage .programTitle {
 	margin: 14px 0;
@@ -143,7 +137,7 @@ body.trngCustomPage {
 	padding-left: 14px;
 	font-weight: bold;
 }
-.trngCustomPage .collectionStatusBox {
+.trngCustomPage .statusBox {
 	background-color: green;
 	color: #fff;
 	font-weight: bold;
@@ -153,10 +147,10 @@ body.trngCustomPage {
 	text-align: center;
 	text-transform: capitalize;
 }
-.trngCustomPage .collectionAmounts .collectionStatusBox.passed {
+.trngCustomPage .collectionAmounts .statusBox.passed {
 	background-color: green;
 }
-.trngCustomPage .collectionAmounts .collectionStatusBox.failed {
+.trngCustomPage .collectionAmounts .statusBox.failed {
 	background-color: red;
 }
 
@@ -168,7 +162,6 @@ body.trngCustomPage {
 
 /* Start of processed output and results */
 .trngCustomPage .outputAndResults {
-	margin-top: 157px;		/* Taking into account height of fixed header */
 	padding: 5px;
 }
 
