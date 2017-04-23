@@ -59,7 +59,11 @@ PHP_MINFO_FUNCTION(skein)
 	php_info_print_table_end();
 }
 
-static int skein256_hash_buffer(unsigned char hash[32],
+#if PHP_VERSION_ID >= 70000
+    static size_t skein256_hash_buffer(unsigned char hash[32],
+#else
+    static int skein256_hash_buffer(unsigned char hash[32],
+#endif
                                 const size_t sizeof_hash,
                                 const unsigned char *buf,
                                 const size_t buf_size,
@@ -78,7 +82,11 @@ static int skein256_hash_buffer(unsigned char hash[32],
     return 0;
 }
 
-static int skein512_hash_buffer(unsigned char hash[64],
+#if PHP_VERSION_ID >= 70000
+	static size_t skein512_hash_buffer(unsigned char hash[64],
+#else
+	static int skein512_hash_buffer(unsigned char hash[64],
+#endif
                                 const size_t sizeof_hash,
                                 const unsigned char *buf,
                                 const size_t buf_size,
@@ -97,7 +105,11 @@ static int skein512_hash_buffer(unsigned char hash[64],
     return 0;
 }
 
-static int skein1024_hash_buffer(unsigned char hash[128],
+#if PHP_VERSION_ID >= 70000
+	static size_t skein1024_hash_buffer(unsigned char hash[128],
+#else
+	static int skein1024_hash_buffer(unsigned char hash[128],
+#endif
                                  const size_t sizeof_hash,
                                  const unsigned char *buf,
                                  const size_t buf_size,
@@ -116,7 +128,11 @@ static int skein1024_hash_buffer(unsigned char hash[128],
     return 0;
 }
 
-static int skein_hash_buffer(unsigned char * const hash,
+#if PHP_VERSION_ID >= 70000
+	static size_t skein_hash_buffer(unsigned char * const hash,
+#else
+	static int skein_hash_buffer(unsigned char * const hash,
+#endif
                              const size_t sizeof_hash,
                              const unsigned char *buf,
                              const size_t buf_size,
@@ -137,7 +153,12 @@ PHP_FUNCTION(skein_hash)
 {
     char hash[128];
 	char *buf = NULL;
+
+#if PHP_VERSION_ID >= 70000
+	size_t buf_size;
+#else
 	int buf_size;
+#endif
 	long hash_bitlen = SKEIN_DEFAULT_BITS_LENGTH;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l",
@@ -152,7 +173,13 @@ PHP_FUNCTION(skein_hash)
                           (size_t) hash_bitlen) != 0) {
         RETURN_FALSE;
     }    
-    RETURN_STRINGL(hash, ceil(hash_bitlen / 8), 1);
+
+    #if PHP_VERSION_ID >= 70000
+	RETURN_STRINGL(hash, ceil(hash_bitlen / 8));
+    #else
+	RETURN_STRINGL(hash, ceil(hash_bitlen / 8), 1);
+    #endif
+
 }
 
 PHP_FUNCTION(skein_hash_hex)
@@ -162,7 +189,13 @@ PHP_FUNCTION(skein_hash_hex)
 	char res[256];
 	char *resptr = res;
 	char *buf = NULL;
+
+#if PHP_VERSION_ID >= 70000	
+	size_t buf_size;
+#else
 	int buf_size;
+#endif
+
     size_t j = 0U;
     size_t real_hash_size;
 	long hash_bitlen = SKEIN_DEFAULT_BITS_LENGTH;
@@ -189,5 +222,10 @@ PHP_FUNCTION(skein_hash_hex)
     } while (++j < real_hash_size);
     *resptr = 0;
 
+    #if PHP_VERSION_ID >= 70000
+	RETURN_STRINGL(res, (size_t) (resptr - res));
+    #else
 	RETURN_STRINGL(res, (size_t) (resptr - res), 1);
+    #endif
+
 }

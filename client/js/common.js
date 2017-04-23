@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2016  Joshua M. David
+ * Copyright (c) 2013-2017  Joshua M. David
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 var common = {
 	
 	// Current program version as an indicator to the user and to help with automatic importing from old versions later
-	programVersion: '1.5.2',
+	programVersion: '1.5.3',
 	
 	// Define lengths of message attributes in bytes
 	padIdentifierSize: 7,		// Size of the pad identifier in bytes. The first 7 bytes of pad are used only to identify which pad was used

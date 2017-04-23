@@ -1,16 +1,16 @@
 ### Jericho Comms - Information-theoretically secure communications
-#### Copyright (c) 2013-2016  Joshua M. David
+#### Copyright (c) 2013-2017  Joshua M. David
 
 
-Jericho Comms is an encrypted communications program built on the principles of information-theoretic security using true random number generation and one-time pads. The goal is to deliver a free, open source, encrypted communications program for journalists, lawyers, activists and citizens of the world that need high assurances that their communications are free of censorship, control, oppression, totalitarian governments and eavesdropping from the world's most powerful intelligence agencies. To defeat the world's best intelligence agencies, you need to lift your game to their level. That means using encryption that they can never, ever break, regardless of advances in mathematics, quantum physics, cryptanalysis or technology.
+Jericho Comms is an encrypted communications program built on the principles of information-theoretic security using true random number generation and one-time pads. The goal is to deliver a free, open source, encrypted communications program for journalists, lawyers, activists and citizens of the world that need high assurances that their communications are free of censorship, control, oppression, totalitarian governments and eavesdropping from the world's most powerful intelligence agencies. To defeat the world's best intelligence agencies, you need to lift your game to their level. That means using encryption that they can never break, regardless of advances in computing power, mathematics, cryptanalysis or quantum physics.
 
 The official website, technical design, signed source code and documentation can be found here:
 https://joshua-m-david.github.io/jerichoencryption/
 
 
-Constructive feedback from anyone is welcome and you are free to contribute to the project with ideas, bug reports or source code. To contribute code, make your own fork of the master branch, edit the code and submit a pull request. For questions and suggestions, make a post on GitHub.
+Constructive feedback from anyone is welcome and you are free to contribute to the project with ideas, bug reports, source code or design/code reviews. To contribute code, make your own fork of the master branch, edit the code and submit a pull request. For questions and suggestions, make a post on GitHub.
 
-Suggestions and source code contributions are welcome if you are not trying to undermine the security of the software. All commits will be heavily scrutinized for weaknesses and security flaws. Introducing security flaws or insecure ideas (intentional or otherwise) will result in you being blacklisted from further contributions.
+Suggestions and source code contributions are welcome if you are not trying to undermine the security of the software. All commits will be heavily scrutinised for weaknesses and security flaws. Introducing security flaws or insecure ideas (intentional or otherwise) will result in you being blacklisted from further contributions.
 
 If you are working on this project, it is preferred that you stay anonymous. Do not mention you are working on the project to anyone using your real identity unless you want to be added to various watch lists, no-fly lists and made a target for surveillance. As a developer, gaining a trusted reputation within the project team and then later on receiving a National Security Letter (or equivalent) which forces you to subtly compromise your code also affects the project. For your safety and the project's, connect to the website and GitHub only via internet cafes, WiFi hotspots, libraries, proxy or VPN. Then connect from there to an anonymising network such as Tor as well.
 
@@ -21,6 +21,7 @@ Other ways to help:
 - Help with documentation.
 - User testing and bug reporting.
 - Marketing and spreading the word about the program.
+- Donations to fund future development.
 
 Road map / To do list:
 - Convert code to a single page app. (v2.0)
@@ -32,7 +33,10 @@ Road map / To do list:
 - Write and receive messages in UTF-8 encoding to support multiple languages. (future)
 - Mobile phone support for Firefox OS. (future)
 - Build into Firefox and/or Chromium extension. (future)
-- Build into Android app with PhoneGap or similar application. (future)
+- Build into Android app with PhoneGap/Electron or similar application. (future)
+- Dark theme for night operations
+- Ability to type in any language (UTF-8 support)
+- Interface translated into most common languages
 
 Some tips for developers:
 - Download the original source code from the website or Freenet and verify the file using the GPG signature (Key ID 0xDC768471C467B6D0 and Fingerprint CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0).
@@ -41,12 +45,12 @@ Some tips for developers:
 - Keep code in the same style throughout the project.
 - Tabs for indentation, spaces for alignment.
 - Do not write obfuscated code or submit minified code. Use meaningful variable names.
-- Aim for quality comments every 2-3 lines explaining exactly what the code is doing and why.
+- Aim for quality comments every 1-3 lines explaining exactly what the code is doing and why.
 - Comments are a critical part of the code, keep them up to date with the code.
 - The project currently uses QUnit and PHPUnit for unit testing. Make sure any new feature or function you write has corresponding unit test cases.
 - Ideally submit small changes with corresponding unit tests if necessary.
 - All existing unit tests must still pass and the program must still be fully functional.
-- Sign your commits with your GnuPG key.
+- Sign your commits with your GnuPG key. Your public key should be on a blockchain e.g. in keybase.io or Namecoin.
 
 Setting up the development environment:
 - Download the code from the site.
@@ -57,7 +61,9 @@ Setting up the development environment:
 - For PHP testing:
   - Install PHPUnit by following instructions here:
     http://phpunit.de/getting-started.html
-  - In /etc/php5/cli/php.ini (php.ini for the CLI) you need to edit the file and tell it to load the Skein hash extension so include the line:
-    extension=skein.so
+  - In /etc/php/7.0/cli/php.ini (php.ini for the CLI) you need to edit the file and tell it to load the Skein hash extension so include the line:
+    `extension=skein.so`
   - Then change directory (cd) to the directory containing the server files e.g. /var/www/jericho/server/ and run this on the command line:
-    phpunit tests.php
+    `phpunit tests.php`
+    Or if using the downloaded .phar file:
+    `php phpunit.phar phpunit tests.php`

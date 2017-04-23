@@ -9,14 +9,11 @@
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 
 
-# Don't show directory listing
-Options -Indexes
+# This crontab will be located in /etc/cron.d/jericho to
+# force synchronise the server time to an NTP server.
 
-# Deny access to all subdirectories and files
-Order Allow,Deny
-Deny From All
+# Sync at 3am and 3pm every day
+00 3,15 * * * root /var/www/html/timesync.sh
 
-# Allow access to the index file only
-<FilesMatch "index.php">
-	Allow from All
-</FilesMatch>
+# Sync on reboots
+@reboot root /var/www/html/timesync.sh

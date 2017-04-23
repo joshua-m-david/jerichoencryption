@@ -1,20 +1,16 @@
 <?php
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2016  Joshua M. David
- * 
+ * Copyright (c) 2013-2017  Joshua M. David
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation in version 3 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
+
 
 /**
  * Database wrapper class using PHP Data Objects (PDO). Handles connections to the database,
@@ -45,7 +41,7 @@ class Database
 	{
 		$this->disconnect();
 	}
-	
+
 	/**
 	 * Connect to the database with persistent connection
 	 * @param array $config
@@ -54,9 +50,9 @@ class Database
 	public function connect()
 	{
 		// If the socket is set, use that, otherwise use the hostname
-		$hostOrSocket = ($this->config['unix_socket'] != '') ? 'unix_socket=' . $this->config['unix_socket'] : 'host=' . $this->config['hostname'];		
+		$hostOrSocket = ($this->config['unix_socket'] != '') ? 'unix_socket=' . $this->config['unix_socket'] : 'host=' . $this->config['hostname'];
 		$connectionString = 'mysql:' . $hostOrSocket . ';port=' . $this->config['port'] . ';dbname=' . $this->config['database'];
-		
+
 		try {
 			// Connect to the database
 			$this->conn = new PDO($connectionString, $this->config['username'], $this->config['password'], array(PDO::ATTR_PERSISTENT => false));
@@ -68,11 +64,11 @@ class Database
 			$this->handleDatabaseError('Error connecting to database.', $e);
 			return false;
 		}
-		
+
 		// Connection success
 		return true;
 	}
-	
+
 	/**
 	 * Disconnect from the database
 	 */
@@ -80,7 +76,7 @@ class Database
 	{
 		$this->conn = null;
 	}
-		
+
  	/**
 	 * Gets a result set from the database
 	 * Warning! Only use this function if there is ZERO chance of SQL injection, i.e. the query is made up of only
@@ -95,24 +91,24 @@ class Database
 			// Get database results in assoc array format and return new array if successful
 			$this->statement = $this->conn->query($query);
 			$this->numRows = 0;
-			
+
 			if ($this->statement !== false)
 			{
 				$this->statement->setFetchMode(PDO::FETCH_ASSOC);
-				$rows = array();				
-				
+				$rows = array();
+
 				// Add each row into the array
 				foreach($this->statement as $row)
-				{			
+				{
 					$rows[] = $row;
 					$this->numRows++;
 				}
-				
+
 				$this->statement->closeCursor();	# Frees up the connection to the server so that other SQL statements may be issued
 				$this->statement = null;
 				return $rows;			# Returns results in array
 			}
-			
+
 			$this->handleDatabaseError('Error retrieving query results.');
 			$this->statement = null;
 			return false;
@@ -124,7 +120,7 @@ class Database
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Used for inserting, updating and deleting
 	 * Warning! Only use this function if there is ZERO chance of SQL injection, i.e. the query is made up of only
@@ -138,13 +134,13 @@ class Database
 		try {
 			// Run the query
 			$this->numRows = $this->conn->exec($query);
-			
+
 			// If there's an error return the error message otherwise return number of rows
 			if ($this->numRows !== false)
 			{
 				return $this->numRows;
 			}
-			
+
 			$this->handleDatabaseError('Error executing query.');
 			return false;
 		}
@@ -166,15 +162,15 @@ class Database
 	{
 		$success = true;
 		$this->numRows = 0;
-			
-		try {	
+
+		try {
 			$this->conn->beginTransaction();
-			
+
 			// Execute each query
 			foreach ($queries as $query)
 			{
 				$rowsAffected = $this->conn->exec($query);
-				
+
 				if ($rowsAffected !== false)
 				{
 					$this->numRows += $rowsAffected;
@@ -185,7 +181,7 @@ class Database
 					$this->handleDatabaseError('Error while executing query in transaction. Query: ' .$query. '.');
 				}
 			}
-			
+
 			// If queries ran successfully we can commit the changes to the db now
 			// If not, all the rows will be rolled back
 			if ($success === true)
@@ -193,7 +189,7 @@ class Database
 				$this->conn->commit();
 				return $this->numRows;
 			}
-			
+
 			// Roll back the transaction on failure
 			$this->conn->rollback();
 			$this->handleDatabaseError('Error while executing transaction.');
@@ -207,7 +203,7 @@ class Database
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Prepares a query and binds param values to statement.
 	 * Returns an associative array if successful, false on error and an empty array if no rows returned.
@@ -224,22 +220,22 @@ class Database
 			$this->numRows = 0;
 
 			if ($this->statement !== false)
-			{			
+			{
 				// Bind params, set to receive assoc array and execute statement
 				$binding = $this->bindParams($params);
-				
+
 				if ($binding !== false)
 				{
-					$this->statement->setFetchMode(PDO::FETCH_ASSOC);			
+					$this->statement->setFetchMode(PDO::FETCH_ASSOC);
 					$result = $this->statement->execute();
-					
+
 					if ($result !== false)
 					{
-						$rows = array();						
-							
+						$rows = array();
+
 						// Add each row into the array
 						foreach($this->statement as $row)
-						{			
+						{
 							$rows[] = $row;
 							$this->numRows++;
 						}
@@ -264,9 +260,9 @@ class Database
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Prepares a query and binds param values to statement. 
+	 * Prepares a query and binds param values to statement.
 	 * Used in cases where user input is being entered into the db to protect against SQL injection.
 	 * @param string $query
 	 * @param array $params
@@ -278,17 +274,17 @@ class Database
 			// Prepare the query
 			$this->statement = $this->conn->prepare($query);
 			$this->numRows = 0;
-			
+
 			if ($this->statement !== false)
 			{
 				// Bind params, set to receive assoc array and execute statement
 				$binding = $this->bindParams($params);
-				
+
 				if ($binding !== false)
-				{				
+				{
 					// Run statement
 					$result = $this->statement->execute();
-					
+
 					if ($result !== false)
 					{
 						// Return number of rows and close statement
@@ -299,7 +295,7 @@ class Database
 					}
 				}
 			}
-			
+
 			// Set error if prepare or executing fails
 			$this->statement->closeCursor();
 			$this->handleDatabaseError('Error while executing prepared update.');
@@ -313,7 +309,7 @@ class Database
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Takes in an array of transaction query objects to run them all in a batch transaction.
 	 * Returns num of rows affected or rolls back transaction and returns false if there is an error.
@@ -326,21 +322,21 @@ class Database
 			$success = true;
 			$this->numRows = 0;
 			$this->conn->beginTransaction();
-			
+
 			// Execute each query
 			foreach ($transactionQueries as $transactionQuery)
 			{
 				// Prepare the query
 				$this->statement = $this->conn->prepare($transactionQuery->query);
-				
+
 				if ($this->statement !== false)
 				{
 					// Bind params (not checked for false in case we need to run a query with no params)
 					$this->bindParams($transactionQuery->params);
-					
+
 					// Run statement
 					$result = $this->statement->execute();
-					
+
 					if ($result !== false)
 					{
 						// Return number of rows and close statement
@@ -360,14 +356,14 @@ class Database
 					$this->statement = null;
 				}
 			} # foreach
-						
+
 			// If queries ran successfully we can commit the changes to the db now
 			if ($success === true)
 			{
 				$this->conn->commit();
 				return $this->numRows;
 			}
-			
+
 			// Roll back the transaction on failure
 			$this->conn->rollback();
 			$this->handleDatabaseError('Error while executing transaction.');
@@ -382,7 +378,7 @@ class Database
 			return false;
 		}
 	}
-		
+
 	/**
 	 * Binds parameters to a statement. Returns true on success, false on error.
 	 * @param array $params
@@ -395,19 +391,19 @@ class Database
 			{
 				$bindingSuccess = true;
 				$params = $this->setEmptyValuesToNull($params);
-				
+
 				// Loop through array of params and bind them to the statement
 				foreach($params as $key => $val)
 				{
 					$dataType = $this->getConstantType($val);
 					$bindResult = $this->statement->bindValue(":$key", $val, $dataType);
-										
+
 					if ($bindResult === false)
 					{
-						$bindingSuccess = false;	
+						$bindingSuccess = false;
 					}
 				}
-									
+
 				return ($bindingSuccess === true) ? true : false;
 			}
 			else {
@@ -447,10 +443,10 @@ class Database
 		{
 			$val = ($val === '') ? null : $val;
 			$newParams[$key] = $val;
-		}		
+		}
 		return $newParams;
 	}
-	
+
 	/**
 	 * Returns the ID of the last row inserted into the table
 	 * @return int
@@ -459,7 +455,7 @@ class Database
 	{
 		return $this->conn->lastInsertId();
 	}
-	
+
 	/**
 	 * Gets the number of rows returned by the last query
 	 * @return int
@@ -468,14 +464,14 @@ class Database
 	{
 		return $this->numRows;
 	}
-	
+
 	/**
 	 * Gets the PDO exception error info, updates array of db errors
 	 * @param string $customErrorMessage
-	 * @param Exception $exception 
+	 * @param Exception $exception
 	 */
 	private function handleDatabaseError($customErrorMessage, $exception = null)
-	{		
+	{
 		if ($exception !== null)
 		{
 			// Show exception error message
@@ -489,9 +485,9 @@ class Database
 			$errorMessage = $customErrorMessage . ' SQL state error code: ' . $errorInfo[0]. '. Driver error code: ' .$errorInfo[1]. '. ' .$errorInfo[2] . '.';
 			$this->errors[] = $errorMessage;
 			$this->exception = null;
-		}		
+		}
 	}
-	
+
 	/**
 	 * Gets database error messages
 	 * @param string $message What error messages to get
@@ -510,9 +506,9 @@ class Database
 		if ($message == 'lastErrorMsg')
 		{
 			return end($this->errors);			# Return last error message
-		}		
+		}
 	}
-	
+
 	/**
 	 * Returns the full exception object for stack trace or false if no errors
 	 * @return array|false

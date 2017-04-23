@@ -1,17 +1,12 @@
 <?php
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2016  Joshua M. David
- * 
+ * Copyright (c) 2013-2017  Joshua M. David
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation in version 3 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
@@ -40,7 +35,7 @@ $api->connectToDatabase();
 // A correctly authenticated request will continue executing past here and perform the API action.
 $api->performClientRequestAuthentication();
 
-// Delete read messages and old nonces from the database after a valid request. We do not want an 
+// Delete read messages and old nonces from the database after a valid request. We do not want an
 // attacker sending multiple requests to the server and a database query being run every invalid request.
 $api->performCleanup();
 

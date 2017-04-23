@@ -1,3 +1,5 @@
+#!/bin/sh
+#
 # Jericho Comms - Information-theoretically secure communications
 # Copyright (c) 2013-2017  Joshua M. David
 #
@@ -9,14 +11,9 @@
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 
 
-# Don't show directory listing
-Options -Indexes
+# This script stops the NTP service, force synchronises
+# the time to an NTP server and restarts the NTP service
 
-# Deny access to all subdirectories and files
-Order Allow,Deny
-Deny From All
-
-# Allow access to the index file only
-<FilesMatch "index.php">
-	Allow from All
-</FilesMatch>
+service ntp stop
+ntpd -gq
+service ntp start
