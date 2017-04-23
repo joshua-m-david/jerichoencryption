@@ -1,19 +1,19 @@
-As of Friday 17 June 2016 the author has not received any 
-court order/warrant/subpoena/National Security Letter, or been 
-pursuaded/coerced/forced/blackmailed into weakening/backdooring 
-the Jericho Comms design or software.
+As of Sunday 23 April 2017 the author (Joshua M. David) has not received any
+court order/warrant/subpoena/National Security Letter, or been
+pursuaded/coerced/forced/blackmailed into weakening/backdooring
+the Jericho Comms design, software or documentation.
 
-To prove that multiple warrant canaries weren't created and signed 
+To prove that multiple warrant canaries were not created and signed
 ahead of time, the current headlines on this date are below.
 
 Current news headlines from The Intercept (https://theintercept.com):
 
-- As Corruption Engulfs Brazil's "Interim" President, Mask Has Fallen Off Protest Movement
-- CIA Director Owes Answers on Accountability for Torture
-- The Use of FBI's Facial Recognition Is Growing, Despite Rampant Inaccuracy and Privacy Concerns
+- Why They March: "Science and Scientists Are Now Under Attack"
+- Cybersecurity for the People: How to Protect Your Privacy at a Protest
+- At Border Security Expo, Officials Dismiss Trump's Wall: "I've Got 200 Foot Bluffs on my Border"
 
-Current news headlines from The Guardian (http://www.theguardian.com/world):
+Current news headlines from The Guardian world news page (http://www.theguardian.com/world):
 
-- Britains EU Referendum / IMF chief Lagarde urges country to stay in Europe
-- US politics / Bernie Sanders says he will work with Clinton to defeat Trump
-- Refugee crisis: Medecins Sans Frontieres rejects EU funding in protest
+- North Korea warns Australia of possible nuclear strike if it 'blindly toes US line'
+- French elections 2017: disintegrating left-right divide sets stage for political upheaval
+- March for Science puts Earth Day focus on global opposition to Trump

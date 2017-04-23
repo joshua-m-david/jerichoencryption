@@ -1,16 +1,11 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2016  Joshua M. David
+	Copyright (c) 2013-2017  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation in version 3 of the License.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -69,7 +64,6 @@
 						<li><a href="#photo-selection">Selecting photos</a></li>
 						<li><a href="#processing-entropy">Processing the entropy</a></li>
 						<li><a href="#testing-collected-data">Testing the collected data</a></li>
-						<li><a href="#exporting-pads-for-testing">Exporting the random data for external testing</a></li>
 						<li><a href="#exporting-pads">Exporting the one-time pads for use</a></li>
 						<li><a href="#delivering-pads">Delivering the one-time pads</a></li>
 						<li><a href="#loading-pads">Loading the one-time pads</a></li>
@@ -155,7 +149,18 @@
 						<a href="information.html#photo-processing-algorithm">here</a>.<br>
 						<br>
 						It should display a brief status message after a few seconds. The processing may take about a minute to 
-						process the photograph depending on the speed of your CPU, the hash algorithm and how large the photo is.
+						process the photograph depending on the speed of your CPU, the hash algorithm and how large the photo is.<br>
+						<br>
+						<b>Note:</b> On the latest versions of Firefox you may get a warning popup at the top of the page saying: <i>'A web 
+						page is slowing down your browser. What would you like to do?'</i><br>
+						<br>
+						This can occur after 10 seconds of processing which is the new default in Firefox. If this happens, let it keep 
+						processing a while longer and click the 'Wait' button. If an <i>error</i> occurs due to a long script execution run 
+						time you can tweak the Firefox settings. In the Firefox address bar, type <code>about:config</code>, and then press 
+						Enter. Accept the warning. Scroll and locate or search with Filter text box for <code>dom.max_script_run_time</code>. 
+						Now double click on the line of <code>dom.max_script_run_time</code> and change the value to a higher number (in 
+						seconds) that you want Firefox to wait before getting the Unresponsive Script warning e.g. <code>30</code> seconds 
+						should be fine. Now press the Restart button on the TRNG page to start the pad creation process again.
 					</p>
 					<p>
 						After this you should see the results displayed and the Export button will have now been 
@@ -506,7 +511,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2016 Joshua M. David
+				Copyright &copy; 2013 - 2017 Joshua M. David
 			</div>
 		</div>
 	</body>

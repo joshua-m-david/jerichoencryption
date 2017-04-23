@@ -5,7 +5,13 @@
     <link>http://joshua-m-david.github.io/jerichoencryption/</link>
     <description>Site and software updates for Jericho Comms</description>
     <language>en-gb</language>
-    <copyright>2013 - 2016 Joshua M. David</copyright>
+    <copyright>2013 - 2017 Joshua M. David</copyright>
+	<item>
+      <title>Version 1.5.3 released</title>
+      <pubDate>Sun 23 Apr 2017 19:00:00 GMT</pubDate>
+	  <link>http://joshua-m-david.github.io/jerichoencryption/download.html#release1.5.2</link>
+      <description><![CDATA[Jericho Comms version 1.5.3 released with compatibility for Ubuntu 16.04 and PHP 7, also a simple automated script to install and configure the server software without any manual work.]]></description>
+    </item>
 	<item>
       <title>Version 1.5.2 released</title>
       <pubDate>Fri 16 Jun 2016 11:00:00 GMT</pubDate>

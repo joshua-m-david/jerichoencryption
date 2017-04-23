@@ -1,16 +1,11 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2016  Joshua M. David
+	Copyright (c) 2013-2017  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation in version 3 of the License.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -86,8 +81,8 @@
 					</p>
 					<p>						
 						For stronger verification of our public key you should also confirm the public key is a match on 
-						<a href="https://onename.com/joshua_m_david">onename.com</a> and 
-						<a href="https://keybase.io/joshua_m_david">keybase.io</a>. Both of these identies are published 
+						<a href="https://onename.com/joshua_m_david">onename.com/joshua_m_david</a> and
+						<a href="https://keybase.io/joshua_m_david">keybase.io/joshua_m_david</a>. Both of these identies are published
 						on the Bitcoin blockchain. Do not rely on what you see on the websites alone which is only 
 						protected by TLS and can be easily altered in real-time by the Five Eyes agencies. Make 
 						sure you download the client apps to verify the public keys on the blockchain.
@@ -99,6 +94,130 @@
 					<br>
 					
 					
+					<h2 id="release1.5.3">Jericho Comms version 1.5.3 downloads (for Firefox or Chromium based browsers)</h2>
+					<p>
+                        This update adds compatibility for Ubuntu Server 16.04.x and PHP 7.x. Also a simple automated script to install and
+						configure the server software was added to limit the amount of manual configuration required.
+					</p>
+					<p>
+                        This release may also be the last version before version 2.0 where the program will need to be 
+						converted to a single page application so that the one-time pads can be encrypted at all times 
+						in client side storage and decrypted only as needed. This will be a considerable amount of work 
+						so there may be a longer delay leading up to the 2.0 version.
+					</p>
+					<p>
+						The server changes are compatible with the previous version 1.5.2.
+					</p>
+					<b>Changes in v1.5.3</b><br>
+					<ul class="changeLog">
+						<li>Improved the <a href="installation-server.html">server installation instructions</a>.</li>
+						<li>Added PHP 7 compatibility in the Skein-515 PHP extension.</li>
+						<li>Added PHP 7 compatibility in the server API code and unit tests.</li>
+						<li>
+							Added a server side bash script to automate the installation of dependencies, setup the server API, perform
+							the basic configuration, generate a server key and run the unit tests.
+						</li>
+					</ul>
+					<table class="downloadLinks">
+						<tr>
+							<th>Mirror</th>
+							<th>Program download</th>
+							<th>Signature</th>
+						</tr>
+						<tr>
+							<td>Freenet</td>
+							<td><a href="http://127.0.0.1:8888/SSK@3PVSpZ55DmJ2c1KVk62~PNdbRLj9X3lzBU0Z1QkS7cM,gyWljK~C5ErCr3zC1gCHAFDMAtUjQS1oZ5EfBMRAD7o,AQACAAE/jericho-comms-v1.5.3.tar.gz">jericho-comms-v1.5.3.tar.gz</a></td>
+							<td><a href="http://127.0.0.1:8888/SSK@agOr2~0cxP47-Sye4lglApeG8z7mId4cfzYxTZEG9Yw,ECZaZWvqu54OhoEH78VW2z9Ben13jmXBbRQy9EgChkk,AQACAAE/jericho-comms-v1.5.3.tar.gz.asc">jericho-comms-v1.5.3.tar.gz.asc</a></td>
+						</tr>
+						<tr>
+							<td>Mega</td>
+							<td><a href="https://mega.nz/#!cZ8UHSqS!S3LJ6ziokVBWfIi92otiWbsnv-THDsOJSua3-_3tDBY">jericho-comms-v1.5.3.tar.gz</a></td>
+							<td><a href="https://mega.nz/#!ccMSGKTY!RQYeR7XrwV4jqnT4B8q8GDZydcnzS6VVp0Emvji2zDw">jericho-comms-v1.5.3.tar.gz.asc</a></td>
+						</tr>
+						<tr>
+							<td>This site</td>
+							<td><a href="files/jericho-comms-v1.5.3.tar.gz">jericho-comms-v1.5.3.tar.gz</a></td>
+							<td><a href="files/jericho-comms-v1.5.3.tar.gz.asc">jericho-comms-v1.5.3.tar.gz.asc</a></td>
+						</tr>
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th>Mirror</th>
+							<th>White paper</th>
+							<th>Signature</th>
+						</tr>
+						<tr>
+							<td>Freenet</td>
+							<td><a href="http://127.0.0.1:8888/SSK@4L7XsrLvjY-pouhASUrHqC~AjgXE6hETkuG~OZVHUXc,js0lCzgw8ROVXwnjGaN9MfhkJl7bzVLQ~hXp14lHEUU,AQACAAE/jericho-comms-v1.5.3.pdf">jericho-comms-v1.5.3.pdf</a></td>
+							<td><a href="http://127.0.0.1:8888/SSK@amkrta9M-CpOsX2dQCEnMduXpHIU7T04Yo3FsmgVeOE,eJicSRQFoa2LSJH03aQfXdU8dp7xReGgMvXV777ZKzI,AQACAAE/jericho-comms-v1.5.3.pdf.asc">jericho-comms-v1.5.3.pdf.asc</a></td>
+						</tr>
+						<tr>
+							<td>Mega</td>
+							<td><a href="https://mega.nz/#!kRlWlaoQ!58HiIxIVLhlcyHgSUDyZchNol23nTv64Ek6S_llovi4">jericho-comms-v1.5.3.pdf</a></td>
+							<td><a href="https://mega.nz/#!kIcB3Q4B!7tzo5rlQVuFYvhBHPobeNgy5lZdzc3iQubLYYAxDm_s">jericho-comms-v1.5.3.pdf.asc</a></td>
+						</tr>
+						<tr>
+							<td>This site</td>
+							<td><a href="files/jericho-comms-v1.5.3.pdf">jericho-comms-v1.5.3.pdf</a></td>
+							<td><a href="files/jericho-comms-v1.5.3.pdf.asc">jericho-comms-v1.5.3.pdf.asc</a></td>
+						</tr>
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th colspan="2">GnuPG signing key details for authenticity verification</th>
+						</tr>
+						<tr>
+							<td>Key server</td>
+							<td>x-hkp://pool.sks-keyservers.net</td>
+						</tr>
+						<tr>							
+							<td>Key ID</td>
+							<td>DC768471C467B6D0</td>
+						</tr>
+						<tr>
+							<td>Fingerprint</td>
+							<td>CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0</td>
+						</tr>
+						<tr>
+							<td>Public key from this site</td>
+							<td><a href="files/pubkey.txt">pubkey.txt</a></td>
+						</tr>
+						<tr>
+							<td>Public key on blockchain at onename.com</td>
+							<td><a href="https://onename.com/joshua_m_david">https://onename.com/joshua_m_david</a></td>
+						</tr>
+						<tr>
+							<td>Public key on blockchain at keybase.io</td>
+							<td><a href="https://keybase.io/joshua_m_david">https://keybase.io/joshua_m_david</a></td>
+						</tr>
+						<tr>
+							<td>Current warrant canary</td>
+							<td><a href="warrant-canary.txt">warrant-canary.txt</a></td>
+						</tr>
+						<tr>
+							<td>Current warrant canary GPG signature</td>
+							<td><a href="warrant-canary.txt.asc">warrant-canary.txt.asc</a></td>
+						</tr>						
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th colspan="2">File hashes of jericho-comms-v1.5.3.tar.gz for integrity verification</th>
+						</tr>
+						<tr>
+							<td>SHA2-384 digest</td>
+							<td class="hash">e40af6c0703acab33fa79ac52f16630059c879d764b76703c30bbb2e521f34753cfc9c4f651149c143bb267be17f14ad</td>
+						</tr>
+						<tr>
+							<td>SHA2-512 digest</td>
+							<td class="hash">07ddf93bcc5bb325236247fa74582c23fbf84c1796525d2cb232501ab7647a11ab610b17ab36c1abf4e2e7950d7796aa64aa5dfe03bede739d71a18b9a91ccd9</td>
+						</tr>
+						<tr>
+							<td>Whirlpool digest</td>
+							<td class="hash">f27dfb956ad0184e39c0449f65e290b47350bbfff0376bf4aef972eb8a049d512c9c01ee9b58e7c6f1107e8c1fcf150c8c4c3460db2198cad28cf8f63c404d53</td>
+						</tr>
+					</table>
+
+
 					<h2 id="release1.5.2">Jericho Comms version 1.5.2 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
                         This update mainly improves the information-theoretic security of the TRNG and the security of 
@@ -124,91 +243,6 @@
 						<li>Ability to combine exported random data from multiple photos together into a single large file.</li>
 						<li>Improved the whitepaper and usage instructions.</li>
 					</ul>
-					<table class="downloadLinks">
-						<tr>
-							<th>Mirror</th>
-							<th>Program download</th>
-							<th>Signature</th>
-						</tr>
-						<tr>
-							<td>Freenet</td>
-							<td><a href="http://127.0.0.1:8889/SSK@AfSzZxzh90onKKKDWyf6hpqhJ6UFh3k0M8A4MNl0SOE,myrtoNg7HiaxJBwlVmovp6cl5Qo~-8LoyNMwj2cnHl8,AQACAAE/jericho-v1.5.2.tar.gz">jericho-v1.5.2.tar.gz</a></td>
-							<td><a href="http://127.0.0.1:8889/SSK@wW9cdT3Nb916aZp9xJSYFkoe25bZiKraV8DcgRmlFys,VSgn40Ix5r04eacqA8hNBnWOMFhdtyCVnL1EIma8J5s,AQACAAE/jericho-v1.5.2.tar.gz.asc">jericho-v1.5.2.tar.gz.asc</a></td>
-						</tr>
-						<tr>
-							<td>Mega</td>
-							<td><a href="https://mega.nz/#!NV9ClRLA!0Jn9yoFPffyxbaxkcxRrdi84wm7y5_CJSO_lGGtr1YQ">jericho-v1.5.2.tar.gz</a></td>
-							<td><a href="https://mega.nz/#!Qd9gCY6K!MGCqUUMRvNgCC3tferzSeymDLN11preElmZ9Q64iCr4">jericho-v1.5.2.tar.gz.asc</a></td>
-						</tr>
-						<tr>
-							<td>This site</td>
-							<td><a href="files/jericho-v1.5.2.tar.gz">jericho-v1.5.2.tar.gz</a></td>
-							<td><a href="files/jericho-v1.5.2.tar.gz.asc">jericho-v1.5.2.tar.gz.asc</a></td>
-						</tr>
-					</table>
-					<table class="downloadLinks">
-						<tr>
-							<th>Mirror</th>
-							<th>White paper</th>
-							<th>Signature</th>
-						</tr>
-						<tr>
-							<td>Mega</td>
-							<td><a href="https://mega.nz/#!YJ9wAApZ!guDMeidf6JL2IvxLV95pE_ls5ihBVu42tU7UAp64pt8">jericho-v1.5.2.pdf</a></td>
-							<td><a href="https://mega.nz/#!0AsWAJYZ!bg4TAX2pxMCPCDhKdV6-UgjQpaQHgoG4RcJPZ1Ve3RY">jericho-v1.5.2.pdf.asc</a></td>
-						</tr>
-						<tr>
-							<td>This site</td>
-							<td><a href="files/jericho-v1.5.2.pdf">jericho-v1.5.2.pdf</a></td>
-							<td><a href="files/jericho-v1.5.2.pdf.asc">jericho-v1.5.2.pdf.asc</a></td>
-						</tr>
-					</table>
-					<table class="downloadLinks">
-						<tr>
-							<th colspan="2">GnuPG signing key details for authenticity verification</th>
-						</tr>
-						<tr>
-							<td>Key server</td>
-							<td>x-hkp://pool.sks-keyservers.net</td>
-						</tr>
-						<tr>							
-							<td>Key ID</td>
-							<td>DC768471C467B6D0</td>
-						</tr>
-						<tr>
-							<td>Fingerprint</td>
-							<td>CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0</td>
-						</tr>
-						<tr>
-							<td>Public key from this site</td>
-							<td><a href="files/pubkey.txt">pubkey.txt</a></td>
-						</tr>
-						<tr>
-							<td>Blockchain identity on onename.com</td>
-							<td><a href="https://onename.com/joshua_m_david">https://onename.com/joshua_m_david</a></td>
-						</tr>
-						<tr>
-							<td>Blockchain identity on keybase.io</td>
-							<td><a href="https://keybase.io/joshua_m_david">https://keybase.io/joshua_m_david</a></td>
-						</tr>
-					</table>
-					<table class="downloadLinks">
-						<tr>
-							<th colspan="2">File hashes of jericho-v1.5.2.tar.gz for integrity verification</th>
-						</tr>
-						<tr>
-							<td>SHA384 digest</td>
-							<td class="hash">b76f658b815fc709a6d1534c230afb8815d0b920c476df82b7b7cbb6e5a7953e582c7222afa7c88814d15c5ca3d04866</td>
-						</tr>
-						<tr>
-							<td>SHA512 digest</td>
-							<td class="hash">48b04aeebda64c11761d07f8024a5ab90fb7955ada69dd1eaceb43d1237bbc35398e454d5d9baf6407042698ec4a99b4ac3db237f983c57b3a70474f5ae13a39</td>
-						</tr>
-						<tr>
-							<td>Whirlpool digest</td>
-							<td class="hash">2a9f55053fabae4c29cfa62c2f37b232122bed24e41ce98937d91581433d0e94a6eb3905f99e2dd1a70548dc39f721dcc379f8dce212019d0a96bb8b3e9ecaba</td>
-						</tr>
-					</table>
 					
 					
 					<h2 id="release1.5.1">Jericho Comms version 1.5.1 downloads (for Firefox or Chromium based browsers)</h2>
@@ -380,7 +414,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2016 Joshua M. David
+				Copyright &copy; 2013 - 2017 Joshua M. David
 			</div>
 		</div>
 	</body>

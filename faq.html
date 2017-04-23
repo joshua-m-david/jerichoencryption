@@ -1,16 +1,11 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2016  Joshua M. David
+	Copyright (c) 2013-2017  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation in version 3 of the License.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -74,7 +69,6 @@
 						<li><a href="#export-regulations">Does this break US Export Regulations?</a></li>
 						<li><a href="#multiple-groups-same-server">Is it possible to use the same server for multiple separate groups communicating?</a></li>
 						<li><a href="#software-limitations">What are some of the limitations of the software?</a></li>
-						<li><a href="#meaning-behind-name">What's the meaning behind the name?</a></li>
 						<li><a href="#nsa-capabilities">What are the capabilities of the NSA?</a></li>
 						<li><a href="#matasano-article-discussion">What about Matasano Security's claims that JavaScript cryptography is insecure?</a></li>
 					</ol>
@@ -142,9 +136,9 @@
 						The main problem with using one-time pads is getting a quality randomness source, key distribution and key 
 						management. The first problem should be solved by the true random number generator included with the program 
 						which should be strong enough to not allow even a powerful attacker to predict outputs from it. Run it through 
-						an external test suite if you do not trust the output and ensure it has proper uniform distribution. The next 
-						version will allow for including your own random data into the program. For the second problem of key 
-						distribution, all you need to do is get out from behind the computer and visit your friends, family, 
+						an external test suite if you do not trust the output and ensure it has proper uniform distribution. It is also
+						possible to import your own random data into the program if you wish to use your own TRNG. For the second problem
+						of key distribution, all you need to do is get out from behind the computer and visit your friends, family,
 						colleagues or associates and deliver the one-time pads to them in person. It is highly unlikely you are 
 						going to have your keys stolen or copied as you are going about your daily life. For the final problem of 
 						key management, this is a simple engineering problem. The program pre-allocates one-time pads to each user 
@@ -232,10 +226,12 @@
 										
 					<h2 id="independently-verified">Has the software been independently verified?</h2>
 					<p>
-						The software has not been independently verified yet. Anyone is welcome to 
-						do so if you are going to provide an honest, constructive and unbiased review. Any feedback or suggestions 
-						will be appreciated and changes made where necessary. Please contact us with your review beforehand so 
-						we have a chance to fix any problems before the review is made public. The author will also sponsor an
+						The full software has not been independently verified yet. However the code is well designed, written and
+						documented enough to enable a security reviewer to perform a successful review without much effort. It is not
+						anticipated that there are any serious or critical security issues in the current software. Anyone is welcome to
+						do a review if they will provide an honest, constructive and unbiased review. Any feedback or suggestions will be
+						much appreciated and changes made where necessary. Please contact us with your review beforehand if there are any
+						issues so we have a chance to fix any problems before the review is made public. The author will also sponsor an
 						independent professional review after the majority of development is complete.
 					</p>
 					<p>
@@ -558,27 +554,7 @@
 							of the conversation which occurred on the other device, but that is just a minor annoyance.
 						</li>
 					</ul>
-							
-					
-					<h2 id="meaning-behind-name">What's the meaning behind the name?</h2>
-					<p>
-						The name is based on the 
-						<a href="https://www.youtube.com/watch?v=YBC1Qob27sM">Jericho Missile</a>. 
-						Jericho Comms is a secure communications program which targets the NSA's core cryptanalytic and 
-						traffic analysis capabilities by launching thousands of undecryptable messages across the 
-						internet. NSA's comprehensive fibre optic cable taps and ISP interception equipment inevitably 
-						collect these data transmissions however their systems are rendered completely useless and they 
-						are unable to perform any useful analysis on them.
-					</p>
-					<p>
-						When the program is feature complete and fully audited, the world's spy agencies will 
-						<a href="information.html#encryption-process">never know the content of messages</a>, 
-                        <a href="information.html#message-authentication">never be able to forge messages</a>, 
-                        <a href="information.html#frustrating-traffic-analysis">never know when real or fake messages are actually being sent</a>, 
-                        never be able to easily determine who is talking to who and never be able to disrupt the 
-						communications of users using this program.
-					</p>
-															
+																				
 					
 					<h2 id="nsa-capabilities">What are the capabilities of the NSA?</h2>
 					<p>
@@ -990,7 +966,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2016 Joshua M. David
+				Copyright &copy; 2013 - 2017 Joshua M. David
 			</div>
 		</div>
 	</body>

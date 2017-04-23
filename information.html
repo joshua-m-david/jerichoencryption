@@ -1,16 +1,11 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2016  Joshua M. David
+	Copyright (c) 2013-2017  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation in version 3 of the License.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see [http://www.gnu.org/licenses/].
@@ -58,14 +53,14 @@
 					<h1 class="nonPrintable">Technical design</h1>
 					<p class="nonPrintable">
 						This page is printable and can be downloaded as a 
-						<a href="files/jericho-v1.5.2.pdf">PDF white paper</a><sup><a href="files/jericho-v1.5.2.pdf.asc">[sig]</a></sup>.
+						<a href="files/jericho-comms-v1.5.3.pdf">PDF white paper</a><sup><a href="files/jericho-comms-v1.5.3.pdf.asc">[sig]</a></sup>.
 					</p>
 					
 					
 					<div class="printableHeader printable">
 						<div class="title">Jericho Comms&trade;</div>
-						<div class="version">Version 1.5.2</div>
-						<div class="date">17 June 2016</div>
+						<div class="version">Version 1.5.3</div>
+						<div class="date">23 April 2017</div>
 						<div class="author">Joshua M. David</div>
                         <div class="email">joshua.m.david [at] tutanota.de</div>
 					</div>
@@ -620,8 +615,8 @@
 						<a href="#ref84">API<sup>[84]</sup></a> using 
 						<a href="#ref85">JSON<sup>[85]</sup></a> which will run on the 
 						<a href="#ref86">Apache<sup>[86]</sup></a> 
-						2.2+ web server, <a href="#ref87">MySQL<sup>[87]</sup></a> 5.5+ database and 
-						<a href="#ref88">PHP<sup>[88]</sup></a> 5.3+ programming language. PHP was chosen 
+						2.4.x web server, <a href="#ref87">MySQL<sup>[87]</sup></a> 5.7.x database and 
+						<a href="#ref88">PHP<sup>[88]</sup></a> 7.0.x programming language. PHP was chosen 
 						because it is a <a href="#ref89">memory safe<sup>[89]</sup></a> language, 
 						fast to develop in and fast to deploy along with a basic 
 						<a href="#ref90">LAMP stack<sup>[90]</sup></a>. In a future 
@@ -631,13 +626,11 @@
 						choosing.
 					</p>
 					<p>
-						At the moment, to get the server side running all that is needed is to install a basic 
-						LAMP stack, copy the server files over to the web root directory, run the database script to 
-						create the tables, then finally edit the config 
-						file with the server's database and API login credentials. An 
-						<a href="#ref92">easy to use guide<sup>[92]</sup></a> with screenshots for 
-						<a href="#ref91">Ubuntu server<sup>[91]</sup></a> has been created for this. Users can install 
-						a server their own network, or pay for a cheap 
+						At the moment, to get the server side running all that is needed is to download and verify the server code, 
+						run a basic bash script which installs and configures everything that is required. The script runs on 
+						<a href="#ref91">Ubuntu server 16.04.x<sup>[91]</sup></a> but there is also an 
+						<a href="#ref92">easy to use guide<sup>[92]</sup></a> with screenshots for users wanting to use a different Linux 
+						distribution. Users can install a server their own network, or pay for a cheap 
 						<a href="#ref93">VPS<sup>[93]</sup></a> somewhere. It is not recommended 
 						to use a VPS in the US to rule out the possibility of the provider being issued with a 
 						<a href="#ref94">National Security Letter (NSL)<sup>[94]</sup></a> 
@@ -4000,7 +3993,7 @@
 				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2016 Joshua M. David
+				Copyright &copy; 2013 - 2017 Joshua M. David
 			</div>
 		</div>
 	</body>

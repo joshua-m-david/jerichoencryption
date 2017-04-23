@@ -21,10 +21,6 @@
 		<changefreq>monthly</changefreq>
 	</url>
 	<url>
-		<loc>http://joshua-m-david.github.io/jerichoencryption/installation-server-tls.html</loc>
-		<changefreq>monthly</changefreq>
-	</url>
-	<url>
 		<loc>http://joshua-m-david.github.io/jerichoencryption/installation-client.html</loc>
 		<changefreq>monthly</changefreq>
 	</url>
