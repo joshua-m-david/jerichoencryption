@@ -1,11 +1,11 @@
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2017  Joshua M. David
- * 
+ * Copyright (c) 2013-2019  Joshua M. David
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation in version 3 of the License.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
@@ -20,10 +20,11 @@
 /*  5. DOWNLOAD PAGE SPECIFIC
 /*	6. INSTALLATION PAGE SPECIFIC
 /*  7. HOW TO USE PAGE SPECIFIC
-/*  8. FAQ PAGE SPECIFIC
-/*	9. FOOTER
-/*	10. MOBILE STYLES
-/*	11. TABLET STYLES
+/*  8. SUPPORT PAGE SPECIFIC
+/*  9. FAQ PAGE SPECIFIC
+/*	10. FOOTER
+/*	11. MOBILE STYLES
+/*	12. TABLET STYLES
 /* --------------------------------------- */
 
 
@@ -43,7 +44,7 @@ body {
 .logo {
 	display: block;
 	width: 352px;
-	height: 38px;	
+	height: 38px;
 	position: absolute;
 	top: 15px;
 	left: 17px;
@@ -58,7 +59,7 @@ body {
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* This is the main navigation at the very top of the page */	
+/* This is the main navigation at the very top of the page */
 .mainNav {
     font-size: 13px;
     left: 285px;
@@ -74,13 +75,14 @@ body {
 	padding: 0 19px;
 }
 .mainNav a {
-	color: #ccc;	
+	color: #ccc;
 	text-decoration: none;
 	font-weight: bold;
 }
 .mainNav a:hover {
 	color: #fff;
 }
+
 
 /* --------------------------------------- */
 /*	2. GENERAL CONTENT
@@ -90,7 +92,7 @@ body {
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
 	background-color: #fff;
 	font-size: 14px;
-	color: #333;	
+	color: #333;
 	border-bottom-left-radius: 7px;
 	border-bottom-right-radius: 7px;
 }
@@ -123,7 +125,7 @@ h2 {
 	text-align: left;
 	font-weight: bold;
 	font-size: 17px;
-	color: #0059DE;	
+	color: #0059DE;
 }
 h3 {
 	font-weight: bold;
@@ -217,7 +219,7 @@ sub {
 	vertical-align: sub;
 	font-size: 75%;
 }
-.page .diagram {	
+.page .diagram {
 	text-align: center;
 }
 .bitmapExamples {
@@ -262,6 +264,7 @@ sub {
 	font-weight: normal;
 }
 
+
 /* --------------------------------------- */
 /*	3. HOME PAGE SPECIFIC
 /* --------------------------------------- */
@@ -269,6 +272,11 @@ sub {
 .homePage .information {
 	float: left;
 	max-width: 627px;
+}
+.homePage .information .initialQuote {
+	font-size: 12px;
+	font-style: italic;
+	margin-bottom: 40px;
 }
 .homePage .news {
 	float: left;
@@ -320,6 +328,7 @@ sub {
 .homePage .advantagesList {
 	font-size: 13px;
 }
+
 
 /* --------------------------------------- */
 /*	4. TECHNICAL DESIGN PAGE SPECIFIC
@@ -486,6 +495,7 @@ sub {
 	text-align: center;
 }
 
+
 /* --------------------------------------- */
 /*	5. DOWNLOAD PAGE SPECIFIC
 /* --------------------------------------- */
@@ -510,6 +520,7 @@ sub {
 	font-size: 10px;
 }
 
+
 /* --------------------------------------- */
 /*	6. INSTALLATION PAGE SPECIFIC
 /* --------------------------------------- */
@@ -517,6 +528,7 @@ sub {
 .installPage .information {
 	padding: 28px 30px 14px 28px;
 }
+
 
 /* --------------------------------------- */
 /*	7. HOW TO USE PAGE SPECIFIC
@@ -526,24 +538,47 @@ sub {
 	padding: 28px 30px 14px 28px;
 }
 
+
 /* --------------------------------------- */
-/*	8. FAQ PAGE SPECIFIC
+/*	8. SUPPORT PAGE SPECIFIC
+/* --------------------------------------- */
+
+.supportPage .information {
+	padding: 28px 30px 14px 28px;
+}
+.supportPage .donateLinks {
+	margin-top: 14px;
+}
+.supportPage .donateLinks .name {
+	font-weight: bold;
+	padding: 3px 14px 3px 0;
+}
+.supportPage .donateLinks .address {
+	font-family: monospace;
+	font-size: 10px;
+	padding: 3px 14px 3px 0;
+}
+
+
+/* --------------------------------------- */
+/*	9. FAQ PAGE SPECIFIC
 /* --------------------------------------- */
 
 .faqPage .information {
 	padding: 28px 30px 14px 28px;
 }
 
+
 /* --------------------------------------- */
-/*	9. FOOTER
+/*	10. FOOTER
 /* --------------------------------------- */
 .footer {
 	font-size: 13px;
 	font-weight: bold;
-	color: #000;	
+	color: #000;
 }
 .footer ul {
-	text-align: center;	
+	text-align: center;
 }
 .footer ul:first-child {
 	padding-top: 12px;
@@ -582,7 +617,7 @@ sub {
 
 
 /* --------------------------------------- */
-/*	10. MOBILE STYLES
+/*	11. MOBILE STYLES
 /* --------------------------------------- */
 @media only screen and (max-width: 959px) {
 
@@ -590,7 +625,7 @@ sub {
 		height: auto;
 		padding: 22px 0 0 0;
 		width: auto;
-	}	
+	}
 	.logo {
 		display: block;
 		left: initial;
@@ -633,7 +668,7 @@ sub {
 		margin-bottom: 20px;
 	}
 	.infoPage table.testResultsTable {
-		font-size: 11px;		
+		font-size: 11px;
 	}
 	.infoPage table.testResultsTable th,
 	.infoPage table.testResultsTable td {
@@ -643,11 +678,11 @@ sub {
 
 
 /* --------------------------------------- */
-/*	11. TABLET STYLES
+/*	12. TABLET STYLES
 /* --------------------------------------- */
 
 @media only screen and (min-width: 657px) and (max-width: 959px) {
-	
+
 	.mainNav ul li {
 		display: inline-block;
 	}

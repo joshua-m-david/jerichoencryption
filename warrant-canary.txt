@@ -1,6 +1,6 @@
-As of Sunday 23 April 2017 the author (Joshua M. David) has not received any
-court order/warrant/subpoena/National Security Letter, or been
-pursuaded/coerced/forced/blackmailed into weakening/backdooring
+As of Monday 30 December 2019 the author (Joshua M. David) has not
+received any court order/warrant/subpoena/National Security Letter, or
+been pursuaded/coerced/forced/blackmailed into weakening/backdooring
 the Jericho Comms design, software or documentation.
 
 To prove that multiple warrant canaries were not created and signed
@@ -8,12 +8,12 @@ ahead of time, the current headlines on this date are below.
 
 Current news headlines from The Intercept (https://theintercept.com):
 
-- Why They March: "Science and Scientists Are Now Under Attack"
-- Cybersecurity for the People: How to Protect Your Privacy at a Protest
-- At Border Security Expo, Officials Dismiss Trump's Wall: "I've Got 200 Foot Bluffs on my Border"
+- Why Don't We Care About China's Uighur Muslims?
+- In the Shadow of the Federal Death Chamber, Executions Are on Hold — For Now
+- Immigration Detention Is Part of Mass Incarceration: The Case for Abolishing ICE and Everything Else
 
-Current news headlines from The Guardian world news page (http://www.theguardian.com/world):
+Current news headlines from The Guardian world news page (https://www.theguardian.com/world):
 
-- North Korea warns Australia of possible nuclear strike if it 'blindly toes US line'
-- French elections 2017: disintegrating left-right divide sets stage for political upheaval
-- March for Science puts Earth Day focus on global opposition to Trump
+- North Korea's Kim Jong-un calls for 'offensive' measures as deadline looms
+- Pompeo hits out at Iran after deadly US strikes in Iraq and Syria
+- Australia bushfires / Thousands evacuated in Victoria on day of huge fire threat

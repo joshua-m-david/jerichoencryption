@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2017  Joshua M. David
+	Copyright (c) 2013-2019  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -13,17 +13,17 @@
 <html lang="en">
 	<head>
 		<title>Jericho Comms&trade; - Server Installation</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
 		<link rel="stylesheet" href="css/global.css" type="text/css">
 		<link rel="stylesheet" href="css/print.css" type="text/css" media="print">
-		
+
 		<!--[if IE]>
 			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<![endif]-->		
+		<![endif]-->
 		<!--[if IE 7]>
 			<link rel="stylesheet" href="css/ie7.css" type="text/css">
 		<![endif]-->
@@ -34,15 +34,15 @@
 	<body>
 		<div class="topSection">
 			<div class="topBanner">
-				<a class="logo" href="index.html" title="Homepage"></a>			
+				<a class="logo" href="index.html" title="Homepage"></a>
 				<div class="mainNav">
-					<ul>						
+					<ul>
 						<li><a href="information.html">Technical design</a></li>
 						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
 						<li><a href="download.html">Download</a></li>
 						<li><a href="installation.html">How to install</a></li>
 						<li><a href="usage.html">How to use</a></li>
-						<li><a href="faq.html">FAQ</a></li>		
+						<li><a href="faq.html">FAQ</a></li>
 					</ul>
 				</div>
 			</div>
@@ -52,13 +52,13 @@
 				<div class="information">
 					<h1>Server Installation Guide</h1>
 					<p>
-						This page explains in an easy step by step guide how to fully setup your 
-						<a href="https://en.wikipedia.org/wiki/Virtual_private_server">VPS</a> or server and get the software running for 
-						Jericho Comms on <a href="http://www.ubuntu.com/download/server">Ubuntu Server 16.04.x</a> Long Term Support (LTS). 
-						Open source is the best way as it's auditable and less likely to contain backdoors. Compiling your 
-						own from source code is even safer if you know how to do that. If you do not like Ubuntu, you 
-						can use whatever Linux or Unix distribution you want, it is really just setting up a Linux, 
-						Apache, MySQL & PHP (LAMP) stack and configuring it to serve the API code.<br>
+						This page explains in an easy step by step guide how to fully setup your
+						<a href="https://en.wikipedia.org/wiki/Virtual_private_server">VPS</a> or server and get the software running for
+						Jericho Comms on <a href="http://www.ubuntu.com/download/server">Ubuntu Server 18.04.x</a> Long Term Support (LTS).
+						Open source is the best way as it's auditable and less likely to contain backdoors. Compiling your
+						own from source code is even safer if you know how to do that. If you do not like Ubuntu, you
+						can use whatever Linux or Unix distribution you want, it is really just setting up a Linux,
+						Apache, PostgreSQL & PHP (LAPP) stack and configuring it to serve the API code.<br>
 						<br>
 						You need approximately 15 minutes of time and some basic computer skills. Be sure to read each step
 						carefully. <b>NB:</b> As a security precaution
@@ -66,7 +66,7 @@
 						Type them out manually or paste them into a plain text editor like gedit, nano or Notepad first to make sure they
 						are safe and don't contain any unexpected commands.
 					</p>
-					
+
 					<h2>Table of Contents</h2>
 					<ol class="tableOfContents">
 						<li><a href="#vps-sign-up">Sign up for a Virtual Private Server</a></li>
@@ -79,215 +79,209 @@
 						<li><a href="#test-server-code">Test the server code</a></li>
 						<li><a href="#summary">Summary</a></li>
 					</ol>
-					
-					
+
+
 					<h2 id="vps-sign-up">Sign up for a Virtual Private Server</h2>
 					<p>
-						There are a number of quality VPS providers around. You will need to 
-						<a href="https://duckduckgo.com/?q=vps+provider+europe">do some research</a> on your own. Try 
-						finding one that is not in any of the 
-						<a href="https://en.wikipedia.org/wiki/Five_Eyes">Five Eyes</a> countries 
-						(US, UK, Canada, Australia and New Zealand). Perhaps somewhere in Europe with better privacy laws 
-						e.g. Finland. Better privacy laws mean they need a proper warrant to hack or shut down your 
-						server whereas countries like the UK 
-						<a href="https://theintercept.com/2015/06/22/gchq-reverse-engineering-warrants/">can just do whatever they want</a>. 
-						Some of the other European countries co-operate with the NSA however 
-						<a href="https://en.wikipedia.org/wiki/Five_Eyes#Future_enlargement">in a wider spying alliance</a>. 
+						There are a number of quality VPS providers around. You will need to
+						<a href="https://duckduckgo.com/?q=vps+provider+europe">do some research</a> on your own. Try
+						finding one that is not in any of the
+						<a href="https://en.wikipedia.org/wiki/Five_Eyes">Five Eyes</a> countries
+						(US, UK, Canada, Australia and New Zealand). Perhaps somewhere in Europe with better privacy laws
+						e.g. Finland. Better privacy laws mean they need a proper warrant to hack or shut down your
+						server whereas countries like the UK
+						<a href="https://theintercept.com/2015/06/22/gchq-reverse-engineering-warrants/">can just do whatever they want</a>.
+						Some of the other European countries co-operate with the NSA however
+						<a href="https://en.wikipedia.org/wiki/Five_Eyes#Future_enlargement">in a wider spying alliance</a>.
 						So Brazil or Iceland may be a better bet.<br>
 						<br>
-						You should only need the most basic server in terms of CPU speed, memory and disk space because 
-						the software is not resource intensive. Around 10 Euros (11 USD) per month is probably fine. That 
-						will get you around 1 CPU core, 512 MB of RAM and 10 GB of disk space which is plenty to 
+						You should only need the most basic server in terms of CPU speed, memory and disk space because
+						the software is not resource intensive. Around 10 Euros (11 USD) per month is probably fine. That
+						will get you around 1 CPU core, 512 MB of RAM and 10 GB of disk space which is plenty to
 						run the server software.<br>
 						<br>
-						Avoid VPS providers that use <a href="https://en.wikipedia.org/wiki/OpenVZ">OpenVZ</a> because 
-						each VPS on the same physical server shares the same Linux kernel. That means you cannot have 
-						full control over the VPS to keep the system time properly synchronized with an NTP server. 
-						<a href="https://en.wikipedia.org/wiki/Kernel-based_Virtual_Machine">KVM</a> based VPSs use 
+						Avoid VPS providers that use <a href="https://en.wikipedia.org/wiki/OpenVZ">OpenVZ</a> because
+						each VPS on the same physical server shares the same Linux kernel. That means you cannot have
+						full control over the VPS to keep the system time properly synchronized with an NTP server.
+						<a href="https://en.wikipedia.org/wiki/Kernel-based_Virtual_Machine">KVM</a> based VPSs use
 						their own kernel which gives you much more control.<br>
 						<br>
-						Alternatively if you want to run your own server on your own network, that is even better. 
-						This would be the most secure option as you can administer the server locally. This means one less 
+						Alternatively if you want to run your own server on your own network, that is even better.
+						This would be the most secure option as you can administer the server locally. This means one less
 						port open on the public network interface. The client software and server share a 512 bit symmetric API key
 						for authentication of data going back and forth but this must be fetched from the server after installation. When
 						managing the server via the internet, the security is only as secure as the SSH connection. SSH is hard to secure
-						against active MITM attacks unless you are 
-						<a href="">certain of the correct host key fingerprint</a>. For your first connection to the VPS 
-						you will not be sure of the server's true fingerprint. You could however try finding it by logging 
-						in via the HTTPS web management console or asking your VPS provider directly. Then again they will 
-						need to send it to you via encrypted email and you still need to verify their public key somehow. 
-						So it ends up being a lot of extra effort. SSH also currently does not have ciphers that are secure against 
-						quantum computers. 
+						against active MITM attacks unless you are
+						<a href="">certain of the correct host key fingerprint</a>. For your first connection to the VPS
+						you will not be sure of the server's true fingerprint. You could however try finding it by logging
+						in via the HTTPS web management console or asking your VPS provider directly. Then again they will
+						need to send it to you via encrypted email and you still need to verify their public key somehow.
+						So it ends up being a lot of extra effort. SSH also currently does not have ciphers that are secure against
+						quantum computers.
 					</p>
-					
-					
+
+
 					<h2 id="install-ubuntu">Download and install Ubuntu Server</h2>
 					<p>
-						If using a VPS, select one of the pre-made Ubuntu Server 16.04.x LTS images. The online provider will 
-						do all the installation automatically for you and initialise your VPS. The current minor version at the time of 
-						writing is Ubuntu Server 16.04.2 but later versions such as 16.04.3 etc should still work fine with this guide.<br>
-						<br>						
-						Otherwise if you're setting up your own server, <a href="http://releases.ubuntu.com/16.04/">download the latest</a> version
-						of Ubuntu Server 16.04.x LTS. Write the image to a CD/DVD/USB drive, then boot from the install image on CD/DVD/USB drive and run 
-						through the installation. This should be pretty self explanatory but there is a step-by-step guide with screenshots 
-						<a href="http://www.tecmint.com/installation-of-ubuntu-16-04-server-edition/">here</a> 
-						if you need them. Make sure your server has a public, static IP address so your group's users 
+						If using a VPS, select one of the pre-made Ubuntu Server 18.04.x LTS images. The online provider will
+						do all the installation automatically for you and initialise your VPS. The current minor version at the time of
+						writing is Ubuntu Server 18.04.3 but later versions such as 18.04.4 etc should still work fine with this guide.<br>
+						<br>
+						Otherwise if you're setting up your own server, <a href="http://cdimage.ubuntu.com/releases/18.04.3/release/">download the latest</a> version
+						of Ubuntu Server 18.04.x LTS. Write the image to a CD/DVD/USB drive, then boot from the install image on CD/DVD/USB drive and run
+						through the installation. This should be pretty self explanatory but there is a step-by-step guide with screenshots
+						<a href="https://www.fosslinux.com/6406/how-to-install-ubuntu-server-18-04-lts.htm">here</a>
+						if you need them. Make sure your server has a public, static IP address so your group's users
 						can connect to it reliably over the internet.<br>
 						<br>
-						At the software selection screen be sure to select <b>OpenSSH server</b> so it gets installed and you can log into your server 
+						At the software selection screen be sure to select <b>OpenSSH server</b> so it gets installed and you can log into your server
 						remotely with SSH. SSH will likely be enabled by default on a VPS.
-						<br>						
+						<br>
 						<img class="listImage" src="img/server-install-openssh.png" alt="">
 					</p>
-							
-					
+
+
 					<h2 id="connect-to-server">Connect to your server</h2>
 					<p>
-						Assuming your operating system is all installed, you can now log into your VPS/server with 
-						<a href="https://en.wikipedia.org/wiki/Secure_Shell">SSH</a>. If you are connecting to your server from a Windows 
+						Assuming your operating system is all installed, you can now log into your VPS/server with
+						<a href="https://en.wikipedia.org/wiki/Secure_Shell">SSH</a>. If you are connecting to your server from a Windows
 						machine you should stop what you're doing and install Linux otherwise you risk compromising everything. However it
 						is possible to use <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html">PuTTY</a>, for example:<br>
 						<br>
 						<img class="listImage" src="img/putty-setup.png"><br>
 						<br>
 						From Linux you can simply use the command line: <code>ssh -p 22 username@ipaddress</code>. Swap out
-						<code>username</code> for the username on your server. You will have created a user account on installation or if using a VPS 
-						they probably set up the <code>root</code> account so use that. Swap out <code>ipaddress</code> with the public IP address of 
+						<code>username</code> for the username on your server. You will have created a user account on installation or if using a VPS
+						they probably set up the <code>root</code> account so use that. Swap out <code>ipaddress</code> with the public IP address of
 						your server.
-					</p>							
-					
-					
+					</p>
+
+
 					<h2 id="upload-program-to-server">Uploading the program onto the server</h2>
 					<p>
-						Now it's time to install get the server code running. The easiest way to get it 
+						Now it's time to install get the server code running. The easiest way to get it
 						onto the server would be to use the command line:<br>
-						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-comms-v1.5.3.tar.gz</code><br>
+						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-comms-v1.5.4.tar.xz</code><br>
 						<br>
 						You also need to download the signature file to verify that the download is authentic:<br>
-						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-comms-v1.5.3.tar.gz.asc</code><br>
+						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-comms-v1.5.4.tar.xz.asc</code><br>
 						<br>
-						This will download the two files and put them inside your current working directory. You can list them with <code>ls -l</code>. 
+						This will download the two files and put them inside your current working directory. You can list them with <code>ls -l</code>.
 						If the files are there you can skip to the next step.<br>
 						<br>
-						If for some reason you are unable to download the files from the website you can always download 
-						them from <a href="https://freenetproject.org/">Freenet</a> using the links on the 
-						<a href="download.html">Download page</a>, then copying the files manually to the server. If 
-						you want to copy them to the server from your Windows machine you can use 
-						<a href="http://winscp.net/eng/download.php">WinSCP</a> and connect to your server using the same credentials like you did 
+						If for some reason you are unable to download the files from the website you can always download
+						them from <a href="https://freenetproject.org/">Freenet</a> using the links on the
+						<a href="download.html">Download page</a>, then copying the files manually to the server. If
+						you want to copy them to the server from your Windows machine you can use
+						<a href="http://winscp.net/eng/download.php">WinSCP</a> and connect to your server using the same credentials like you did
 						earlier with PuTTY. Then it's a basic drag and drop operation.<br>
 						<br>
 						If wanting to transfer the files from your Linux machine to the server you can use the following command:<br>
-						<code>scp /path/on/local/machine/jericho-comms-v1.5.3.tar.gz username@ipaddress:~</code><br>
+						<code>scp /path/on/local/machine/jericho-comms-v1.5.4.tar.xz username@ipaddress:~</code><br>
 						<br>
-						Be sure to swap out <code>username</code> for the username on the server and swap out <code>ipaddress</code> for the IP address 
-						of the server. It should prompt you for the password. The <code>~</code> character will put the file in the home directory for 
-						your account so it will be available as soon as you log into the server. Instead of the <code>~</code> character you can swap 
+						Be sure to swap out <code>username</code> for the username on the server and swap out <code>ipaddress</code> for the IP address
+						of the server. It should prompt you for the password. The <code>~</code> character will put the file in the home directory for
+						your account so it will be available as soon as you log into the server. Instead of the <code>~</code> character you can swap
 						that for the destination path on the server if you wish e.g. <code>/var/www/html/</code>.
 					</p>
-					
-					
+
+
 					<h2 id="verify-signature">Verifying the integrity and authenticity of the file</h2>
 					<p>
-						It's very important you verify the integrity and authenticity of the downloaded file so you know the file is authentic. Otherwise 
-						an attacker could have performed a <a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM attack</a> and swapped 
+						It's very important you verify the integrity and authenticity of the downloaded file so you know the file is authentic. Otherwise
+						an attacker could have performed a <a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM attack</a> and swapped
 						out the file for one with a backdoor in the encryption code.
 					</p>
 					<h3>Verifying by file hashes</h3>
 					<p>
 						First verify that the file was downloaded correctly using the hashes found on the <a href="download.html">download page</a>:<br>
-						<code>sha384sum jericho-comms-v1.5.3.tar.gz | grep "e40af6c0703acab33fa79ac52f16630059c879d764b76703c30bbb2e521f34753cfc9c4f651149c143bb267be17f14ad"</code><br>
+						<code>sha384sum jericho-comms-v1.5.4.tar.xz | grep "ddb904257ca106110d8cdbc8bbcbbb2a54d14266c3c4e39dc5a4c7dd6850d58309645e17cb6b382a5f0c21b27ea72c54"</code><br>
 						<br>
 						If the checksum matches it will display the matching hash output on a line on the command line, for example:<br>
-						<code>e40af6c0703acab33fa79ac52f16630059c879d764b76703c30bbb2e521f34753cfc9c4f651149c143bb267be17f14ad &nbsp;jericho-comms-v1.5.3.tar.gz</code><br>
-						<br>
-						You can also verify using <a href="https://en.wikipedia.org/wiki/SHA-2">SHA2-512</a> and
-						<a href="https://en.wikipedia.org/wiki/Whirlpool_%28cryptography%29">Whirlpool</a> hashes on the download page by using 
-						<code>sha512sum</code> and <code>whirlpoolsum</code> commands in the format above, along with the corresponding
-						hashes found on the <a href="download.html">download page</a>. It will tell you to install whirlpoolsum so just follow the
-						instructions on the screen.<br>
+						<code>ddb904257ca106110d8cdbc8bbcbbb2a54d14266c3c4e39dc5a4c7dd6850d58309645e17cb6b382a5f0c21b27ea72c54 &nbsp;jericho-comms-v1.5.4.tar.xz</code><br>
 						<br>
 						If nothing is returned on the command line, then the file is a mismatch and you will have to re-download it.
-						You can try downloading it from another source such as FreeNet as well (see the 
+						You can try downloading it from another source such as FreeNet as well (see the
 						<a href="download.html">download page</a> for a link).
 					</p>
 					<h3>Verifying by GnuPG signature</h3>
 					<p>
-						This is a stronger method to verify that the download was actually created by us. Otherwise the server could have 
-						been hacked and they simply replaced the download links with malware and updated the file hashes. This will be 
-						strong enough as proof unless there is a quantum computer available 
-						<a href="http://crypto.stackexchange.com/a/35142">with over 8192 logical qubits to break the 4096 bit RSA key</a>. 
+						This is a stronger method to verify that the download was actually created by us. Otherwise the server could have
+						been hacked and they simply replaced the download links with malware and updated the file hashes. This will be
+						strong enough as proof unless there is a quantum computer available
+						<a href="http://crypto.stackexchange.com/a/35142">with over 8192 logical qubits to break the 4096 bit RSA key</a>.
 						The key ID for each download is listed on the <a href="download.html">download page</a>. Import our public key
 						which can be used to verify the file:<br>
 						<code>gpg --keyserver x-hkp://pool.sks-keyservers.net --recv-keys 0xDC768471C467B6D0</code><br>
 						<br>
-						After importing the key you should verify that the key fingerprint is correct with 
+						After importing the key you should verify that the key fingerprint is correct with
 						<code>gpg --fingerprint 0xDC768471C467B6D0</code>. You should see:<br>
 						<br>
 						<code>
-							pub &nbsp;&nbsp;4096R/0xDC768471C467B6D0 2013-09-25 [expires: 2018-03-27]<br>
+							pub &nbsp;&nbsp;4096R/0xDC768471C467B6D0 2013-09-25 [expires: 2024-12-27]<br>
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Key fingerprint = CF3F 79EE 0114 59BA 0A59  9E9C DC76 8471 C467 B6D0<br>
-							uid &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Joshua M. David (Jericho Comms) &lt;joshua.m.david[at]tutanota.de&gt;<br>
-							uid &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Joshua M. David (Jericho Encryption) &lt;jerichoencryption[at]rediffmail.com&gt;<br>
-							sub &nbsp;&nbsp;4096R/0xA5A2DFDDBE456DA7 2013-09-25 [expires: 2018-03-27]
+							uid &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Joshua M. David (Jericho Comms) &lt;joshua.m.david@tutanota...&gt;<br>
+							uid &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Joshua M. David (Jericho Encryption) &lt;jerichoencryption@rediffmail...&gt;<br>
+							sub &nbsp;&nbsp;4096R/0xA5A2DFDDBE456DA7 2013-09-25 [expires: 2024-12-27]
 						</code><br>
 						<br>
-						NB: The email addresses have had the @ symbol replaced with [at] to reduce spam mail. Now
-						run <code>gpg --verify jericho-comms-v1.5.3.tar.gz.asc jericho-comms-v1.5.3.tar.gz</code> to verify the
+						NB: The email addresses have had the TLD replaced with ... to reduce spam mail. Now
+						run <code>gpg --verify jericho-comms-v1.5.4.tar.xz.asc jericho-comms-v1.5.4.tar.xz</code> to verify the
 						signature. This should give you a message saying <b>Good signature</b> similar to the following:<br>
 						<br>
 						<code>
-							gpg: Signature made Sun 23 Apr 2017 {time}<br>
-							gpg: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;using RSA key 0xDC768471C467B6D0<br>
-							gpg: Good signature from "Joshua M. David (Jericho Comms) &lt;joshua.m.david[at]tutanota.de&gt;"<br>
-							gpg: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aka "Joshua M. David (Jericho Encryption) &lt;jerichoencryption[at]rediffmail.com&gt;"<br>
+							gpg: Signature made Mon 30 Dec 2019 {time}<br>
+							gpg: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;using RSA key CF3F79EE011459BA0A599E9CDC768471C467B6D0<br>
+							gpg: Good signature from "Joshua M. David (Jericho Comms) &lt;joshua.m.david@tutanota...&gt;"<br>
+							gpg: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aka "Joshua M. David (Jericho Encryption) &lt;jerichoencryption@rediffmail...&gt;"<br>
 							gpg: WARNING: This key is not certified with a trusted signature!<br>
 							gpg: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There is no indication that the signature belongs to the owner.<br>
 							Primary key fingerprint: CF3F 79EE 0114 59BA 0A59  9E9C DC76 8471 C467 B6D0
 						</code><br>
 						<br>
 						NB: the time has been replaced with {time} as it may appear relative to your timezone. It will also likely show a
-						warning because you have not assigned a trust index to this person. 
-						This means that GnuPG verified that the key made that signature, but it's up to you to decide 
-						if that key really belongs to the developer. The best method is usually to meet the developer 
+						warning because you have not assigned a trust index to this person.
+						This means that GnuPG verified that the key made that signature, but it's up to you to decide
+						if that key really belongs to the developer. The best method is usually to meet the developer
 						in person and exchange key fingerprints. However, sometimes this is not possible, so you can also
 						check the fingerprint on <a href="https://onename.com/joshua_m_david">onename.com/joshua_m_david</a> and
 						<a href="https://keybase.io/joshua_m_david">keybase.io/joshua_m_david</a>. Both of these identities and
-						fingerprints are published on the Bitcoin blockchain. Do not rely on what you see on the 
-						websites alone which is only protected by TLS and can be easily altered in real-time by the 
-						Five Eyes agencies. Make sure you download the client apps to verify the public keys on the 
+						fingerprints are published on the Bitcoin blockchain. Do not rely on what you see on the
+						websites alone which is only protected by TLS and can be easily altered in real-time by the
+						Five Eyes agencies. Make sure you download the client apps to verify the public keys on the
 						blockchain. If you can review the source code of those apps, even better.
 					</p>
-					
-					
+
+
 					<h2 id="extracting-server-files">Extracting the server files</h2>
 					<p>
-						Now you need to extract files from inside the jericho-comms-v1.5.3.tar.gz archive file. This can be done using:<br>
-						<code>tar -zxvf jericho-comms-v1.5.3.tar.gz</code><br>
+						Now you need to extract files from inside the jericho-comms-v1.5.4.tar.xz archive file. This can be done using:<br>
+						<code>tar -xvf jericho-comms-v1.5.4.tar.xz</code><br>
 						<br>
-						That will extract the files into a directory called <code>jericho-comms-v1.5.3</code> which is in your current
+						That will extract the files into a directory called <code>jericho-comms-v1.5.4</code> which is in your current
 						working directory.
 					</p>
-					
-					
+
+
 					<h2 id="running-installation-script">Running the server installation script</h2>
 					<p>
 						Run the server API software installation script using:<br>
-						<code>sudo ./jericho-comms-v1.5.3/server/setup.sh</code><br>
+						<code>sudo ./jericho-comms-v1.5.4/server/setup.sh</code><br>
 						<br>
 						This script is designed to be run on a clean install of the Linux server. It will prompt you a number of
-						simple questions and automate the installation of Apache, MySQL, PHP and the Jericho Comms server API software. It
+						simple questions and automate the installation of Apache, PostgreSQL, PHP and the Jericho Comms server API software. It
 						will also harden the installation using some simple firewall rules to block all incoming traffic except HTTP and
 						SSH.
 					</p>
-								
-										
+
+
 					<h2 id="test-server-code">Test the server code</h2>
 					<p>
 						Now you can test the connection to the server. The client program will do that automatically for you.
 						<a href="download.html">Download</a> the client code onto your PC and verify it using the
-						<a href="#verify-signature">same method as earlier</a>. Extract the files and in the <code>client</code> directory, 
+						<a href="#verify-signature">same method as earlier</a>. Extract the files and in the <code>client</code> directory,
 						open the <code>index.html</code> file in your web browser. From the main menu of the client program, select the
-						<b>Test Server connection</b> option. Now enter the IP address and server key that are printed at the end of the
+						<b>Test Server connection</b> option. Now enter the IP address and port, then the server key that are printed at the end of the
 						server installation script:
 						<br>
 						<img class="listImage" src="img/test-server-connection.png" alt="Test server connection"><br>
@@ -295,34 +289,34 @@
 						Now click the <b>Test server connection</b> button. You should see a message saying
 						<b>Server and database connection successful.</b><br>
 						<br>
-						If it is still not working, you can try setting the <code>testResponseHeaders</code> key to <code>true</code> 
+						If it is still not working, you can try setting the <code>testResponseHeaders</code> key to <code>true</code>
 						in the <code>$applicationConfig</code> array of the <code>/var/www/html/config/config.php</code> file on the
-						server. This enables a more specific error message to be sent back with the HTTP/1.1 404 error response code.
-						The Web Developer console in Firefox can view the error message sent back. This is found under  
-						Tools -> Web Developer -> Web Console or simply Ctrl + Shift + K to open it. Once installed, simply 
-						press F12 and it will open. Then retry the connection and view the error. That will give you a clue about 
+						server. This enables a more specific error message to be sent back with the HTTP/1.1 200 header response code.
+						The Web Developer console in Firefox can view the error message sent back. This is found under
+						Tools -> Web Developer -> Web Console or simply Ctrl + Shift + K to open it. Once installed, simply
+						press F12 and it will open. Then retry the connection and view the error. That will give you a clue about
 						what needs to be fixed:<br>
 						<br>
 						<img class="listImage" src="img/test-connection-browser-console.png" alt="Web console"><br>
 						<br>
-						If you notice some sort of database error it probably means your database password (in the <code>config.php</code> 
-						file) is incorrect. Either that or other database connection details may be incorrect. Basic shared hosting 
-						users (non VPS) might also need to edit the UNIX socket and port numbers in the <b>config.php</b> file 
+						If you notice some sort of database error it probably means your database password (in the <code>config.php</code>
+						file) is incorrect. Either that or other database connection details may be incorrect. Basic shared hosting
+						users (non VPS) might also need to edit the UNIX socket and port numbers in the <b>config.php</b> file
 						with settings provided by the hosting provider.<br>
 						<br>
-						If the error is something about the timestamp being incorrect, perhaps your PC and the server are not 
+						If the error is something about the timestamp being incorrect, perhaps your PC and the server are not
 						synchronized to an NTP server. Try updating both then try again.<br>
 						<br>
 						If the MAC is incorrect then you likely don't have the same key on the server as the client.<br>
-						<br>						
-						Remember to set the <code>testResponseHeaders</code> key to <code>false</code> once you have resolved the 
+						<br>
+						Remember to set the <code>testResponseHeaders</code> key to <code>false</code> once you have resolved the
 						issue, otherwise this leaves clues for an attacker.
 					</p>
-					
-					
+
+
 					<h2 id="summary">Summary</h2>
 					<p>
-						To sum up you configured Linux, Apache, PHP, MySQL and the server side API software.<br>
+						To sum up you configured Linux, Apache, PostgreSQL, PHP and the server side API software.<br>
 						<br> There are probably other things that can be done to lock the server
 						down even further. For example,
 						<a href="https://www.digitalocean.com/community/articles/how-to-set-up-ssh-keys--2">using SSH keys</a>
@@ -340,12 +334,12 @@
 						server and then create a new one somewhere else. The server IP and key can be easily replaced in the client interface.<br>
 						<br>
 						You can continue with the <a href="installation-client.html">client installation guide</a> now.
-					</p>					
+					</p>
 				</div>
 				<div class="clear"></div>
 			</div>
 		</div>
-		
+
 		<div class="footer">
 			<ul class="links">
 				<li>
@@ -362,7 +356,7 @@
 				<li>-</li>
 				<li>
 					<a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a>
-				</li>				
+				</li>
 				<li>-</li>
 				<li>
 					<a href="installation.html">How to install</a>
@@ -377,12 +371,10 @@
 				</li>
 			</ul>
 			<div class="donate">
-				Want to support the project?<br>
-				Bitcoin: <code>16h8K8sXCobL5u7wKRPG95F8XAc735P8TM</code><br>
-				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
+				<a href="support.html">Want to support the project?</a>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2017 Joshua M. David
+				Copyright &copy; 2013 - 2019 Joshua M. David
 			</div>
 		</div>
 	</body>

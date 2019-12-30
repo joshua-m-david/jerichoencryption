@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2017  Joshua M. David
+	Copyright (c) 2013-2019  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -13,17 +13,17 @@
 <html lang="en">
 	<head>
 		<title>Jericho Comms&trade; - How to use</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
 		<link rel="stylesheet" href="css/global.css" type="text/css">
 		<link rel="stylesheet" href="css/print.css" type="text/css" media="print">
-		
+
 		<!--[if IE]>
 			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<![endif]-->		
+		<![endif]-->
 		<!--[if IE 7]>
 			<link rel="stylesheet" href="css/ie7.css" type="text/css">
 		<![endif]-->
@@ -34,9 +34,9 @@
 	<body>
 		<div class="topSection">
 			<div class="topBanner">
-				<a class="logo" href="index.html" title="Homepage"></a>			
+				<a class="logo" href="index.html" title="Homepage"></a>
 				<div class="mainNav">
-					<ul>						
+					<ul>
 						<li><a href="information.html">Technical design</a></li>
 						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
 						<li><a href="download.html">Download</a></li>
@@ -49,13 +49,13 @@
 		</div>
 		<div class="content">
 			<div class="page usagePage">
-				<div class="information">					
+				<div class="information">
 					<h1>How to use</h1>
 					<p>
-						These instructions explain how to run the client side of the software to generate keys, export keys and start chatting. You 
+						These instructions explain how to run the client side of the software to generate keys, export keys and start chatting. You
 						should have completed the <a href="installation.html">installation instructions</a> first.
 					</p>
-					
+
 					<h2>Table of Contents</h2>
 					<ol class="tableOfContents">
 						<li><a href="#start-program">Run the program</a></li>
@@ -72,26 +72,26 @@
 						<li><a href="#auto-nuke">Emergency self destruct</a></li>
 						<li><a href="#final-notes">Final notes</a></li>
 					</ol>
-										
+
 					<h2 id="start-program">1. Run the program</h2>
 					<p>
-						Once you've extracted the client files and the server is setup 
-						(<a href="installation.html">see installation instructions</a>), you can open the <b>client</b> directory 
-						and launch the <b>index.html</b> in your web browser. With Windows or Linux	you can do this by right 
-						clicking on the index.html file and selecting <b>Open with</b> then selecting the Web Browser e.g. 
+						Once you've extracted the client files and the server is setup
+						(<a href="installation.html">see installation instructions</a>), you can open the <b>client</b> directory
+						and launch the <b>index.html</b> in your web browser. With Windows or Linux	you can do this by right
+						clicking on the index.html file and selecting <b>Open with</b> then selecting the Web Browser e.g.
 						Firefox. This means the website will be running from an address like this in the address bar:<br>
 						<code>file:///media/truecrypt1/jericho/client/index.html</code><br>
 						<br>
-						You should be presented with the main menu screen of the program:						
+						You should be presented with the main menu screen of the program:
 					</p>
 					<p class="diagram">
 						<img src="img/main-program-screen.png" alt="Main program screen">
 					</p>
 					<p>
-						It's a good idea to create a bookmark (<b>Ctrl + D</b>) for this main screen in your browser bookmarks bar so 
+						It's a good idea to create a bookmark (<b>Ctrl + D</b>) for this main screen in your browser bookmarks bar so
 						you can access the chat again quickly.
 					</p>
-					
+
 					<h2 id="run-unit-tests">2. Run the unit tests</h2>
 					<p>
 						Click the <b>Run code tests</b> button.
@@ -100,121 +100,121 @@
 						<img src="img/run-tests.png" alt="Unit tests">
 					</p>
 					<p>
-						Check to make sure all the code tests passed and there were no failures. This ensures the program will 
-						operate correctly in your browser. If something fails check you are using the latest version of Firefox 
-						or Chromium. If you have this and it is still failing, 
-						<a href="https://github.com/joshua-m-david/jerichoencryption/issues">post a ticket on Github</a> with a 
+						Check to make sure all the code tests passed and there were no failures. This ensures the program will
+						operate correctly in your browser. If something fails check you are using the latest version of Firefox
+						or Chromium. If you have this and it is still failing,
+						<a href="https://github.com/joshua-m-david/jerichoencryption/issues">post a ticket on Github</a> with a
 						screenshot of the error.
 					</p>
-					
+
 					<h2 id="open-generate-page">3. Open the Create one-time pads page</h2>
 					<p>
 						Click the <b>Back</b> button on your browser to go back to the main screen and click on the <b>Create one-time pads</b> button. You
-						should be taken to an introductory screen that explains how the True Random Number Generator (TRNG) works. 
-						After you have read this, click <b>Launch TRNG</b>. This takes you to a mostly blank screen with 
-						buttons along the top. All the actions to perform are numbered according the order things should be done. 
-						The buttons will be disabled until you complete the tasks in the correct order. Here you will generate the 
+						should be taken to an introductory screen that explains how the True Random Number Generator (TRNG) works.
+						After you have read this, click <b>Launch TRNG</b>. This takes you to a mostly blank screen with
+						buttons along the top. All the actions to perform are numbered according the order things should be done.
+						The buttons will be disabled until you complete the tasks in the correct order. Here you will generate the
 						random data required for the one-time pads:
 					</p>
 					<p class="diagram">
 						<img src="img/generate-pads-page.png" alt="TRNG page">
 					</p>
-					
-										
+
+
 					<h2 id="photo-selection">4. Selecting photos</h2>
 					<p>
-						Click the <b>Browse...</b> button and select two photographs from your hard drive. For high quality results, 
-						use photos from a standalone digital camera or DSLR that has been captured in your camera's raw image 
-						format and converted to PNG or BMP. Avoid JPEG and other lossy compression algorithms if possible as they 
-						may affect the output in predictable ways. Avoid taking photographs of anything with strong sunlight 
+						Click the <b>Browse...</b> button and select two photographs from your hard drive. For high quality results,
+						use photos from a standalone digital camera or DSLR that has been captured in your camera's raw image
+						format and converted to PNG or BMP. Avoid JPEG and other lossy compression algorithms if possible as they
+						may affect the output in predictable ways. Avoid taking photographs of anything with strong sunlight
 						hitting it as this may over-expose certain areas in the photograph.<br>
 						<br>
-						The photos should never have been uploaded to the internet, shared on social media or anywhere else. It must 
-						be taken specifically for this purpose and you will delete it immediately after the one-time pads 
+						The photos should never have been uploaded to the internet, shared on social media or anywhere else. It must
+						be taken specifically for this purpose and you will delete it immediately after the one-time pads
 						have been generated. Do not use your wedding photos.<br>
 						<br>
-						Use photos of something that is generally random in nature. Photos taken in macro mode of sand at a beach 
-						or grass work very well. Bushes, flowers, trees, rocks and ocean waves also work well. You can 
+						Use photos of something that is generally random in nature. Photos taken in macro mode of sand at a beach
+						or grass work very well. Bushes, flowers, trees, rocks and ocean waves also work well. You can
 						see the results of testing on various photographs <a href="information.html#trng-test-analysis">here</a>.
 					</p>
-					
+
 					<h2 id="processing-entropy">5. Processing the entropy</h2>
 					<p>
 						Once you have uploaded the photos it will be shown in the screen.<br>
 						<br>
 						<img class="listImage" src="img/trng-photos-loaded.png" alt="Photos loaded">
-						<br>	
-						Click the <b>Process</b> button. This 
-						processes the entropy in the photo according to the algorithm explained 
+						<br>
+						Click the <b>Process</b> button. This
+						processes the entropy in the photo according to the algorithm explained
 						<a href="information.html#photo-processing-algorithm">here</a>.<br>
 						<br>
-						It should display a brief status message after a few seconds. The processing may take about a minute to 
+						It should display a brief status message after a few seconds. The processing may take about a minute to
 						process the photograph depending on the speed of your CPU, the hash algorithm and how large the photo is.<br>
 						<br>
-						<b>Note:</b> On the latest versions of Firefox you may get a warning popup at the top of the page saying: <i>'A web 
+						<b>Note:</b> On the latest versions of Firefox you may get a warning popup at the top of the page saying: <i>'A web
 						page is slowing down your browser. What would you like to do?'</i><br>
 						<br>
-						This can occur after 10 seconds of processing which is the new default in Firefox. If this happens, let it keep 
-						processing a while longer and click the 'Wait' button. If an <i>error</i> occurs due to a long script execution run 
-						time you can tweak the Firefox settings. In the Firefox address bar, type <code>about:config</code>, and then press 
-						Enter. Accept the warning. Scroll and locate or search with Filter text box for <code>dom.max_script_run_time</code>. 
-						Now double click on the line of <code>dom.max_script_run_time</code> and change the value to a higher number (in 
-						seconds) that you want Firefox to wait before getting the Unresponsive Script warning e.g. <code>30</code> seconds 
+						This can occur after 10 seconds of processing which is the new default in Firefox. If this happens, let it keep
+						processing a while longer and click the 'Wait' button. If an <i>error</i> occurs due to a long script execution run
+						time you can tweak the Firefox settings. In the Firefox address bar, type <code>about:config</code>, and then press
+						Enter. Accept the warning. Scroll and locate or search with Filter text box for <code>dom.max_script_run_time</code>.
+						Now double click on the line of <code>dom.max_script_run_time</code> and change the value to a higher number (in
+						seconds) that you want Firefox to wait before getting the Unresponsive Script warning e.g. <code>30</code> seconds
 						should be fine. Now press the Restart button on the TRNG page to start the pad creation process again.
 					</p>
 					<p>
-						After this you should see the results displayed and the Export button will have now been 
-						activated. You should also see how many bits were collected, how many one-time pads were 
+						After this you should see the results displayed and the Export button will have now been
+						activated. You should also see how many bits were collected, how many one-time pads were
 						created and whether all the randomness tests passed.
 						<br>
 						<img class="listImage" src="img/trng-processed-images.png" alt="Photos processed">
 						<br>
 					</p>
-					
+
 					<h2 id="testing-collected-data">6. Testing the collected data</h2>
 					<p>
 						There are a number of ways to view the random data if you need to verify it.
 					</p>
 					<ul>
-						<li>							
-							Click the <b>View bitmap</b> or <b>View colour bitmap</b> buttons. This will show a bitmap 
-							image on the screen allowing you to visualize the random data after it has been processed and 
-							see if it looks random. If it looks like there are discernable patterns then it means the 
-							random data is not uniformly distributed and you may be better off finding another photograph. 
-							You can use the mouse to scroll up/down and left/right to see the full image. If you have a 
+						<li>
+							Click the <b>View bitmap</b> or <b>View colour bitmap</b> buttons. This will show a bitmap
+							image on the screen allowing you to visualize the random data after it has been processed and
+							see if it looks random. If it looks like there are discernable patterns then it means the
+							random data is not uniformly distributed and you may be better off finding another photograph.
+							You can use the mouse to scroll up/down and left/right to see the full image. If you have a
 							good photograph, it should look something like this:<br>
 							<br>
 							<img class="listImage" src="img/random-bitmap-good-example.png" alt="Random bitmap example">
-							
+
 							<img class="listImage" src="img/random-colour-bitmap-good-example.png" alt="Random colour bitmap example">
 							<br>
 						</li>
 						<li>
-							Click the <b>View test results</b> buttons. This shows the results of some basic statistical random number 
-							tests on the output which are from <a href="http://csrc.nist.gov/publications/fips/fips140-2/fips1402.pdf">FIPS 140-2</a>. 
-							This tests every 20,000 bits of the random data. This will give you a summary of the randomnesses 
-							test results. If all the tests pass at each step then you have the best possible results and 
-							very good source photographs. If the earlier tests have failed, that does not matter too 
-							much. It may just be small sections of the photograph that are not uniformly random. The 
-							important thing is that the tests on the last line, the extracted bits, passes. 
-							If this does not pass you should click the <b>Restart</b> button and use some different 
+							Click the <b>View test results</b> buttons. This shows the results of some basic statistical random number
+							tests on the output which are from <a href="http://csrc.nist.gov/publications/fips/fips140-2/fips1402.pdf">FIPS 140-2</a>.
+							This tests every 20,000 bits of the random data. This will give you a summary of the randomnesses
+							test results. If all the tests pass at each step then you have the best possible results and
+							very good source photographs. If the earlier tests have failed, that does not matter too
+							much. It may just be small sections of the photograph that are not uniformly random. The
+							important thing is that the tests on the last line, the extracted bits, passes.
+							If this does not pass you should click the <b>Restart</b> button and use some different
 							photographs.
 						</li>
 						<li>
-							Generally for a good photograph, e.g. close-up of sand at a beach, the extracted tests 
-							should pass. This will give excellent, truly random one-time pads. If the extracted entropy 
-							tests pass then it is a good indication that the randomness extracter worked and the data is 
-							now uniformly distributed and safe to use. Absolutely avoid using the data if the final 
+							Generally for a good photograph, e.g. close-up of sand at a beach, the extracted tests
+							should pass. This will give excellent, truly random one-time pads. If the extracted entropy
+							tests pass then it is a good indication that the randomness extracter worked and the data is
+							now uniformly distributed and safe to use. Absolutely avoid using the data if the final
 							tests fail.
 						</li>
 					</ul>
-										
-					
+
+
 					<h2 id="exporting-pads">7. Exporting the one-time pads for use</h2>
 					<p>
-						Now that the one-time pads have been created you need to export them separately for each user. This means 
-						each user gets allocated specific one-time pads to prevent re-use from another user. You definitely do not 
-						want to load the same pads for each user or a pad could be accidentally re-used which will allow for 
+						Now that the one-time pads have been created you need to export them separately for each user. This means
+						each user gets allocated specific one-time pads to prevent re-use from another user. You definitely do not
+						want to load the same pads for each user or a pad could be accidentally re-used which will allow for
 						cryptanalysis.
 					</p>
 					<p class="diagram">
@@ -222,190 +222,190 @@
 					</p>
 					<ul>
 						<li>
-							There are multiple ways to export the pads. Generally the text file method (default) is the 
-							easiest. This will export the one-time pads to a text file which you can load into the program 
-							later. You can also export to the clipboard and then manually copy and paste into a text file. 
-							Version 2.0 will include a method to export to an image file so the file can be easily 
-							imported on tablet and mobile devices which add restrictions to only allow importing from 
+							There are multiple ways to export the pads. Generally the text file method (default) is the
+							easiest. This will export the one-time pads to a text file which you can load into the program
+							later. You can also export to the clipboard and then manually copy and paste into a text file.
+							Version 2.0 will include a method to export to an image file so the file can be easily
+							imported on tablet and mobile devices which add restrictions to only allow importing from
 							images.
 						</li>
 						<li>
-							Next to <b>Export to</b> select option 
-							<code>One-time pads (Text file)</code>. Click the <b>Export</b> button which will popup a save dialog. 
-							Save the file to removable storage such as MicroSD card, SD card or USB drive. If you need 
-							plausible deniability you should always save the one-time pads within a hidden encrypted 
+							Next to <b>Export to</b> select option
+							<code>One-time pads (Text file)</code>. Click the <b>Export</b> button which will popup a save dialog.
+							Save the file to removable storage such as MicroSD card, SD card or USB drive. If you need
+							plausible deniability you should always save the one-time pads within a hidden encrypted
 							volume e.g. with <a href="https://www.grc.com/misc/truecrypt/truecrypt.htm">TrueCrypt</a>.
 						</li>
 						<li>
-							Now set the full server address and port in the format shown. If the server is using a 
-							non-standard port you can add the port number into the URL e.g. 
+							Now set the full server address and port in the format shown. If the server is using a
+							non-standard port you can add the port number into the URL e.g.
 							<code>http://servername.com:443</code>. If the code for the web server is not in the root
-							directory of the web server be sure to add the directory path in too e.g. 
+							directory of the web server be sure to add the directory path in too e.g.
 							<code>http://servername.com/chat/</code>.
 						</li>
 						<li>
-							Click <b>Create server key</b> to generate a 512 bit server API key. This needs to match the one in the 
+							Click <b>Create server key</b> to generate a 512 bit server API key. This needs to match the one in the
 							server configuration file. See instructions for editing that <a href="installation-server.html#edit-config-file">here</a>.
 						</li>
 						<li>
-							Click the <b>Test server connection</b> button. This should show a success message on the screen. If a 
-							successful connection cannot be made you may have the URL wrong, the key may be incorrect or the 
-							server side is not configured correctly. If you are having trouble there are some troubleshooting steps 
+							Click the <b>Test server connection</b> button. This should show a success message on the screen. If a
+							successful connection cannot be made you may have the URL wrong, the key may be incorrect or the
+							server side is not configured correctly. If you are having trouble there are some troubleshooting steps
 							<a href="installation-server.html#test-server-code">here</a>.
 						</li>
 						<li>
-							Next set the <b>Number of users in group</b>. This should match the number of users in the chat group 
+							Next set the <b>Number of users in group</b>. This should match the number of users in the chat group
 							that is specified in the server config file.
 						</li>
 						<li>
-							Next you can choose custom <b>User call signs</b> (nicknames) for the users in the chat group. Only 
-							user letters A-Z, a-z and numbers 0-9 for the custom nickname. These custom nicknames are kept client 
-							side and exported with the one-time pad data. They are only visible to each user with the one-time 
-							pads, they are not transmitted over the network as part of the protocol. Only the generic call sign 
-							e.g. alpha, bravo, charlie etc are transmitted which identifies which user is communicating with the 
-							server. This is used to mark when a user has read a message on the server so it does not retrieve it 
+							Next you can choose custom <b>User call signs</b> (nicknames) for the users in the chat group. Only
+							user letters A-Z, a-z and numbers 0-9 for the custom nickname. These custom nicknames are kept client
+							side and exported with the one-time pad data. They are only visible to each user with the one-time
+							pads, they are not transmitted over the network as part of the protocol. Only the generic call sign
+							e.g. alpha, bravo, charlie etc are transmitted which identifies which user is communicating with the
+							server. This is used to mark when a user has read a message on the server so it does not retrieve it
 							twice.
 						</li>
 						<li>
-							Next you can choose a <b>Passphrase</b> to encrypt the one-time pads before they are transported. 
-							This passphrase should be communicated in person when you deliver the pads to the other 
-							user/s. It should not be stored in any computer and ideally not written down on paper 
-							either. This gives you some extra security if your storage media is stolen or confiscated 
-							(e.g. by immigration security/border control) when the one-time pads are in transit. The 
+							Next you can choose a <b>Passphrase</b> to encrypt the one-time pads before they are transported.
+							This passphrase should be communicated in person when you deliver the pads to the other
+							user/s. It should not be stored in any computer and ideally not written down on paper
+							either. This gives you some extra security if your storage media is stolen or confiscated
+							(e.g. by immigration security/border control) when the one-time pads are in transit. The
 							passphrase strength should be at least 256 bits to prevent quantum computer attacks.
 						</li>
 						<li>
-							In the <b>Advanced options</b> you can choose to <b>Store the PBKDF salt as a separate keyfile</b>. 
-							This means 1536 bits of random data which is critical to decrypting the database can be saved 
-							to a different storage medium than where the one-time pads will be for transport. If this 
-							keyfile is stored on a separate MicroSD or printed on a piece of paper then an attacker 
-							needs this information to have any hope of decrypting the database. If you are at risk of 
-							having your electronic devices confiscated as you go through customs you can store the 
-							keyfile written printed on a piece of paper inside a book or magazine. Then if your notebook 
-							PC is confiscated which has the one-time pads you can eat the piece of paper and even divulge 
-							the password if forced to under duress and no-one will be able to crack the database for a 
+							In the <b>Advanced options</b> you can choose to <b>Store the PBKDF salt as a separate keyfile</b>.
+							This means 1536 bits of random data which is critical to decrypting the database can be saved
+							to a different storage medium than where the one-time pads will be for transport. If this
+							keyfile is stored on a separate MicroSD or printed on a piece of paper then an attacker
+							needs this information to have any hope of decrypting the database. If you are at risk of
+							having your electronic devices confiscated as you go through customs you can store the
+							keyfile written printed on a piece of paper inside a book or magazine. Then if your notebook
+							PC is confiscated which has the one-time pads you can eat the piece of paper and even divulge
+							the password if forced to under duress and no-one will be able to crack the database for a
 							very long time.
 						</li>
 						<li>
-							Next in the <b>Advanced options</b> you can choose to <b>Enter the PBKDF iterations at decryption 
-                            time</b>. If checked, the number of <a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF</a> 
-                            iterations will not be stored with the one-time 
-							pads and will need to be manually entered at decryption time. These numbers can be written 
-							on a piece of paper or remembered and communicated verbally with the user/s you are sharing 
-							the encrypted one-time pad database with. This increases the amount of work for an attacker 
-							by a large margin as it is another piece of the puzzle they do not have to crack the 
-							database encryption. Essentially an attacker will need to try every possible number of PBKDF 
+							Next in the <b>Advanced options</b> you can choose to <b>Enter the PBKDF iterations at decryption
+                            time</b>. If checked, the number of <a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF</a>
+                            iterations will not be stored with the one-time
+							pads and will need to be manually entered at decryption time. These numbers can be written
+							on a piece of paper or remembered and communicated verbally with the user/s you are sharing
+							the encrypted one-time pad database with. This increases the amount of work for an attacker
+							by a large margin as it is another piece of the puzzle they do not have to crack the
+							database encryption. Essentially an attacker will need to try every possible number of PBKDF
 							iterations (1 - 10,000+) for every password attempt they make.
 						</li>
 						<li>
-							Finally in the <b>Advanced options</b> you can choose the number of PBKDF iterations to 
-							perform for both PBKDF algorithms. This is the amount of computational difficulty required 
-							to compute the master encryption key from the passphrase. Attackers have the advantage as 
-							they can perform password guessing attempts in parallel on supercomputers and specialised 
-                            hardware like <a href="https://en.wikipedia.org/wiki/Graphics_processing_unit">GPUs</a> and 
-                            <a href="https://en.wikipedia.org/wiki/Application-specific_integrated_circuit">ASICs</a>. 
-                            This forces them to expend significant computational 
-							effort for each password attempt. The defaults of 10,000 iterations for both algorithms are 
-							reasonable for a quad core desktop PC and may take about 8 seconds to encrypt/decrypt. If 
-							the database will be decrypted on a low powered mobile device or tablet you may wish to lower 
-							the number of iterations significantly otherwise the database will take a long time to decrypt. 
-							You can compensate for the lower number of iterations by adding extra password characters. 
-							There are some limits to what number of iterations can be computed in a reasonable timeframe 
-							with the browser's JavaScript engine so 100,000 iterations is likely unrealistic. It is 
+							Finally in the <b>Advanced options</b> you can choose the number of PBKDF iterations to
+							perform for both PBKDF algorithms. This is the amount of computational difficulty required
+							to compute the master encryption key from the passphrase. Attackers have the advantage as
+							they can perform password guessing attempts in parallel on supercomputers and specialised
+                            hardware like <a href="https://en.wikipedia.org/wiki/Graphics_processing_unit">GPUs</a> and
+                            <a href="https://en.wikipedia.org/wiki/Application-specific_integrated_circuit">ASICs</a>.
+                            This forces them to expend significant computational
+							effort for each password attempt. The defaults of 10,000 iterations for both algorithms are
+							reasonable for a quad core desktop PC and may take about 8 seconds to encrypt/decrypt. If
+							the database will be decrypted on a low powered mobile device or tablet you may wish to lower
+							the number of iterations significantly otherwise the database will take a long time to decrypt.
+							You can compensate for the lower number of iterations by adding extra password characters.
+							There are some limits to what number of iterations can be computed in a reasonable timeframe
+							with the browser's JavaScript engine so 100,000 iterations is likely unrealistic. It is
 							better to use a longer passphrase to compensate for this anyway.
-						</li>						
+						</li>
 						<li>
-							Click the <b>Export one-time pads</b> button which will prompt a save dialog to save the 
-							one-time pads for each user. Ideally write them to the transport storage media immediately 
+							Click the <b>Export one-time pads</b> button which will prompt a save dialog to save the
+							one-time pads for each user. Ideally write them to the transport storage media immediately
 							to avoid leaving copies across multiple storage devices.
 						</li>
 					</ul>
-					
+
 					<h2 id="delivering-pads">8. Delivering the one-time pads</h2>
 					<p>
-						At this point you should have the generated one-time pads on a USB drive or other removable/portable media. 
-						To get the one-time pads to the other users, ideally they will arrange a physical meetup. 
-						This is to create a <a href="http://en.wikipedia.org/wiki/Secure_channel">secure channel</a> or 
-						<a href="http://en.wikipedia.org/wiki/Air_gap_%28networking%29">air gap</a> to deliver the one-time 
-						pads which ensures the encryption keys are not intercepted or compromised by transferring them over an 
-						insecure network like the internet. Key exchange is considered out of scope for the program itself as 
-						this is the user's responsibility. The best method is to hide in plain sight. Here are a few solutions 
+						At this point you should have the generated one-time pads on a USB drive or other removable/portable media.
+						To get the one-time pads to the other users, ideally they will arrange a physical meetup.
+						This is to create a <a href="http://en.wikipedia.org/wiki/Secure_channel">secure channel</a> or
+						<a href="http://en.wikipedia.org/wiki/Air_gap_%28networking%29">air gap</a> to deliver the one-time
+						pads which ensures the encryption keys are not intercepted or compromised by transferring them over an
+						insecure network like the internet. Key exchange is considered out of scope for the program itself as
+						this is the user's responsibility. The best method is to hide in plain sight. Here are a few solutions
 						that will usually work:
 					</p>
 					<ul>
 						<li>
-							 Meeting the users in person for a coffee/drink/lunch/dinner provides an innocent cover for 
-							 the exchange of encryption keys. If you are going about your daily activities this is the 
+							 Meeting the users in person for a coffee/drink/lunch/dinner provides an innocent cover for
+							 the exchange of encryption keys. If you are going about your daily activities this is the
 							 least suspicious option and the most likely to succeed.
 						</li>
 						<li>
-							A <a href="http://en.wikipedia.org/wiki/Dead_drop">dead drop</a>. Arrange the time and place 
-							of the dead drop (or regularly scheduled dead drops) in person or using another method, but 
+							A <a href="http://en.wikipedia.org/wiki/Dead_drop">dead drop</a>. Arrange the time and place
+							of the dead drop (or regularly scheduled dead drops) in person or using another method, but
 							do not arrange this over an insecure channel like the phone or internet.
 						</li>
 						<li>
-							If your country does not inspect internal mail you can hand sign a sealed courier envelope 
-							and send it with reasonable assurance that it won't be compromised. If the package appears to 
-							be opened on delivery, consider the encryption keys compromised and do not use them. 
-							International mail is sometimes opened by 
-							<a href="https://en.wikipedia.org/wiki/Customs">Customs</a> so it is not a reliable method. 
+							If your country does not inspect internal mail you can hand sign a sealed courier envelope
+							and send it with reasonable assurance that it won't be compromised. If the package appears to
+							be opened on delivery, consider the encryption keys compromised and do not use them.
+							International mail is sometimes opened by
+							<a href="https://en.wikipedia.org/wiki/Customs">Customs</a> so it is not a reliable method.
 							It would not be difficult to hide an encrypted MicroSD within something else though.
 						</li>
 						<li>
-							It is not difficult to get a laptop, portable hard drive, MicroSD card, or SD card through 
-							Customs at national or international airports. You can also 
-							hide them in your luggage or on your person. If your government generally clones or scans 
-							personal phones or computers as you are going through Customs you may need to use 
-							<a href="http://en.wikipedia.org/wiki/Steganography_tools">steganography</a> to hide the 
+							It is not difficult to get a laptop, portable hard drive, MicroSD card, or SD card through
+							Customs at national or international airports. You can also
+							hide them in your luggage or on your person. If your government generally clones or scans
+							personal phones or computers as you are going through Customs you may need to use
+							<a href="http://en.wikipedia.org/wiki/Steganography_tools">steganography</a> to hide the
 							one-time pads within your vacation photos, videos or other files.
 						</li>
 						<li>
-							Governments and diplomats also have the option of using a 
-							<a href="http://en.wikipedia.org/wiki/Diplomatic_bag">diplomatic bag</a> to transfer items to 
-							another country which have diplomatic immunity from search or seizure under the Vienna 
+							Governments and diplomats also have the option of using a
+							<a href="http://en.wikipedia.org/wiki/Diplomatic_bag">diplomatic bag</a> to transfer items to
+							another country which have diplomatic immunity from search or seizure under the Vienna
 							Convention on Diplomatic Relations.
 						</li>
 						<li>
-							If you have lots of money you could potentially use someone like 
+							If you have lots of money you could potentially use someone like
 							<a href="http://i.imgur.com/REpDayC.jpg">this</a> to deliver your pads.
 						</li>
 					</ul>
 					<p>
-						The one-time pads absolutely cannot be sent via a less secure channel such as the internet even if 
-						you think you are using the best public key, block or stream cipher encryption there is. Your 
-						security will only be as strong as the cipher you used and you lose the 
-						<a href="http://en.wikipedia.org/wiki/One-time_pad#Perfect_secrecy">perfect secrecy</a> that the 
+						The one-time pads absolutely cannot be sent via a less secure channel such as the internet even if
+						you think you are using the best public key, block or stream cipher encryption there is. Your
+						security will only be as strong as the cipher you used and you lose the
+						<a href="http://en.wikipedia.org/wiki/One-time_pad#Perfect_secrecy">perfect secrecy</a> that the
 						one-time pad provides.
 					</p>
 					<p>
-						If the other user already has a copy of the program they can use that. Otherwise just include a copy of 
+						If the other user already has a copy of the program they can use that. Otherwise just include a copy of
 						the client files on the storage media before you give it to them.
 					</p>
-					
-					
+
+
 					<h2 id="loading-pads">9. Loading the one-time pads</h2>
 					<p>
-						By now each user should have a copy of the one-time pads and be back at their separate locations. Each user should open the 
-						main screen of the program. Click the <b>Load one-time pads</b> button. This will open up the following screen:						
+						By now each user should have a copy of the one-time pads and be back at their separate locations. Each user should open the
+						main screen of the program. Click the <b>Load one-time pads</b> button. This will open up the following screen:
 					</p>
 					<p class="diagram">
 						<img src="img/load-pads-page.png" alt="Load screen">
 					</p>
 					<p>
-						The easier option is to simply load the pads from the text file using the button provided. You can also 
-						manually open the text file containing the one-time pads, select all the text and then copy paste it into 
+						The easier option is to simply load the pads from the text file using the button provided. You can also
+						manually open the text file containing the one-time pads, select all the text and then copy paste it into
 						the text box provided.
 					</p>
 					<p>
-						Once successfully loaded, you must manually delete the text file from the removable storage device. The 
+						Once successfully loaded, you must manually delete the text file from the removable storage device. The
 						only remaining copies of the one-time pads should be in each user's browser storage.
 					</p>
 					<p>
-						Once loaded a button will appear that will take you to the main chat. You can also access the Chat from 
+						Once loaded a button will appear that will take you to the main chat. You can also access the Chat from
 						the main menu.
 					</p>
-					
-					
+
+
 					<h2 id="using-chat-application">10. Using the chat application</h2>
 					<p>
 						Using the chat application is very simple to send and receive messages.
@@ -414,58 +414,58 @@
 						<img src="img/chat-page.png" alt="Chat screen">
 					</p>
 					<p>
-						Be sure to look at each message received and ensure it is shown as <b>Authentic</b>. If someone is trying 
-						to interfere with your communications it may show a warning saying that the message has been tampered with. 
-						If that occurs you can ask the user to resend the contents of that message with the same Message ID. Due 
-						to the MAC sent with each message it will be impossible for an attacker to successfully forge a fake 
-						message without the program alerting you. If an invalid message is detected an attacker could be interfering 
-						with the server communications or has altered the data being sent. In any case you should likely seek to 
+						Be sure to look at each message received and ensure it is shown as <b>Authentic</b>. If someone is trying
+						to interfere with your communications it may show a warning saying that the message has been tampered with.
+						If that occurs you can ask the user to resend the contents of that message with the same Message ID. Due
+						to the MAC sent with each message it will be impossible for an attacker to successfully forge a fake
+						message without the program alerting you. If an invalid message is detected an attacker could be interfering
+						with the server communications or has altered the data being sent. In any case you should likely seek to
 						set up a new server as soon as possible.
 					</p>
 					<p>
-						Chat notification sounds can be turned off with the icon next to the <b>Chat</b> title. This setting will 
-						be remembered next time you open the program. You can even use your own chat notification sound if you 
-						want. Replace the <code>incoming-message.wav</code> file in the <code>client\sounds</code> directory with 
+						Chat notification sounds can be turned off with the icon next to the <b>Chat</b> title. This setting will
+						be remembered next time you open the program. You can even use your own chat notification sound if you
+						want. Replace the <code>incoming-message.wav</code> file in the <code>client\sounds</code> directory with
 						your own <a href="http://en.wikipedia.org/wiki/WAV">WAV</a> file.
 					</p>
-					
+
 					<h2 id="backup-pads">11. Backing up the one-time pads</h2>
 					<p>
-						Each time a message is sent or received the one-time pad is deleted from each device. The messages will only stay on the screen 
-						until the user closes the browser tab/window. If you need to move the pads to a different device you should export the pads 
-						back to a text file. This will export only the remaining pads. Definitely do not re-import the original list of pads otherwise 
+						Each time a message is sent or received the one-time pad is deleted from each device. The messages will only stay on the screen
+						until the user closes the browser tab/window. If you need to move the pads to a different device you should export the pads
+						back to a text file. This will export only the remaining pads. Definitely do not re-import the original list of pads otherwise
 						it will result in pad re-use. Go to the main screen and click <b>Backup pads</b>. The following page should load.
 					</p>
 					<p class="diagram">
 						<img src="img/backup-pads-page.png" alt="Backup pads page">
 					</p>
 					<p>
-						Create the backup first to text file, or copy to the clipboard then manually paste into a text file. Once done, clear the 
+						Create the backup first to text file, or copy to the clipboard then manually paste into a text file. Once done, clear the
 						local database. This means you only have one copy of the pads and there's no chance of accidental re-use.
 					</p>
-					
+
 					<h2 id="auto-nuke">12. Emergency self destruct</h2>
 					<p>
-						To clear everything in an emergency, initiate the auto nuke. This will delete the one-time pads from all 
-						connected devices and delete remaining encrypted messages from the server once everyone has received 
-						the command. Next time one of the other users opens the application it will also clear everything on 
-						their machine. It will also clear sent and received messages from the screen of each device. Reserve 
+						To clear everything in an emergency, initiate the auto nuke. This will delete the one-time pads from all
+						connected devices and delete remaining encrypted messages from the server once everyone has received
+						the command. Next time one of the other users opens the application it will also clear everything on
+						their machine. It will also clear sent and received messages from the screen of each device. Reserve
 						this for an actual emergency because it is time consuming to recreate and deliver new one-time pads.
 					</p>
 					<p>
-						You can find the <b>Emergency auto nuke</b> button on the main screen. That will load up another page 
+						You can find the <b>Emergency auto nuke</b> button on the main screen. That will load up another page
 						asking you to confirm the action:
 					</p>
 					<p class="diagram">
 						<img src="img/emergency-auto-nuke.png" alt="Auto nuke screen">
 					</p>
 					<p>
-						After the auto nuke has been initiated and all group user's local databases have been wiped, the 
-						server database should be ideally reset before you re-use it. The server administrator can run 
-						the following command:<br>
-						<code>mysql -u root -p &lt; /var/www/html/createtables.sql</code>
+						After the auto nuke has been initiated and all group user's local databases have been wiped, the
+						server database should be ideally reset before you re-use it. The server administrator can the
+						<code>setup.sh</code> script again to remove everything from the server and revert it to its original
+						state.
 					</p>
-					
+
 					<h2 id="final-notes">13. Final notes</h2>
 					<p>
 						Remember to read the <a href="information.html#extra-security-considerations">extra security precautions</a>.
@@ -474,7 +474,7 @@
 				<div class="clear"></div>
 			</div>
 		</div>
-		
+
 		<div class="footer">
 			<ul class="links">
 				<li>
@@ -491,7 +491,7 @@
 				<li>-</li>
 				<li>
 					<a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a>
-				</li>				
+				</li>
 				<li>-</li>
 				<li>
 					<a href="installation.html">How to install</a>
@@ -506,12 +506,10 @@
 				</li>
 			</ul>
 			<div class="donate">
-				Want to support the project?<br>
-				Bitcoin: <code>16h8K8sXCobL5u7wKRPG95F8XAc735P8TM</code><br>
-				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
+				<a href="support.html">Want to support the project?</a>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2017 Joshua M. David
+				Copyright &copy; 2013 - 2019 Joshua M. David
 			</div>
 		</div>
 	</body>

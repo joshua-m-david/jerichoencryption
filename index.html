@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2017  Joshua M. David
+	Copyright (c) 2013-2019  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -13,17 +13,17 @@
 <html lang="en">
 	<head>
 		<title>Jericho Comms&trade; - One-time pad chat app</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
 		<link rel="stylesheet" href="css/global.css" type="text/css">
 		<link rel="stylesheet" href="css/print.css" type="text/css" media="print">
-		
+
 		<!--[if IE]>
 			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<![endif]-->		
+		<![endif]-->
 		<!--[if IE 7]>
 			<link rel="stylesheet" href="css/ie7.css" type="text/css">
 		<![endif]-->
@@ -31,12 +31,12 @@
 			<link rel="stylesheet" href="css/ie8.css" type="text/css">
 		<![endif]-->
 	</head>
-	<body>		
+	<body>
 		<div class="topSection">
 			<div class="topBanner">
-				<a class="logo" href="index.html" title="Homepage"></a>			
+				<a class="logo" href="index.html" title="Homepage"></a>
 				<div class="mainNav">
-					<ul>						
+					<ul>
 						<li><a href="information.html">Technical design</a></li>
 						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
 						<li><a href="download.html">Download</a></li>
@@ -50,37 +50,41 @@
 		<div class="content">
 			<div class="page homePage">
 				<div class="information">
+					<p class="initialQuote">
+						<b>"Any one who considers arithmetical methods of producing random digits is, of course, in a state of sin."</b><br>
+						- John von Neumann
+					</p>
 					<h2 id="introducing-jericho-encryption">Introducing Jericho Comms</h2>
 					<p>
-						Jericho Comms is an end-to-end encrypted, group text communications 
-						program which provides information-theoretic security 
+						Jericho Comms is an end-to-end encrypted, group text communications
+						program which provides information-theoretic security
 						for all messages that are sent and received.
 
-						The goal is to deliver a high assurance, encrypted communications program with 
-						plausible deniability for activists, human rights lawyers, 
-						journalists, whistleblowers and citizens of the world that need high assurances that their 
-						communications are free of censorship, control and eavesdropping from the world's 
+						The goal is to deliver a high assurance, encrypted communications program with
+						plausible deniability for activists, human rights lawyers,
+						journalists, whistleblowers and citizens of the world that need high assurances that their
+						communications are free of censorship, control and eavesdropping from the world's
 						governments and intelligence agencies.
 					</p>
 					<p>
-						To defeat the world's top intelligence agencies, citizens of every country need to raise 
-						their communications security to a level where no-one can ever hope to break the encryption, 
+						To defeat the world's top intelligence agencies, citizens of every country need to raise
+						their communications security to a level where no-one can ever hope to break the encryption,
 						regardless of advances in computing power, cryptanalysis, mathematics or quantum physics.
 					</p>
-										
-					
+
+
 					<h2>Advantages in using Jericho Comms</h2>
 					<p>
-						Since the 
-						<a href="https://en.wikipedia.org/wiki/Global_surveillance_disclosures_(2013-present)">global surveillance disclosures</a> 
-						(Snowden revelations) starting in June 2013, there have been a number of secure messaging 
-						solutions released. This software was one of the earliest counter-offensives to these revelations 
-						with a fully functional prototype release in August 2013. This software has a number of strong 
-						advantages compared to other secure messaging solutions whose designers have not accounted for 
-						or understood the entire breadth and depth of the revelations. Most of them aim for mass market, 
-						average grade security and do not adequately protect their users against the full capabilities 
-						of the <a href="https://en.wikipedia.org/wiki/National_Security_Agency">NSA</a>, 
-						<a href="https://en.wikipedia.org/wiki/Government_Communications_Headquarters">GCHQ</a> and 
+						Since the
+						<a href="https://en.wikipedia.org/wiki/Global_surveillance_disclosures_(2013-present)">global surveillance disclosures</a>
+						(Snowden revelations) starting in June 2013, there have been a number of secure messaging
+						solutions released. This software was one of the earliest counter-offensives to these revelations
+						with a fully functional prototype release in August 2013. This software has a number of strong
+						advantages compared to other secure messaging solutions whose designers have not accounted for
+						or understood the entire breadth and depth of the revelations. Most of them aim for mass market,
+						average grade security and do not adequately protect their users against the full capabilities
+						of the <a href="https://en.wikipedia.org/wiki/National_Security_Agency">NSA</a>,
+						<a href="https://en.wikipedia.org/wiki/Government_Communications_Headquarters">GCHQ</a> and
 						<a href="https://en.wikipedia.org/wiki/Tailored_Access_Operations">TAO</a>.
 					</p>
 					<p>
@@ -89,7 +93,7 @@
 					<ul class="advantagesList">
 						<li><b>Fully open source</b> &ndash; anyone can freely contribute, distribute, download, modify and use the software.</li>
 						<li><b>Simple to understand and use</b> &ndash; anyone can use including journalists and novice computer users.</li>
-						<li><b>Runs on fully open source environments</b> &ndash; no need to trust a closed source operating system.</li>						
+						<li><b>Runs on fully open source environments</b> &ndash; no need to trust a closed source operating system.</li>
 						<li><b>End-to-end encrypted</b> &ndash; no service provider in the middle with ability to read user messages.</li>
 						<li><b>Forward secrecy</b> &ndash; compromise of a message or key does not compromise past or future messages.</li>
 						<li><b>Plausible deniability</b> &ndash; users under duress can provide a key that decrypts to a plausible message.</li>
@@ -100,6 +104,7 @@
 						<li><b>Not wholly reliant on NIST</b> &ndash; standards are combined with algorithms from trusted cryptographers.</li>
 						<li><b>Full design whitepaper</b> &ndash; design is verifiable and auditable for cryptographers and security researchers.</li>
 						<li><b>Critical code is unit tested</b> &ndash; strong confidence that the cryptography and software works correctly.</li>
+						<li><b>Dependencies are vetted</b> &ndash; by avoiding use of package managers (NPM, Composer), libraries are not blindly trusted.</li>
 						<li><b>Code is well written and commented</b> &ndash; easily verifiable for security researchers and other developers.</li>
 						<li><b>Code is written to secure coding guidelines</b> &ndash; coded defensively with knowledge of common pitfalls.</li>
 						<li><b>Code is written in memory safe languages</b> &ndash; limited attack surface for buffer overflows and exploits.</li>
@@ -111,67 +116,71 @@
 						<li><b>Not government or defense agency funded</b> &ndash; author has no questionable affiliations or loyalties.</li>
 						<li><b>Simple user guide and installation instructions</b> &ndash; prevents user error and misconfiguration issues.</li>
 					</ul>
-					
-					
+
+
 					<h2>Design summary</h2>
 					<p>
-						To accomplish the program's design goals, the software uses a 
-						True Random Number Generator (TRNG), the 
-						One-Time Pad (OTP) cipher for message encryption 
-						and a one-time Message Authentication Code (MAC) for 
+						To accomplish the program's design goals, the software uses a
+						True Random Number Generator (TRNG), the
+						One-Time Pad (OTP) cipher for message encryption
+						and a one-time Message Authentication Code (MAC) for
 						message authenticity.
-
-						To provide additional protection of the one-time pad database during the 
-						initial key exchange between users, a 
-						strong password/passphrase and 
-						keyfile can be used. The program will then use a cascade 
-						of password Key Derivation Functions (KDFs), 
-						stream ciphers and MACs to encrypt and authenticate the 
+					</p>
+					<p>
+						To provide additional protection of the one-time pad database during the
+						initial key exchange between users, a
+						strong password/passphrase and
+						keyfile can be used. The program will then use a cascade
+						of password Key Derivation Functions (KDFs),
+						stream ciphers and MACs to encrypt and authenticate the
 						database.
-
-						Other features of the program include a strong MAC for authentication between the clients 
-						and the server, a decoy messaging system to frustrate 
-						traffic analysis and a self 
+					</p>
+					<p>
+						Other features of the program include a strong MAC for authentication between the clients
+						and the server, a decoy messaging system to frustrate
+						traffic analysis and a self
 						destruct mechanism which can wipe all the client databases in case of an emergency.
 					</p>
 					<p>
-						One-time pads are not frequently used outside of government and military networks because 
-						they are somewhat inconvenient to use. This means they have generally only been reserved for 
-						truly important communications such as the 
-						highest-level Allied communications in World War II 
-						or the Washington-Moscow hotline. They are still used by the US government where heavily 
+						One-time pads are not frequently used outside of government and military networks because
+						they are somewhat inconvenient to use. This means they have generally only been reserved for
+						truly important communications such as the
+						highest-level Allied communications in World War II
+						or the Washington-Moscow hotline. They are still used by the US government where heavily
 						armoured trucks transport random numbers to the Pentagon.
-
-						The main problems are that the user needs to collect a lot of truly random data and the 
-						one-time pads must be exchanged through a secure channel, e.g. delivered in person, before 
-						communication can take place. These are not insurmountable problems and the design of this 
-						software solves the main issues which make using one-time pads too impractical. The whole 
-						system is very simple to set up and use, including generating truly random key material, 
+					</p>
+					<p>
+						The main problems are that the user needs to collect a lot of truly random data and the
+						one-time pads must be exchanged through a secure channel, e.g. delivered in person, before
+						communication can take place. These are not insurmountable problems and the design of this
+						software solves the main issues which make using one-time pads too impractical. The whole
+						system is very simple to set up and use, including generating truly random key material,
 						exchanging the one-time pads securely, key management and communicating securely.
-
-						The program itself can be downloaded from the project's website 
-						and the full source code, which is available on GitHub, 
+					</p>
+					<p>
+						The program itself can be downloaded from the project's website
+						and the full source code, which is available on GitHub,
 						is released under the General Public License Version 3.0.
 					</p>
-					
-					
+
+
 					<h2>Enforce your right to privacy</h2>
 					<p>
-						In the wake of the <a href="https://www.eff.org/nsa-spying">NSA spying revelations</a> it is clear that 
-						none of our communications are secure any longer. The <a href="http://en.wikipedia.org/wiki/Nsa">NSA</a> 
-						is actively monitoring, collecting, 
-						<a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">decrypting</a> and 
-						<a href="http://www.wired.com/threatlevel/2012/03/ff_nsadatacenter/">indefinitely storing</a> 
-						the whole world's communications as it transits their networks. Any traffic passing through 
-						any of the <a href="http://en.wikipedia.org/wiki/UKUSA_Agreement">Five Eyes</a> countries (US, UK, Canada, 
-						Australia and NZ) is monitored, collected and stored indefinitely. Any and all of your internet 
-						traffic, phone calls, email, chat messages and anything else are vulnerable to the Five Eyes spy 
+						In the wake of the <a href="https://www.eff.org/nsa-spying">NSA spying revelations</a> it is clear that
+						none of our communications are secure any longer. The <a href="http://en.wikipedia.org/wiki/Nsa">NSA</a>
+						is actively monitoring, collecting,
+						<a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">decrypting</a> and
+						<a href="http://www.wired.com/threatlevel/2012/03/ff_nsadatacenter/">indefinitely storing</a>
+						the whole world's communications as it transits their networks. Any traffic passing through
+						any of the <a href="http://en.wikipedia.org/wiki/UKUSA_Agreement">Five Eyes</a> countries (US, UK, Canada,
+						Australia and NZ) is monitored, collected and stored indefinitely. Any and all of your internet
+						traffic, phone calls, email, chat messages and anything else are vulnerable to the Five Eyes spy
 						agencies. This is no longer conspiracy theory, it is actually happening.
 					</p>
 					<p>
-						This is a massive breach of international human rights and it is an attack on the liberty, freedom and 
-						privacy of every person on the planet. It has huge implications for our democracy, freedom of the press, 
-						attorney-client privilege and freedom of speech. The 
+						This is a massive breach of international human rights and it is an attack on the liberty, freedom and
+						privacy of every person on the planet. It has huge implications for our democracy, freedom of the press,
+						attorney-client privilege and freedom of speech. The
 						<a href="http://www.un.org/en/documents/udhr/">Universal Declaration of Human Rights</a> states clearly:
 					</p>
 					<ul>
@@ -179,168 +188,175 @@
 							<b>Article 3:</b> Everyone has the right to life, <i>liberty</i> and security of person.
 						</li>
 						<li>
-							<b>Article 12:</b> No one shall be subjected to arbitrary interference with his <i>privacy</i>, 
-							family, home or <i>correspondence</i>, nor to attacks upon his honour and reputation. Everyone has the 
+							<b>Article 12:</b> No one shall be subjected to arbitrary interference with his <i>privacy</i>,
+							family, home or <i>correspondence</i>, nor to attacks upon his honour and reputation. Everyone has the
 							right to the protection of the law against such interference or attacks.
 						</li>
 					</ul>
 					<p>
 						It is time to enforce your right to privacy by using encryption the spies can never crack.
 					</p>
-										
-					
+
+
 					<h2>What about other types of encryption?</h2>
 					<p>
-						Most companies and organisations worldwide are using 
-						<a href="https://en.wikipedia.org/wiki/NSA_Suite_B_Cryptography">Suite B Cryptography</a> algorithms 
-						which have been publically published by the <a href="http://en.wikipedia.org/wiki/Nist">NIST</a> for security of 
-						<a href="http://itlaw.wikia.com/wiki/1989_NIST/NSA_Memorandum_of_Understanding">unclassified, non-military government networks</a>. 
-						This has led most other governments, companies and individuals worldwide to adopt these standards thinking 
-						that if they are secure for the government then they must be secure for them too. In 
-						<a href="http://www.nytimes.com/interactive/2013/09/05/us/documents-reveal-nsa-campaign-against-encryption.html?ref=us">this NSA leak</a> 
-						we see privileged, top secret information that the NSA's real plan has <i>actually</i> been to covertly influence 
-						these encryption policies, designs, standards and specifications to make them amenable to advanced 
-						cryptanalytic capabilities of the NSA and exploitable through their signals intelligence collection network 
-						with prior knowledge of the modification. The aim being that everyone in the world believes their systems' 
-						are secure, but in reality, and only known to the NSA, their systems are exploitable. A lot of software 
-						projects and companies <i>still</i> do not understand this and continue to use standards from the NIST. 
-						This gives them and their users a false sense of security that their systems are secure from the NSA. 
+						Most companies and organisations worldwide are using
+						<a href="https://en.wikipedia.org/wiki/NSA_Suite_B_Cryptography">Suite B Cryptography</a> algorithms
+						which have been publically published by the <a href="http://en.wikipedia.org/wiki/Nist">NIST</a> for security of
+						<a href="http://itlaw.wikia.com/wiki/1989_NIST/NSA_Memorandum_of_Understanding">unclassified, non-military government networks</a>.
+						This has led most other governments, companies and individuals worldwide to adopt these standards thinking
+						that if they are secure for the government then they must be secure for them too. In
+						<a href="http://www.nytimes.com/interactive/2013/09/05/us/documents-reveal-nsa-campaign-against-encryption.html?ref=us">this NSA leak</a>
+						we see privileged, top secret information that the NSA's real plan has <i>actually</i> been to covertly influence
+						these encryption policies, designs, standards and specifications to make them amenable to advanced
+						cryptanalytic capabilities of the NSA and exploitable through their signals intelligence collection network
+						with prior knowledge of the modification. The aim being that everyone in the world believes their systems'
+						are secure, but in reality, and only known to the NSA, their systems are exploitable. A lot of software
+						projects and companies <i>still</i> do not understand this and continue to use standards from the NIST.
+						This gives them and their users a false sense of security that their systems are secure from the NSA.
 					</p>
 					<p>
-						There has been evidence of <a href="http://www-cs-faculty.stanford.edu/~eroberts/cs201/projects/ethics-of-surveillance/tech_encryptionbackdoors.html">one</a> 
-						encryption standard that was found to contain an NSA backdoor. It is absolutely naïve to assume 
-						this was the only standard that was compromised in the 25 years that the Memorandum of Understanding between 
-						NIST and NSA has existed. Some reputable cryptographers 
-						<a href="http://safecurves.cr.yp.to">have already found problems</a> with the NIST's elliptic curve standards. 
-						The truth is, any NIST/NSA standard could be subtly compromised in ways unbeknownst to the public cryptography 
-						community. 
-						<a href="https://en.wikipedia.org/wiki/Data_Encryption_Standard#NSA.27s_involvement_in_the_design">In the 1970s</a> 
-						the NSA made tweaks to S-Boxes to help strengthen the DES standard, but no-one at the time understood why. 
-						It took public cryptographers another <i>two decades</i> to discover differential cryptanalysis. It is highly 
-						likely the NSA are still years ahead of the public cryptography community in the area of cryptanalysis. What 
-						we think is secure today may not actually be secure at all when trying to protect communications from  
+						There has been evidence of <a href="http://www-cs-faculty.stanford.edu/~eroberts/cs201/projects/ethics-of-surveillance/tech_encryptionbackdoors.html">one</a>
+						encryption standard that was found to contain an NSA backdoor. It is absolutely naïve to assume
+						this was the only standard that was compromised in the 25 years that the Memorandum of Understanding between
+						NIST and NSA has existed. Some reputable cryptographers
+						<a href="http://safecurves.cr.yp.to">have already found problems</a> with the NIST's elliptic curve standards.
+						The truth is, any NIST/NSA standard could be subtly compromised in ways unbeknownst to the public cryptography
+						community.
+						<a href="https://en.wikipedia.org/wiki/Data_Encryption_Standard#NSA.27s_involvement_in_the_design">In the 1970s</a>
+						the NSA made tweaks to S-Boxes to help strengthen the DES standard, but no-one at the time understood why.
+						It took public cryptographers another <i>two decades</i> to discover differential cryptanalysis. It is highly
+						likely the NSA are still years ahead of the public cryptography community in the area of cryptanalysis. What
+						we think is secure today may not actually be secure at all when trying to protect communications from
 						the NSA.
 					</p>
 					<p>
-						Finally, <u>none</u> of the cryptography algorithms being generally used today 
-						(<a href="http://en.wikipedia.org/wiki/RSA_%28algorithm%29">RSA</a>, 
-						<a href="https://en.wikipedia.org/wiki/Diffie-Hellman_key_exchange">DH</a>, 
-						<a href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard">AES</a>, 
-						<a href="https://en.wikipedia.org/wiki/Sha2">SHA2</a> etc) are actually <i>mathematically proven</i> 
-						to be unbreakable and the ciphers are not 
-						<a href="http://en.wikipedia.org/wiki/Information_theoretic_security">information-theoretically secure</a>. 
-						They are thought to be secure because they involve methods that assume solving a particular problem e.g. 
-						<a href="https://en.wikipedia.org/wiki/Integer_factorization">integer factorization</a> or 
-						<a href="https://en.wikipedia.org/wiki/Discrete_logarithm">discrete logarithms</a> is hard and would 
-						require long periods of time and/or large amounts of computing power to crack the encryption. When people 
-						say that an algorithm like AES is secure, it is usually followed by the reasoning that a lot of smart 
-						people have tried to break AES and have not succeeded. This is the naïve logic that leads the public to 
-						use weak ciphers and allow the NSA/GCHQ to break all of the world's communications. It's easy to forget 
-						that the <a href="http://www.math.uh.edu/~tomforde/Web/Jobs.html">NSA employs</a> the <i>smartest</i> 
-						mathematicians and cryptographers. Also that those smart cryptanalysts are <i>not</i> 
-						obligated to publish their results in cryptanalysis due to non-disclosure agreements with the 
-						NSA as a condition of their employment. Also the yearly 
-						<a href="http://apps.washingtonpost.com/g/page/national/inside-the-2013-us-intelligence-black-budget/420/#document/p16/a117323">multi-billion dollar black budgets</a> 
-						they devote to breaking cryptography including 
-						<a href="http://www.washingtonpost.com/world/national-security/nsa-seeks-to-build-quantum-computer-that-could-crack-most-types-of-encryption/2014/01/02/8fff297e-7195-11e3-8def-a33011492df2_story.html">developing a quantum computer</a>. 
-						Also the standards themselves 
-						<a href="http://www.nytimes.com/interactive/2013/09/05/us/documents-reveal-nsa-campaign-against-encryption.html?ref=us">being deliberately weakened</a> 
+						Finally, <u>none</u> of the cryptography algorithms being generally used today
+						(<a href="http://en.wikipedia.org/wiki/RSA_%28algorithm%29">RSA</a>,
+						<a href="https://en.wikipedia.org/wiki/Diffie-Hellman_key_exchange">DH</a>,
+						<a href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard">AES</a>,
+						<a href="https://en.wikipedia.org/wiki/Sha2">SHA2</a> etc) are actually <i>mathematically proven</i>
+						to be unbreakable and the ciphers are not
+						<a href="http://en.wikipedia.org/wiki/Information_theoretic_security">information-theoretically secure</a>.
+						They are thought to be secure because they involve methods that assume solving a particular problem e.g.
+						<a href="https://en.wikipedia.org/wiki/Integer_factorization">integer factorization</a> or
+						<a href="https://en.wikipedia.org/wiki/Discrete_logarithm">discrete logarithms</a> is hard and would
+						require long periods of time and/or large amounts of computing power to crack the encryption. When people
+						say that an algorithm like AES is secure, it is usually followed by the reasoning that a lot of smart
+						people have tried to break AES and have not succeeded. This is the naïve logic that leads the public to
+						use weak ciphers and allow the NSA/GCHQ to break all of the world's communications. It's easy to forget
+						that the <a href="http://www.math.uh.edu/~tomforde/Web/Jobs.html">NSA employs</a> the <i>smartest</i>
+						mathematicians and cryptographers. Also that those smart cryptanalysts are <i>not</i>
+						obligated to publish their results in cryptanalysis due to non-disclosure agreements with the
+						NSA as a condition of their employment. Also the yearly
+						<a href="http://apps.washingtonpost.com/g/page/national/inside-the-2013-us-intelligence-black-budget/420/#document/p16/a117323">multi-billion dollar black budgets</a>
+						they devote to breaking cryptography including
+						<a href="http://www.washingtonpost.com/world/national-security/nsa-seeks-to-build-quantum-computer-that-could-crack-most-types-of-encryption/2014/01/02/8fff297e-7195-11e3-8def-a33011492df2_story.html">developing a quantum computer</a>.
+						Also the standards themselves
+						<a href="http://www.nytimes.com/interactive/2013/09/05/us/documents-reveal-nsa-campaign-against-encryption.html?ref=us">being deliberately weakened</a>
 						by the NSA.
-						Also that the <a href="http://arstechnica.com/security/2012/06/flame-crypto-breakthrough/">NSA are <i>years</i> ahead in cryptanalysis</a>. 
-						Also that there is <a href="http://www.spiegel.de/international/germany/bild-1010361-793640.html">confirmed proof</a> 
-						that the NSA have in-house (non-public) techniques to crack block ciphers like AES. 
-						With all this in mind, how then is the qualification that the "world's best" public 
-						cryptographers cannot break a particular algorithm <i>any</i> assurance of security against the 
+						Also that the <a href="http://arstechnica.com/security/2012/06/flame-crypto-breakthrough/">NSA are <i>years</i> ahead in cryptanalysis</a>.
+						Also that there is <a href="http://www.spiegel.de/international/germany/bild-1010361-793640.html">confirmed proof</a>
+						that the NSA have in-house (non-public) techniques to crack block ciphers like AES.
+						With all this in mind, how then is the qualification that the "world's best" public
+						cryptographers cannot break a particular algorithm <i>any</i> assurance of security against the
 						NSA?
 					</p>
 					<p>
-						Why would you naïvely trust the US government's encryption standards that <i>they want you to use</i>, 
+						Why would you naïvely trust the US government's encryption standards that <i>they want you to use</i>,
 						especially when they have shown their duplicity and are running a mass surveillance system in secret?
 					</p>
-					
-					
+
+
 					<h2>Project status</h2>
 					<p>
-						Currently the program is fully functional and usable on PCs. However it is still in active 
-						research and development to try and cover off a broad spectrum of security threats such as traffic 
-						fingerprinting and targeted attacks that the NSA may be able to deploy against users of the 
-						program. There are also ideas and functionality in development to make it usable on various 
-						platforms e.g. tablets and mobile devices. It is hoped that users, developers, security 
-						researchers and cryptographers will provide additional ideas and security analysis so the 
+						Currently the program is fully functional and usable on PCs. However it is still in active
+						research and development to try and cover off a broad spectrum of security threats such as traffic
+						fingerprinting and targeted attacks that the NSA may be able to deploy against users of the
+						program. There are also ideas and functionality in development to make it usable on various
+						platforms e.g. tablets and mobile devices. It is hoped that users, developers, security
+						researchers and cryptographers will provide additional ideas and security analysis so the
 						software can be improved and made useful for everyone.
 					</p>
 					<p>
-						We hope that with the concepts and designs used in this software, we can prove that using one-time pads 
-						<i>is</i> actually a viable option outside of classified government and military networks. We hope that 
-						this project enlightens other developers to create other solutions using one-time pads. We have 
-						already seen new one-time pad based software being developed which was inspired by this project. 
-						We hope to discourage users from using the US government's compromised encryption standards that 
-						everyone else is using. We hope to encourage users to use well written, tested, security reviewed 
+						We hope that with the concepts and designs used in this software, we can prove that using one-time pads
+						<i>is</i> actually a viable option outside of classified government and military networks. We hope that
+						this project enlightens other developers to create other solutions using one-time pads. We have
+						already seen new one-time pad based software being developed which was inspired by this project.
+						We hope to discourage users from using the US government's compromised encryption standards that
+						everyone else is using. We hope to encourage users to use well written, tested, security reviewed
 						open source software and hardware.
 					</p>
 					<p>
-						As with any security software you should verify the software yourself and read the code to make sure it 
-						does not contain any problems. With this software you can run it live in the browser and step through the 
-						code line by line with Firebug or any of the tools built into your web browser. As you will see it should 
-						work exactly as described <a href="information.html">in the documentation</a>. A lot of the heavy lifting 
-						e.g. cryptographic hashing has been done in a few trusted external libraries, the outputs of which have 
-						been verified against the specification documents. The aim is not to "roll-your-own" cryptography, but use 
-						algorithms from trusted authors and proven unbreakable ciphers like the one-time pad to bring a secure 
-						solution together. One-time pads are one of the simplest ciphers to implement compared to modern encryption 
-						standards (elliptic curves, RSA, AES or block ciphers), which often requires a lot of knowledge in 
-						mathematics. This means it is less likely to get the implementation wrong, compromising security through 
+						As with any security software you should verify the software yourself and read the code to make sure it
+						does not contain any problems. With this software you can run it live in the browser and step through the
+						code line by line with Firebug or any of the tools built into your web browser. As you will see it should
+						work exactly as described <a href="information.html">in the documentation</a>. A lot of the heavy lifting
+						e.g. cryptographic hashing has been done in a few trusted external libraries, the outputs of which have
+						been verified against the specification documents. The aim is not to "roll-your-own" cryptography, but use
+						algorithms from trusted authors and proven unbreakable ciphers like the one-time pad to bring a secure
+						solution together. One-time pads are one of the simplest ciphers to implement compared to modern encryption
+						standards (elliptic curves, RSA, AES or block ciphers), which often requires a lot of knowledge in
+						mathematics. This means it is less likely to get the implementation wrong, compromising security through
 						timing and other side channel attacks.
 					</p>
-					<p>						
-						Feedback can be discussed <a href="https://github.com/joshua-m-david/jerichoencryption">on Github</a>. 
-						You are free to discuss the program, possible features, installation issues, security issues, encryption, 
-                        privacy and anti-surveillance techniques there. There is also 
-                        <a href="https://www.reddit.com/r/uncrackable">a specific subreddit</a> 
-                        which focusses on information theoretic security research and development (e.g. one-time pads).
-					</p>					
 					<p>
-						A road map of future improvements can be found <a href="https://github.com/joshua-m-david/jerichoencryption">on Github</a>. 
-						For the next phase of the project we will be adding a responsive version for mobile devices. After that we 
-						have some other ideas and we can potentially look into securing file transfers, phone calls and other 
+						Feedback can be discussed <a href="https://github.com/joshua-m-david/jerichoencryption">on Github</a>.
+						You are free to discuss the program, possible features, installation issues, security issues, encryption,
+                        privacy and anti-surveillance techniques there. There is also
+                        <a href="https://www.reddit.com/r/uncrackable">a specific subreddit</a>
+                        which focusses on information theoretic security research and development (e.g. one-time pads).
+					</p>
+					<p>
+						A road map of future improvements can be found <a href="https://github.com/joshua-m-david/jerichoencryption">on Github</a>.
+						For the next phase of the project we will be adding a responsive version for mobile devices. After that we
+						have some other ideas and we can potentially look into securing file transfers, phone calls and other
 						communications.
 					</p>
 					<p>
-                        Developers with skills in other languages (e.g. <a href="https://www.rust-lang.org/">Rust</a>) 
-                        could consider developing secure client alternatives for other platforms using the current design 
+                        Developers with skills in other languages (e.g. <a href="https://www.rust-lang.org/">Rust</a>)
+                        could consider developing secure client alternatives for other platforms using the current design
                         and software as a reference implementation.
 					</p>
-					
-					
+
+
 					<h2>Supporting the project</h2>
 					<p>
-						The whole code base is open source (released under the GPL v3 licence) and free for anyone to 
-						use or modify for their own use. Each download contains the full source code necessary to run 
+						The whole code base (client and server) is open source (released under the GPL v3 licence) and free for anyone to
+						use or modify for their own use. Each download contains the full source code necessary to run
 						the program.
 					</p>
 					<p>
-						Constructive feedback from anyone is welcome and you are free to contribute to the project with ideas, bug reports or source code 
-						<a href="https://github.com/joshua-m-david/jerichoencryption">on GitHub</a>. Source code contributions will be strictly managed 
-						via a <a href="https://help.github.com/articles/creating-a-pull-request">Pull Request</a> from Github and heavily scrutinized 
-						for any security weaknesses. It will be important to remain vigilant against the NSA or other governments who may try to corrupt 
-						the code base, <a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">introduce weaknesses</a> or 
-						attempt to water down the security of the program. Contributions are welcome if you truly believe in the 
+						Constructive feedback from anyone is welcome and you are free to contribute to the project with ideas, bug reports or source code
+						<a href="https://github.com/joshua-m-david/jerichoencryption">on GitHub</a>. Source code contributions will be strictly managed
+						via a <a href="https://help.github.com/articles/creating-a-pull-request">Pull Request</a> from Github and heavily scrutinized
+						for any security weaknesses. It will be important to remain vigilant against the NSA or other governments who may try to corrupt
+						the code base, <a href="http://www.theguardian.com/world/2013/sep/05/nsa-gchq-encryption-codes-security">introduce weaknesses</a> or
+						attempt to water down the security of the program. Contributions are welcome if you truly believe in the
 						project and are not trying to undermine the security of the software.
 					</p>
 					<p>
-						The project is essentially non profit and the program is being developed for free. However we 
-						invite you to make donations via Bitcoin or Litecoin to help with domain renewals, website 
-						hosting costs and future security audits so we can make this program really useful and 
+						The project is essentially non profit and the program is being developed for free. However we
+						invite you to <a href="support.html">make donations</a> to help with domain renewals, website
+						hosting costs and future security audits so we can make this program really useful and
 						trustworthy. The sending addresses are listed at the bottom of the page.
 					</p>
 				</div>
 				<div class="news">
 					<h3>
-						Latest news 
+						Latest news
 						<a class="rssIcon" href="news.rss" title="Add our news feed to your RSS reader for release updates">
 							<img alt="Latest news RSS feed" src="img/rss.png">
 						</a>
 					</h3>
 					<ol>
+						<li>
+							<a href="download.html#release1.5.4">
+								<b>Version 1.5.4 released</b><br>
+								Jericho Comms version 1.5.4 released with compatibility for Ubuntu 18.04 and PHP 7.2, also multiple language support for sending/receiving messages, UI improvements if running low on pads, TRNG output analysis improvements, security hardened server installation script, changed server database to PostgreSQL and converted the client application to an SPA.
+								<div class="date">30 Dec 2019</div>
+							</a>
+						</li>
 						<li>
 							<a href="download.html#release1.5.3">
 								<b>Version 1.5.3 released</b><br>
@@ -351,70 +367,70 @@
 						</li>
 						<li>
 							<a href="download.html#release1.5.2">
-								<b>Version 1.5.2 released</b><br>								
-								Jericho Comms version 1.5.2 released with improved TRNG design and stronger cascaded key 
+								<b>Version 1.5.2 released</b><br>
+								Jericho Comms version 1.5.2 released with improved TRNG design and stronger cascaded key
 								derivation for encrypting the one-time pad database for transport.
 								<div class="date">17 Jun 2016</div>
 							</a>
 						</li>
 						<li>
 							<a href="download.html#release1.5.1">
-								<b>Version 1.5.1 released</b><br>								
-								Jericho Comms version 1.5.1 released with better network failure resiliency, 
-								improvements for mitigating timing attacks on the server API and added a failsafe 
+								<b>Version 1.5.1 released</b><br>
+								Jericho Comms version 1.5.1 released with better network failure resiliency,
+								improvements for mitigating timing attacks on the server API and added a failsafe
 								CSPRNG in case of failure in the HTML5 Web Crypto API.
 								<div class="date">24 Dec 2015</div>
 							</a>
 						</li>
 						<li>
 							<a href="download.html#release1.5">
-								<b>Version 1.5 released</b><br>								
-								Jericho Comms version 1.5 released with cascade encryption and authentication of the 
-								one-time pad database for secure transport, automated decoy message sending at random 
+								<b>Version 1.5 released</b><br>
+								Jericho Comms version 1.5 released with cascade encryption and authentication of the
+								one-time pad database for secure transport, automated decoy message sending at random
 								intervals to frustrate traffic analysis and desktop alerts for incoming chat messages.
 								<div class="date">9 Sep 2015</div>
 							</a>
 						</li>
 						<li>
 							<a href="download.html#release1.41">
-								<b>Version 1.41 released</b><br>								
+								<b>Version 1.41 released</b><br>
 								Jericho Chat version 1.41 released with a small bug fix to the user interface.
 								<div class="date">19 Oct 2014</div>
 							</a>
 						</li>
 						<li>
 							<a href="download.html#release1.4">
-								<b>Version 1.4 released</b><br>								
-								Jericho Chat version 1.4 released with modifed TRNG algorithm after a review, also the 
+								<b>Version 1.4 released</b><br>
+								Jericho Chat version 1.4 released with modifed TRNG algorithm after a review, also the
 								ability to use your own custom random data with the program.
 								<div class="date">5 Oct 2014</div>
 							</a>
 						</li>
 						<li>
 							<a href="download.html#release1.3">
-								<b>Version 1.3 released</b><br>								
-								Jericho Chat version 1.3 released with group chat between 2-7 users, a new secure server protocol 
+								<b>Version 1.3 released</b><br>
+								Jericho Chat version 1.3 released with group chat between 2-7 users, a new secure server protocol
 								and new true random number generator.
 								<div class="date">3 Aug 2014</div>
 							</a>
 						</li>
 						<li>
 							<a href="download.html#release1.2">
-								<b>Version 1.2 released</b><br>								
+								<b>Version 1.2 released</b><br>
 								Version 1.2 released with improved entropy collector and randomness extraction process.
 								<div class="date">1 Nov 2013</div>
 							</a>
 						</li>
 						<li>
 							<a href="download.html#release1.1">
-								<b>Version 1.1 released</b><br>								
+								<b>Version 1.1 released</b><br>
 								Version 1.1 released with a few minor improvements also new server and client installation guides.
 								<div class="date">28 Sep 2013</div>
 							</a>
 						</li>
 						<li>
 							<a href="download.html#release1.0">
-								<b>Jericho Encrypted Chat Launched</b><br>															
+								<b>Jericho Encrypted Chat Launched</b><br>
 								Jericho Encrypted Chat v1.0 with information-theoretically secure encryption is now freely available for everyone.
 								<div class="date">28 Aug 2013</div>
 							</a>
@@ -424,7 +440,7 @@
 				<div class="clear"></div>
 			</div>
 		</div>
-		
+
 		<div class="footer">
 			<ul class="links">
 				<li>
@@ -441,7 +457,7 @@
 				<li>-</li>
 				<li>
 					<a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a>
-				</li>				
+				</li>
 				<li>-</li>
 				<li>
 					<a href="installation.html">How to install</a>
@@ -456,12 +472,10 @@
 				</li>
 			</ul>
 			<div class="donate">
-				Want to support the project?<br>
-				Bitcoin: <code>16h8K8sXCobL5u7wKRPG95F8XAc735P8TM</code><br>
-				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
+				<a href="support.html">Want to support the project?</a>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2017 Joshua M. David
+				Copyright &copy; 2013 - 2019 Joshua M. David
 			</div>
 		</div>
 	</body>

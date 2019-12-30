@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2017  Joshua M. David
+	Copyright (c) 2013-2019  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -13,17 +13,17 @@
 <html lang="en">
 	<head>
 		<title>Jericho Comms&trade; - Server Installation</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
 		<link rel="stylesheet" href="css/global.css" type="text/css">
 		<link rel="stylesheet" href="css/print.css" type="text/css" media="print">
-		
+
 		<!--[if IE]>
 			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<![endif]-->		
+		<![endif]-->
 		<!--[if IE 7]>
 			<link rel="stylesheet" href="css/ie7.css" type="text/css">
 		<![endif]-->
@@ -34,15 +34,15 @@
 	<body>
 		<div class="topSection">
 			<div class="topBanner">
-				<a class="logo" href="index.html" title="Homepage"></a>			
+				<a class="logo" href="index.html" title="Homepage"></a>
 				<div class="mainNav">
-					<ul>						
+					<ul>
 						<li><a href="information.html">Technical design</a></li>
 						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
 						<li><a href="download.html">Download</a></li>
 						<li><a href="installation.html">How to install</a></li>
 						<li><a href="usage.html">How to use</a></li>
-						<li><a href="faq.html">FAQ</a></li>		
+						<li><a href="faq.html">FAQ</a></li>
 					</ul>
 				</div>
 			</div>
@@ -50,20 +50,20 @@
 		<div class="content">
 			<div class="page installPage">
 				<div class="information">
-															
+
 					<h2>Create and install a TLS certificate</h2>
 					<p>
-						You will need a TLS certificate installed on the server. This adds an additional layer of encryption for the whole protocol 
-						but is mainly used to protect the server API credentials (username and password) which let each user connect to the server 
-						to send/receive messages. This will make life more difficult for the average attacker that wants to interfere with your 
-						communications. This guide will setup a self-signed certificate and setup Apache to use it. Each user can manually verify the 
-						certificate's public key manually when they connect to the server the first time to ensure it is the same one that was generated 
-						on the server. The person who generated the certificate can export the certificate file and give it to the other 
-						user when they are exchanging one-time pads and have them load it up into their browser. Or simply copy the SHA1 checksum of 
-						the certificate and give that to the user at the same time in a text file. Then they can accept that certificate into the 
-						browser as trusted if the hash presented matches. Any changes to the certificate after that i.e. 
-						an actual <a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM attack</a> will throw up a warning in both user's 
-						browsers. Self-signed certificates are now more secure than using a Certificate Authority due to 
+						You will need a TLS certificate installed on the server. This adds an additional layer of encryption for the whole protocol
+						but is mainly used to protect the server API credentials (username and password) which let each user connect to the server
+						to send/receive messages. This will make life more difficult for the average attacker that wants to interfere with your
+						communications. This guide will setup a self-signed certificate and setup Apache to use it. Each user can manually verify the
+						certificate's public key manually when they connect to the server the first time to ensure it is the same one that was generated
+						on the server. The person who generated the certificate can export the certificate file and give it to the other
+						user when they are exchanging one-time pads and have them load it up into their browser. Or simply copy the SHA1 checksum of
+						the certificate and give that to the user at the same time in a text file. Then they can accept that certificate into the
+						browser as trusted if the hash presented matches. Any changes to the certificate after that i.e.
+						an actual <a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM attack</a> will throw up a warning in both user's
+						browsers. Self-signed certificates are now more secure than using a Certificate Authority due to
 						<a href="http://security.stackexchange.com/questions/42409/are-self-signed-certificates-actually-more-secure-than-ca-signed-certificates-no">this scenario</a>.
 					</p>
 					<p>
@@ -76,16 +76,16 @@
 						Now create a new self-signed certificate and server key to protect it:<br>
 						<code>openssl req -x509 -nodes -days 730 -newkey rsa:4096 -keyout /etc/apache2/ssl/apache.key -out /etc/apache2/ssl/apache.crt</code><br>
 						<br>
-						This will create a standard <a href="http://en.wikipedia.org/wiki/X509">X.509</a> certificate with validity for 2 years 
-						(730 days), using RSA and a key size of 4096 bits. A 4096 bit key 
-						should be safe from low level attackers until quantum computers go mainstream. The <code>-nodes</code> 
-						flag means we don't encrypt the private key. This is a convenience option which allows you to reboot 
-						Apache or the server without needing to manually enter the private key password every time. Feel free 
+						This will create a standard <a href="http://en.wikipedia.org/wiki/X509">X.509</a> certificate with validity for 2 years
+						(730 days), using RSA and a key size of 4096 bits. A 4096 bit key
+						should be safe from low level attackers until quantum computers go mainstream. The <code>-nodes</code>
+						flag means we don't encrypt the private key. This is a convenience option which allows you to reboot
+						Apache or the server without needing to manually enter the private key password every time. Feel free
 						to remove that flag if you need more security.<br>
 						<br>
 						<img src="img/certificate-creation.png"><br>
 						<br>
-						During the creation process it will ask you for some more information to fill in. Just enter some random information to protect 
+						During the creation process it will ask you for some more information to fill in. Just enter some random information to protect
 						your anonymity. The most important line is "Common Name". Enter your site's IP address here (or domain if you have one).<br>
 						<br>
 						Now the certificate is created. So we need to setup the virtual hosts so it works. Open up the SSL config file:<br>
@@ -93,15 +93,15 @@
 						<br>
 						Change the port on the virtual host to <code>443</code> which is the default SSL port.<br>
 						<br>
-						Add the line <code>ServerName 192.168.1.101</code> with your public server IP below the <code>ServerAdmin webmaster@localhost</code> email. 
+						Add the line <code>ServerName 192.168.1.101</code> with your public server IP below the <code>ServerAdmin webmaster@localhost</code> email.
 						Usually you would add your domain name here if you had one:<br>
 						<br>
-						Scroll down some more until you see the section <code>&lt;Directory /var/www/&gt;</code>. In here change the line <code>AllowOverride None</code> 
-						to <code>AllowOverride All</code>. This allows some extra configuration using <a href="http://en.wikipedia.org/wiki/Htaccess">.htaccess</a> files. 
-						There are some .htaccess files in the program's directories to prevent access to certain directories and stop directory listings as 
+						Scroll down some more until you see the section <code>&lt;Directory /var/www/&gt;</code>. In here change the line <code>AllowOverride None</code>
+						to <code>AllowOverride All</code>. This allows some extra configuration using <a href="http://en.wikipedia.org/wiki/Htaccess">.htaccess</a> files.
+						There are some .htaccess files in the program's directories to prevent access to certain directories and stop directory listings as
 						a security addition.<br>
 						<br>
-						Now scroll to the end of the file and add in the following four lines to the end of your virtual host configuration (before 
+						Now scroll to the end of the file and add in the following four lines to the end of your virtual host configuration (before
 						the closing <code>&lt;/VirtualHost&gt;</code> tag):<br>
 						<br>
 						<code>
@@ -116,88 +116,88 @@
 						<br>
 						Now save and exit out of the file with <code>Ctrl</code> + <code>X</code>, then <code>Y</code> and <code>Enter</code> to confirm.<br>
 						<br>
-						Now enable that Virtual Host with <code>a2ensite default</code> and restart Apache with <code>service apache2 reload</code>. 
-						You may receive an extra warning on the console <i>"NameVirtualHost *:80 has no VirtualHosts"</i>. Don't worry about this 
+						Now enable that Virtual Host with <code>a2ensite default</code> and restart Apache with <code>service apache2 reload</code>.
+						You may receive an extra warning on the console <i>"NameVirtualHost *:80 has no VirtualHosts"</i>. Don't worry about this
 						because you have enabled only port 443 (HTTPS) to work now. Regular HTTP will have no response now.<br>
 						<br>
-						The site should now be visible in the browser by going to the IP address of the server: <code>https://192.168.1.101/</code>. 
-						Remember to swap out the <code>192.168.1.101</code> for the IP address of your server and to use <b>https</b>. Regular HTTP 
+						The site should now be visible in the browser by going to the IP address of the server: <code>https://192.168.1.101/</code>.
+						Remember to swap out the <code>192.168.1.101</code> for the IP address of your server and to use <b>https</b>. Regular HTTP
 						will no longer work which is good because we only want to accept secure connections.<br>
 						<br>
-						If you're using Firefox or Chrome and visited the server IP it will likely throw up a big warning that you're using a 
-						self-signed certificate. Don't worry about this as we will import the certificate you just created as a trusted one in the 
+						If you're using Firefox or Chrome and visited the server IP it will likely throw up a big warning that you're using a
+						self-signed certificate. Don't worry about this as we will import the certificate you just created as a trusted one in the
 						browser.
 					</p>
-					
+
 					<h2 id="setup-secure-profile">Setup a new secure browser profile</h2>
 					<p>
-						In this step we will setup a new secure browser or browser profile purely for secure communications. This is mainly because of 
-						<a href="http://security.stackexchange.com/questions/42409/are-self-signed-certificates-actually-more-secure-than-ca-signed-certificates-no">this scenario</a>. 
-						There's more information on that <a href="https://freedom-to-tinker.com/blog/felten/mozilla-debates-whether-trust-chinese-ca/">here</a>. 
-						It's also handy to have a separate profile so you don't accidentally erase your one-time pads whenever you clear your browser 
-						history. It also keeps this profile and extensions separate so nothing can maliciously copy your one-time pads. An extra layer 
-						of security would be to install the browser/browser profile into an <a href="http://www.truecrypt.org/docs/tutorial">encrypted volume</a>, 
+						In this step we will setup a new secure browser or browser profile purely for secure communications. This is mainly because of
+						<a href="http://security.stackexchange.com/questions/42409/are-self-signed-certificates-actually-more-secure-than-ca-signed-certificates-no">this scenario</a>.
+						There's more information on that <a href="https://freedom-to-tinker.com/blog/felten/mozilla-debates-whether-trust-chinese-ca/">here</a>.
+						It's also handy to have a separate profile so you don't accidentally erase your one-time pads whenever you clear your browser
+						history. It also keeps this profile and extensions separate so nothing can maliciously copy your one-time pads. An extra layer
+						of security would be to install the browser/browser profile into an <a href="http://www.truecrypt.org/docs/tutorial">encrypted volume</a>,
 						so it's encrypted on the storage device as well.<br>
 						<br>
-						First download the latest version of Firefox Portable <a href="http://portableapps.com/apps/internet/firefox_portable">from here</a> 
-						and install it. If you want to chat from multiple computers, install it onto a USB drive. There exists portable 
-						versions of <a href="http://portableapps.com/apps/internet/google_chrome_portable">Chrome</a> as well but this guide will just 
+						First download the latest version of Firefox Portable <a href="http://portableapps.com/apps/internet/firefox_portable">from here</a>
+						and install it. If you want to chat from multiple computers, install it onto a USB drive. There exists portable
+						versions of <a href="http://portableapps.com/apps/internet/google_chrome_portable">Chrome</a> as well but this guide will just
 						cover Firefox for now.
 					</p>
 					<h3>Alternate method</h3>
 					<p>
-						If you just want to use your existing Firefox install you can follow 
-						<a href="http://kb.mozillazine.org/Profile_Manager">these instructions</a> to set up a new profile. 
-						The <a href="http://kb.mozillazine.org/Opening_a_new_instance_of_Firefox_with_another_profile">-no-remote</a> option 
+						If you just want to use your existing Firefox install you can follow
+						<a href="http://kb.mozillazine.org/Profile_Manager">these instructions</a> to set up a new profile.
+						The <a href="http://kb.mozillazine.org/Opening_a_new_instance_of_Firefox_with_another_profile">-no-remote</a> option
 						may come in handy when you want to run multiple separate Firefox profiles at the same time.
 					</p>
-					
+
 					<h2 id="securing-new-profile">Securing your new Firefox profile</h2>
-					This section follows some steps to lock down your browser profile so it's as secure as possible and will only be used for chatting 
+					This section follows some steps to lock down your browser profile so it's as secure as possible and will only be used for chatting
 					with this program.<br>
 					<br>
 					<h3>Disabling Certificate Authorities</h3>
 					<p>
-						Load up your new Firefox installation/profile. Click the <b>Firefox</b> button in the top left corner then go to 
+						Load up your new Firefox installation/profile. Click the <b>Firefox</b> button in the top left corner then go to
 						<b>Options</b> -> <b>Options</b>.<br>
 						<br>
 						<img src="img/firefox-options.png"><br>
 						<br>
-						Then click the 
+						Then click the
 						<b>Advanced</b> button on the top right, then the <b>Certificates</b> tab. Click <b>View Certificates</b>.<br>
 						<br>
 						<img src="img/firefox-advanced-options.png"><br>
-						<br>						
-						On the <b>Servers</b>, <b>Authorities</b> and <b>Others</b> tabs you will need to delete <u>all</u> of the pre-authenticated 
-						certificates installed in your browser. Due to 
-						<a href="http://security.stackexchange.com/questions/42409/are-self-signed-certificates-actually-more-secure-than-ca-signed-certificates-no">this situation</a> 
-						you can't trust any of them and the NSA can <a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM attack</a> your connection 
+						<br>
+						On the <b>Servers</b>, <b>Authorities</b> and <b>Others</b> tabs you will need to delete <u>all</u> of the pre-authenticated
+						certificates installed in your browser. Due to
+						<a href="http://security.stackexchange.com/questions/42409/are-self-signed-certificates-actually-more-secure-than-ca-signed-certificates-no">this situation</a>
+						you can't trust any of them and the NSA can <a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM attack</a> your connection
 						due to compromised Certificate Authority root certificates.<br>
 						<br>
-						To do this, click on the <b>Authorities</b> tab, now click on each item and click <b>Delete or Distrust...</b> and click <b>OK</b> 
-						on the confirmation prompt. You can select them all at once by clicking on each item, holding down the <b>Ctrl</b> key, then 
+						To do this, click on the <b>Authorities</b> tab, now click on each item and click <b>Delete or Distrust...</b> and click <b>OK</b>
+						on the confirmation prompt. You can select them all at once by clicking on each item, holding down the <b>Ctrl</b> key, then
 						clicking on the each item, then finally deleting all of them at once.<br>
 						<br>
 						<img src="img/delete-authorities.png"><br>
 						<br>
-						On the <b>Servers</b> and <b>Others</b> tabs, click on each item and click <b>Delete</b> and click <b>OK</b> on the confirmation 
+						On the <b>Servers</b> and <b>Others</b> tabs, click on each item and click <b>Delete</b> and click <b>OK</b> on the confirmation
 						prompt.<br>
 						<br>
 						<img src="img/delete-servers.png"><br>
 						<br>
-						You should have a nice clean list now. When you close that dialog, the objects may reappear in the list but they will no longer 
-						be trusted. You can verify this by going to <code>https://google.com</code> and it will show a warning in the browser. This is 
-						a good thing as it means you will <b>only</b> trust the certificate that you created on the server not a fake certificate that 
-						has been signed by one of the compromised Certificate Authority's root certificates which would trick your browser into 
+						You should have a nice clean list now. When you close that dialog, the objects may reappear in the list but they will no longer
+						be trusted. You can verify this by going to <code>https://google.com</code> and it will show a warning in the browser. This is
+						a good thing as it means you will <b>only</b> trust the certificate that you created on the server not a fake certificate that
+						has been signed by one of the compromised Certificate Authority's root certificates which would trick your browser into
 						trusting the certificate on your behalf.<br>
 						<br>
-						Remember that you will use this browser/browser profile for only your secure communications with this program. Use a regular browser 
-						install for all other non-secure communications. There's not much you can do about other communications until the internet 
-						community as a whole comes up with a way to secure internet communications again. The fundamental chain of trust in Certificate 
-						Authorities is broken when governments can force a CA to handover their root certificates under secret court order. 
-						<a href="http://en.wikipedia.org/wiki/DNSSEC">DNSSEC</a> will also be broken if the DNS root is in control of the United States. 
-						There is an excellent talk on the topic <a href="https://www.youtube.com/watch?v=pDmj_xe7EIQ">here</a>. As Bruce Schneier has said 
-						"<a href="http://www.theguardian.com/commentisfree/2013/sep/05/government-betrayed-internet-nsa-spying">the US has proved to be an unethical steward of the internet</a>". 
+						Remember that you will use this browser/browser profile for only your secure communications with this program. Use a regular browser
+						install for all other non-secure communications. There's not much you can do about other communications until the internet
+						community as a whole comes up with a way to secure internet communications again. The fundamental chain of trust in Certificate
+						Authorities is broken when governments can force a CA to handover their root certificates under secret court order.
+						<a href="http://en.wikipedia.org/wiki/DNSSEC">DNSSEC</a> will also be broken if the DNS root is in control of the United States.
+						There is an excellent talk on the topic <a href="https://www.youtube.com/watch?v=pDmj_xe7EIQ">here</a>. As Bruce Schneier has said
+						"<a href="http://www.theguardian.com/commentisfree/2013/sep/05/government-betrayed-internet-nsa-spying">the US has proved to be an unethical steward of the internet</a>".
 						No single country should ever be in control of the internet otherwise there is the potential for them to abuse that position of power.
 					</p>
 					<h3>Enabling TLS 1.2 in the browser</h3>
@@ -216,30 +216,30 @@
 						<br>
 						<img src="img/firefox-plugins.jpg"><br>
 						<br>
-						Restart the browser for all the changes to take effect. That covers the basic steps to secure the browser profile. If you have 
-						set this up on a portable Firefox install, be sure to copy that install for the other user onto a USB drive so they don't need 
+						Restart the browser for all the changes to take effect. That covers the basic steps to secure the browser profile. If you have
+						set this up on a portable Firefox install, be sure to copy that install for the other user onto a USB drive so they don't need
 						to repeat the process.
 					</p>
-					
+
 					<h2 id="exporting-certificate">Exporting the self-signed certificate</h2>
 					<p>
 						Visit your server IP in your browser e.g. <code>https://192.168.1.101</code>. The warning for Firefox will look like something like this:<br>
 						<br>
 						<img src="img/firefox-certificate-warning.png"><br>
 						<br>
-						You can verify the certificate is the same one you generated on the server by typing the following commands into the command line 
+						You can verify the certificate is the same one you generated on the server by typing the following commands into the command line
 						on your server:<br>
 						<code>openssl x509 -in /etc/apache2/ssl/apache.crt -outform DER -out cert.cer</code><br>
 						<code>sha1sum cert.cer</code><br>
-						<code>md5sum cert.cer</code><br>						
+						<code>md5sum cert.cer</code><br>
 						<br>
-						This will create a copy of the certificate in <a href="https://en.wikipedia.org/wiki/Distinguished_Encoding_Rules#DER_encoding">DER</a> 
-						format. Then it will output an MD5 hash and SHA1 hash of the entire certificate on the console. You will compare these values to the 
+						This will create a copy of the certificate in <a href="https://en.wikipedia.org/wiki/Distinguished_Encoding_Rules#DER_encoding">DER</a>
+						format. Then it will output an MD5 hash and SHA1 hash of the entire certificate on the console. You will compare these values to the
 						"fingerprint" values of the certificate displayed by your web browser.<br>
 						<br>
 						<img src="img/server-signature.png"><br>
 						<br>
-						Go back to your browser window and expand the <b>I understand the Risks</b> section on the warning page. Click <b>Add Exception...</b> 
+						Go back to your browser window and expand the <b>I understand the Risks</b> section on the warning page. Click <b>Add Exception...</b>
 						which will pop up a dialog. Under the <b>Certificate Status</b> section, click the <b>View...</b> button.<br>
 						<br>
 						<img src="img/add-security-exception.png"><br>
@@ -248,51 +248,51 @@
 						<br>
 						<img src="img/browser-certificate-viewer.png"><br>
 						<br>
-						Down the bottom under <b>Fingerprints</b> you should see groups of hexadecimal symbols. These should match the SHA1 and MD5 hashes 
-						of the certificate on the server. On the browser the symbols may be grouped with colons and in uppercase, this is just a method of 
-						formatting the data, for example, <code>67:4D:31</code> is exactly the same signature as <code>674d31</code>. Compare the SHA1 
+						Down the bottom under <b>Fingerprints</b> you should see groups of hexadecimal symbols. These should match the SHA1 and MD5 hashes
+						of the certificate on the server. On the browser the symbols may be grouped with colons and in uppercase, this is just a method of
+						formatting the data, for example, <code>67:4D:31</code> is exactly the same signature as <code>674d31</code>. Compare the SHA1
 						signature to that of the server's and also compare the MD5 hash as well.<br>
-						<br>		
-						If the values are a match, then you can export this certificate to your computer. Click the <b>Details</b> tab then click the 
+						<br>
+						If the values are a match, then you can export this certificate to your computer. Click the <b>Details</b> tab then click the
 						<b>Export...</b> button. This will pop up a Save to File dialog. Choose file type <b>X.509 Certificate</b> with extension <b>.crt</b>
 						which should be the default. Save it somewhere on your hard drive.<br>
 						<br>
-						Click the <b>Close</b> button to close the Certificate Viewer dialog, and click <b>Cancel</b> on the the Security Exception 
-						dialog. Be sure to give the other user a copy of the certificate file when you give them the one-time pads. This means they 
+						Click the <b>Close</b> button to close the Certificate Viewer dialog, and click <b>Cancel</b> on the the Security Exception
+						dialog. Be sure to give the other user a copy of the certificate file when you give them the one-time pads. This means they
 						don't need to do this manual validation.
 					</p>
 					<h3>Alternate method</h3>
 					<p>
-						You can also manually copy the certificate file from the server using the SSH connection. This is preferable if there's no match 
-						between the hashes which would mean you are already being attacked with a 
-						<a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM attack</a> which has replaced the public certificate with 
+						You can also manually copy the certificate file from the server using the SSH connection. This is preferable if there's no match
+						between the hashes which would mean you are already being attacked with a
+						<a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM attack</a> which has replaced the public certificate with
 						that of the attackers.<br>
 						<br>
-						To export the certificate from the server manually to your computer using SSH you can use 
-						<a href="http://winscp.net/eng/download.php">WinSCP</a> if you are using Windows. For Linux you can use the command line for this 
+						To export the certificate from the server manually to your computer using SSH you can use
+						<a href="http://winscp.net/eng/download.php">WinSCP</a> if you are using Windows. For Linux you can use the command line for this
 						with SCP which will copy the certificate file off the server into your current working directory, for example:<br>
 						<code>scp username@ipaddress:/etc/apache2/ssl/apache.crt .</code>
 					</p>
 					<h3>Notes</h3>
 					<p>
-						Be sure to give this certificate file to the other user so they can skip this manual verification step and go straight to 
-						importing the certificate into the browser. If you have created a portable Firefox installation, you can load the certificate 
-						file into that, then copy the installation directory to a USB drive and the other user will have everything they need. This is 
-						recommended if the other user is not skilled with computers. Alternatively copy down the MD5 and SHA1 certificate checksums so 
+						Be sure to give this certificate file to the other user so they can skip this manual verification step and go straight to
+						importing the certificate into the browser. If you have created a portable Firefox installation, you can load the certificate
+						file into that, then copy the installation directory to a USB drive and the other user will have everything they need. This is
+						recommended if the other user is not skilled with computers. Alternatively copy down the MD5 and SHA1 certificate checksums so
 						they can manually verify them with the certificate received by their browser.
 					</p>
-					
+
 					<h2 id="importing-certificate">Importing the certificate into the browser</h2>
 					<p>
 						These instructions will cover importing the self-signed certificate into the browser for Firefox and Chrome.
-					</p>					
+					</p>
 					<h3>Firefox</h3>
 					<p>
 						For Firefox, click the <b>Firefox</b> button in the top left corner then go to <b>Options</b> -> <b>Options</b>.<br>
 						<br>
 						<img src="img/firefox-options.png"><br>
 						<br>
-						In the Options dialog, click the <b>Advanced</b> button on the top right, then the <b>Certificates</b> tab. Click 
+						In the Options dialog, click the <b>Advanced</b> button on the top right, then the <b>Certificates</b> tab. Click
 						<b>View Certificates</b>.<br>
 						<br>
 						<img src="img/firefox-advanced-options.png"><br>
@@ -316,13 +316,13 @@
 						<br>
 						<img src="img/secure-connection.png"><br>
 						<br>
-						If you click on the <b>padlock</b> icon in the address bar, then click the <b>More Information...</b> button it will show you 
+						If you click on the <b>padlock</b> icon in the address bar, then click the <b>More Information...</b> button it will show you
 						the details for the certificate. At the bottom of the dialog it show which symmetric cipher keys are being used for the connection.<br>
 						<br>
 						<img src="img/symmetric-key-details.png"><br>
 						<br>
-						Which symmetric cipher is used and the key strength gets used decided in the Diffie-Hellman key exchange between the browser 
-						and the server. In this example it is using the 
+						Which symmetric cipher is used and the key strength gets used decided in the Diffie-Hellman key exchange between the browser
+						and the server. In this example it is using the
 						<a href="https://en.wikipedia.org/wiki/Camellia_%28cipher%29">Camellia</a> block cipher with 256 bit keys.
 					</p>
 					<h3>Chrome</h3>
@@ -330,7 +330,7 @@
 						<li>Open <b>Chrome settings</b>, scroll to the bottom, and click <b>Show advanced settings...</b></li>
 						<li>Under <b>HTTPS/SSL</b>, click <b>Manage certificates...</b></li>
 						<li>
-							Click the <b>Trusted Root Certification Authorities</b> tab, then click the <b>Import...</b> button. This opens the 
+							Click the <b>Trusted Root Certification Authorities</b> tab, then click the <b>Import...</b> button. This opens the
 							Certificate Import Wizard. Click <b>Next</b> to get to the File to Import screen.
 						</li>
 						<li>Click <b>Browse...</b> and select the certificate file you saved earlier, then click <b>Next</b>.</li>
@@ -346,10 +346,10 @@
 						<br>
 						<img src="img/chrome-secured.png">
 					</p>
-					
+
 					<h2 id="firewall-setup">Setting up the firewall</h2>
 					<p>
-						Now we're going to configure a basic firewall so only SSH and HTTPS traffic will be allowed through to the web server. 
+						Now we're going to configure a basic firewall so only SSH and HTTPS traffic will be allowed through to the web server.
 						This is a simple way to setup an iptables firewall configuration using <a href="https://help.ubuntu.com/community/UFW">UFW</a>.<br>
 						<br>
 						First set the default configuration to <b>deny</b> everything:<br>
@@ -370,27 +370,27 @@
 						<br>
 						<img src="img/firewall-enabled.png" alt="Firewall enabled"><br>
 						<br>
-						Now the firewall is enabled and logging. There are potentially other advanced configuration options you could use to harden 
-						up the firewall and server more. You will need to do some more of your own research for that. The current configuration will 
-						allow any IP to connect on those ports. If the IP address of you and your chat partner can change (ie dynamically assigned 
+						Now the firewall is enabled and logging. There are potentially other advanced configuration options you could use to harden
+						up the firewall and server more. You will need to do some more of your own research for that. The current configuration will
+						allow any IP to connect on those ports. If the IP address of you and your chat partner can change (ie dynamically assigned
 						from your ISP) then this is fine.<br>
 						<br>
-						If both chat partners have static IP addresses you could restrict access to only those IPs through the 
-						firewall. If both chat partners are in the same country you could only allow IPs from that country to connect. If both chat 
-						partners are outside the US and in different countries you could potentially 
-						<a href="http://www.ipaddresslocation.org/ip_ranges/get_ranges.php">firewall off</a> the entire US from connecting to your 
-						server. That would help mitigate the NSA and their <a href="https://en.wikipedia.org/wiki/Tailored_Access_Operations">Tailored Access Operations</a> 
+						If both chat partners have static IP addresses you could restrict access to only those IPs through the
+						firewall. If both chat partners are in the same country you could only allow IPs from that country to connect. If both chat
+						partners are outside the US and in different countries you could potentially
+						<a href="http://www.ipaddresslocation.org/ip_ranges/get_ranges.php">firewall off</a> the entire US from connecting to your
+						server. That would help mitigate the NSA and their <a href="https://en.wikipedia.org/wiki/Tailored_Access_Operations">Tailored Access Operations</a>
 						team from finding your server easily.<br>
 						<br>
-						Other options include changing the default SSH port to a random one. While not increasing the security it will cut down  
-						the number of entries in the log file from basic attackers scanning for servers with the default SSH ports open. If you get log 
+						Other options include changing the default SSH port to a random one. While not increasing the security it will cut down
+						the number of entries in the log file from basic attackers scanning for servers with the default SSH ports open. If you get log
 						attempts after changing the port then it would more likely indicate a targeted attack.
-					</p>					
+					</p>
 				</div>
 				<div class="clear"></div>
 			</div>
 		</div>
-		
+
 		<div class="footer">
 			<ul class="links">
 				<li>
@@ -407,7 +407,7 @@
 				<li>-</li>
 				<li>
 					<a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a>
-				</li>				
+				</li>
 				<li>-</li>
 				<li>
 					<a href="installation.html">How to install</a>
@@ -422,12 +422,10 @@
 				</li>
 			</ul>
 			<div class="donate">
-				Want to support the project?<br>
-				Bitcoin: <code>16h8K8sXCobL5u7wKRPG95F8XAc735P8TM</code><br>
-				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
+				<a href="support.html">Want to support the project?</a>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2017 Joshua M. David
+				Copyright &copy; 2013 - 2019 Joshua M. David
 			</div>
 		</div>
 	</body>

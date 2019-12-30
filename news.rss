@@ -5,11 +5,17 @@
     <link>http://joshua-m-david.github.io/jerichoencryption/</link>
     <description>Site and software updates for Jericho Comms</description>
     <language>en-gb</language>
-    <copyright>2013 - 2017 Joshua M. David</copyright>
+    <copyright>2013 - 2019 Joshua M. David</copyright>
+	<item>
+      <title>Version 1.5.4 released</title>
+      <pubDate>Sat 30 Dec 2019 12:00:00 GMT</pubDate>
+	  <link>http://joshua-m-david.github.io/jerichoencryption/download.html#release1.5.4</link>
+      <description><![CDATA[Jericho Comms version 1.5.4 released with compatibility for Ubuntu 18.04 and PHP 7.2, also multiple language support for sending/receiving messages, UI improvements if running low on pads, TRNG output analysis improvements, security hardened server installation script, changed server database to PostgreSQL and converted the client application to an SPA.]]></description>
+    </item>
 	<item>
       <title>Version 1.5.3 released</title>
       <pubDate>Sun 23 Apr 2017 19:00:00 GMT</pubDate>
-	  <link>http://joshua-m-david.github.io/jerichoencryption/download.html#release1.5.2</link>
+	  <link>http://joshua-m-david.github.io/jerichoencryption/download.html#release1.5.3</link>
       <description><![CDATA[Jericho Comms version 1.5.3 released with compatibility for Ubuntu 16.04 and PHP 7, also a simple automated script to install and configure the server software without any manual work.]]></description>
     </item>
 	<item>

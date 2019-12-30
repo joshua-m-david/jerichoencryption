@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2017  Joshua M. David
+	Copyright (c) 2013-2019  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -13,17 +13,17 @@
 <html lang="en">
 	<head>
 		<title>Jericho Comms&trade; - Download</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">		
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="description" content="Jericho Comms is a secure group chat program using one-time pads.">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		
+
 		<link rel="stylesheet" href="css/reset.css" type="text/css">
 		<link rel="stylesheet" href="css/global.css" type="text/css">
 		<link rel="stylesheet" href="css/print.css" type="text/css" media="print">
-		
+
 		<!--[if IE]>
 			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<![endif]-->		
+		<![endif]-->
 		<!--[if IE 7]>
 			<link rel="stylesheet" href="css/ie7.css" type="text/css">
 		<![endif]-->
@@ -34,15 +34,15 @@
 	<body>
 		<div class="topSection">
 			<div class="topBanner">
-				<a class="logo" href="index.html" title="Homepage"></a>			
+				<a class="logo" href="index.html" title="Homepage"></a>
 				<div class="mainNav">
-					<ul>						
+					<ul>
 						<li><a href="information.html">Technical design</a></li>
 						<li><a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a></li>
 						<li><a href="download.html">Download</a></li>
 						<li><a href="installation.html">How to install</a></li>
 						<li><a href="usage.html">How to use</a></li>
-						<li><a href="faq.html">FAQ</a></li>				
+						<li><a href="faq.html">FAQ</a></li>
 					</ul>
 				</div>
 			</div>
@@ -52,71 +52,62 @@
 				<div class="information">
 					<h1>Download</h1>
 					<p>
-						The following links have been provided to download the software. All downloads contain the source code, 
-						which is all that is needed to run the program locally in the browser. In the event of this site 
-						being taken down you can still find the files by searching on 
-						<a href="https://freenetproject.org/">Freenet</a>. For now, software questions, feedback and 
-						suggestions can be made 
+						The following links have been provided to download the software. All downloads contain the source code,
+						which is all that is needed to run the program locally in the browser. In the event of this site
+						being taken down you can still find the files by searching on
+						<a href="https://freenetproject.org/">Freenet</a>. For now, software questions, feedback and
+						suggestions can be made
 						<a href="https://github.com/joshua-m-david/jerichoencryption/issues">on GitHub</a>.
 					</p>
 					<h3 class="important">Important:</h3>
 					<p>
-						It is absolutely critical to verify the downloaded file. This is to prevent anyone from intercepting 
-						the file download and serving you a modified version of the source code with weakened/broken 
-						encryption. To prevent against accidental file corruption you can verify the downloaded file's 
-						integrity using the file hashes. You should also verify the authenticity of the file by verifying 
-						the <a href="https://www.gnupg.org">GnuPG</a> signature. 
-						<a href="installation-server.html#verify-signature">See our guide</a> for 
-						how to verify the signature.						
+						It is absolutely critical to verify the downloaded file. This is to prevent anyone from intercepting
+						the file download and serving you a modified version of the source code with weakened/broken
+						encryption. To prevent against accidental file corruption you can verify the downloaded file's
+						integrity using the file hashes. You should also verify the authenticity of the file by verifying
+						the <a href="https://www.gnupg.org">GnuPG</a> signature.
+						<a href="installation-server.html#verify-signature">See our guide</a> for
+						how to verify the signature.
 					<p>
-						While this signature is not secure against quantum computers, it 
-						will be secure until there is one that can break 4096 bit RSA. Since the NSA are not likely to 
-						publish a press release when they have a functioning quantum computer and tip everyone off to 
-						their new capability, it is <i>always</i> worth it read and verify the source code yourself 
-						before using it. If you cannot do that yourself, ask someone that you trust and who is knowledgeable 
-						in web programming and cryptography. It can also help to download it from multiple sources and 
-						compare the hash digests. If you have reason to believe you may be under close surveillance, you 
-						can try avoiding targeted attacks by downloading it via <a href="https://www.torproject.org">Tor</a>, 
+						While this signature is not secure against quantum computers, it
+						will be secure until there is one that can break 4096 bit RSA. Since the NSA are not likely to
+						publish a press release when they have a functioning quantum computer and tip everyone off to
+						their new capability, it is <i>always</i> worth it read and verify the source code yourself
+						before using it. If you cannot do that yourself, ask someone that you trust and who is knowledgeable
+						in web programming and cryptography. It can also help to download it from multiple sources and
+						compare the hash digests. If you have reason to believe you may be under close surveillance, you
+						can try avoiding targeted attacks by downloading it via <a href="https://www.torproject.org">Tor</a>,
 						<a href="https://geti2p.net">I2P</a> or <a href="https://freenetproject.org">Freenet</a>.
 					</p>
-					<p>						
-						For stronger verification of our public key you should also confirm the public key is a match on 
+					<p>
+						For stronger verification of our public key you should also confirm the public key is a match on
 						<a href="https://onename.com/joshua_m_david">onename.com/joshua_m_david</a> and
 						<a href="https://keybase.io/joshua_m_david">keybase.io/joshua_m_david</a>. Both of these identies are published
-						on the Bitcoin blockchain. Do not rely on what you see on the websites alone which is only 
-						protected by TLS and can be easily altered in real-time by the Five Eyes agencies. Make 
+						on the Bitcoin blockchain. Do not rely on what you see on the websites alone which is only
+						protected by TLS and can be easily altered in real-time by the Five Eyes agencies. Make
 						sure you download the client apps to verify the public keys on the blockchain.
 					</p>
 					<p>
-						Please also see and verify our <a href="faq.html#warrant-canary">warrant canary</a> for each 
+						Please also see and verify our <a href="faq.html#warrant-canary">warrant canary</a> for each
 						release using the same GnuPG signature listed below.
 					</p>
 					<br>
-					
-					
-					<h2 id="release1.5.3">Jericho Comms version 1.5.3 downloads (for Firefox or Chromium based browsers)</h2>
+
+
+					<h2 id="release1.5.4">Jericho Comms version 1.5.4 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
-                        This update adds compatibility for Ubuntu Server 16.04.x and PHP 7.x. Also a simple automated script to install and
-						configure the server software was added to limit the amount of manual configuration required.
+						This is an interim update to mainly add compatibility for Ubuntu Server 18.04.x LTS and PHP 7.2.x
+						which is the packaged version on this version of Ubuntu.
 					</p>
-					<p>
-                        This release may also be the last version before version 2.0 where the program will need to be 
-						converted to a single page application so that the one-time pads can be encrypted at all times 
-						in client side storage and decrypted only as needed. This will be a considerable amount of work 
-						so there may be a longer delay leading up to the 2.0 version.
-					</p>
-					<p>
-						The server changes are compatible with the previous version 1.5.2.
-					</p>
-					<b>Changes in v1.5.3</b><br>
+					<b>Changes in v1.5.4</b><br>
 					<ul class="changeLog">
-						<li>Improved the <a href="installation-server.html">server installation instructions</a>.</li>
-						<li>Added PHP 7 compatibility in the Skein-515 PHP extension.</li>
-						<li>Added PHP 7 compatibility in the server API code and unit tests.</li>
-						<li>
-							Added a server side bash script to automate the installation of dependencies, setup the server API, perform
-							the basic configuration, generate a server key and run the unit tests.
-						</li>
+						<li>Added UTF-8 international language support for sending/receiving messages including correct counting of bytes when sending messages. In the past few years a right wing / authoritarian shift has been observed in a lot of countries so now is the time to fix this limitation and allow any languages to be used with the program.</li>
+						<li>When users in a group are running low on one-time pads, the UI will now show their number in orange to let other users know they are low and that they should switch to a second set of pads (or exchange more pads soon). The UI will also go red if they completely run out of pads indicating that the user cannot send any more messages.</li>
+						<li>Improved the TRNG extraction process to show if there are stuck/repeating pixels in the same location in both images.</li>
+						<li>Improved the TRNG to provide a final recommendation on whether the final output is worth using or not for one-time pads.</li>
+						<li>Improved server installation script to use the latest Long Term Support version of Ubuntu, harden the Apache configuration, use <a href="https://ntpsec.org/">NTPsec</a> instead of regular NTP, reduce metadata leakage about the installation, automate the addition of other groups on the server and other general improvements.</li>
+						<li>Changed the server code to use PostgreSQL instead of MySQL as it is a proper open source product and more reliable database.</li>
+						<li>Converted the app to a single page application and reorganised the code, which will be useful handling different chats and decrypting data later on.</li>
 					</ul>
 					<table class="downloadLinks">
 						<tr>
@@ -125,19 +116,14 @@
 							<th>Signature</th>
 						</tr>
 						<tr>
-							<td>Freenet</td>
-							<td><a href="http://127.0.0.1:8888/SSK@3PVSpZ55DmJ2c1KVk62~PNdbRLj9X3lzBU0Z1QkS7cM,gyWljK~C5ErCr3zC1gCHAFDMAtUjQS1oZ5EfBMRAD7o,AQACAAE/jericho-comms-v1.5.3.tar.gz">jericho-comms-v1.5.3.tar.gz</a></td>
-							<td><a href="http://127.0.0.1:8888/SSK@agOr2~0cxP47-Sye4lglApeG8z7mId4cfzYxTZEG9Yw,ECZaZWvqu54OhoEH78VW2z9Ben13jmXBbRQy9EgChkk,AQACAAE/jericho-comms-v1.5.3.tar.gz.asc">jericho-comms-v1.5.3.tar.gz.asc</a></td>
-						</tr>
-						<tr>
 							<td>Mega</td>
-							<td><a href="https://mega.nz/#!cZ8UHSqS!S3LJ6ziokVBWfIi92otiWbsnv-THDsOJSua3-_3tDBY">jericho-comms-v1.5.3.tar.gz</a></td>
-							<td><a href="https://mega.nz/#!ccMSGKTY!RQYeR7XrwV4jqnT4B8q8GDZydcnzS6VVp0Emvji2zDw">jericho-comms-v1.5.3.tar.gz.asc</a></td>
+							<td><a href="https://mega.nz/#F!oFMxGS4J!muunqM1oyjo7yM6NewUlOw">jericho-comms-v1.5.4.tar.xz</a></td>
+							<td><a href="https://mega.nz/#F!oFMxGS4J!muunqM1oyjo7yM6NewUlOw">jericho-comms-v1.5.4.tar.xz.asc</a></td>
 						</tr>
 						<tr>
 							<td>This site</td>
-							<td><a href="files/jericho-comms-v1.5.3.tar.gz">jericho-comms-v1.5.3.tar.gz</a></td>
-							<td><a href="files/jericho-comms-v1.5.3.tar.gz.asc">jericho-comms-v1.5.3.tar.gz.asc</a></td>
+							<td><a href="files/jericho-comms-v1.5.4.tar.xz">jericho-comms-v1.5.4.tar.xz</a></td>
+							<td><a href="files/jericho-comms-v1.5.4.tar.xz.asc">jericho-comms-v1.5.4.tar.xz.asc</a></td>
 						</tr>
 					</table>
 					<table class="downloadLinks">
@@ -147,19 +133,14 @@
 							<th>Signature</th>
 						</tr>
 						<tr>
-							<td>Freenet</td>
-							<td><a href="http://127.0.0.1:8888/SSK@4L7XsrLvjY-pouhASUrHqC~AjgXE6hETkuG~OZVHUXc,js0lCzgw8ROVXwnjGaN9MfhkJl7bzVLQ~hXp14lHEUU,AQACAAE/jericho-comms-v1.5.3.pdf">jericho-comms-v1.5.3.pdf</a></td>
-							<td><a href="http://127.0.0.1:8888/SSK@amkrta9M-CpOsX2dQCEnMduXpHIU7T04Yo3FsmgVeOE,eJicSRQFoa2LSJH03aQfXdU8dp7xReGgMvXV777ZKzI,AQACAAE/jericho-comms-v1.5.3.pdf.asc">jericho-comms-v1.5.3.pdf.asc</a></td>
-						</tr>
-						<tr>
 							<td>Mega</td>
-							<td><a href="https://mega.nz/#!kRlWlaoQ!58HiIxIVLhlcyHgSUDyZchNol23nTv64Ek6S_llovi4">jericho-comms-v1.5.3.pdf</a></td>
-							<td><a href="https://mega.nz/#!kIcB3Q4B!7tzo5rlQVuFYvhBHPobeNgy5lZdzc3iQubLYYAxDm_s">jericho-comms-v1.5.3.pdf.asc</a></td>
+							<td><a href="https://mega.nz/#F!oFMxGS4J!muunqM1oyjo7yM6NewUlOw">jericho-comms-v1.5.4.pdf</a></td>
+							<td><a href="https://mega.nz/#F!oFMxGS4J!muunqM1oyjo7yM6NewUlOw">jericho-comms-v1.5.4.pdf.asc</a></td>
 						</tr>
 						<tr>
 							<td>This site</td>
-							<td><a href="files/jericho-comms-v1.5.3.pdf">jericho-comms-v1.5.3.pdf</a></td>
-							<td><a href="files/jericho-comms-v1.5.3.pdf.asc">jericho-comms-v1.5.3.pdf.asc</a></td>
+							<td><a href="files/jericho-comms-v1.5.4.pdf">jericho-comms-v1.5.4.pdf</a></td>
+							<td><a href="files/jericho-comms-v1.5.4.pdf.asc">jericho-comms-v1.5.4.pdf.asc</a></td>
 						</tr>
 					</table>
 					<table class="downloadLinks">
@@ -170,7 +151,7 @@
 							<td>Key server</td>
 							<td>x-hkp://pool.sks-keyservers.net</td>
 						</tr>
-						<tr>							
+						<tr>
 							<td>Key ID</td>
 							<td>DC768471C467B6D0</td>
 						</tr>
@@ -197,40 +178,52 @@
 						<tr>
 							<td>Current warrant canary GPG signature</td>
 							<td><a href="warrant-canary.txt.asc">warrant-canary.txt.asc</a></td>
-						</tr>						
+						</tr>
 					</table>
 					<table class="downloadLinks">
 						<tr>
-							<th colspan="2">File hashes of jericho-comms-v1.5.3.tar.gz for integrity verification</th>
+							<th colspan="2">File hash of jericho-comms-v1.5.4.tar.xz for integrity verification</th>
 						</tr>
 						<tr>
 							<td>SHA2-384 digest</td>
-							<td class="hash">e40af6c0703acab33fa79ac52f16630059c879d764b76703c30bbb2e521f34753cfc9c4f651149c143bb267be17f14ad</td>
-						</tr>
-						<tr>
-							<td>SHA2-512 digest</td>
-							<td class="hash">07ddf93bcc5bb325236247fa74582c23fbf84c1796525d2cb232501ab7647a11ab610b17ab36c1abf4e2e7950d7796aa64aa5dfe03bede739d71a18b9a91ccd9</td>
-						</tr>
-						<tr>
-							<td>Whirlpool digest</td>
-							<td class="hash">f27dfb956ad0184e39c0449f65e290b47350bbfff0376bf4aef972eb8a049d512c9c01ee9b58e7c6f1107e8c1fcf150c8c4c3460db2198cad28cf8f63c404d53</td>
+							<td class="hash">ddb904257ca106110d8cdbc8bbcbbb2a54d14266c3c4e39dc5a4c7dd6850d58309645e17cb6b382a5f0c21b27ea72c54</td>
 						</tr>
 					</table>
+
+
+					<h2 id="release1.5.3">Jericho Comms version 1.5.3 downloads (for Firefox or Chromium based browsers)</h2>
+					<p>
+                        This update adds compatibility for Ubuntu Server 16.04.x and PHP 7.0.x. Also a simple automated script to install and
+						configure the server software was added to limit the amount of manual configuration required.
+					</p>
+					<p>
+						The server changes are compatible with the previous version 1.5.2.
+					</p>
+					<b>Changes in v1.5.3</b><br>
+					<ul class="changeLog">
+						<li>Improved the <a href="installation-server.html">server installation instructions</a>.</li>
+						<li>Added PHP 7 compatibility in the Skein-512 PHP extension.</li>
+						<li>Added PHP 7 compatibility in the server API code and unit tests.</li>
+						<li>
+							Added a server side bash script to automate the installation of dependencies, setup the server API, perform
+							the basic configuration, generate a server key and run the unit tests.
+						</li>
+					</ul>
 
 
 					<h2 id="release1.5.2">Jericho Comms version 1.5.2 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
-                        This update mainly improves the information-theoretic security of the TRNG and the security of 
+                        This update mainly improves the information-theoretic security of the TRNG and the security of
 						the one-time pad database for transport.
 					</p>
 					<p>
-                        This release may also be the last version before version 2.0 where the program will need to be 
-						converted to a single page application so that the one-time pads can be encrypted at all times 
-						in client side storage and decrypted only as needed. This will be a considerable amount of work 
+                        This release may also be the last version before version 2.0 where the program will need to be
+						converted to a single page application so that the one-time pads can be encrypted at all times
+						in client side storage and decrypted only as needed. This will be a considerable amount of work
 						so there may be a longer delay leading up to the 2.0 version.
 					</p>
 					<p>
-						Some of the changes will make it backwards incompatible with version 1.5.1. You will need to 
+						Some of the changes will make it backwards incompatible with version 1.5.1. You will need to
 						replace the client code and generate new one-time pads.
 					</p>
 					<b>Changes in v1.5.2</b><br>
@@ -243,20 +236,20 @@
 						<li>Ability to combine exported random data from multiple photos together into a single large file.</li>
 						<li>Improved the whitepaper and usage instructions.</li>
 					</ul>
-					
-					
+
+
 					<h2 id="release1.5.1">Jericho Comms version 1.5.1 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
-						This update mainly makes the client and server more resilent to attack and recovers automatically 
+						This update mainly makes the client and server more resilent to attack and recovers automatically
 						from network dropouts or disconnections.
                     </p>
 					<p>
-						Some of the changes will make it backwards incompatible with version 1.5. You will need to 
-						replace the client code, the server code and generate new one-time pads. If you want to keep 
-						using your existing one-time pads that you have already shared with your chat partners 
-						and it is too much hassle to create and share new ones, then keep using version 1.5 for now. 
-						Please make a request on the <a href="https://github.com/joshua-m-david/jerichoencryption/issues">GitHub issue list</a> 
-						and we will prioritise creation of a small script to convert the one-time pads from 1.5 format 
+						Some of the changes will make it backwards incompatible with version 1.5. You will need to
+						replace the client code, the server code and generate new one-time pads. If you want to keep
+						using your existing one-time pads that you have already shared with your chat partners
+						and it is too much hassle to create and share new ones, then keep using version 1.5 for now.
+						Please make a request on the <a href="https://github.com/joshua-m-david/jerichoencryption/issues">GitHub issue list</a>
+						and we will prioritise creation of a small script to convert the one-time pads from 1.5 format
 						to 1.5.1.
 					</p>
 					<b>Changes in v1.5.1</b><br>
@@ -268,28 +261,28 @@
 						<li>Made the main website responsive so it is more easily viewable on mobile devices.</li>
 						<li>Added a list of references to the white paper and <a href="information.html">technical documentation</a> and improved the quality in general.</li>
 					</ul>
-					
-					
+
+
 					<h2 id="release1.5">Jericho Comms version 1.5 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
-						There are quite a few large changes in this release which is why it has taken almost a year 
-                        to develop. With the uncertainty surrounding 
+						There are quite a few large changes in this release which is why it has taken almost a year
+                        to develop. With the uncertainty surrounding
                         <a href="https://en.wikipedia.org/wiki/TrueCrypt#End_of_life_announcement">the future of Truecrypt</a>,
                         which was most likely a triggered <a href="https://en.wikipedia.org/wiki/Warrant_canary">warrant canary</a>
-						or <a href="https://en.m.wikipedia.org/wiki/Dead_man%27s_switch#Software">dead-mans switch</a>, 
-						the main change in this release was the cascade encryption and authentication 
-						of the one-time pad database to protect the one-time pads with a strong passphrase when they are 
-						transported. You should of course continue to use version 7.1a of TrueCrypt if you need the 
-						plausible deniability features that a hidden volume offers. TrueCrypt version 7.1a has had a 
+						or <a href="https://en.m.wikipedia.org/wiki/Dead_man%27s_switch#Software">dead-mans switch</a>,
+						the main change in this release was the cascade encryption and authentication
+						of the one-time pad database to protect the one-time pads with a strong passphrase when they are
+						transported. You should of course continue to use version 7.1a of TrueCrypt if you need the
+						plausible deniability features that a hidden volume offers. TrueCrypt version 7.1a has had a
 						reasonably clean bill of health <a href="http://istruecryptauditedyet.com/">after an audit of the code</a>.
                     </p>
 					<p>
-						Many of the changes will make it backwards incompatible with version 1.41. You will need to 
-						replace the client code, the server code and generate new one-time pads. If you want to keep 
-						using your existing one-time pads that you have already shared with your chat partners 
-						and it is too much hassle to create and share new ones, then keep using version 1.41 for now. 
-						Please make a request on the <a href="https://github.com/joshua-m-david/jerichoencryption/issues">GitHub issue list</a> 
-						and we will prioritise creation of a small script to convert the one-time pads from 1.41 format 
+						Many of the changes will make it backwards incompatible with version 1.41. You will need to
+						replace the client code, the server code and generate new one-time pads. If you want to keep
+						using your existing one-time pads that you have already shared with your chat partners
+						and it is too much hassle to create and share new ones, then keep using version 1.41 for now.
+						Please make a request on the <a href="https://github.com/joshua-m-david/jerichoencryption/issues">GitHub issue list</a>
+						and we will prioritise creation of a small script to convert the one-time pads from 1.41 format
 						to 1.5.
 					</p>
 					<b>Changes in v1.5</b><br>
@@ -299,10 +292,10 @@
 						<li>Added functionality for clients to automatically <a href="information.html#frustrating-traffic-analysis">send decoy messages</a> at random intervals to hinder traffic analysis.</li>
 						<li>The auto nuke command is now sent covertly via the secure and authenticated message channel rather than as a separate API request.</li>
 						<li>Added desktop alert notifications for incoming chat messages so users can see they have a new message when the browser is not in focus.</li>
-						<li>Base64 encoded the server protocol data packets in preparation of the v2.0 release which will encrypt all meta data.</li>						
+						<li>Base64 encoded the server protocol data packets in preparation of the v2.0 release which will encrypt all meta data.</li>
 					</ul>
-										
-					
+
+
 					<h2 id="release1.41">Jericho Chat version 1.41 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
 						This version fixed a small bug in the user interface. This version is compatible with v1.4 and v1.3.
@@ -311,12 +304,12 @@
 					<ul class="changeLog">
 						<li>Modified the Export dialog on the TRNG pages to make the Test Connection functionality work properly again.</li>
 					</ul>
-										
-					
+
+
 					<h2 id="release1.4">Jericho Chat version 1.4 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
-						This version modified the main TRNG algorithm after a review of the design and also added ability for 
-						you to upload your own random data into the program, which is then split into multiple one-time pads 
+						This version modified the main TRNG algorithm after a review of the design and also added ability for
+						you to upload your own random data into the program, which is then split into multiple one-time pads
 						for use with the program.
 					</p>
 					<b>Changes in v1.4</b><br>
@@ -324,31 +317,31 @@
 						<li>Modified <a href="information.html#trng">TRNG</a> algorithm.</li>
 						<li>Added ability to <a href="information.html#trng-custom">load custom random data</a> into the program.</li>
 					</ul>
-										
-					
+
+
 					<h2 id="release1.3">Jericho Chat version 1.3 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
-						This version has had a major overhaul of the code. Many of the changes will make it backwards incompatible 
-						with version 1.2. You will need to replace the client code, the server code and generate new one-time pads. 
-						If you want to keep using your existing one-time pads that you have already shared with your chat partners 
-						and it is too much hassle to create and share new ones, then keep using version 1.2 for now. Please 
-						make a request on the <a href="https://github.com/joshua-m-david/jerichoencryption/issues">GitHub issue list</a> 
+						This version has had a major overhaul of the code. Many of the changes will make it backwards incompatible
+						with version 1.2. You will need to replace the client code, the server code and generate new one-time pads.
+						If you want to keep using your existing one-time pads that you have already shared with your chat partners
+						and it is too much hassle to create and share new ones, then keep using version 1.2 for now. Please
+						make a request on the <a href="https://github.com/joshua-m-david/jerichoencryption/issues">GitHub issue list</a>
 						and we will prioritise creation of a small script to convert the one-time pads from 1.2 format to 1.3.
 					</p>
 					<b>Changes in v1.3</b><br>
 					<ul class="changeLog">
 						<li><a href="information.html#trng">New TRNG</a> using shot noise from a digital camera.</li>
 						<li>Added group chat functionality, users can now communicate in a group of 2 - 7 people.</li>
-						<li>Added a secure <a href="information.html#server-authentication-protocol">server API authentication protocol</a> to remove reliance on TLS for connecting with the API.</li>						
+						<li>Added a secure <a href="information.html#server-authentication-protocol">server API authentication protocol</a> to remove reliance on TLS for connecting with the API.</li>
 						<li>Removed HMAC in message authentication and the <a href="information.html#message-authentication">MAC now uses Skein or Keccak</a> in a secure construction.</li>
 						<li>Reduced reliance on any NSA algorithms by removing SHA2 for message authentication.</li>
 						<li><a href="information.html#message-encoding">Increased maximum message size</a> to 115 bytes/characters.</li>
 						<li>Shortened the message length field and timestamp field.</li>
 					</ul>
-					
-					
+
+
 					<h2 id="release1.2">Jericho Chat version 1.2 downloads (for Firefox or Chromium based browsers)</h2>
-					<b>Changes in v1.2</b><br>					
+					<b>Changes in v1.2</b><br>
 					<ul class="changeLog">
 						<li>Renamed the program to Jericho Chat to simplify the name.</li>
 						<li>Source code is now licenced under GPL version 3.</li>
@@ -358,26 +351,26 @@
 						<li>Added more test result outputs to give confidence in the randomness tests.</li>
 						<li>Hyperlinks in sent chat messages are now converted to clickable links just like received messages.</li>
 					</ul>
-					
-					
+
+
 					<h2 id="release1.1">Jericho Encrypted Chat version 1.1 downloads (for Firefox or Chromium based browsers)</h2>
 					<b>Changes in v1.1</b><br>
 					<ul class="changeLog">
 						<li>Server and client installation guide completed.</li>
 						<li>Words now wrap properly within message display.</li>
-						<li>URL links sent in chat are shortened and turned into clickable hyperlinks for the other user.</li>						
+						<li>URL links sent in chat are shortened and turned into clickable hyperlinks for the other user.</li>
 						<li>Long words that are too wide for the window can now be viewed with scroll bar.</li>
-						<li>Added validation checking for message length, MAC and timestamp to be within acceptable ranges.</li>						
+						<li>Added validation checking for message length, MAC and timestamp to be within acceptable ranges.</li>
 					</ul>
-					
-					
+
+
 					<h2 id="release1.0">Jericho Encrypted Chat version 1.0 downloads (for Firefox or Chromium based browsers)</h2>
 					<b>Initial release</b><br>
 				</div>
 				<div class="clear"></div>
 			</div>
 		</div>
-		
+
 		<div class="footer">
 			<ul class="links">
 				<li>
@@ -394,7 +387,7 @@
 				<li>-</li>
 				<li>
 					<a href="https://github.com/joshua-m-david/jerichoencryption">Source code</a>
-				</li>				
+				</li>
 				<li>-</li>
 				<li>
 					<a href="installation.html">How to install</a>
@@ -406,15 +399,13 @@
 				<li>-</li>
 				<li>
 					<a href="faq.html">FAQ</a>
-				</li>		
+				</li>
 			</ul>
 			<div class="donate">
-				Want to support the project?<br>
-				Bitcoin: <code>16h8K8sXCobL5u7wKRPG95F8XAc735P8TM</code><br>
-				Litecoin: <code>Ld2X3Uyknq87GktF38q2ZQopyevRwC4hji</code>
+				<a href="support.html">Want to support the project?</a>
 			</div>
 			<div class="copyright">
-				Copyright &copy; 2013 - 2017 Joshua M. David
+				Copyright &copy; 2013 - 2019 Joshua M. David
 			</div>
 		</div>
 	</body>
