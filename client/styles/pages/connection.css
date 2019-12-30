@@ -1,0 +1,57 @@
+/**
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2019  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	TEST SERVER CONNECTION PAGE
+/* --------------------------------------- */
+
+.connectionPage body {
+	background-color: #eee;
+	display: flex;
+	flex-direction: column;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 100%;
+	margin: 0 auto;
+	max-width: 540px;
+	padding: 5px;
+}
+
+.connectionPage .information {
+	text-align: left;
+}
+
+.connectionPage {
+	font-size: 12px;
+	text-align: center;
+}
+
+.connectionPage .connectionDetails {
+	display: inline-block;
+	margin: 7px auto 0 auto;
+}
+
+.connectionPage .connectionDetails label {
+	display: block;
+	margin: 7px 0 3px 0;
+	font-weight: bold;
+}
+
+.connectionPage input[type="text"] {
+	width: 300px;
+}
+
+/* Action buttons at bottom of page */
+.connectionPage .buttons {
+	margin-top: 21px;
+	text-align: center;
+}

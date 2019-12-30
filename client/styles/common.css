@@ -1,0 +1,253 @@
+/**
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2019  Joshua M. David
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	COMMON STYLES
+/* --------------------------------------- */
+
+/* Make sure the height of the page uses up the full screen height */
+html, body {
+	height: 100%;
+	margin: 0;
+}
+
+/* Hide all pages by default */
+.content {
+	display: none;
+}
+
+/* If the class e.g. homePage is added to the html element, then the hidden state is overriden and the content is shown */
+.homePage .homePageContent,
+.createPage .createPageContent,
+.trngPage .trngPageContent,
+.trngCustomPage .trngCustomPageContent,
+.trngCapturePage .trngCapturePageContent,
+.trngConcatCombinerPage .trngConcatCombinerPageContent,
+.trngXorCombinerPage .trngXorCombinerPageContent,
+.importPage .importPageContent,
+.chatPage .chatPageContent,
+.connectionPage .connectionPageContent,
+.backupPage .backupPageContent,
+.nukePage .nukePageContent {
+	display: block;
+}
+
+
+/* Hide jQueryUI based dialogs by default */
+.exportPadsSettings,
+.uploadSettings {
+	display: none;
+}
+
+
+/* Button styles */
+.blueButton {
+	background-image: linear-gradient(to top, rgba(44, 160, 202, 1) 0%, rgba(62, 184, 229, 1) 100%);
+	border-radius: 7px;
+	border: solid 1px #186f8f;
+	box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+	color: #fff;
+	cursor: pointer;
+	display: inline-block;
+	font-family: sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 12px;
+	position: relative;
+	text-decoration: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+.blueButton:active {
+	background-image: linear-gradient(to top, rgba(62, 184, 229, 1) 0%, rgba(44, 160, 202, 1) 100%);
+	top: 1px;
+}
+.blueButton:disabled,
+.blueButton.isDisabled {
+	opacity: 0.5;
+}
+.blueButton:disabled:active,
+.blueButton.isDisabled:active {
+	background-image: linear-gradient(to top, rgba(44, 160, 202, 1) 0%, rgba(62, 184, 229, 1) 100%);
+	top: 0;
+}
+/* Extra disabled state for the label on the TRNG image page */
+.blueButton.disabled,
+.blueButton.isDisabled {
+	cursor: default;
+	background-image: linear-gradient(to top, rgba(44, 160, 202, 1) 0%, rgba(62, 184, 229, 1) 100%);
+	opacity: 0.5;
+	top: 0;
+}
+
+
+/* Text and select box entry styles so is consistent on Firefox and Chrome */
+input[type="text"], input[type="password"], select {
+	border: 1px solid #c0c0c0;
+}
+input[type="text"], input[type="password"] {
+	padding-left: 5px;
+}
+input[type="text"]:focus, input[type="password"]:focus {
+	outline: 0 none;
+}
+
+/* White background for consistency across browsers */
+select {
+	background-color: #fff;
+}
+
+/* Page navigation at top */
+.pageNavigation {
+	display: table;
+}
+.pageNavigation .navItem {
+	display: table-cell;
+	vertical-align: top;
+}
+.pageNavigation .navItem.statusMessage {
+	padding-left: 10px;
+	text-align: left;
+	vertical-align: middle;
+}
+
+/* Normal page heading */
+h2 {
+	color: #3399cc;
+	font-size: 14px;
+	font-weight: bold;
+	margin: 5px 0 3px;
+	text-align: center;
+}
+
+
+/* Error and success status messages */
+.statusMessage {
+	display: none;
+}
+.statusMessage .statusMessageText {
+	font-size: 12px;
+    font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+}
+.statusMessage.processing .icon {
+	background-image: url('../images/loading.gif');
+	background-repeat: no-repeat;
+	display: inline-block;
+	height: 16px;
+	vertical-align: middle;
+	width: 13px;
+}
+.isError {
+	color: #ff0000;
+}
+.isWarning {
+	color: #ff9100;
+}
+.isSuccess {
+	color: #008000;
+}
+.isProcessing {
+	color: #2da2cc;
+}
+
+
+/* Override default jQueryUI styles */
+.ui-widget-overlay {
+	background: #000;
+	opacity: .30;
+}
+.ui-widget-content a.blueButton {
+	color: #fff;
+}
+.ui-widget {
+	font-size: 13px;
+}
+
+
+/* Randomness tests */
+.overallTestResultsText {
+	font-size: 14px;
+	font-weight: bold;
+}
+.overallTestResultsText .isSuccess {
+	color: #008000;
+}
+.overallTestResultsText .isFailed {
+	color: #ff0000;
+}
+.randomnessTestResults {
+	background: #fdfdfd;
+	border-radius: 7px;
+	display: inline-block;
+	border: 1px solid #3399cc;
+	font-size: 14px;
+	margin-top: 20px;
+	padding: 20px;
+}
+.randomnessTestResults:last-child {
+	margin-bottom: 20px;
+}
+.randomnessTestResults .randomnessTestResultsHeader {
+	padding: 5px 0 20px 0;
+}
+.randomnessTestResults .randomnessTestResultsHeader span {
+	font-weight: bold;
+}
+.randomnessTestResults .isTestSuccess {
+	color: #008000;
+}
+.randomnessTestResults .isTestFailure {
+	color: #ff0000;
+}
+.randomnessTestResultsTable th {
+	color: #3399cc;
+	padding-bottom: 10px;
+	text-align: left;
+	white-space: nowrap;
+}
+.randomnessTestResultsTable th,
+.randomnessTestResultsTable td {
+	padding-right: 20px;
+	padding-top: 5px;
+}
+.randomnessTestResultsTable td:first-of-type {
+	white-space: nowrap;
+}
+.randomnessTestResultsTable th:nth-child(3),
+.randomnessTestResultsTable th:nth-child(4),
+.randomnessTestResultsTable td:nth-child(3),
+.randomnessTestResultsTable td:nth-child(4) {
+	text-align: center;
+}
+.randomnessTestResultsTable td:nth-child(3) {
+	font-weight: bold;
+	white-space: nowrap;
+}
+.randomnessTestResultsTable .indented {
+	padding-left: 20px;
+}
+.randomnessTestResultsTable .testGrouping td,
+.randomnessTestResultsTable .subTestGrouping td {
+	border-top: 1px solid #ddd;
+	padding-bottom: 10px;
+	padding-top: 10px;
+}
+.randomnessTestResultsTable .testGrouping td:first-child {
+	font-weight: bold;
+}
+.randomnessTestResultsTable .smallSummaryText {
+	font-size: 0.9em;
+	font-weight: normal;
+}

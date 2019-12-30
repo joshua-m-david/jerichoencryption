@@ -1,7 +1,7 @@
 <?php
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2017  Joshua M. David
+ * Copyright (c) 2013-2019  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,17 +12,24 @@
  */
 
 
-/* --------------------------------------- */
-/* File to bootstrap the PHP application
-/* --------------------------------------- */
+/**
+ * This file bootstraps the PHP API, receives requests from the client app, validates the
+ * authentication on them and responds accordingly to the client with an authenticated response
+ */
+
+
+use Jericho\Database as Database;
+use Jericho\Api as Api;
+
 
 // Include code for libraries
-require_once 'lib/database.php';
-require_once 'lib/query.php';
-require_once 'lib/api.php';
+require_once 'library/database.php';
+require_once 'library/query.php';
+require_once 'library/api.php';
 
 // Load the config into memory
 require_once 'config/config.php';
+
 
 // Initialise the database and API objects
 $db = new Database($databaseConfig);

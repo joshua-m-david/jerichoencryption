@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--
+	Jericho Comms - Information-theoretically secure communications
+	Copyright (c) 2013-2019  Joshua M. David
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation in version 3 of the License.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see [http://www.gnu.org/licenses/].
+-->
+<html>
+	<head>
+		<title>Code Tests - Jericho Comms</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+		<link rel="icon" type="image/png" sizes="16x16" href="../images/favicon.png">
+		<link rel="icon" type="image/png" sizes="196x196" href="../images/touch-icon-196x196.png">
+
+		<link rel="stylesheet" href="../styles/libraries/qunit.css">
+
+		<!-- Load source code to test -->
+		<script src="../scripts/libraries/jquery.js"></script>
+
+		<script src="../scripts/libraries/cryptojs-core.js"></script>
+		<script src="../scripts/libraries/cryptojs-x64core.js"></script>
+		<script src="../scripts/libraries/cryptojs-enc-base64.js"></script>
+		<script src="../scripts/libraries/cryptojs-hmac.js"></script>
+		<script src="../scripts/libraries/cryptojs-sha3.js"></script>
+		<script src="../scripts/libraries/cryptojs-cipher-core.js"></script>
+		<script src="../scripts/libraries/cryptojs-mode-ctr.js"></script>
+		<script src="../scripts/libraries/cryptojs-pad-nopadding.js"></script>
+		<script src="../scripts/libraries/cryptojs-aes.js"></script>
+		<script src="../scripts/libraries/cryptojs-pbkdf2.js"></script>
+		<script src="../scripts/libraries/skein.js"></script>
+		<script src="../scripts/libraries/salsa20.js"></script>
+
+		<script src="../scripts/database.js"></script>
+		<script src="../scripts/database-crypto.js"></script>
+		<script src="../scripts/query.js"></script>
+		<script src="../scripts/common.js"></script>
+		<script src="../scripts/export.js"></script>
+		<script src="../scripts/pages/chat.js"></script>
+		<script src="../scripts/notification.js"></script>
+		<script src="../scripts/pages/trng.js"></script>
+		<script src="../scripts/workers/trng-worker.js"></script>
+		<script src="../scripts/tests-trng.js"></script>
+
+		<!-- Load test suite code -->
+		<script src="../scripts/libraries/qunit.js"></script>
+		<script src="../scripts/tests.js"></script>
+	</head>
+<body>
+	<div id="qunit"></div>
+	<div id="qunit-fixture"></div>
+	<div id="testencoding"></div>
+
+	<!-- Copy of template in index.html for testing the convertLinksAndEscapeForXSS function -->
+	<a class="messageLink isUrlTemplate" target="_blank" href=""></a>
+</body>
+</html>

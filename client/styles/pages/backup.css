@@ -1,0 +1,69 @@
+/**
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2019  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	BACKUP/RESTORE PADS PAGE
+/* --------------------------------------- */
+
+.backupPage body {
+	background-color: #eee;
+	display: flex;
+	flex-direction: column;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 100%;
+	margin: 0 auto;
+	max-width: 540px;
+	padding: 5px;
+}
+
+.backupPage .instructions {
+	margin: 14px 0 21px 0;
+}
+.backupPage .exportMethods {
+	margin: 7px auto;
+}
+.backupPage .exportMethods label {
+	padding: 0 3px;
+}
+.backupPage .buttons {
+	margin-top: 21px;
+	text-align: center;
+}
+
+/* Restore pads */
+.backupPage .restorePads h2 {
+	margin-top: 30px;
+	margin-bottom: 15px;
+}
+.backupPage .restorePads {
+	font-size: 12px;
+}
+.backupPage .restorePads .information {
+	margin-bottom: 10px
+}
+.backupPage .restorePads .method {
+	margin: 21px 0;
+	text-align: center;
+}
+.backupPage .restorePads .methodTitle {
+	font-weight: bold;
+	margin: 3px 0;
+}
+.backupPage .restorePads .padDataClipboardInput {
+	margin: 3px 0;
+	width: 200px;
+}
+.backupPage .restorePads .chatButton {
+	display: none;
+	text-align: center;
+}

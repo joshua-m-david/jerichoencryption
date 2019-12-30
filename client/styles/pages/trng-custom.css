@@ -1,0 +1,189 @@
+/**
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2019  Joshua M. David
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	TRNG CUSTOM PAGE
+/* --------------------------------------- */
+
+.trngCustomPage body {
+	background-color: #eee;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 100%;
+}
+
+/* Fixed header section */
+.trngCustomPage .header {
+	display: block;
+	left: 0;
+	padding: 5px 0 20px 0;
+	right: 0;
+	top: -1px;
+	z-index: 1;
+}
+
+/* Buttons along the top */
+.trngCustomPage .pageNavigation {
+	width: 100%;
+}
+.trngCustomPage .pageNavigation .blueButton {
+	text-align: center;
+}
+.trngCustomPage .pageNavigation td:first-child {
+	vertical-align: top;
+}
+.trngCustomPage .pageNavigation td:first-child .blueButton {
+	width: 77px;
+}
+.trngCustomPage .pageNavigation td:nth-child(2) {
+	padding-left: 5px;
+	vertical-align: top;
+}
+.trngCustomPage .pageNavigation td:nth-child(2) .blueButton {
+	width: 91px;
+}
+.trngCustomPage .pageNavigation td:nth-child(3) {
+	text-align: center;
+	width: 100%;
+}
+.trngCustomPage .pageNavigation td:nth-child(4) {
+	vertical-align: top;
+}
+.trngCustomPage .pageNavigation td:nth-child(4) .blueButton {
+	width: 97px;
+}
+.trngCustomPage .pageNavigation td:last-child {
+	padding-left: 5px;
+	text-align: center;
+}
+.trngCustomPage .pageNavigation td:last-child .blueButton {
+	width: 170px;
+}
+.trngCustomPage .pageNavigation .fileUploadInstructions {
+	font-size: 12px;
+	font-weight: bold;
+}
+.trngCustomPage .pageNavigation .fileInfo {
+	text-align: center;
+	margin-top: 15px;
+}
+.trngCustomPage .pageNavigation .fileInfo b {
+	padding-right: 7px;
+}
+.trngCustomPage .programTitle {
+	margin: 14px 0;
+}
+.trngCustomPage .pageNavigation .blueButton.bottomButton {
+	margin-top: 5px;
+}
+.trngCustomPage .testingButtons {
+	opacity: 0.5;
+}
+.trngCustomPage .testingButtons.active {
+	opacity: 1;
+}
+.trngCustomPage .statusMessageText {
+	position: relative;
+	left: -52px;
+}
+
+/* Upload settings dialog */
+.uploadSettingsDialog {
+	display: none;
+	text-align: center;
+}
+.uploadSettingsDialog label {
+	display: block;
+	font-weight: bold;
+	margin: 20px 0 5px 0;
+	text-align: center;
+}
+.uploadSettingsDialog .fileUploadType option::first-letter {
+	text-transform: capitalize;
+}
+.uploadSettingsDialog.ui-dialog-content {
+	background: #eee;
+}
+
+/* Hide extra long filename for uploaded image */
+.trngCustomPage .fileLoader {
+	display: none;
+}
+
+/* Display status of currently collected entropy */
+.trngCustomPage .collectionAmounts {
+	font-size: 11px;
+	left: -52px;
+	line-height: 9px;
+	margin: 0 auto 0 auto;
+	position: relative;
+}
+.trngCustomPage .collectionAmounts table {
+	margin: 0 auto;
+}
+.trngCustomPage .collectionLabel {
+	padding-left: 7px;
+}
+.trngCustomPage .totalsLabel {
+	font-weight: bold;
+}
+.trngCustomPage .statusBox {
+	background-color: green;
+	color: #fff;
+	font-weight: bold;
+	min-width: 14px;
+	padding: 5px;
+	text-align: center;
+	text-transform: capitalize;
+}
+.trngCustomPage .collectionAmounts .statusBox.isSuccess {
+	background-color: green;
+}
+.trngCustomPage .collectionAmounts .statusBox.isFailed {
+	background-color: red;
+}
+
+/* Put status in middle */
+.trngCustomPage .statusMessage {
+	margin-top: 20px;
+	text-align: center;
+}
+
+/* Start of processed output and results */
+.trngCustomPage .outputAndResults {
+	display: none;
+	margin-left: 20px;
+}
+.trngCustomPage h3 {
+	font-size: 14px;
+	font-weight: bold;
+	margin: 5px 0;
+	position: relative;
+}
+/* Anchor tag offset because of fixed header */
+.trngCustomPage h3 span {
+	position: absolute;
+	top: -157px;
+}
+
+/* Add margin to bottom of each image */
+.trngCustomPage canvas {
+	margin-bottom: 20px;
+}
+
+/* Randomness test styles */
+.trngCustomPage .testSuccess {
+	color: green;
+}
+.trngCustomPage .testFailure {
+	color: red;
+}

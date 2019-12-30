@@ -1,1 +1,8 @@
-<phpunit bootstrap="bootstrap.php" colors="true"></phpunit>
+<phpunit
+	bootstrap="tests/bootstrap.php"
+	cacheResult="false"
+	colors="true">
+	<testsuite name="Jericho test suite">
+		<directory suffix="test.php">tests/</directory>
+	</testsuite>
+</phpunit>

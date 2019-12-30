@@ -1,0 +1,195 @@
+/**
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2019  Joshua M. David
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	TRNG RANDOM DATA COMBINER PAGE
+/* --------------------------------------- */
+
+.trngXorCombinerPage body {
+	background-color: #eee;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 100%;
+}
+
+/* Fixed header section */
+.trngXorCombinerPage .header {
+	background-color: #eee;
+	display: block;
+	left: 0;
+	padding: 5px;
+	right: 0;
+	top: -1px;
+	z-index: 1;
+	padding-bottom: 20px;
+}
+
+/* Buttons along the top */
+.trngXorCombinerPage .pageNavigation {
+	margin-bottom: 20px;
+	width: 100%;
+}
+.trngXorCombinerPage .pageNavigation .blueButton {
+	text-align: center;
+}
+.trngXorCombinerPage .pageNavigation td:first-child {
+	vertical-align: top;
+}
+.trngXorCombinerPage .pageNavigation td:nth-child(2) {
+	padding-left: 5px;
+	vertical-align: top;
+}
+.trngXorCombinerPage .pageNavigation td:nth-child(3) {
+	text-align: center;
+	width: 100%;
+}
+.trngXorCombinerPage .pageNavigation td:nth-child(4) {
+	text-align: center;
+	vertical-align: top;
+}
+.trngXorCombinerPage .pageNavigation td:last-child {
+	padding-left: 5px;
+	text-align: center;
+	vertical-align: top;
+	width: 97px;
+}
+.trngXorCombinerPage .programTitle {
+	margin: 14px 0;
+}
+.trngXorCombinerPage .testingButtons {
+	opacity: 0.5;
+}
+.trngXorCombinerPage .testingButtons.active {
+	opacity: 1;
+}
+.trngXorCombinerPage .fileInfo {
+	margin-top: 7px;
+	text-align: center;
+}
+.trngXorCombinerPage .fileInfo:first-of-type {
+	margin-top: 15px;
+}
+
+/* Hide extra long filename for uploaded image */
+.trngXorCombinerPage .imageLoader {
+	display: none;
+}
+
+/* Hide the anchor tag which is used to trigger the file download */
+.trngXorCombinerPage .exportFileLink {
+	display: none;
+}
+
+/* Display status of currently collected entropy */
+.trngXorCombinerPage .collectionAmounts {
+	display: none;
+	font-size: 12px;
+	line-height: 12px;
+	margin: 7px auto 0 auto;
+}
+.trngXorCombinerPage .collectionLabel {
+	padding-left: 7px;
+}
+.trngXorCombinerPage .totalsLabel {
+	font-weight: bold;
+	padding-left: 14px;
+}
+.trngXorCombinerPage .statusBox,
+.trngXorCombinerPage .fileInfo span {
+	background-color: #dadada;
+	border-radius: 3px;
+	color: #000;
+	display: block;
+	font-weight: bold;
+	margin-left: 1px;
+	min-width: 14px;
+	padding: 2px 5px;
+	text-align: right;
+	text-transform: capitalize;
+}
+.trngXorCombinerPage .collectionAmounts a {
+	background-color: #2ca0ca;
+	border-radius: 3px;
+	color: #fff;
+	cursor: pointer;
+	display: block;
+	margin-left: 5px;
+	padding: 2px 5px;
+	text-decoration: none;
+}
+.trngXorCombinerPage .fileTypeA.warning,
+.trngXorCombinerPage .fileTypeB.warning {
+	background-color: #ff7a00;
+	color: #fff;
+	cursor: help;
+}
+.trngXorCombinerPage .collectionAmounts .statusBox.passed {
+	background-color: green;
+	color: #fff;
+}
+.trngXorCombinerPage .collectionAmounts .statusBox.failed {
+	background-color: red;
+	color: #fff;
+}
+
+/* Put status in middle */
+.trngXorCombinerPage .statusMessage {
+	margin-top: 20px;
+	text-align: center;
+}
+
+/* Start of processed output and results */
+.trngXorCombinerPage .outputAndResults {
+	padding: 5px;
+}
+
+/* Output headings */
+.trngXorCombinerPage .originalImage,
+.trngXorCombinerPage .output,
+.trngXorCombinerPage .results {
+	display: none;
+}
+.trngXorCombinerPage h3 {
+	font-size: 12px;
+	font-weight: bold;
+	margin: 5px 0;
+	padding-top: 5px;
+	position: relative;
+}
+/* Anchor tag offset because of fixed header */
+.trngXorCombinerPage h3 span {
+	position: absolute;
+	top: -157px;
+}
+
+/* Add margin to bottom of each image */
+.trngXorCombinerPage canvas {
+	display: block;
+	margin-bottom: 20px;
+}
+
+/* Randomness test styles */
+.trngXorCombinerPage .testSuccess {
+	color: green;
+}
+.trngXorCombinerPage .testFailure {
+	color: red;
+}
+
+.trngXorCombinerPage .isFileInfoRowTemplate {
+	display: none;
+}
+
+.instruction {
+	margin: 10px 0;
+	text-align: center;
+}

@@ -1,0 +1,140 @@
+/**
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2019  Joshua M. David
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* ----------------------------------------- */
+/*	4. EXPORT PADS / SERVER SETTINGS DIALOG
+/* ----------------------------------------- */
+
+.exportPadsSettings .exportMethodTable {
+	margin-top: 15px;
+}
+.exportPadsSettings .helpExplanation {
+	margin-bottom: 15px;
+	margin-top: 21px;
+	text-align: center;
+}
+.exportPadsSettings .helpExplanation .randomData {
+	display: none;
+}
+.exportPadsSettings .statusMessage {
+	margin-bottom: 14px;
+	text-align: center;
+}
+.exportPadsSettings fieldset {
+	border-color: #3399cc;
+	border-radius: 5px;
+	padding-bottom: 14px;
+	padding-top: 10px;
+	margin-bottom: 14px;
+}
+.exportPadsSettings .databaseEncryptionPassword {
+	position: relative;
+}
+.exportPadsSettings .passphraseStrength {
+	display: none;
+	font-size: 12px;
+	margin-right: 14px;
+	position: absolute;
+	right: 0;
+	top: 57px;
+}
+.exportPadsSettings .passphraseStrength .text {
+	font-weight: bold;
+}
+.exportPadsSettings .passphraseStrength .text.isBad {
+	color: #ff0000;
+}
+.exportPadsSettings .passphraseStrength .text.isAverage {
+	color: #ff9100;
+}
+.exportPadsSettings .passphraseStrength .text.isGood {
+	color: #008000;
+}
+.exportPadsSettings .buttonShowAdvancedOptions {
+	color: #3399cc;
+	cursor: pointer;
+	font-weight: bold;
+	margin-bottom: 30px;
+	text-indent: 11px;
+}
+.exportPadsSettings .advancedOptions {
+	display: none;
+}
+.exportPadsSettings .advancedOptions label[title] {
+	cursor: help;
+}
+.exportPadsSettings legend {
+	color: #3399cc;
+	font-weight: bold;
+}
+.exportPadsSettings table {
+	margin: 0 auto;
+}
+.exportPadsSettings th {
+	text-align: right;
+	font-weight: bold;
+	text-wrap: none;
+	vertical-align: middle;
+}
+.exportPadsSettings th.nicknamesHeading {
+	padding-top: 4px;
+	vertical-align: top;
+}
+.exportPadsSettings .isExportNicknameTemplate {
+	display: none;
+}
+.exportPadsSettings table td {
+	padding: 2px 4px;
+}
+.exportPadsSettings .buttons {
+	margin-top: 14px;
+	text-align: center;
+}
+.exportPadsSettings select,
+.exportPadsSettings input[type="text"] {
+	width: 270px;
+}
+.exportPadsSettings .databaseEncryptionPassword input[type="password"],
+.exportPadsSettings .databaseEncryptionPassword input[type="text"] {
+	width: 307px;
+}
+.exportPadsSettings .exportMethod optgroup:last-child {
+	padding-top: 5px;
+}
+.exportPadsSettings .nicknames label {
+	display: inline-block;
+	font-weight: bold;
+	margin-bottom: 4px;
+	width: 49px;
+}
+.exportPadsSettings .nicknames label:last-of-type {
+	margin-bottom: 0;
+}
+.exportPadsSettings .nicknames input {
+	display: inline-block;
+	margin-bottom: 4px;
+	width: 217px;
+}
+.exportPadsSettings .nicknames input:last-of-type {
+	margin-bottom: 0;
+}
+.exportPadsSettings input.numOfIterations {
+	width: 57px;
+}
+.exportPadsSettings .btnExportKeyfile {
+	display: none;
+}
+
+/* Hide the anchor tag which is used to trigger the file download */
+.exportPadsSettings .fileLink {
+	display: none;
+}

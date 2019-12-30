@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2017  Joshua M. David
+	Copyright (c) 2013-2019  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -10,143 +10,1545 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see [http://www.gnu.org/licenses/].
 -->
-<html class="homePage">
+<html>
 	<head>
 		<title>Jericho Comms</title>
+
+		<!-- Meta tags -->
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<meta name="viewport" content="height=device-height, width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="mobile-web-app-capable" content="yes">
-		
-		<link rel="icon" type="image/png" sizes="16x16" href="img/favicon.png">
-		<link rel="icon" type="image/png" sizes="196x196" href="img/touch-icon-196x196.png">
-		
-		<link rel="stylesheet" href="css/lib/normalize.css">
-		<link rel="stylesheet" href="css/common.css">
-		<link rel="stylesheet" href="css/index.css">
-		
-		<script src="js/lib/jquery.js"></script>
-		<script src="js/common.js"></script>
-		<script src="js/index.js"></script>
+
+		<!-- Favicon / Home screen icons -->
+		<link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
+		<link rel="icon" type="image/png" sizes="196x196" href="images/touch-icon-196x196.png">
+
+		<!-- Library style sheets -->
+		<link rel="stylesheet" href="styles/libraries/normalize.css">
+		<link rel="stylesheet" href="styles/libraries/jquery-ui/jquery-ui.css">
+		<link rel="stylesheet" href="styles/libraries/font-awesome/css/font-awesome.css">
+
+		<!-- Common application style sheets -->
+		<link rel="stylesheet" href="styles/common.css">
+		<link rel="stylesheet" href="styles/export.css">
+
+		<!-- Page specific application style sheets -->
+		<link rel="stylesheet" href="styles/pages/home.css">
+		<link rel="stylesheet" href="styles/pages/create.css">
+		<link rel="stylesheet" href="styles/pages/import.css">
+		<link rel="stylesheet" href="styles/pages/connection.css">
+		<link rel="stylesheet" href="styles/pages/backup.css">
+		<link rel="stylesheet" href="styles/pages/nuke.css">
+		<link rel="stylesheet" href="styles/pages/chat.css">
+		<link rel="stylesheet" href="styles/pages/trng.css">
+		<link rel="stylesheet" href="styles/pages/trng-custom.css">
+		<link rel="stylesheet" href="styles/pages/trng-capture.css">
+		<link rel="stylesheet" href="styles/pages/trng-combiner-concat.css">
+		<link rel="stylesheet" href="styles/pages/trng-combiner-xor.css">
+
+		<!-- Inline web worker for deriving keys from the passphrase -->
+		<script id="import-pads-pbkdf-worker" type="javascript/worker">
+			// Use ECMAScript 5's strict mode
+			'use strict';
+
+			// Import scripts to be used
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-core.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-x64core.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-enc-base64.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-hmac.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-sha3.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-cipher-core.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-mode-ctr.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-pad-nopadding.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-aes.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-pbkdf2.js');
+			importScripts(baseUrl + '/scripts/libraries/skein.js');
+			importScripts(baseUrl + '/scripts/libraries/salsa20.js');
+			importScripts(baseUrl + '/scripts/database-crypto.js');
+			importScripts(baseUrl + '/scripts/common.js');
+			importScripts(baseUrl + '/scripts/pages/import.js');
+			importScripts(baseUrl + '/scripts/workers/import-worker.js');
+
+			// Get data from the process which started the worker thread
+			this.addEventListener('message', function(event)
+			{
+				// Derive the master key from the passphrase, keyfile and number of iterations. Then derive the 4 sub keys
+				var workerData = importPadsWorker.deriveSubKeys(event.data.passphrase, event.data.keyfile, event.data.pbkdfKeccakIterations, event.data.pbkdfSkeinIterations);
+
+				// Send the processed data back to the main thread
+				self.postMessage(workerData);
+
+			}, false);
+		</script>
+
+		<!-- Inline web worker for verifying and decrypting the imported pads -->
+		<script id="import-pads-verify-and-decrypt-worker" type="javascript/worker">
+			// Use ECMAScript 5's strict mode
+			'use strict';
+
+			// Import scripts to be used
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-core.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-x64core.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-enc-base64.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-hmac.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-sha3.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-cipher-core.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-mode-ctr.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-pad-nopadding.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-aes.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-pbkdf2.js');
+			importScripts(baseUrl + '/scripts/libraries/skein.js');
+			importScripts(baseUrl + '/scripts/libraries/salsa20.js');
+			importScripts(baseUrl + '/scripts/database-crypto.js');
+			importScripts(baseUrl + '/scripts/common.js');
+			importScripts(baseUrl + '/scripts/pages/import.js');
+			importScripts(baseUrl + '/scripts/workers/import-worker.js');
+
+			// Get data from the process which started the worker thread
+			this.addEventListener('message', function(event)
+			{
+				// Verify the pad indexes, verify the pads, then decrypt them
+				var workerData = importPadsWorker.verifyAndDecryptPads(event.data.dbAesKey, event.data.dbSalsaKey, event.data.dbKeccakMacKey, event.data.dbSkeinMacKey, event.data.padData);
+
+				// Send the processed data back to the main thread
+				self.postMessage(workerData);
+
+			}, false);
+		</script>
+
+		<!-- Inline web worker for whitening/extracting the random data -->
+		<script id="trng-extraction-worker" type="javascript/worker">
+			// Use ECMAScript 5's strict mode
+			'use strict';
+
+			// Import scripts to be used
+			importScripts(baseUrl + '/scripts/common.js');
+			importScripts(baseUrl + '/scripts/workers/trng-worker.js');
+
+			// Get data from the process which started the worker thread
+			this.addEventListener('message', function(event)
+			{
+				// Run the extractor on the entropy (inside web worker)
+				var randomData = trngWorker.process(event.data.dataImageA, event.data.dataImageB);
+
+				// Send it back to the main thread
+				this.postMessage(randomData);
+
+			}, false);
+		</script>
+
+		<!-- Inline web worker for running randomness tests on the random data -->
+		<script id="randomness-tests-worker" type="javascript/worker">
+			// Use ECMAScript 5's strict mode
+			'use strict';
+
+			// Import scripts to be used
+			importScripts(baseUrl + '/scripts/tests-trng.js');
+
+			// Get data from the process which started the worker thread
+			this.addEventListener('message', function(e)
+			{
+				// Run the tests on all the random data (inside web worker)
+				var overallResults = trngTests.runTests(e.data.randomData);
+
+				// Send the processed data back to the main thread
+				self.postMessage(
+				{
+					overallResults: overallResults
+				});
+
+			}, false);
+		</script>
+
+		<!-- Inline web worker for creating the one-time pads and encrypting the one-time pad database -->
+		<script id="export-pads-worker" type="javascript/worker">
+			// Use ECMAScript 5's strict mode
+			'use strict';
+
+			// Import scripts to be used
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-core.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-x64core.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-enc-base64.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-hmac.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-sha3.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-cipher-core.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-mode-ctr.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-pad-nopadding.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-aes.js');
+			importScripts(baseUrl + '/scripts/libraries/cryptojs-pbkdf2.js');
+			importScripts(baseUrl + '/scripts/libraries/skein.js');
+			importScripts(baseUrl + '/scripts/libraries/salsa20.js');
+			importScripts(baseUrl + '/scripts/database-crypto.js');
+			importScripts(baseUrl + '/scripts/common.js');
+			importScripts(baseUrl + '/scripts/export.js');
+			importScripts(baseUrl + '/scripts/workers/export-worker.js');
+
+			// Get data from the process which started the worker thread
+			this.addEventListener('message', function(event)
+			{
+				// Create the keys, derive keys from password, encrypt and MAC the one-time pads (inside web worker)
+				var workerData = exportPadsWorker.createAndEncryptPads(event.data.options, event.data.extractedRandomDataHex);
+
+				// Send the processed data back to the main thread
+				self.postMessage(workerData);
+
+			}, false);
+		</script>
+
+
+		<!-- Generic JavaScript library files -->
+		<script src="scripts/libraries/jquery.js"></script>
+		<script src="scripts/libraries/jquery-ui.js"></script>
+		<script src="scripts/libraries/filesaver.js"></script>
+
+		<!-- Crypto JavaScript library files -->
+		<script src="scripts/libraries/cryptojs-core.js"></script>
+		<script src="scripts/libraries/cryptojs-x64core.js"></script>
+		<script src="scripts/libraries/cryptojs-enc-base64.js"></script>
+		<script src="scripts/libraries/cryptojs-hmac.js"></script>
+		<script src="scripts/libraries/cryptojs-sha3.js"></script>
+		<script src="scripts/libraries/cryptojs-cipher-core.js"></script>
+		<script src="scripts/libraries/cryptojs-mode-ctr.js"></script>
+		<script src="scripts/libraries/cryptojs-pad-nopadding.js"></script>
+		<script src="scripts/libraries/cryptojs-aes.js"></script>
+		<script src="scripts/libraries/cryptojs-pbkdf2.js"></script>
+		<script src="scripts/libraries/skein.js"></script>
+		<script src="scripts/libraries/salsa20.js"></script>
+
+		<!-- Application JavaScript library files -->
+		<script src="scripts/database.js"></script>
+		<script src="scripts/database-crypto.js"></script>
+		<script src="scripts/query.js"></script>
+		<script src="scripts/common.js"></script>
+		<script src="scripts/application.js"></script>
+		<script src="scripts/notification.js"></script>
+		<script src="scripts/decoy.js"></script>
+		<script src="scripts/export.js"></script>
+		<script src="scripts/tests-trng.js"></script>
+
+		<!-- Application JavaScript page specific files -->
+		<script src="scripts/pages/home.js"></script>
+		<script src="scripts/pages/create.js"></script>
+		<script src="scripts/pages/import.js"></script>
+		<script src="scripts/pages/connection.js"></script>
+		<script src="scripts/pages/backup.js"></script>
+		<script src="scripts/pages/nuke.js"></script>
+		<script src="scripts/pages/chat.js"></script>
+		<script src="scripts/pages/trng.js"></script>
+		<script src="scripts/pages/trng-custom.js"></script>
+		<script src="scripts/pages/trng-capture.js"></script>
+		<script src="scripts/pages/trng-combiner-concat.js"></script>
+		<script src="scripts/pages/trng-combiner-xor.js"></script>
+
+		<!-- Application bootstrap file to be loaded after all other files and which starts the app -->
+		<script src="scripts/bootstrap.js"></script>
 	</head>
-	<body>		
-		<div class="content">
-			<div class="mainMenu">			
+	<body>
+		<!-- Home page
+		============================================================================================================================== -->
+		<div class="content homePageContent">
+			<div class="mainMenu">
 				<h1>
-					Jericho Comms <span class="programVersion"></span>
+					Jericho Comms <span class="jsProgramVersion programVersion"></span>
 				</h1>
-				<ul class="menu">										
+				<ul class="menu">
+					<!-- Most common options -->
 					<li>
-						<a class="blueButton btnOpenGeneratePadsMenu">Create one-time pads</a>
+						<a class="jsPageLoadButton blueButton" data-page="create">Create one-time pads</a>
 					</li>
 					<li>
-						<a href="import.html" class="blueButton">Load one-time pads</a>
+						<a class="jsPageLoadButton blueButton" data-page="import">Import one-time pads</a>
 					</li>
 					<li>
-						<a href="chat.html" class="blueButton">Chat</a>
+						<a class="jsPageLoadButton blueButton" data-page="chat">Chat</a>
 					</li>
-					
+
+					<!-- Less common options -->
 					<li class="spacer">
-						<a href="tests.html" class="blueButton">Run code tests</a>
+						<a class="blueButton" href="tests/tests.html">Run code tests</a>
 					</li>
 					<li>
-						<a href="connection.html" class="blueButton">Test server connection</a>
+						<a class="jsPageLoadButton blueButton" data-page="connection">Test server connection</a>
 					</li>
 					<li>
-						<a href="backup.html" class="blueButton">Backup or restore</a>
+						<a class="jsPageLoadButton blueButton" data-page="backup">Backup or restore</a>
 					</li>
 					<li>
-						<a href="nuke.html" class="blueButton">Emergency nuke</a>
+						<a class="jsPageLoadButton blueButton" data-page="nuke">Emergency nuke</a>
 					</li>
 				</ul>
 			</div>
-			
-			<div class="generatePadsSubMenu">
+		</div>
+
+
+		<!-- Create pads page
+		============================================================================================================================== -->
+		<div class="content createPageContent">
+			<div class="generatePadsMenu">
 				<div class="pageNavigation">
 					<div class="navItem">
-						<a href="index.html" class="blueButton">Home</a>
+						<a class="jsPageLoadButton blueButton" data-page="home">Home</a>
 					</div>
-					<div class="navItem statusMessage">
+					<div class="navItem jsStatusMessage statusMessage">
 						<span class="icon"></span>
-						<span class="message"></span>
+						<span class="jsStatusMessageText statusMessageText"></span>
 					</div>
 				</div>
 				<h2>Create one-time pads</h2>
 				<div class="information">
-					You need truly random data for information-theoretically secure communications using one-time pads. 
+					You need truly random data for information-theoretically secure communications using one-time pads.
 					This program provides a True Random Number Generator (TRNG).<br>
 					<br>
-					Entropy is extracted from two images that you provide. For best results, use photographs from a 
-					standalone digital camera or digital SLR that have been captured in your camera's RAW image format. 
-					This best preserves the original data when the shot was taken. You should then transfer them directly 
-					to your computer by USB cable or SD memory card. Then convert them as-is (without post processing) 
-					to a lossless image format e.g. PNG or BMP. Avoid JPEG and other lossy compression formats where 
-					possible as they may affect the output in predictable ways. Avoid using your mobile phone as they 
-					generally have poor security and the contents can be secretly collected from them at any time due to 
+					Entropy is extracted from two images that you provide. For best results, use photographs from a
+					standalone digital camera or digital SLR that have been captured in your camera's RAW image format.
+					This best preserves the original data when the shot was taken. You should then transfer them directly
+					to your computer by USB cable or SD memory card. Then convert them as-is (without post processing)
+					to a lossless image format e.g. PNG or BMP. Avoid JPEG and other lossy compression formats where
+					possible as they may affect the output in predictable ways. Avoid using your mobile phone as they
+					generally have poor security and the contents can be secretly collected from them at any time due to
 					the closed baseband processor.<br>
 					<br>
-					Take photos of something that is generally random in nature. Photos taken in macro mode of sand at a 
-					beach, grass and gravel work best. Trees, bushes, rocks and ocean waves also work well. Avoid 
+					Take photos of something that is generally random in nature. Photos taken in macro mode of sand at a
+					beach, grass and gravel work best. Trees, bushes, rocks and ocean waves also work well. Avoid
 					studio photography with plain backgrounds. The photos should be clear and in focus as much as possible.<br>
 					<br>
-					The program will run randomness tests on the data after it has been run through the randomness extractor. 
-					Check that all of the tests pass otherwise you may need to try different photos. Be sure to permanently 
-					delete the original photos from the camera and your computer after the one-time pads have been created 
-					from them. To be absolutely safe, run this program from a non-networked (air gapped) computer. On 
+					The program will run randomness tests on the data after it has been run through the randomness extractor.
+					Check that all of the tests pass otherwise you may need to try different photos. Be sure to permanently
+					delete the original photos from the camera and your computer after the one-time pads have been created
+					from them. To be absolutely safe, run this program from a non-networked (air gapped) computer. On
 					export, the one-time pads will be encrypted for transport and use.<br>
 					<br>
-					This process should be run from a desktop or laptop PC as it is resource intensive and the page is 
-					not mobile optimised. The website has details about how the algorithm processes and extracts the 
+					This process should be run from a desktop or laptop PC as it is resource intensive and the page is
+					not mobile optimised. The website has details about how the algorithm processes and extracts the
 					random data from the photo.<br>
 					<br>
 					<div class="centerMenuButton">
-						<a href="trng.html" class="blueButton">Launch TRNG</a>
+						<a class="jsPageLoadButton blueButton" data-page="trng">Launch TRNG</a>
 					</div>
 					<br>
 					<br>
-					Alternatively you can import your own truly random data which will be split it into separate 
-					one-time pads for use with the program. This is at your own risk. Do not use data generated from a 
-					PRNG or even a CSPRNG as it will not be strong enough for one-time pads and will reduce the security 
+					Alternatively you can import your own truly random data which will be split it into separate
+					one-time pads for use with the program. This is at your own risk. Do not use data generated from a
+					PRNG or even a CSPRNG as it will not be strong enough for one-time pads and will reduce the security
 					to that of a stream cipher.<br>
 					<br>
 					<div class="centerMenuButton">
-						<a href="trng-custom.html" class="blueButton">Load custom random data</a>
+						<a class="jsPageLoadButton blueButton" data-page="trngCustom">Load custom random data</a>
 					</div>
 					<br>
 					<br>
 					<h2>Other tools</h2>
-					This tool is useful if you do not have a standalone digital camera capable of RAW mode and wish to 
-					capture photographs using your webcam. After you have saved two photographs you can process them in 
-					the TRNG. If the webcam photograph capture does not provide enough random data you can always export 
-					and combine the extracted random data together from multiple sets of images into a larger file, 
+					This tool is useful if you do not have a standalone digital camera capable of RAW mode and wish to
+					capture photographs using your webcam. After you have saved two photographs you can process them in
+					the TRNG. If the webcam photograph capture does not provide enough random data you can always export
+					and combine the extracted random data together from multiple sets of images into a larger file,
 					then load the file as custom random data and create the one-time pads from it.
 					<br>
 					<br>
 					<div class="centerMenuButton">
-						<a href="trng-capture.html" class="blueButton">Webcam photograph capture</a>
+						<a class="jsPageLoadButton blueButton" data-page="trngCapture">Webcam photograph capture</a>
 					</div>
 					<br>
 					<br>
-					This tool is useful if you have processed multiple sets of images with the TRNG and you want to 
-					concatenate all the files of random data together and convert it into a single binary file for 
-					testing in an external tool. In the TRNG you should have exported the random data as text files 
-					containing only ASCII hexadecimal symbols. Then use this tool to combine the data from all the files 
+					This tool is useful if you have processed multiple sets of images with the TRNG and you want to
+					concatenate all the files of random data together and convert it into a single binary file for
+					testing in an external tool. In the TRNG you should have exported the random data as text files
+					containing only ASCII hexadecimal symbols. Then use this tool to combine the data from all the files
 					and output a single binary file. This has been tested to only work in Firefox at the moment.
 					<br>
 					<br>
 					<div class="centerMenuButton">
-						<a href="trng-combiner.html" class="blueButton">Combine random data by concatenation</a>
+						<a class="jsPageLoadButton blueButton" data-page="trngConcatCombiner">Combine random data by concatenation</a>
 					</div>
 					<br>
 					<br>
-					This tool is useful if you have processed multiple sets of images with the TRNG and you want to 
-					XOR all the files of random data together and convert it into a single binary file for 
-					testing in an external tool. In the TRNG you should have exported the random data as text files 
-					containing only ASCII hexadecimal symbols. Then use this tool to combine the data from all the files 
+					This tool is useful if you have processed multiple sets of images with the TRNG and you want to
+					XOR all the files of random data together and convert it into a single binary file for
+					testing in an external tool. In the TRNG you should have exported the random data as text files
+					containing only ASCII hexadecimal symbols. Then use this tool to combine the data from all the files
 					and output a single binary file.
+					<br>
+					<br>
 					<div class="centerMenuButton">
-						<a href="trng-xor-combiner.html" class="blueButton">Combine random data by XOR</a>
+						<a class="jsPageLoadButton blueButton" data-page="trngXorCombiner">Combine random data by XOR</a>
 					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Import pads page
+		============================================================================================================================== -->
+		<div class="content importPageContent">
+			<div class="pageNavigation">
+				<div class="navItem">
+					<a class="jsPageLoadButton blueButton" data-page="home">Home</a>
+				</div>
+				<div class="navItem jsStatusMessage statusMessage">
+					<span class="icon"></span>
+					<span class="jsStatusMessageText statusMessageText"></span>
+				</div>
+			</div>
+			<h2>Load one-time pads</h2>
+			<div class="information">
+				This will load the one-time pads from the clipboard or text file into the local storage of this
+				computer/device. Once the pads are loaded you can start chatting.
+			</div>
+
+			<div class="importMethod">
+				<div class="methodTitle">Load method:</div>
+				<select class="jsImportMethod">
+					<option value="textFile">Load one-time pads from text file</option>
+					<option value="clipboard">Load one-time pads from clipboard</option>
+				</select>
+			</div>
+			<div class="jsMethod method textFile">
+				<div class="methodTitle">Choose the one-time pad text file:</div>
+				<input class="jsPadFile padFile" type="file" name="padFile" accept="text/plain">
+			</div>
+			<div class="jsMethod method clipboard">
+				<div class="methodTitle">
+					Open the one-time pad text file, select all text (Ctrl + A), copy (Ctrl + C), paste below (Ctrl + V) then
+					click Load.
+				</div>
+				<div>
+					<input class="jsPadDataClipboardInput padDataClipboardInput" type="text">
+				</div>
+				<div>
+					<input class="jsLoadPadsFromClipboardButton blueButton" type="button" value="Load">
+				</div>
+			</div>
+
+			<div class="jsImportSettingsContainer importSettingsContainer">
+				<div class="methodTitle">Enter decryption details:</div>
+				<table class="importSettings">
+					<tr>
+						<th>Passphrase</th>
+						<td>
+							<input class="jsImportPassphraseText longText" type="password">
+						</td>
+					</tr>
+					<tr class="jsKeyfileRow">
+						<th>Keyfile</th>
+						<td>
+							<input class="jsImportKeyfileText longText" type="text">
+							<input class="jsImportKeyfileFromTextFileButton importKeyfileFromTextFile" type="file" name="keyfile" accept="text/plain">
+						</td>
+					</tr>
+				</table>
+				<table class="importSettings iterations">
+					<tr class="jsKeccakIterationsRow">
+						<th>PBKDF Keccak iterations</th>
+						<td>
+							<input class="jsImportPbkdfKeccakIterations numOfIterations" type="text">
+						</td>
+					</tr>
+					<tr class="jsSkeinIterationsRow">
+						<th>PBKDF Skein iterations</th>
+						<td>
+							<input class="jsImportPbkdfSkeinIterations numOfIterations" type="text">
+						</td>
+					</tr>
+				</table>
+				<div class="buttonContainer">
+					<div class="jsImportButtonContainer importButtonContainer">
+						<input class="jsImportPadsButton blueButton" type="button" value="Import">
+					</div>
+					<div class="jsChatButtonContainer chatButtonContainer">
+						<a class="jsPageLoadButton blueButton" data-page="chat">Go to chat</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Test server connection page
+		============================================================================================================================== -->
+		<div class="content connectionPageContent">
+			<div class="pageNavigation">
+				<div class="navItem">
+					<a class="jsPageLoadButton blueButton" data-page="home">Home</a>
+				</div>
+				<div class="navItem jsStatusMessage statusMessage">
+					<span class="icon"></span>
+					<span class="jsStatusMessageText statusMessageText"></span>
+				</div>
+			</div>
+			<h2>Test server connection</h2>
+			<div class="information">
+				This will test the connection from the client to the server using the API. Using HTTPS is not necessary as all data to and
+				from the server is cryptographically authenticated with a MAC. However if you want to use self-signed certificates,
+				remember to load/accept the server's certificate as trusted into your browser's certificate store first or the connection
+				will fail.
+			</div>
+			<div class="connectionDetails">
+				<label>Server address and port</label>
+				<input class="jsServerAddressAndPort serverInfoTextBox" type="text" placeholder="http://ip-or-domain.com:80/group-name/"><br>
+
+				<label>Server key</label>
+				<input class="jsServerKey serverInfoTextBox" type="text">
+
+				<div class="buttons">
+					<input class="jsTestServerConnectionButton blueButton" type="button" value="Test server connection">
+					<input class="jsSaveSettingsButton blueButton" type="button" value="Save settings">
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Backup pads / Restore pads page
+		============================================================================================================================== -->
+		<div class="content backupPageContent">
+			<div class="pageNavigation">
+				<div class="navItem">
+					<a class="jsPageLoadButton blueButton" data-page="home">Home</a>
+				</div>
+				<div class="navItem jsStatusMessage statusMessage">
+					<span class="icon"></span>
+					<span class="jsStatusMessageText statusMessageText"></span>
+				</div>
+			</div>
+
+			<h2>Backup/move pads to another device</h2>
+			<div class="instructions">
+				This will let you save the current pads in this device or computer's local storage to another location.<br>
+				<br>
+				<b>Warning:</b> the pads being backed up will not be encrypted (until v2.0). Please save the pads in an
+				encrypted TrueCrypt 7.1a container file instead or use destructable media e.g. CD/DVD.<br>
+				<br>
+				Once saved from here you must clear this device's storage so that you don't have the same pads on two
+				different devices. Doing that could allow duplicate use of a pad and allow for cryptanalysis.
+			</div>
+			<table class="exportMethods">
+				<tr>
+					<td>Save to</td>
+					<td>
+						<label for="backupPageExportMethodClipboard">
+							<input id="backupPageExportMethodClipboard" class="jsExportMethod" type="radio" name="exportMethod" value="clipboard"> Clipboard
+						</label>
+						<label for="backupPageExportMethodTextFile">
+							<input id="backupPageExportMethodTextFile" class="jsExportMethod" type="radio" name="exportMethod" value="textFile" checked="checked"> Text file
+						</label>
+					</td>
+				</tr>
+			</table>
+			<div class="buttons">
+				<input class="jsCreateBackupButton blueButton" type="button" value="1. Create backup">
+				<input class="jsClearLocalDatabaseButton blueButton" type="button" value="2. Clear local database" disabled="disabled">
+			</div>
+
+			<div class="restorePads">
+				<h2>Restore pads from backup</h2>
+				<div class="information">
+					This will load the backed up one-time pads from the clipboard or text file into the local storage of
+					this computer/device. Once the pads are loaded you can start chatting.
+				</div>
+				<div class="method">
+					<div class="methodTitle">Method 1: &nbsp;Load from text file:</div>
+					<input class="jsRestorePadFile" type="file" name="restorePadFile">
+				</div>
+				<div class="method">
+					<div class="methodTitle">Method 2: &nbsp;Open text file, select all text (Ctrl + A), copy (Ctrl + C) and paste (Ctrl + V):</div>
+					<div>
+						<input class="jsPadDataClipboardInput padDataClipboardInput" type="text">
+						<input class="jsLoadPadsFromClipboardButton blueButton" type="button" value="Load">
+					</div>
+				</div>
+				<div class="jsChatButtonContainer chatButton">
+					<a class="jsPageLoadButton blueButton" data-page="chat">Go to chat</a>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Auto nuke page
+		============================================================================================================================== -->
+		<div class="content nukePageContent">
+			<div class="pageNavigation">
+				<div class="navItem">
+					<a class="jsPageLoadButton blueButton" data-page="home">Home</a>
+				</div>
+				<div class="navItem jsStatusMessage statusMessage">
+					<span class="icon"></span>
+					<span class="jsStatusMessageText statusMessageText"></span>
+				</div>
+			</div>
+			<h2>Emergency auto nuke</h2>
+
+			<div class="warningLabel">Warning:</div>
+			<div class="warningText">
+				This button will delete all the one-time pads from this device/computer's browser and all the messages from the server.<br>
+				<br>
+				The next time the other user connects to the server it will automatically delete their one-time pads as well. They will not have
+				a chance to read the most recent messages you sent if they have not read them already.<br>
+				<br>
+				If your device/computer is about to be compromised and you need to clear all evidence of communications use the button below.
+			</div>
+			<div class="nukeButton">
+				<input class="jsInitAutoNukeButton blueButton" type="button" value="Initiate auto nuke">
+			</div>
+
+			<div class="jsLocalNukeContainer localNukeContainer">
+				<div class="warningLabel">Note:</div>
+				<div class="warningText">
+					If you cannot resolve the connection issue in time, you can still nuke your local database.
+				</div>
+				<div class="nukeButton">
+					<input class="jsLocalNukeButton blueButton" type="button" value="Nuke local database">
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Chat page
+		============================================================================================================================== -->
+		<div class="content chatPageContent">
+			<div class="pageNavigation">
+				<div class="navItem">
+					<a class="jsPageLoadButton blueButton" data-page="home">Home</a>
+				</div>
+				<div class="navItem jsStatusMessage statusMessage">
+					<span class="icon"></span>
+					<span class="jsStatusMessageText statusMessageText"></span>
+				</div>
+			</div>
+			<h2>
+				Chat
+				<span class="notificationButtons">
+					<i class="fa fa-volume-up fa-lg jsEnableDisableAudioIcon"></i>
+					<i class="fa fa-toggle-on fa-lg jsEnableDisableAudio"></i>
+					<i class="fa fa-bolt fa-lg jsEnableDisableVibrationLightningIcon enableDisableVibrationLightningIcon"></i>
+					<i class="fa fa-toggle-on fa-lg jsEnableDisableVibration"></i>
+					<i class="fa fa-bell-o fa-lg jsEnableDisableWebNotificationsIcon enableDisableWebNotificationsIcon"></i>
+					<i class="fa fa-toggle-on fa-lg jsEnableDisableWebNotifications"></i>
+				</span>
+			</h2>
+			<div class="jsMainChat mainChat">
+				<div class="jsMessage message isMessageTemplate">
+					<div class="padIdentifier">
+						Message ID <span class="jsPadIdentifierText"></span>
+					</div>
+					<div class="fromUserAndDateTime">
+						From <span class="jsFromUser"></span> on <span class="jsDate"></span> at <span class="jsTime"></span>
+					</div>
+					<div class="jsMessageText messageText" title=""></div>
+					<div class="jsMessageStatus messageStatus"></div>
+				</div>
+			</div>
+			<div class="chatEntry">
+				<textarea class="jsChatInput chatInput" placeholder="Type message here..." autofocus></textarea>
+				<table>
+					<tr>
+						<td class="messagesLastCheckedStatus">
+							<span class="jsMessagesLastCheckedStatus"></span> <b class="jsMessagesLastCheckedTime"></b>
+						</td>
+						<td class="messageCharsRemaining">
+							<b class="jsMessageCharsRemaining"></b> <span class="jsMessageCharsRemainingText"></span>
+						</td>
+					</tr>
+					<tr>
+						<td class="jsMessagesRemaining messagesRemaining">
+							<div>Remaining messages per user:</div>
+							<div class="jsGroupUsers groupUsers">
+								<div class="jsUser user isUserTemplate">
+									<span class="jsOnlineStatusCircle onlineStatusCircle isOffline"></span>
+									<span class="jsCallsign"></span>:
+									<span class="jsNumOfPadsRemaining numOfPadsRemaining">0</span>
+								</div>
+							</div>
+						</td>
+						<td>
+							<input class="jsSendMessageButton blueButton sendMessageButton" type="button" value="Send message">
+						</td>
+					</tr>
+				</table>
+			</div>
+			<a class="messageLink isUrlTemplate" target="_blank" href=""></a>
+		</div>
+
+
+		<!-- True Random Number Generator page
+		============================================================================================================================== -->
+		<div class="content trngPageContent">
+			<div class="header">
+				<table class="pageNavigation">
+					<tr>
+						<td>
+							<a class="jsPageLoadButton blueButton" data-page="home">Home</a>
+						</td>
+						<td>
+							<input class="jsStartOverButton blueButton" type="button" value="Restart" disabled="disabled">
+						</td>
+						<td>
+							<input class="jsShowTestsSummaryButton blueButton" type="button" value="Show tests summary" disabled="disabled">
+						</td>
+						<td>
+							<label class="jsImageLoaderLabel imageLoaderLabel blueButton" for="trngImageLoader">1. Select images</label><br>
+							<input id="trngImageLoader" class="jsImageLoader imageLoader" type="file" name="imageLoader" multiple="multiple" accept="image/*">
+						</td>
+						<td>
+							<input class="jsProcessImageButton blueButton" type="button" value="2. Process" disabled="disabled">
+						</td>
+						<td>
+							<input class="jsOpenExportPadsSettingsButton blueButton" type="button" value="3. Export" disabled="disabled">
+						</td>
+					</tr>
+				</table>
+
+				<!-- Upload image information for the first image -->
+				<table class="jsFileInfo collectionAmounts fileInfo">
+					<tr>
+						<td class="collectionLabel">
+							<b>Image 1:</b>
+						</td>
+						<td class="collectionLabel">
+							Name:
+						</td>
+						<td class="totalPhotoPixels">
+							<span class="jsFileNameA">N/A</span>
+						</td>
+						<td class="collectionLabel">
+							Size:
+						</td>
+						<td class="totalEntropyInputBits">
+							<span class="jsFileSizeA">0</span>
+						</td>
+						<td class="collectionLabel">
+							Type:
+						</td>
+						<td class="inputEntropyTestsPass">
+							<span class="jsFileTypeA fileTypeA">N/A</span>
+						</td>
+						<td>
+							<a class="jsViewOriginalImageButtonA">View image</a>
+						</td>
+					</tr>
+				</table>
+
+				<!-- Upload image information for the second image -->
+				<table class="jsFileInfo collectionAmounts fileInfo">
+					<tr>
+						<td class="collectionLabel">
+							<b>Image 2:</b>
+						</td>
+						<td class="collectionLabel">
+							Name:
+						</td>
+						<td class="totalPhotoPixels">
+							<span class="jsFileNameB">N/A</span>
+						</td>
+						<td class="collectionLabel">
+							Size:
+						</td>
+						<td class="totalEntropyInputBits">
+							<span class="jsFileSizeB">0</span>
+						</td>
+						<td class="collectionLabel">
+							Type:
+						</td>
+						<td class="inputEntropyTestsPass">
+							<span class="jsFileTypeB fileTypeB">N/A</span>
+						</td>
+						<td>
+							<a class="jsViewOriginalImageButtonB">View image</a>
+						</td>
+					</tr>
+				</table>
+
+				<!-- Start of advanced testing information which is hidden by default -->
+				<div class="jsTestingSummaryInfo testingSummaryInfo">
+
+					<!-- Information about stuck pixels (pixels with the same colours in both images -->
+					<table class="jsCollectionAmounts collectionAmounts repeatingPixelsInfo">
+						<tr>
+							<td class="collectionLabel">
+								<b>Repeating / stuck pixels (same RGB colour at the same location in both images):</b>
+							</td>
+							<td class="collectionLabel">
+								Total pixels:
+							</td>
+							<td class="totalRepeatingPixels">
+								<div class="jsTotalRepeatingPixels statusBox">0</div>
+							</td>
+							<td>
+								<a class="jsShowRepeatingPixelIndexesButton showRepeatingPixelIndexesButton">View pixel indexes</a>
+							</td>
+							<td>
+								<a class="jsViewRepeatingPixelsButton viewRepeatingPixelsButton">View image</a>
+							</td>
+						</tr>
+					</table>
+
+					<!-- Amount of entropy collected for the first image -->
+					<table class="jsCollectionAmounts collectionAmounts imageA">
+						<tr>
+							<td class="collectionLabel totalsLabel">
+								<b>Image 1 least significant bits:</b>
+							</td>
+							<td class="collectionLabel">
+								Image pixels:
+							</td>
+							<td class="totalPhotoPixels">
+								<div class="jsTotalPixelsImageA statusBox">0</div>
+							</td>
+							<td class="collectionLabel">
+								Input entropy bits:
+							</td>
+							<td class="totalEntropyInputBits">
+								<div class="jsTotalEntropyInputBitsImageA statusBox">0</div>
+							</td>
+							<td class="collectionLabel">
+								Entropy tests:
+							</td>
+							<td class="inputEntropyTestsPass">
+								<div class="jsInputEntropyTestsPassImageA statusBox">N/A</div>
+							</td>
+							<td>
+								<a class="jsViewLeastSigBitsBitmapImageButtonA">View bitmap</a>
+							</td>
+							<td>
+								<a class="jsViewLeastSigBitsColourBitmapImageButtonA">View colour bitmap</a>
+							</td>
+							<td>
+								<a class="jsViewLeastSigBitsTestResultsImageButtonA">View test results</a>
+							</td>
+						</tr>
+					</table>
+
+					<!-- Amount of entropy collected for the second image -->
+					<table class="jsCollectionAmounts collectionAmounts imageB">
+						<tr>
+							<td class="collectionLabel totalsLabel">
+								<b>Image 2 least significant bits:</b>
+							</td>
+							<td class="collectionLabel">
+								Image pixels:
+							</td>
+							<td class="totalPhotoPixels">
+								<div class="jsTotalPixelsImageB statusBox">0</div>
+							</td>
+							<td class="collectionLabel">
+								Input entropy bits:
+							</td>
+							<td class="totalEntropyInputBits">
+								<div class="jsTotalEntropyInputBitsImageB statusBox">0</div>
+							</td>
+							<td class="collectionLabel">
+								Entropy tests:
+							</td>
+							<td class="inputEntropyTestsPass">
+								<div class="jsInputEntropyTestsPassImageB statusBox">N/A</div>
+							</td>
+							<td>
+								<a class="jsViewLeastSigBitsBitmapImageButtonB">View bitmap</a>
+							</td>
+							<td>
+								<a class="jsViewLeastSigBitsColourBitmapImageButtonB">View colour bitmap</a>
+							</td>
+							<td>
+								<a class="jsViewLeastSigBitsTestResultsImageButtonB">View test results</a>
+							</td>
+						</tr>
+					</table>
+
+					<!-- Amount of entropy collected from the first and second images XORed together -->
+					<table class="jsCollectionAmounts collectionAmounts xored">
+						<tr>
+							<td class="collectionLabel totalsLabel">
+								<b>XORed least significant bits of both images:</b>
+							</td>
+							<td class="collectionLabel">
+								Entropy bits:
+							</td>
+							<td class="xoredEntropyBits">
+								<div class="jsTotalXoredEntropyBits statusBox">0</div>
+							</td>
+							<td class="collectionLabel">
+								Entropy tests:
+							</td>
+							<td class="xoredEntropyTestsPass">
+								<div class="jsXoredEntropyTestsPass statusBox">N/A</div>
+							</td>
+							<td>
+								<a class="jsViewLeastSigBitsXoredBitmapButton">View bitmap</a>
+							</td>
+							<td>
+								<a class="jsViewLeastSigBitsXoredColourBitmapButton">View colour bitmap</a>
+							</td>
+							<td>
+								<a class="jsViewLeastSigBitsXoredTestResultsButton">View test results</a>
+							</td>
+						</tr>
+					</table>
+
+					<!-- Amount of entropy collected after the Von Neumann whitening process -->
+					<table class="jsCollectionAmounts collectionAmounts final">
+						<tr>
+							<td class="collectionLabel totalsLabel">
+								<b>Totals after Von Neumann whitening:</b>
+							</td>
+							<td class="collectionLabel">
+								Extracted bits:
+							</td>
+							<td class="totalExtractedBits">
+								<div class="jsTotalExtractedBits statusBox">0</div>
+							</td>
+							<td class="collectionLabel">
+								Extracted tests:
+							</td>
+							<td class="extractedTestsPass">
+								<div class="jsExtractedTestsPass statusBox">N/A</div>
+							</td>
+							<td>
+								<a class="jsViewExtractedBitsBitmapButton">View bitmap</a>
+							</td>
+							<td>
+								<a class="jsViewExtractedBitsColourBitmapButton">View colour bitmap</a>
+							</td>
+							<td>
+								<a class="jsViewExtractedBitsTestResultsButton">View test results</a>
+							</td>
+						</tr>
+					</table>
+
+				</div>
+
+				<!-- Total number of messages (close estimate) and whether the user should use the data or not -->
+				<table class="jsCollectionAmounts collectionAmounts jsReccomendedToUse">
+					<tr>
+						<td class="collectionLabel totalsLabel">
+							<b>Final results:</b>
+						</td>
+						<td class="collectionLabel">
+							Estimated number of messages:
+						</td>
+						<td class="totalNumOfMessages">
+							<div class="jsTotalNumOfMessages statusBox">0</div>
+						</td>
+						<td class="collectionLabel">
+							Recommended to export and use for secure messaging:
+						</td>
+						<td>
+							<div class="jsRecommendedToUse statusBox">N/A</div>
+						</td>
+					</tr>
+				</table>
+
+				<!-- General status messages -->
+				<div class="navItem jsStatusMessage statusMessage">
+					<span class="icon"></span>
+					<span class="jsStatusMessageText statusMessageText"></span>
+				</div>
+			</div>
+
+			<!-- Headings hidden and shown with JavaScript. The most recent processing results are shown at the top. -->
+			<div class="jsOutputAndResults outputAndResults">
+				<div class="jsExtractedBitsColourBitmap output extractedBitsColour">
+					<h3>Random bits after Von Neumann extraction (coloured pixels)</h3>
+					<canvas class="jsExtractedBitsColour"></canvas>
+				</div>
+				<div class="jsExtractedBitsBitmap output extractedBitsBlackWhite">
+					<h3>Random bits after Von Neumann extraction (black and white pixels)</h3>
+					<canvas class="jsExtractedBitsBlackWhite"></canvas>
+				</div>
+				<div class="jsExtractedBitsTestResults results extractedBits">
+					<h3>Random bits after Von Neumann extraction test results</h3>
+					<div class="jsExtractedBitsOverallResultLog"></div>
+				</div>
+
+				<div class="jsLeastSigBitsXoredColourBitmap output leastSigBitsXoredColour">
+					<h3>Least significant bits from both images XORed together (coloured pixels)</h3>
+					<canvas class="jsLeastSigBitsXoredColour"></canvas>
+				</div>
+				<div class="jsLeastSigBitsXoredBitmap output leastSigBitsXoredBlackWhite">
+					<h3>Least significant bits from both images XORed together (black and white pixels)</h3>
+					<canvas class="jsLeastSigBitsXoredBlackWhite"></canvas>
+				</div>
+				<div class="jsLeastSigBitsXoredTestResults results leastSigBitsXored">
+					<h3>Least significant bits from both images XORed together test results</h3>
+					<div class="jsLeastSigBitsXoredOverallResultLog"></div>
+				</div>
+
+				<div class="jsLeastSigBitsColourBitmapImageB output leastSigBitsColour imageB">
+					<h3>Least significant bits second image (coloured pixels)</h3>
+					<canvas class="jsLeastSigBitsColourImageB"></canvas>
+				</div>
+				<div class="jsLeastSigBitsBitmapImageB output leastSigBitsBlackWhite imageB">
+					<h3>Least significant bits second image (black and white pixels)</h3>
+					<canvas class="jsLeastSigBitsBlackWhiteImageB"></canvas>
+				</div>
+				<div class="jsLeastSigBitsTestResultsImageB results leastSigBits imageB">
+					<h3>Least significant bits second image test results</h3>
+					<div class="jsLeastSigBitsOverallResultLogImageB"></div>
+				</div>
+
+				<div class="jsLeastSigBitsColourBitmapImageA output leastSigBitsColour imageA">
+					<h3>Least significant bits first image (coloured pixels)</h3>
+					<canvas class="jsLeastSigBitsColourImageA"></canvas>
+				</div>
+				<div class="jsLeastSigBitsBitmapImageA output leastSigBitsBlackWhite imageA">
+					<h3>Least significant bits first image (black and white pixels)</h3>
+					<canvas class="jsLeastSigBitsBlackWhiteImageA"></canvas>
+				</div>
+				<div class="jsLeastSigBitsTestResultsImageA results leastSigBits imageA">
+					<h3>Least significant bits first image test results</h3>
+					<div class="jsLeastSigBitsOverallResultLogImageA"></div>
+				</div>
+
+				<div class="jsRepeatingPixelsHeader originalImage">
+					<h3>Repeating/stuck pixels image (visually check for red pixels)</h3>
+					<canvas class="jsRepeatingPixelsCanvas"></canvas>
+				</div>
+				<div class="jsRepeatingPixelIndexesHeader results repeatingPixelIndexes">
+					<h3>Repeating/stuck pixels index locations</h3>
+					<div class="jsRepeatingPixelIndexes"></div>
+				</div>
+
+				<div class="jsOriginalImageHeaderB originalImage imageB">
+					<h3>Original second image</h3>
+					<canvas class="jsImageCanvasB"></canvas>
+				</div>
+				<div class="jsOriginalImageHeaderA originalImage imageA">
+					<h3>Original first image</h3>
+					<canvas class="jsImageCanvasA"></canvas>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Custom random data import page
+		============================================================================================================================== -->
+		<div class="content trngCustomPageContent">
+			<div class="header">
+				<table class="pageNavigation">
+					<tr>
+						<td>
+							<a class="jsPageLoadButton blueButton" data-page="home">Home</a>
+						</td>
+						<td>
+							<input class="jsOpenUploadSettingsButton blueButton" type="button" value="Settings"><br>
+							<input class="jsStartOverButton blueButton bottomButton" type="button" value="Restart" disabled="disabled">
+						</td>
+						<td>
+							<div class="jsFileUploadInstructions fileUploadInstructions"></div><br>
+							<label class="jsFileLoaderLabel fileLoaderLabel blueButton" for="trngCustomPageFileLoader">1. Select file</label><br>
+							<input id="trngCustomPageFileLoader" class="jsFileLoaderButton fileLoader" type="file" name="fileLoader">
+							<div class="fileInfo">
+								<b>File information:</b>
+								<span class="jsFileInfo">N/A</span>
+							</div>
+						</td>
+						<td>
+							<input class="jsOpenExportPadsSettingsButton blueButton" type="button" value="2. Export" disabled="disabled">
+						</td>
+						<td class="jsTestingButtons testingButtons">
+							<a class="blueButton" href="#trngCustomPageTestResultsCanvasAnchor">View bitmap images</a><br>
+							<a class="blueButton bottomButton" href="#trngCustomPageAllTestResults">View test results</a>
+						</td>
+					</tr>
+				</table>
+
+				<!-- Current amount of entropy collected -->
+				<table class="collectionAmounts">
+					<tr>
+						<td class="collectionLabel totalsLabel">
+							<b>Totals:</b>
+						</td>
+						<td class="collectionLabel">
+							Random bits:
+						</td>
+						<td class="totalRandomBits">
+							<div class="jsTotalRandomBits statusBox">0</div>
+						</td>
+						<td class="collectionLabel">
+							Messages:
+						</td>
+						<td class="totalNumOfMessages">
+							<div class="jsTotalNumOfMessages statusBox">0</div>
+						</td>
+						<td class="collectionLabel">
+							Tests:
+						</td>
+						<td>
+							<div class="jsOverallTestsPass statusBox">N/A</div>
+						</td>
+					</tr>
+				</table>
+
+				<div class="jsStatusMessage navItem statusMessage">
+					<span class="icon"></span>
+					<span class="jsStatusMessageText statusMessageText"></span>
+				</div>
+			</div>
+
+			<!-- Headings hidden and shown with JavaScript -->
+			<div id="trngCustomPageTestResultsCanvasAnchor" class="jsOutputAndResults outputAndResults">
+				<h3 class="originalHeading">Random bits (coloured pixels)</h3>
+				<canvas class="jsRandomBitsColour"></canvas>
+
+				<h3 class="originalHeading">Random bits (black and white pixels)</h3>
+				<canvas class="jsRandomBitsBlackWhite"></canvas>
+
+				<div id="trngCustomPageAllTestResults" class="overallTestResultsText">
+					Overall test result for all groups of 20,000 bits: <span class="jsOverallResult"></span>.
+				</div>
+
+				<div class="jsAllTestResults"></div>
+			</div>
+		</div>
+
+
+		<!-- Template for random test results
+		============================================================================================================================== -->
+		<div class="isRandomnessTestResultsTemplate randomnessTestResults">
+			<div class="randomnessTestResultsHeader">
+				Group test results for <span class="jsTestGroupStartNum"></span> to <span class="jsTestGroupEndNum"></span> bits passed:
+				<span class="jsTestGroupPassed testGroupPassed"></span>.
+			</div>
+			<table class="randomnessTestResultsTable">
+				<tr>
+					<th class="testName">Test Name</th>
+					<th class="testPassCriteria">Test Pass Criteria</th>
+					<th class="testResult">Test Result</th>
+					<th class="testResult">Test Passed</th>
+				</tr>
+
+				<tr class="testGrouping">
+					<td>The Monobit Test</td>
+					<td>The test is passed if 9725 < X < 10275.</td>
+					<td class="jsMonobitTestResult"></td>
+					<td class="jsMonobitTestPassed"></td>
+				</tr>
+
+				<tr class="testGrouping">
+					<td>The Poker Test</td>
+					<td>The test is passed if 2.16 < X < 46.17.</td>
+					<td class="jsPokerTestResult"></td>
+					<td class="jsPokerTestPassed"></td>
+				</tr>
+
+				<tr class="testGrouping jsRunsTest">
+					<td>The Runs Test</td>
+					<td>
+						The test is passed if the number of runs that occur (consecutive '0' or '1' bits for lengths 1
+						through 6+) is each	within the specified interval:
+					</td>
+					<td></td>
+					<td class="jsRunsTestOverallPassed"></td>
+				</tr>
+				<tr class="subTestGrouping">
+					<td class="indented">Run length 1</td>
+					<td class="indented">2315 - 2685</td>
+					<td class="jsRunsTestResultRunLength1">
+						<span class="jsTotalRuns"></span><br>
+						<span class="smallSummaryText">(<span class="js0BitRuns"></span> zero runs + <span class="js1BitRuns"></span> one runs)</span>
+					</td>
+					<td class="jsRunsTestPassedRunLength1"></td>
+				</tr>
+				<tr class="subTestGrouping">
+					<td class="indented">Run length 2</td>
+					<td class="indented">1114 - 1386</td>
+					<td class="jsRunsTestResultRunLength2">
+						<span class="jsTotalRuns"></span><br>
+						<span class="smallSummaryText">(<span class="js0BitRuns"></span> zero runs + <span class="js1BitRuns"></span> one runs)</span>
+					</td>
+					<td class="jsRunsTestPassedRunLength2"></td>
+				</tr>
+				<tr class="subTestGrouping">
+					<td class="indented">Run length 3</td>
+					<td class="indented">527 - 723</td>
+					<td class="jsRunsTestResultRunLength3">
+						<span class="jsTotalRuns"></span><br>
+						<span class="smallSummaryText">(<span class="js0BitRuns"></span> zero runs + <span class="js1BitRuns"></span> one runs)</span>
+					</td>
+					<td class="jsRunsTestPassedRunLength3"></td>
+				</tr>
+				<tr class="subTestGrouping">
+					<td class="indented">Run length 4</td>
+					<td class="indented">240 - 384</td>
+					<td class="jsRunsTestResultRunLength4">
+						<span class="jsTotalRuns"></span><br>
+						<span class="smallSummaryText">(<span class="js0BitRuns"></span> zero runs + <span class="js1BitRuns"></span> one runs)</span>
+					</td>
+					<td class="jsRunsTestPassedRunLength4"></td>
+				</tr>
+				<tr class="subTestGrouping">
+					<td class="indented">Run length 5</td>
+					<td class="indented">103 - 209</td>
+					<td class="jsRunsTestResultRunLength5">
+						<span class="jsTotalRuns"></span><br>
+						<span class="smallSummaryText">(<span class="js0BitRuns"></span> zero runs + <span class="js1BitRuns"></span> one runs)</span>
+					</td>
+					<td class="jsRunsTestPassedRunLength5"></td>
+				</tr>
+				<tr class="subTestGrouping">
+					<td class="indented">Run length 6+</td>
+					<td class="indented">103 - 209</td>
+					<td class="jsRunsTestResultRunLength6">
+						<span class="jsTotalRuns"></span><br>
+						<span class="smallSummaryText">(<span class="js0BitRuns"></span> zero runs + <span class="js1BitRuns"></span> one runs)</span>
+					</td>
+					<td class="jsRunsTestPassedRunLength6"></td>
+				</tr>
+
+				<tr class="testGrouping">
+					<td>The Long Runs Test</td>
+					<td>The test is passed if there are no runs of length 26 or more (of either zeros or ones).</td>
+					<td class="jsLongRunsTestResult"></td>
+					<td class="jsLongRunsTestPassed"></td>
+				</tr>
+			</table>
+		</div>
+
+
+		<!-- Dialog for configuring settings when importing custom random data
+		============================================================================================================================== -->
+		<div class="jsUploadSettingsDialog uploadSettingsDialog" title="Import settings">
+			<div class="helpExplanation">Set the parameters for the random data import</div>
+
+			<label>Format of random data for file upload</label>
+			<select class="jsFileUploadType fileUploadType">
+				<option value="binary">Binary file containing random data encoded in raw binary</option>
+				<option value="hexadecimal">Plain text file containing random data encoded in hexadecimal e.g. 4a65726963686f</option>
+				<option value="base64">Plain text file containing random data encoded in Base64 e.g. SmVyaWNobw==</option>
+			</select>
+		</div>
+
+
+		<!-- Dialog for exporting pads and testing the server connection
+		============================================================================================================================== -->
+		<div class="jsExportPadsSettingsDialog exportPadsSettings" title="Export">
+			<table class="exportMethodTable">
+				<tr>
+					<th>Export to</th>
+					<td>
+						<select class="jsExportMethodSelect exportMethod">
+							<optgroup label="Export one-time pads for actual use">
+								<option value="textFile" selected>One-time pads (Text file)</option>
+								<option value="clipboard">One-time pads (Clipboard)</option>
+							</optgroup>
+							<optgroup label="Export LSBs from image 1 for external tests">
+								<option value="testExportEntropyFirstImageBinaryFile">Binary file</option>
+								<option value="testExportEntropyFirstImageBinary">ASCII binary string (Text file)</option>
+								<option value="testExportEntropyFirstImageHexadecimal">Hexadecimal string (Text file)</option>
+								<option value="testExportEntropyFirstImageBase64">Base64 string (Text file)</option>
+							</optgroup>
+							<optgroup label="Export LSBs from image 2 for external tests">
+								<option value="testExportEntropySecondImageBinaryFile">Binary file</option>
+								<option value="testExportEntropySecondImageBinary">ASCII binary string (Text file)</option>
+								<option value="testExportEntropySecondImageHexadecimal">Hexadecimal string (Text file)</option>
+								<option value="testExportEntropySecondImageBase64">Base64 string (Text file)</option>
+							</optgroup>
+							<optgroup label="Export XORed LSBs from both images for external tests">
+								<option value="testExportEntropyXoredBinaryFile">Binary file</option>
+								<option value="testExportEntropyXoredBinary">ASCII binary string (Text file)</option>
+								<option value="testExportEntropyXoredHexadecimal">Hexadecimal string (Text file)</option>
+								<option value="testExportEntropyXoredBase64">Base64 string (Text file)</option>
+							</optgroup>
+							<optgroup label="Export extracted bits for external tests">
+								<option value="testExportEntropyExtractedBinaryFile">Binary file</option>
+								<option value="testExportEntropyExtractedBinary">ASCII binary string (Text file)</option>
+								<option value="testExportEntropyExtractedHexadecimal">Hexadecimal string (Text file)</option>
+								<option value="testExportEntropyExtractedBase64">Base64 string (Text file)</option>
+							</optgroup>
+						</select>
+					</td>
+				</tr>
+			</table>
+
+			<div class="helpExplanation">
+				<span class="jsExportOneTimePadsHelpExplanation oneTimePads">Fill out all the details to make importing easier for other users:</span>
+				<span class="jsExportRandomDataHelpExplanation randomData">Export the random data for testing in an external program:</span>
+			</div>
+			<div class="jsStatusMessage statusMessage">
+				<span class="icon"></span>
+				<span class="jsStatusMessageText statusMessageText"></span>
+			</div>
+
+			<fieldset class="jsExportServerDetails">
+				<legend>Server details</legend>
+				<table>
+					<tr>
+						<th>Server address and port</th>
+						<td>
+							<input class="jsExportServerAddressAndPort" type="text" placeholder="http://ip-or-domain.com:8080/group-name/">
+						</td>
+					</tr>
+					<tr>
+						<th>Server API key (512 bits)</th>
+						<td>
+							<input class="jsExportServerKey" type="text">
+						</td>
+					</tr>
+				</table>
+				<div class="buttons">
+					<input class="jsExportCreateServerKeyButton blueButton" type="button" value="1. Create server key">
+					<input class="jsExportTestServerButton blueButton" type="button" value="2. Test server connection">
+				</div>
+			</fieldset>
+
+			<fieldset class="jsExportChatGroupDetails">
+				<legend>Chat group details</legend>
+				<table>
+					<tr>
+						<th>Number of users in group</th>
+						<td>
+							<select class="jsExportNumOfGroupUsersSelect">
+								<option value="2" selected>Two users</option>
+								<option value="3">Three users</option>
+								<option value="4">Four users</option>
+								<option value="5">Five users</option>
+								<option value="6">Six users</option>
+								<option value="7">Seven users</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th class="nicknamesHeading">Custom user nicknames</th>
+						<td class="jsExportNicknames nicknames">
+							<div class="isExportNicknameTemplate jsExportNickname">
+								<label>Callsign</label> <input class="jsExportNicknameInput-callsign" type="text" maxlength="12" value="Callsign">
+							</div>
+							<div class="jsExportNickname">
+								<label>Alpha</label> <input class="jsExportNicknameInput-alpha" type="text" maxlength="12" value="Alpha">
+							</div>
+							<div class="jsExportNickname">
+								<label>Bravo</label> <input class="jsExportNicknameInput-bravo" type="text" maxlength="12" value="Bravo">
+							</div>
+						</td>
+					</tr>
+				</table>
+			</fieldset>
+			<fieldset class="jsExportDatabaseEncryptionPassword databaseEncryptionPassword">
+				<legend>Database encryption password</legend>
+				<table>
+					<tr>
+						<th>Passphrase</th>
+						<td>
+							<input class="jsExportPassphraseTextInput" type="password">
+						</td>
+					</tr>
+					<tr>
+						<th>Passphrase (repeat)</th>
+						<td>
+							<input class="jsExportPassphraseRepeatTextInput" type="password">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="exportDisplayPassword">Display password</label>
+						</th>
+						<td>
+							<input id="exportDisplayPassword" class="jsExportDisplayPasswordCheckbox" type="checkbox">
+						</td>
+					</tr>
+				</table>
+				<div class="jsExportPassphraseStrengthContainer passphraseStrength">
+					Estimated strength:
+					<span class="jsExportPassphraseStrengthText text">
+						<span class="jsExportPassphraseStrengthBits bits">0</span> bits
+					</span>
+				</div>
+			</fieldset>
+			<div class="jsExportShowAdvancedOptionsButton buttonShowAdvancedOptions">Advanced options for international travel &ndash; Click to show</div>
+			<fieldset class="jsExportAdvancedOptions advancedOptions">
+				<legend>Advanced options for international travel</legend>
+				<table>
+					<tr class="exportKeyfileRow">
+						<th>
+							<label for="exportStoreKeyfileSeparately" title="If you store the keyfile in another location or write it down somewhere discreetly, you can make it practically impossible to decrypt the one-time pads, even if you are forced to reveal the password at customs.">Store the PBKDF salt as a separate keyfile</label>
+						</th>
+						<td>
+							<input id="exportStoreKeyfileSeparately" class="jsExportStoreKeyfileSeparatelyCheckbox" type="checkbox">
+						</td>
+					</tr>
+					<tr class="exportIterationsRow">
+						<th>
+							<label for="exportEnterPbkdfIterationsOnDecrypt" title="By choosing custom iterations and choosing to enter that secret number at decryption time, you increase the brute force effort required for an attacker.">Enter the PBKDF iterations at decryption time</label>
+						</th>
+						<td>
+							<input id="exportEnterPbkdfIterationsOnDecrypt" class="jsExportEnterPbkdfIterationsOnDecryptCheckbox" type="checkbox">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="exportPbkdfKeccakIterationsTextInput"  title="By increasing the number of iterations this increases the effort to brute force decrypt the one-time pads. Or if the password strength is fine and your chat partner/s have slow performing devices you can decrease the number to make it easier for them to decrypt.">
+								Number of PBKDF Keccak iterations
+							</label>
+						</th>
+						<td>
+							<input id="exportPbkdfKeccakIterationsTextInput" class="jsExportPbkdfKeccakIterationsTextInput numOfIterations" type="text" value="10000">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="exportPbkdfSkeinIterationsTextInput"  title="By increasing the number of iterations this increases the effort to brute force decrypt the one-time pads. Or if the password strength is fine and your chat partner/s have slow performing devices you can decrease the number to make it easier for them to decrypt.">
+								Number of PBKDF Skein iterations
+							</label>
+						</th>
+						<td>
+							<input id="exportPbkdfSkeinIterationsTextInput" class="jsExportPbkdfSkeinIterationsTextInput numOfIterations" type="text" value="10000" title="By increasing the number of iterations this increases the effort to brute force decrypt the one-time pads. Or if the password strength is fine and your chat partner/s have slow performing devices you can decrease the number to make it easier for them to decrypt.">
+						</td>
+					</tr>
+				</table>
+			</fieldset>
+			<div class="buttons">
+				<input class="jsExportPadsButton blueButton" type="button" value="3. Export one-time pads">
+				<a class="jsExportPadsFileLink fileLink" download="random-data.bin" href=""></a>
+			</div>
+		</div>
+
+
+		<!-- Custom random data import page
+		============================================================================================================================== -->
+		<div class="content trngCapturePageContent">
+			<div class="header">
+				<table class="pageNavigation">
+					<tr>
+						<td>
+							<a class="jsPageLoadButton blueButton" data-page="home">Home</a>
+						</td>
+						<td>
+							<a class="jsTakePhotoButton blueButton isDisabled">1. Take photograph</a>
+						</td>
+						<td>
+							<input class="jsRestartButton blueButton" type="button" value="Restart">
+						</td>
+					</tr>
+				</table>
+
+				<!-- General status messages -->
+				<div class="navItem jsStatusMessage statusMessage">
+					<span class="icon"></span>
+					<span class="jsStatusMessageText statusMessageText"></span>
+				</div>
+
+				<div class="jsVideoStreamContainer videoStream">
+					<h3>Video stream</h3>
+					<video class="jsWebcamStream"></video>
+				</div>
+				<div class="jsPhotographContainer capturedPhotograph">
+					<h3>Captured photograph</h3>
+					<canvas class="jsPhotoCanvas"></canvas>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Combine random data files with concatenation page
+		============================================================================================================================== -->
+		<div class="content trngConcatCombinerPageContent">
+			<div class="header">
+				<table class="pageNavigation">
+					<tr>
+						<td>
+							<a class="jsPageLoadButton blueButton" data-page="home">Home</a>
+						</td>
+						<td>
+							<input class="jsRestartButton blueButton" type="button" value="Restart" disabled="disabled">
+						</td>
+						<td>
+							<label class="jsFileLoaderLabel imageLoaderLabel blueButton" for="trngConcatCombinerFileLoader">1. Select text files</label><br>
+							<input id="trngConcatCombinerFileLoader" class="jsFileLoader imageLoader" type="file" name="imageLoader" multiple="multiple">
+						</td>
+						<td>
+							<input class="jsExportFileButton blueButton" type="button" value="2. Save file" disabled="disabled">
+							<a class="jsExportFileLink exportFileLink" download="random-data.bin" href=""></a>
+						</td>
+					</tr>
+				</table>
+
+				<div class="instruction">
+					Select text files containing ASCII hexadecimal symbols to be concatenated together and converted into a single binary file.
+				</div>
+
+				<table class="jsFileInfoTable collectionAmounts fileInfo">
+					<tr class="jsFileInfoRow isFileInfoRowTemplate">
+						<td class="collectionLabel">
+							File name:
+						</td>
+						<td>
+							<span class="jsFileName fileName">N/A</span>
+						</td>
+						<td class="collectionLabel">
+							Total hex symbols:
+						</td>
+						<td>
+							<span class="jsTotalHexSymbols totalHexSymbols">0</span>
+						</td>
+						<td class="collectionLabel">
+							Size:
+						</td>
+						<td>
+							<span class="jsFileSize fileSize">0</span>
+						</td>
+					</tr>
+				</table>
+
+				<!-- General status messages -->
+				<div class="jsStatusMessage navItem statusMessage">
+					<span class="icon"></span>
+					<span class="jsStatusMessageText statusMessageText"></span>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Combine random data files with exclusive OR (XOR) page
+		============================================================================================================================== -->
+		<div class="content trngXorCombinerPageContent">
+			<div class="header">
+				<table class="pageNavigation">
+					<tr>
+						<td>
+							<a class="jsPageLoadButton blueButton" data-page="home">Home</a>
+						</td>
+						<td>
+							<input class="jsRestartButton blueButton" type="button" value="Restart" disabled="disabled">
+						</td>
+						<td>
+							<label class="jsFileLoaderLabel imageLoaderLabel blueButton" for="trngXorCombinerFileLoader">1. Select text files</label><br>
+							<input id="trngXorCombinerFileLoader" class="jsFileLoader imageLoader" type="file" name="imageLoader" multiple="multiple">
+						</td>
+						<td>
+							<input class="jsExportFileButton blueButton" type="button" value="2. Save file" disabled="disabled">
+							<a class="jsExportFileLink exportFileLink" download="random-data.bin" href=""></a>
+						</td>
+					</tr>
+				</table>
+
+				<div class="instruction">
+					Select text files containing ASCII hexadecimal symbols to be XORed together and converted into a single binary file.
+				</div>
+
+				<table class="jsFileInfoTable collectionAmounts fileInfo">
+					<tr class="jsFileInfoRow isFileInfoRowTemplate">
+						<td class="collectionLabel">
+							File name:
+						</td>
+						<td>
+							<span class="jsFileName fileName">N/A</span>
+						</td>
+						<td class="collectionLabel">
+							Total hex symbols:
+						</td>
+						<td>
+							<span class="jsTotalHexSymbols totalHexSymbols">0</span>
+						</td>
+						<td class="collectionLabel">
+							Size:
+						</td>
+						<td>
+							<span class="jsFileSize fileSize">0</span>
+						</td>
+					</tr>
+				</table>
+
+				<!-- General status messages -->
+				<div class="jsStatusMessage navItem statusMessage">
+					<span class="icon"></span>
+					<span class="jsStatusMessageText statusMessageText"></span>
 				</div>
 			</div>
 		</div>

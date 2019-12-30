@@ -1,0 +1,246 @@
+/**
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2019  Joshua M. David
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	CHAT PAGE
+/* --------------------------------------- */
+
+.chatPage,
+.chatPageContent {
+	height: 100%;
+}
+.chatPage body {
+	background-color: #eee;
+	display: flex;
+	flex-direction: column;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 100%;
+	margin: 0 auto;
+	max-width: 540px;
+	padding: 5px;
+}
+
+/* Chat page header and notification functionality buttons */
+.chatPage h2 {
+	position: relative;
+}
+.chatPage .notificationButtons {
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.chatPage .notificationButtons i {
+	cursor: pointer;
+}
+.chatPage .enableDisableVibrationLightningIcon,
+.chatPage .enableDisableWebNotificationsIcon {
+	padding-left: 14px;
+}
+
+/* Container for chat input, send button and message checked status */
+.chatPage .chatEntry {
+	padding: 0 0 10px 0;
+}
+.chatPage .chatEntry table {
+	margin: 0 auto;
+	width: 100%;
+}
+.chatPage .chatEntry td {
+	padding: 0;
+	vertical-align: top;
+	width: 50%;
+}
+.chatPage .chatEntry td:first-child {
+	text-align: left;
+}
+.chatPage .chatEntry td:last-child {
+	text-align: right;
+}
+.chatPage .sendMessageButton {
+	margin-top: 3px;
+}
+
+/* Text area for chat input */
+.chatPage .chatInput {
+	border: 1px solid #e7d9e1;
+	border-radius: 0;
+	display: block;
+	font-size: 12px;
+	height: 67px;
+	margin: 7px 0;
+	padding: 2px;
+	resize: none;
+	width: 100%;
+}
+.chatPage .chatInput:focus {
+	border: 1px solid #3399cc;
+}
+
+/* When the messages were last checked */
+.chatPage .messagesLastCheckedStatus {
+	font-size: 10px;
+	color: #373737;
+}
+
+/* Main chat window */
+.chatPage .mainChat {
+	background-color: #fff;
+	border: 1px solid #e7d9e1;
+	height: calc(100% - 230px);
+	margin: 0 auto;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	width: 100%;
+}
+
+/* The template is copied and used by jQuery */
+.chatPage .isMessageTemplate {
+	display: none;
+}
+
+/* The template is copied and used by jQuery */
+.chatPage .isUrlTemplate {
+	display: none;
+}
+
+/* Style for the message container */
+.chatPage .mainChat .message {
+	border-radius: 7px;
+	-webkit-box-shadow: 1px 1px 3px 0px rgba(0,0,0,0.7), 1px 1px 7px rgba(255,255,255, 0.77) inset;
+	box-shadow: 1px 1px 3px 0px rgba(0,0,0,0.7), 1px 1px 7px rgba(255,255,255, 0.77) inset;
+	clear: both;
+	max-width: 90%;
+	margin: 5px;
+	min-width: 225px;
+	padding: 7px;
+	position: relative;
+}
+
+/* The pad identifier */
+.chatPage .mainChat .message .padIdentifier {
+	font-size: 10px;
+	color: #373737;
+}
+.chatPage .mainChat .message .padIdentifier span {
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+/* From which user and the date time for the message */
+.chatPage .mainChat .message .fromUserAndDateTime {
+	font-size: 10px;
+	color: #373737;
+}
+.chatPage .mainChat .message .fromUserAndDateTime span {
+	font-weight: bold;
+}
+
+/* Text style for the message */
+.chatPage .mainChat .message .messageText {
+	font-size: 12px;
+	padding-top: 10px;
+	font-weight: bold;
+	word-break: keep-all;
+	overflow: auto;
+}
+
+/* Message MAC authentication status */
+.chatPage .mainChat .message .messageStatus {
+	font-size: 10px;
+	font-weight: bold;
+	position: absolute;
+	top: 7px;
+	right: 7px;
+	color: #373737;
+}
+.chatPage .mainChat .message .messageStatus.isSendSuccess,
+.chatPage .mainChat .message .messageStatus.isMessageValid {
+	color: green;
+}
+.chatPage .mainChat .message .messageStatus.isSendError,
+.chatPage .mainChat .message .messageStatus.isMessageInvalid {
+	color: red;
+}
+
+/* Styles for message received and sent */
+.chatPage .isMessageReceived {
+	float: left;
+}
+.chatPage .isMessageReceived.alpha {
+	background: #ccffff;
+}
+.chatPage .isMessageReceived.bravo {
+	background: #99ffcc;
+}
+.chatPage .isMessageReceived.charlie {
+	background: #ccffcc;
+}
+.chatPage .isMessageReceived.delta {
+	background: #ccff99;
+}
+.chatPage .isMessageReceived.echo {
+	background: #e6e6ff;
+}
+.chatPage .isMessageReceived.foxtrot {
+	background: #cfe7f5;
+}
+.chatPage .isMessageReceived.golf {
+	background: #ffffcc;
+}
+.chatPage .isMessageSent {
+	float: right;
+	background: #dcdcdc;
+}
+
+/* How many messages/pads remaining in the database */
+.chatPage .messagesRemaining {
+	font-size: 10px;
+	color: #373737;
+}
+
+/* How many characters remaining in current message to be sent */
+.chatPage .messageCharsRemaining {
+	font-size: 10px;
+	color: #373737;
+	text-align: right;
+}
+
+/* Online status for users */
+.chatPage .groupUsers {
+	font-size: 10px;
+	color: #373737;
+	margin-top: 1px;
+}
+.chatPage .groupUsers .user {
+	display: inline-block;
+	margin-right: 7px;
+}
+.chatPage .groupUsers .user.isUserTemplate {
+	display: none;
+}
+.chatPage .groupUsers .onlineStatusCircle {
+	background-color: green;
+	border-radius: 50%;
+	display: inline-block;
+	height: 7px;
+	width: 7px;
+}
+.chatPage .groupUsers .onlineStatusCircle.isOnline {
+	background-color: green;
+}
+.chatPage .groupUsers .onlineStatusCircle.isOffline {
+	background-color: red;
+}
+.chatPage .groupUsers .numOfPadsRemaining {
+	font-weight: bold;
+}

@@ -1,0 +1,195 @@
+/**
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2019  Joshua M. David
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	TRNG RANDOM DATA COMBINER PAGE
+/* --------------------------------------- */
+
+.trngConcatCombinerPage body {
+	background-color: #eee;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	height: 100%;
+}
+
+/* Fixed header section */
+.trngConcatCombinerPage .header {
+	background-color: #eee;
+	display: block;
+	left: 0;
+	padding: 5px;
+	right: 0;
+	top: -1px;
+	z-index: 1;
+	padding-bottom: 20px;
+}
+
+/* Buttons along the top */
+.trngConcatCombinerPage .pageNavigation {
+	margin-bottom: 20px;
+	width: 100%;
+}
+.trngConcatCombinerPage .pageNavigation .blueButton {
+	text-align: center;
+}
+.trngConcatCombinerPage .pageNavigation td:first-child {
+	vertical-align: top;
+}
+.trngConcatCombinerPage .pageNavigation td:nth-child(2) {
+	padding-left: 5px;
+	vertical-align: top;
+}
+.trngConcatCombinerPage .pageNavigation td:nth-child(3) {
+	text-align: center;
+	width: 100%;
+}
+.trngConcatCombinerPage .pageNavigation td:nth-child(4) {
+	text-align: center;
+	vertical-align: top;
+}
+.trngConcatCombinerPage .pageNavigation td:last-child {
+	padding-left: 5px;
+	text-align: center;
+	vertical-align: top;
+	width: 97px;
+}
+.trngConcatCombinerPage .programTitle {
+	margin: 14px 0;
+}
+.trngConcatCombinerPage .testingButtons {
+	opacity: 0.5;
+}
+.trngConcatCombinerPage .testingButtons.active {
+	opacity: 1;
+}
+.trngConcatCombinerPage .fileInfo {
+	margin-top: 7px;
+	text-align: center;
+}
+.trngConcatCombinerPage .fileInfo:first-of-type {
+	margin-top: 15px;
+}
+
+/* Hide extra long filename for uploaded image */
+.trngConcatCombinerPage .imageLoader {
+	display: none;
+}
+
+/* Hide the anchor tag which is used to trigger the file download */
+.trngConcatCombinerPage .exportFileLink {
+	display: none;
+}
+
+/* Display status of currently collected entropy */
+.trngConcatCombinerPage .collectionAmounts {
+	display: none;
+	font-size: 12px;
+	line-height: 12px;
+	margin: 7px auto 0 auto;
+}
+.trngConcatCombinerPage .collectionLabel {
+	padding-left: 7px;
+}
+.trngConcatCombinerPage .totalsLabel {
+	font-weight: bold;
+	padding-left: 14px;
+}
+.trngConcatCombinerPage .statusBox,
+.trngConcatCombinerPage .fileInfo span {
+	background-color: #dadada;
+	border-radius: 3px;
+	color: #000;
+	display: block;
+	font-weight: bold;
+	margin-left: 1px;
+	min-width: 14px;
+	padding: 2px 5px;
+	text-align: right;
+	text-transform: capitalize;
+}
+.trngConcatCombinerPage .collectionAmounts a {
+	background-color: #2ca0ca;
+	border-radius: 3px;
+	color: #fff;
+	cursor: pointer;
+	display: block;
+	margin-left: 5px;
+	padding: 2px 5px;
+	text-decoration: none;
+}
+.trngConcatCombinerPage .fileTypeA.warning,
+.trngConcatCombinerPage .fileTypeB.warning {
+	background-color: #ff7a00;
+	color: #fff;
+	cursor: help;
+}
+.trngConcatCombinerPage .collectionAmounts .statusBox.passed {
+	background-color: green;
+	color: #fff;
+}
+.trngConcatCombinerPage .collectionAmounts .statusBox.failed {
+	background-color: red;
+	color: #fff;
+}
+
+/* Put status in middle */
+.trngConcatCombinerPage .statusMessage {
+	margin-top: 20px;
+	text-align: center;
+}
+
+/* Start of processed output and results */
+.trngConcatCombinerPage .outputAndResults {
+	padding: 5px;
+}
+
+/* Output headings */
+.trngConcatCombinerPage .originalImage,
+.trngConcatCombinerPage .output,
+.trngConcatCombinerPage .results {
+	display: none;
+}
+.trngConcatCombinerPage h3 {
+	font-size: 12px;
+	font-weight: bold;
+	margin: 5px 0;
+	padding-top: 5px;
+	position: relative;
+}
+/* Anchor tag offset because of fixed header */
+.trngConcatCombinerPage h3 span {
+	position: absolute;
+	top: -157px;
+}
+
+/* Add margin to bottom of each image */
+.trngConcatCombinerPage canvas {
+	display: block;
+	margin-bottom: 20px;
+}
+
+/* Randomness test styles */
+.trngConcatCombinerPage .testSuccess {
+	color: green;
+}
+.trngConcatCombinerPage .testFailure {
+	color: red;
+}
+
+.trngConcatCombinerPage .isFileInfoRowTemplate {
+	display: none;
+}
+
+.instruction {
+	margin: 10px 0;
+	text-align: center;
+}

@@ -1,0 +1,47 @@
+/**
+ * Jericho Comms - Information-theoretically secure communications
+ * Copyright (c) 2013-2019  Joshua M. David
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation in version 3 of the License.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see [http://www.gnu.org/licenses/].
+ */
+
+/* --------------------------------------- */
+/*	CREATE PADS MENU PAGE
+/* --------------------------------------- */
+
+.createPage body {
+	background-color: #eee;
+	color: #111;
+	display: flex;
+	flex-direction: column;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	height: 100%;
+	margin: 0 auto;
+	max-width: 540px;
+	padding: 10px;
+}
+
+/* Explanation of functionality */
+.createPage .information {
+	text-align: left;
+}
+
+/* Instructions */
+.createPage .generatePadsMenu p {
+	text-align: center;
+}
+
+.createPage .centerMenuButton {
+	text-align: center;
+}
+
+/* Make the link appear clickable */
+.createPage .btnOpenGeneratePadsMenu {
+	cursor: pointer;
+}
