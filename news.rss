@@ -5,7 +5,13 @@
     <link>http://joshua-m-david.github.io/jerichoencryption/</link>
     <description>Site and software updates for Jericho Comms</description>
     <language>en-gb</language>
-    <copyright>2013 - 2019 Joshua M. David</copyright>
+    <copyright>2013 - 2024 Joshua M. David</copyright>
+	<item>
+      <title>Version 2.0.0 released</title>
+      <pubDate>Fri 25 Oct 2024 23:00:00 GMT</pubDate>
+	  <link>http://joshua-m-david.github.io/jerichoencryption/download.html#release2.0.0</link>
+      <description><![CDATA[Jericho Comms version 2.0.0 released with compatibility for Debian 11, also zero meta data (encrypted and authenticated) traffic between the clients and server.]]></description>
+    </item>
 	<item>
       <title>Version 1.5.4 released</title>
       <pubDate>Sat 30 Dec 2019 12:00:00 GMT</pubDate>

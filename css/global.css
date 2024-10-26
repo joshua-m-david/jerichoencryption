@@ -1,6 +1,6 @@
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -236,6 +236,9 @@ sub {
 .page .diagram img {
 	height: auto;
 	max-width: 100%;
+}
+.page .diagram.halfSize img {
+	max-width: 50%;
 }
 .page .tableOfContents ol {
 	color: #000;

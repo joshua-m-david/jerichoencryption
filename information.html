@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2019  Joshua M. David
+	Copyright (c) 2013-2024  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -53,16 +53,16 @@
 					<h1 class="nonPrintable">Technical design</h1>
 					<p class="nonPrintable">
 						This page is printable and can be downloaded as a
-						<a href="files/jericho-comms-v1.5.4.pdf">PDF white paper</a><sup><a href="files/jericho-comms-v1.5.4.pdf.asc">[sig]</a></sup>.
+						<a href="files/jericho-comms-v2.0.0.pdf">PDF white paper</a><sup><a href="files/jericho-comms-v2.0.0.pdf.asc">[sig]</a></sup>.
 					</p>
 
 
 					<div class="printableHeader printable">
 						<div class="title">Jericho Comms&trade;</div>
-						<div class="version">Version 1.5.4</div>
-						<div class="date">30 December 2019</div>
+						<div class="version">Version 2.0.0</div>
+						<div class="date">26 October 2024</div>
 						<div class="author">Joshua M. David</div>
-                        <div class="email">joshua.m.david [at] tutanota [dot] de</div>
+                        <div class="email">joshua [.] m [.] david [at] protonmail [.] com</div>
 					</div>
 					<div class="printableAbstract">
 						<h2 id="abstract"><span>1</span> Abstract</h2>
@@ -98,9 +98,9 @@
 							<a href="#ref29">stream ciphers<sup>[29]</sup></a> and MACs to encrypt and authenticate the
 							database.
 
-							Other features of the program include a strong MAC for authentication between the clients
-							and the server, a decoy messaging system to frustrate
-							<a href="#ref65">traffic analysis<sup>[65]</sup></a> and a self
+							Other features of the program include: zero meta data for network traffic between the
+							clients and the server by way of encryption and authentication, a decoy messaging system to
+							frustrate <a href="#ref65">traffic analysis<sup>[65]</sup></a> and a self
 							destruct mechanism which can wipe all the client databases in case of an emergency.
 						</p>
 						<p>
@@ -137,12 +137,13 @@
 							<li><a href="#how-it-works">How it works</a></li>
 							<li><a href="#configuring-own-server">Server configuration</a></li>
 							<li>
-								<a href="#server-authentication-protocol">Server authentication protocol</a><br>
+								<a href="#client-server-protocol">Client - server zero meta-data encryption and authentication protocol</a><br>
 								<ol class="singleNumber">
 									<li><a href="#design-goals">Design goals</a></li>
-									<li><a href="#limitations">Limitations</a></li>
+									<li><a href="#limitations">Current limitations</a></li>
 									<li><a href="#initial-setup">Initial setup</a></li>
-									<li><a href="#send-and-verify-api-request">Client API request</a></li>
+									<li><a href="#client-api-request">Client API request</a></li>
+									<li><a href="#server-request-validation">Server request validation</a></li>
 									<li><a href="#server-api-response">Server API response</a></li>
 								</ol>
 							</li>
@@ -177,12 +178,8 @@
 							</li>
 							<li><a href="#using-html5">Using HTML5</a></li>
 							<li>
-								<a href="#json-rest-api">REST API using JSON</a>
+								<a href="#rest-api">REST API</a>
 								<ol>
-									<li><a href="#api-send-message">Send message</a></li>
-									<li><a href="#api-send-message-response">Send message server response</a></li>
-									<li><a href="#api-receive-messages">Receive messages request</a></li>
-									<li><a href="#api-receive-messages-response">Receive messages response</a></li>
 									<li><a href="#api-auto-nuke">Initiate self destruct request</a></li>
 									<li><a href="#api-auto-nuke-response">Self destruct initiated response</a></li>
 								</ol>
@@ -356,7 +353,7 @@
 						The advantages of this software are:
 					</p>
 					<ul class="advantagesList">
-						<li><b>Fully open source</b> &ndash; anyone can freely contribute, distribute, download, modify and use the software.</li>
+						<li><b>Fully open source client and server software</b> &ndash; anyone can freely contribute, distribute, download, modify and use.</li>
 						<li><b>Simple to understand and use</b> &ndash; anyone can use including journalists and novice computer users.</li>
 						<li><b>Runs on fully open source environments</b> &ndash; no need to trust a closed source operating system.</li>
 						<li><b>End-to-end encrypted</b> &ndash; no service provider in the middle with ability to read user messages.</li>
@@ -366,10 +363,10 @@
 						<li><b>Information-theoretically secure</b> &ndash; messages remain secure even against unlimited computing power.</li>
 						<li><b>Automated decoy messages</b> &ndash; hides the real number of messages being sent across the network.</li>
 						<li><b>Limited network metadata</b> &ndash; hinders traffic fingerprinting, analysis and automated remote exploits.</li>
-						<li><b>Not wholly reliant on NIST</b> &ndash; standards are combined with algorithms from trusted cryptographers.</li>
+						<li><b>Not wholly reliant on NIST</b> &ndash; standards are combined with algorithms from trusted community cryptographers.</li>
 						<li><b>Full design whitepaper</b> &ndash; design is verifiable and auditable for cryptographers and security researchers.</li>
 						<li><b>Critical code is unit tested</b> &ndash; strong confidence that the cryptography and software works correctly.</li>
-						<li><b>Dependencies are vetted</b> &ndash; by avoiding use of package managers (NPM, Composer), libraries are not blindly trusted.</li>
+						<li><b>Dependencies are vetted and tested</b> &ndash; by avoiding use of package managers (NPM, Composer etc), libraries and their automatic updates are not blindly trusted.</li>
 						<li><b>Code is well written and commented</b> &ndash; easily verifiable for security researchers and other developers.</li>
 						<li><b>Code is written to secure coding guidelines</b> &ndash; coded defensively with knowledge of common pitfalls.</li>
 						<li><b>Code is written in memory safe languages</b> &ndash; limited attack surface for buffer overflows and exploits.</li>
@@ -408,10 +405,10 @@
 							</th>
                         </tr>
 						<tr>
-							<th>&otimes;</th>
+							<th>&times;</th>
 							<th>
 								Regular multiplication. E.g.<br>
-								<code>5 &otimes; 5 = 25</code>.
+								<code>5 &times; 5 = 25</code>.
 							</th>
                         </tr>
 						<tr>
@@ -457,20 +454,68 @@
 						implementation details can be found in the source code which is provided with every download.
 					</p>
 					<p class="diagram">
-						<a href="img/network-architecture.png">
-							<img alt="Network architecture diagram" src="img/network-architecture.png" style="width: 100%">
+						<a href="img/network-architecture-v2.0.0.png">
+							<img alt="Network architecture diagram" src="img/network-architecture-v2.0.0.png" style="width: 100%">
 						</a>
 					</p>
+					<h3>Diagram legend</h3>
+					<ol>
+						<li>
+							The first user generates the one-time pads (encryption keys) client side using the program's
+							True Random Number Generator (TRNG) and stores them encrypted on portable storage media.
+							The user then personally delivers the one-time pads to the other group users who are likely
+							in different geographical locations. After secure delivery to all group users, the portable
+							storage media should be securely erased or physically destroyed.
+						</li>
+						<li>
+							Each user loads up the one-time pads into the program. Each user is allocated their own
+							set of one-time pads for sending. This prevents another user from reusing another user's
+							one-time pads. The portable storage media should then be erased.
+						</li>
+						<li>
+							The program encrypts each message with a one-time pad. The message is also authenticated
+							with an information-theoretically secure MAC. The one-time pad is then automatically
+							deleted from the user's local database, then the encrypted message and MAC are sent to
+							the server.
+						</li>
+						<li>
+							A randomly generated Group ID of 64 bits and Group API Key of 512 bits exists on each
+							client and the server. All data sent between the client and server is additionally encrypted
+							using Skein-512 hash algorithm as a stream cipher similar to CTR mode and authenticated
+							and verified with a MAC also using the Skein-512 hash algorithm. This extra layer of
+							encryption between the clients and servers hides all meta data about the protocol because
+							all the requests and responses are sent looking like a random blob of data.
+						</li>
+						<li>
+							A dedicated server or VPS, which is managed by one of the participating chat users,
+							receives the encrypted message and stores it for the other group users.
+						</li>
+						<li>
+							The server web application provides an API which reveals no meta data. The server
+							database provides temporary storage for the one-time pad encrypted messages only. Once
+							the message has been received and read by all users on the clients it is automatically
+							removed from the server after a short interval.
+						</li>
+						<li>
+							The other user/s receive the encrypted message, determine which one-time pad was used
+							to encrypt it, then decrypt and verify the authenticity of the message locally.
+						</li>
+						<li>
+							The one-time pad is deleted from each receiving user's local database after they have
+							read the encrypted message.
+						</li>
+					</ol>
+					<h3>Diagram notes</h3>
 					<ul>
 						<li>
 							The program uses a simple <a href="#ref49">star network<sup>[49]</sup></a> design. One particular
 							point about this client-server architecture is that the clients are the only devices which
-							have the one-time pads (encryption keys). The server effectively only contains encrypted
+							have the one-time pads (encryption keys). The server effectively only contains end-to-end encrypted
 							data. The clients operate on a request, response basis. Because of this, the clients
 							which have the sensitive encryption keys should have their firewalls configured to block <b>all</b>
 							incoming traffic by default and only receive incoming data as responses to outgoing requests
 							that they have specifically made to the server. The responses from the server are always
-							authenticated using a shared API Key and any malformed or unauthentic responses are immediately
+							authenticated using a shared Group API Key and any malformed or unauthentic responses are immediately
 							discarded. This makes the client machines a lot more resilient to attack and exfiltration of
 							encryption keys. Assuming the client machines are single purpose and are not used for
 							untrusted web browsing or other activities this is a very small attack surface. To use it
@@ -481,14 +526,16 @@
 							The server should have a firewall as well which only allows incoming application data on one
 							port and optionally on an SSH port for management. The server application expects a correctly
 							authenticated packet from the client or it discards the request and responds with a
-							<code>HTTP/1.1 200 OK</code> header response. The attacker will not know if the request was
-							successful or not, however the client will know due to an unauthentic MAC. There is the
-							potential for a <a href="#ref51">0-day vulnerability<sup>[51]</sup></a>
+							<code>HTTP/1.1 200 OK</code> header response. This header is on all requests successful or
+							not and random data is always in the body of the response whether successful or not.
+							The attacker will not know if the request was successful or not, however the client will
+							know due to an unauthentic MAC after decoding the response body.
+							There is some small potential for a <a href="#ref51">0-day vulnerability<sup>[51]</sup></a>
 							in the server application layers e.g. in Apache or PHP, but compromising the server will not
 							compromise confidentiality or authenticity of messages as they are encrypted end-to-end. If
 							an attacker gained access to the server they could only interfere with the server's operations
 							to block messages from being sent or received at all. If that is the case, the users can merely
-							setup a new server quickly. In future multiple servers will be able to be used to provide
+							setup a new server quickly. In future, multiple servers will be able to be used to provide
 							high availability.
 						</li>
 					</ul>
@@ -541,6 +588,20 @@
 									insecure channel.
 								</li>
 								<li>
+									During an epidemic or a pandemic such as COVID-19, it's still possible to exchange one-time pads
+									safely. For example, meet the other chat participants in person at a safe distance
+									e.g. 5+ meters in an outdoor area with plenty of ventilation. Use N95 (or better)
+									respirator masks to be extra safe. Put the memory storage device in a ziplock plastic
+									bag and	the other participants will handle it with gloves until the pads are transferred
+									off the memory storage device to their local computer/devices.<br>
+									<br>
+									In some countries, only the supermarkets, pharmacies and gas stations remained open.
+									In these cases, just meet at the supermarket or gas station around the same time
+									and use the dead drop method. You can even stick around to watch from a distance
+									and make sure they actually pick up the memory storage device off the bananas or
+									canned beans, depending on where you put it.
+								</li>
+								<li>
 									If the country a user is residing in does not inspect internal mail, a sealed
 									(tamperproof) courier envelope can be hand signed and sent with reasonable assurance
 									that it won't be compromised. If the package appears to be opened on delivery, the
@@ -550,8 +611,8 @@
 									something else though.
 								</li>
 								<li>
-									Usually it is not difficult to get a laptop, portable hard drive, MicroSD card, or
-									SD card through Customs at national or international airports. Users can also hide
+									Usually it is not difficult to get a cellphone, laptop, portable hard drive, MicroSD card,
+									or SD card through Customs at national or international airports. Users can also hide
 									them in their carry-on luggage or on their person. If the government is allowed to scan
 									personal phones or computers as people are going through Customs then they may need
 									to use <a href="#ref59">steganography<sup>[59]</sup></a> to hide the one-time pads
@@ -628,14 +689,14 @@
 						fast to develop in and fast to deploy along with a basic
 						<a href="#ref90">LAPP stack<sup>[90]</sup></a>. In a future
 						version, the design may be ported to another server side language, database and web server that
-						are considered more secure. The straightforward JSON REST API interface should enable the client
+						are considered more secure. The straightforward REST API interface should enable the client
 						to connect with multiple different backend code bases and users can implement the one of their
 						choosing.
 					</p>
 					<p>
 						At the moment, to get the server side running all that is needed is to download and verify the server code,
 						run a basic bash script which installs and configures everything that is required. The script runs on
-						<a href="#ref91">Ubuntu Server 18.04.x LTS<sup>[91]</sup></a> but there is also an
+						Debian 11 but there is also an
 						<a href="#ref92">easy to use guide<sup>[92]</sup></a> with screenshots for users wanting to use a different Linux
 						distribution. Users can install a server their own network, or pay for a cheap
 						<a href="#ref93">VPS<sup>[93]</sup></a> somewhere. It is not recommended
@@ -645,15 +706,16 @@
 					</p>
 
 
-					<h2 id="server-authentication-protocol"><span>8</span> Server authentication protocol</h2>
+					<h2 id="client-server-protocol"><span>8</span> Client - server zero meta-data encryption and authentication protocol</h2>
 					<p>
-						A symmetric key based authentication protocol is used to securely authenticate the requests and
-						responses with the server API. This replaces TLS which secured the server API credentials
-						(username & password) in transit in versions up to 1.2. The reason for this was mainly to
-						simplify installation,
+						A symmetric key based encryption and authentication protocol is used to securely encrypt and
+						authenticate the requests and responses with the server API. This replaces TLS which secured the
+						server API credentials (username & password) in transit in versions up to 1.2. The reason for this
+						was mainly to simplify installation,
 						<a href="#ref46">avoid Certificate Authorities<sup>[46]</sup></a><a href="#ref47"><sup>[47]</sup></a><a href="#ref95"><sup>[95]</sup></a><a href="#ref96"><sup>[96]</sup></a>,
 						have resistance against active <a href="#ref97">MITM attacks<sup>[97]</sup></a> and
-						<a href="#ref36">quantum computers<sup>[36]</sup></a>.
+						<a href="#ref36">quantum computers<sup>[36]</sup></a>, also to hide any meta data about the protocol
+						as it transits public networks.
 						There have also been major security problems with common TLS implementations such as
 						<a href="#ref98">OpenSSL<sup>[98]</sup></a>,
 						<a href="#ref99">GnuTLS<sup>[99]</sup></a> and
@@ -670,86 +732,68 @@
 							server, not an attacker.
 						</li>
 						<li>
-							Mitigate passive MITM attacks where an attacker tries to steal the API credentials in transit.
+							Disallow a user of one group to spoof another user's requests from another group to the server.
 						</li>
 						<li>
-							Mitigate active MITM attacks where an attacker attempts to send fake responses to/from the server or
-							impersonate the server.
+							Avert passive MITM attacks where an attacker tries to snoop the API credentials in transit.
 						</li>
 						<li>
-							Mitigate replay attacks and reject any request/response if the data was modified in transit.
+							Avert active MITM attacks where an attacker attempts to send fake requests to the server or
+							impersonate the server responses.
 						</li>
 						<li>
-							Prevent a request to the server being modified by an attacker to perform a different API action.
+							Avert replay attacks and reject a request/response if the MAC does not match or if the data
+							was modified in transit.
+						</li>
+						<li>
+							Prevent one request to the server being replayed with a different action being performed by
+							the attacker.
 						</li>
 						<li>
 							Mitigate quantum computer attacks on the protocol.
 						</li>
+						<li>
+							Separately encrypt all traffic between the client and server API to hide/obfuscate any meta
+							data about the data so any data sent/received looks entirely random, is of varying sizes,
+							and most importantly limits traffic fingerprinting and blocking methods. This is so the only
+							information going to and from the server appears to be random data and useless for a network
+							observer.
+						</li>
 					</ul>
 
-					<h3 id="limitations"><span>8.2</span> Limitations</h3>
+					<h3 id="limitations"><span>8.2</span> Current limitations</h3>
+					<p>
+						These limitations may change in future revisions of the program.
+					</p>
 					<ul>
 						<li>
-							The server administrator will control the server and be a user of the chat group's operating on that
+							The server administrator will control the server and ideally be a user of the chat groups operating on that
 							server as well. The server administrator will be a trustworthy person not interested in interfering
 							with his own chat group's communications. If a group of users want to communicate with each other,
 							but the server administrator is not included in that group, then they should set up their own server.
 							This rules out the server administrator having the will to interfere with communications.
 						</li>
 						<li>
-							Users of the server have an interest in keeping the shared API key on the server a secret to protect
-							their own communications so they will not give that key to anyone else.
+							Users of the server have an interest in keeping the group's shared API key on the server a
+							secret to protect their own communications so they will not give that key to anyone else.
 						</li>
 						<li>
-							There is no need for each user having a separate API key on the server to send/receive requests
-							because the server administrator could access that key anyway and impersonate them or simply edit
-							the database record to alter which user the message came from.
+							There is no need for each user in a group having a separate API key on the server to send/receive
+							requests because the server administrator could access that key anyway and impersonate them
+							or simply edit the database record to alter which user the message came from.
 						</li>
 						<li>
-							There is trust between the users in the group communicating not to impersonate other users in the
+							There is trust between the users in each group communicating not to impersonate other users in the
 							chat group. Because every user in a group has access to all the same one-time pads and same API key,
-							it would technically be possible to pretend to be one of the other users in the chat group. This also
-							doubles as a <a href="#ref101">deniable authentication<sup>[101]</sup></a>
+							it would technically be possible to pretend to be one of the other users in the chat group by tampering
+							with the local data. This also doubles as a <a href="#ref101">deniable authentication<sup>[101]</sup></a>
 							protocol because every message sent could have been engineered to come from one of the other
 							users in the chat group.
-						</li>
-						<li>
-							Encryption for the server protocol is not required because individual messages are encrypted using the
-							one-time pads and signed on each client machine. Some anonymised, non-critical meta-data is viewable
-							if an attacker in a privileged network position is passively watching the traffic. This may indicate
-							a chat conversation is taking place using this protocol. If this is a problem, the user can easily
-							add TLS to the connection and use a pinned certificate. Version 2.0 of the program will encrypt the connection
-							between the client and the server using a cascade stream cipher to hide the meta data and to avoid
-							relying on TLS. Hiding the meta data by sending only encrypted binary blobs between the client
-							and server will make traffic analysis and fingerprinting much more difficult for spy tools like
-                            <a href="#ref102">XKeyScore<sup>[102]</sup></a>.
-                            Without knowledge of the protocol being used this means automated hacking tools that
-							<a href="#ref103">TAO agents<sup>[103]</sup></a> use will not know whether a client machine
-							is running this program or any other program sending binary data. This lowers the likelihood
-							of them being able to target the client machines with a specific exploit for this program to
-							extract the one-time pads or tamper with them.
 						</li>
 						<li>
 							The server protocol does not anonymise IP addresses from users connecting to the server. If
 							there is a requirement for anonymity, then users can tunnel their connection through a SOCKS5
 							proxy in their web browser or tunnel their connection through the Tor network.
-						</li>
-					</ul>
-
-					<h3 id="initial-setup"><span>8.3</span> Initial setup</h3>
-					<ul class="formulas">
-						<li>
-							A random 512 bit <i>API Key</i> is created at time of one-time pad creation using some of
-							the truly random data and entered into the configuration file on the server. The user can
-							use SSH to access their VPS, but ideally to	get the key securely onto the server, the
-							server could be hosted on their local network running a web server with a static public IP
-							that is serving to the wider Internet. Storing the key in the configuration file prevents
-							SQL injection attacks to retrieve the key and also it saves a database lookup each request.
-						</li>
-						<li>
-							The <i>API Key</i> is given to each user in person (not using a key exchange protocol or sent
-							via an insecure network). This will be done in the initial key exchange between users as the program
-							can store the <i>API Key</i> and server address along with the one-time pads.
 						</li>
 						<li>
 							The protocol currently caters for 2 - 7 users per group. If additional chat groups are required
@@ -759,24 +803,78 @@
 							users who talk more often a greater allocation of one-time pads for sending, e.g. one user
 							broadcasting announcements to the other users.
 						</li>
+						<li>
+							The program is currently designed so that the one-time pad data is designed to stay on one
+							device for each group user. If a user wished to communicate	from their laptop and their
+							phone within the same group chat, it would be better to make another group user with a different
+							name e.g. Bob (Laptop) and Bob (Phone). Then each device gets their own one-time pads for sending
+							and there is no accidental re-use.
+						</li>
 					</ul>
 
-					<h3 id="send-and-verify-api-request"><span>8.4</span> Client API request</h3>
+					<h3 id="initial-setup"><span>8.3</span> Initial setup</h3>
 					<ul class="formulas">
 						<li>
-							User creates a random 512 bit per request <a href="#ref106"><i>Nonce</i><sup>[106]</sup></a>.
-							The server keeps track of sent nonces to prevent replay attacks. The nonce is created using
-							the Web Crypto API <a href="#ref69">getRandomValues<sup>[69]</sup></a> method.
+							A random 512 bit <i>API Key</i> in hexadecimal is created at time of one-time pad creation using some of
+							the truly random data and entered into the configuration file on the server. The user can
+							use SSH to access their VPS, but ideally to	get the key securely onto the server, the
+							server could be hosted on their local network running a web server with a static public IP
+							that is serving to the wider Internet. Storing the key in the configuration file prevents
+							SQL injection attacks to retrieve the key and also it saves a database lookup each request.
+						</li>
+						<li>
+							A random 64 bit Group Identifier (<i>Group ID</i>) in hexadecimal is created at group creation.
+							Groups are created when necessary on the server using the main setup Bash script.
+						</li>
+						<li>
+							The <i>API Key</i> and <i>Group ID</i> (both as hexadecimal strings) are given to each user in
+							person (<b>not</b> using a key exchange protocol or sent via an insecure network). This will
+							be done in the initial key exchange between users as the program can store the <i>API Key</i>,
+							<i>Group ID</i> and server address along with the one-time pads.
 						</li>
 						<li>
 							User creates an API request including a group of data variables to send to the server as part of the
 							<i>Message Packet</i>. For example, this can contain the one-time pad encrypted message
 							and its MAC that the server will store.
 						</li>
+					</ul>
+
+
+					<h3 id="client-api-request"><span>8.4</span> Client API request</h3>
+					<p>
+						First the program derives an encryption and MAC key from the Server Group Key. The method it uses is
+						similar to KDF1 and KDF2 where the master key is hashed with a counter e.g. <i>Hash(Key || 32 bit counter)</i>.<br>
+						<br>
+						<i>Encryption Key</i> = Skein-512( <i>Server Group Key</i> || <i>00000000</i> );<br>
+						<i>MAC Key</i> = Skein-512( <i>Server Group Key</i> || <i>00000001</i> );
+					</p>
+					<p>
+						The following describes the parts of the network request:
+					</p>
+					<ul class="formulas">
 						<li>
-							Each request is sent with an <i>API Action</i> to perform on the server. This prevents the attacker
-							from changing what action to perform on the server because any change to the data packet will alter
-							the MAC.
+							The <i>Padding Length</i> is a positive number 2 bytes in length indicating how many bytes of random padding
+							have been added to the network request to disguise the true length. This is helpful for the server to
+							remove the padding later and extract the other parts. This number is then converted to hexadecimal for serialisation.
+						</li>
+						<li>
+							The <i>Padding</i> is a random number of bytes for each network request (minimum length x and maximum length y)
+							gets added to the network request to disguise the true length and disguise how many real messages were sent. These
+							bytes are converted to hexadecimal for serialisation.
+						</li>
+						<li>
+							The <i>Message Packets</i> are each individual (one-time pad encrypted and authenticated) <i>Message Packet</i>
+							concatenated together. The number of <i>Message Packets</i> that can be sent at one time depends on the program
+							configuration. In version 2.0 due to client configuration, just one <i>Message Packet</i> can be sent at a time,
+							however in a future version it will be possible to write longer plaintext messages and split the message into
+							multiple <i>Message Packets</i> then have it reconstructed at the receiving end. Multiple <i>Message Packets</i>
+							are supported in the protocol at the moment, as implemented, however the deconstruction and reconstruction of
+							messages in the client is not yet. These <i>Message Packets</i> are in hexadecimal format ready for serialisation.
+						</li>
+						<li>
+							A <i>Current Timestamp</i> is included to indicate when the request was sent. This is a
+							<a href="#ref105">UNIX timestamp<sup>[105]</sup></a> therefore both the client and
+							server code use UTC time. This is 5 bytes and in hexadecimal format ready for serialisation.
 						</li>
 						<li>
 							The <i>From User</i> data indicates which user the message is from. The server uses this to retrieve
@@ -786,39 +884,109 @@
 							around the world are using the same protocol. When exporting the one-time pads, the user can assign call
 							signs/nicknames to the chat users within the group to override the default names. These nicknames are
 							not transmitted to the server because they are kept in the user's local storage next to the one-time
-							pads.
+							pads. For network transport, this is 1 byte in lowercase, shortened to <i>a</i> for Alpha, <i>b</i> for Bravo etc.
 						</li>
 						<li>
-							A <i>Sent Timestamp</i> is included to indicate when the request was sent. This is a
-							<a href="#ref105">UNIX timestamp<sup>[105]</sup></a> therefore both the client and
-							server code use UTC time.
+							Each request is sent with an <i>API Action</i> to perform on the server. This prevents the attacker
+							from changing what action to perform on the server because any change to the data packet will alter
+							the MAC. This is 1 byte shortened to <i>s</i> for Send, <i>r</i> for Receive, or <i>t</i> for Test.
 						</li>
+					</ul>
+					<p>
+						Then the program serialises the data to be encrypted in hexadecimal (and left pad it to the correct fixed length if necessary):<br>
+						<br>
+						<i>Serialised Payload</i> = <i>Padding Length</i> || <i>Padding</i> || <i>Message Packets</i> || <i>Current Timestamp</i> || <i>From User</i> || <i>API Action</i>
+					</p>
+					<p>
+						Next the program generates a keystream using the Skein-512 hash algorithm in a mode similar to counter mode using
+						an 8 byte counter i.e. Skein-512( <i>Encryption Key</i> || <i>Nonce</i> || <i>Counter (i)</i> ) with the counter incrementing by 1 each loop
+						e.g. <i>0000000000000000</i>, <i>0000000000000001</i> etc which produces 512 bits each iteration
+						and this keeps getting appended together until the keystream is longer than the <i>Serialised Payload</i>.
+						This keystream is then truncated to the exact length of the payload and XORed with the <i>Serialised Payload</i> i.e.<br>
+						<br>
+						<i>Keystream</i> = Skein-512( <i>Encryption Key</i> || <i>Nonce</i> || <i>i</i> ) || Skein-512( <i>Encryption Key</i> || <i>Nonce</i> || <i>i + 1</i> ) || ...<br>
+						<i>Encrypted Payload</i> = <i>Keystream</i> &oplus; <i>Serialised Payload</i>
+					</p>
+					<p>
+						Next the data is serialised for authentication and a MAC is created:<br>
+					</p>
+					<ul class="formulas">
 						<li>
-							The server rejects messages received that are received more than +/- 60 seconds of the
-							received UNIX timestamp. The server and clients should be synchronized to an NTP server. The
-							60 second allowance should be enough to counter any clock drift and subtle differences
-							between the server and client clocks.
-						</li>
-						<li>
-							The server rejects duplicate messages/replay attacks received within the allowed time window
-							by storing all received nonces and checking incoming message timestamps against past received
-							nonces. If the nonce is the same and same request is received twice, then the second request
-							will be invalid. Sent nonces are kept on the server for at least 120 seconds and then
-							discarded by a separate cleanup process.
+							User creates a random 512 bit per request <a href="#ref106"><i>Nonce</i><sup>[106]</sup></a>.
+							The server keeps track of sent nonces to prevent replay attacks. The nonce is created using
+							the Web Crypto API <a href="#ref69">getRandomValues<sup>[69]</sup></a> method.
 						</li>
 						<li>
 							These variables are stringified into JSON and a MAC is calculated using version 1.3 of the
-							<a href="#ref109">Skein<sup>[109]</sup></a> 512 bit (Skein-512) hash function on
-							the JSON data:<br>
+							<a href="#ref109">Skein<sup>[109]</sup></a> 512 bit (Skein-512) hash function on the JSON data:<br>
 							<br>
-							<i>MAC</i> &#8592; <i>Skein-512</i>( <i>API Key</i> || <i>API Action</i> || <i>From User</i> || <i>Nonce</i> || <i>Sent Timestamp</i> || <i>Message Packet</i> )
+							<i>MAC</i> = <i>Skein-512</i>( <i>MAC Key</i> || <i>Group ID</i> || <i>Nonce</i> || <i>Encrypted Payload</i> )
 						</li>
 						<li>
-							The client sends the JSON data and the MAC to the server. The server receives the request, looks up
-							the username and verifies it is a valid user for that chat group, then verifies the request by
-							recreating the same MAC with the data provided.
+							The data is then serialised and encoded to Base64 for transport:<br>
+							<br>
+							<i>Network Payload</i> = Base64( <i>Nonce</i> || <i>Encrypted Payload</i> || <i>MAC</i> )
 						</li>
-						<li id="double-hmac-validation">
+					</ul>
+					<p>
+						Even if the data is <a href="#ref112">Base64<sup>[110]</sup></a> decoded it still looks like
+						completely random data. Also the length varies with each request. Each request could look like
+						it is carrying 0 messages (e.g. a receive request) or sending many. As far as the network
+						observer is concerned they cannot fingerprint the traffic from the data alone.
+						The data going back and forth will essentially just be a random binary blob. This will help
+						disguise meta data and make it much harder for spy agencies to fingerprint the traffic as
+						definitely originating from this program and prevent them targeting the client machines or
+						server with automated <a href="#ref103">TAO hacking tools<sup>[103]</sup></a> or malware
+						that has been mentioned in the Snowden revelations. The main aim is to avoid
+						<a href="#ref102">XKeyScore<sup>[102]</sup></a> detection rules make network traffic more
+						difficult to analyse.<br>
+						<br>
+						After this, a standard POST Fetch API request is made with the <i>Network Payload</i> in the body
+						of the request. The network headers are all standard ones for a POST request with CORS. If other
+						programs and services used a similar architecture design of just sending encrypted Base64 data
+						in the body of their requests (and responses) then no network observer could tell which service or
+						program was in use, nor what was being sent. Coupled with just using server IPs instead of DNS,
+						no network observer knows what service is what unless they hack the servers (or clients) to find
+						out more details, thus drastically increasing the work required and making mass surveillance
+						more difficult.
+					</p>
+
+					<h3 id="server-request-validation"><span>8.5</span> Server request validation</h3>
+					<p>
+						When the server receives a request, it first validates it in the following manner:
+					</p>
+					<ul class="formulas">
+						<li>
+							The length of the request is checked to make sure it is within a valid range (and not extreme so
+							as to avoid Denial of Service type attacks.
+						</li>
+						<li>
+							The Base64 <i>Network Packet</i> is decoded and validation is done to make sure it decoded correctly.
+						</li>
+						<li>
+							The decoded data of the <i>Network Packet</i> in hexadecimal is split into the <i>Nonce</i>, <i>Encrypted Payload</i> and <i>MAC</i>.
+						</li>
+						<li>
+							Next, the <i>Group ID</i> for this message is found by trying out all the <i>Group Server Keys</i>
+							that are on the server and trying to validate the MAC. For programming purposes, this <i>Group Server Keys</i> is
+							an array of key-value pairs (Group IDs to Group Server Keys).
+							It is assumed there will not be many chat groups on the server e.g. less than 10, so this is a fast operation.
+							However an advantage of doing this, is that many groups and users can be chatting on the server, but to an
+							outside observer they don't know which message is being sent to which group, there's no correlation.
+							They can see data going back and forth, but they don't know who is communicating with who as
+							all data is encrypted separately for the request and response. There is no Group ID included in the Network Packet for them
+							to know which group was sent a message. The only way to know would be for them to be the server administrator and query the
+							database, or for them to hack the server (which is more work and hard).<br>
+							<br>
+							for <i>i</i> in <i>Server Group Keys</i>:<br>
+							<span class="functionInner"><i>Encryption Key</i> = Skein-512( <i>Server Group Key<sub>i</sub></i> || <i>00000000</i> );</span><br>
+							<span class="functionInner"><i>MAC Key</i> = Skein-512( <i>Server Group Key<sub>i</sub></i> || <i>00000001</i> );</span><br>
+							<span class="functionInner"><i>Computed MAC</i> = <i>Skein-512</i>( <i>MAC Key<sub>i</sub></i> || <i>Group ID<sub>i</sub></i> || <i>Nonce</i> || <i>Encrypted Payload</i> )</span><br>
+							<span class="functionInner"><i>MAC validated?</i> = constantCompare( <i>MAC</i>, <i>Computed MAC</i> )</span><br>
+							<br>
+							If the MAC validates, the program will exit the loop early as it has found the corresponding Group for the
+							message and can proceed.<br>
+							<br>
 							The server rejects invalid MACs, which will also mean any attempt to modify the data sent
 							will fail. The MAC validation method in the API is protected against timing side channel
 							attacks using a method very similar to
@@ -835,60 +1003,106 @@
 							<span class="functionInner"><i>Hash B</i> &#8592; <i>Skein-512</i>( <i>API Key</i> || <i>Random Data</i> || <i>Received MAC</i> )</span><br>
 							<br>
                             <span class="functionInner"><i>return</i> ( <i>Hash A</i> === <i>Hash B</i> )</span><br>
-							}
+							}<br>
+							<br>
+							If the MAC does not validate for any of the Server Group Keys, then an error will optionally be returned to the client.
+							To see this error message it will be included in the headers of the network response e.g.
+							<code>HTTP/1.1 200 Chat group not found, request MAC is invalid or request data altered</code>. These error messages
+							are only included for debugging purposes when setting up the client (or server) and it is manually required to set
+							<code>testResponseHeaders</code> to <code>true</code> in the <code>/var/www/html/config/config.json</code> file on the server.
+							Normally for such a validation error, then only a <code>HTTP/1.1 200</code> is sent back so there is no leakage about
+							what is actually running on the server, nor give clues to an attacker about what they did wrong for a malformed/invalid request.<br>
+							<br>
+							In such cases where the client has sent a valid request and it is validated, the server then knows which group is communicating
+							with it and can respond in an encrypted and authenticated response with an error code embedded in the encrypted response.
+							That error code can then be displayed in the client for them to know what went wrong. E.g. it could be something normal like
+							there are no new messages to receive, or maybe something unlikely like a database error.
 						</li>
 						<li>
-							Failed requests can be re-sent manually by the client which will use a different <i>Nonce</i>,
-							<i>Sent Timestamp</i> and <i>MAC</i>.
+							Next decryption can be done of the <i>Encrypted Payload</i>. After decryption, the <i>Current Timestamp</i> in the plaintext payload is
+							validated. From the current server time, the server will accept a <i>Current Timestamp</i> 5 minutes in the past and a
+							<i>Current Timestamp</i> 5 minutes in the future. This gives an allowed window of acceptable clock drift between the
+							clients and server. Both clients and the server should be syncing with an NTP server for best results. The
+							automated server installation script uses NTPsec for this.
 						</li>
 						<li>
-                            The program also <a href="#ref112">Base64<sup>[110]</sup></a> encodes the entire packet
-							before sending in preparation for version 2.0. In version 2.0 the packet will also be
-							encrypted between the client and server and then Base64 encoded. The data going back and
-							forth will essentially just be a random binary blob. This will help disguise meta data and
-							make it much harder for spy agencies to fingerprint the traffic as definitely originating
-							from this program and prevent them targeting the client machines or server with automated
-                            <a href="#ref103">TAO hacking tools<sup>[103]</sup></a> or malware
-							that has been mentioned in the Snowden revelations. The current version will just
-							provide an extra annoyance to the Five Eyes agencies who will need to update their
-                            <a href="#ref102">XKeyScore<sup>[102]</sup></a> detection rules and decode the Base64 data
-							first in order to analyse it.
+							Next the server will validate the received <i>Nonce</i> against nonces that have already been sent.
+							The <i>Nonce</i> is used to reject duplicate messages/replay attacks received within same timestamp interval.
+							Sent nonces are kept on the server in the database for 1 hour and then discarded when the cron cleanup is run.
+							A delay longer than this means a <i>Network Packet</i> will not be accepted due to the time delay.
+						</li>
+						<li>
+							The next step is validing the <i>API Action</i> and <i>From User</i>. If these validate, then the API Action can be
+							performed i.e. the storing of the sent message (for other group users to fetch later), or the fetching of messages
+							for that group that the current user has not received yet.
 						</li>
 					</ul>
 
-					<h3 id="server-api-response"><span>8.5</span> Server API response</h3>
+					<h3 id="server-api-response"><span>8.6</span> Server API response</h3>
+					<p>
+						In a normal encrypted and authenticated response, the following is first serialised:
+					</p>
 					<ul class="formulas">
 						<li>
-							On any valid server requests, the server signs the response with the <i>API Key</i> so that
-							the user knows the response from the real server. Invalid requests return an
-							<code>HTTP/1.1 200 OK</code> header response. This means an attacker does not even know if
-							there is a valid application or web page on the web server if they do not have the
-							<i>API Key</i> to make a valid request. All invalid requests respond with the server
-							pretending it is able to find what the attacker is looking for.
+							<i>Padding</i> which is a variable number of random bytes between the min and max constants. This disguises
+							how many (if any) messages were sent back in a response.
 						</li>
 						<li>
-							The <i>Server Message Packet</i> contains data sent from the server including status responses
-							and the one-time pad encrypted messages.
-						</li>
-						<li>
-							The original <i>Client Request MAC</i> is included in the server's response MAC calculation
-							so the client can be sure it is receiving a response to the original request.
-						</li>
-						<li>
-							The <i>Server Message Packet</i> is stringified into JSON and a MAC is calculated using the
-							Skein 512 bit hash function on the JSON data:<br>
+							<i>User Message Packets</i> which is 0 bytes to a variable number of bytes. Each <i>User Message Packet</i> is made up of:<br>
+							<i>From User</i> which is just the first letter lowercase (1 byte)<br>
+							<i>One-time Pad Encrypted Message Packet</i> which is 384 bytes encrypted on the client side<br>
 							<br>
-							<i>MAC</i> &#8592; <i>Skein-512</i>( <i>API Key</i> || <i>Server Message Packet</i> || <i>Client Request MAC</i> )
+							The <i>User Message Packets</i> is then serialised into hexadecimal format like the following:<br>
+							<i>User Message Packets</i> = <i>From User<sub>0</sub></i> || <i>OTP Encrypted Message Packet<sub>0</sub></i> || <i>From User<sub>1</sub></i> || <i>OTP Encrypted Message Packet<sub>1</sub></i> || ...
 						</li>
 						<li>
-							If the MAC does not match on the client then the response is not actually from the server and will be
-							discarded. A warning will be shown to the user that interference has occurred.
+							Number of Messages which is 2 bytes in length, so the client parsing the response can know how many messages to expect.
 						</li>
 						<li>
-							On a successful request and response the client will process the data received from the server,
-							decrypt any received messages, check for XSS attacks and render the messages on the client.
+							Response Code which is 1 byte in length, so the client can know if the request was a success, or failure. Some of the response codes are:<br>
+							<br>
+							<code>0</code> = This is the generic response success code. It could mean a message was sent successfully or that messages were received successfully.<br>
+							<code>1</code> = This is the response code when it made a successful receive messages API request but there were no messages to collect.<br>
+							<code>100</code> = The DB query failed.<br>
+							<code>101</code> = Could not find the test record in the database. Likely a configuration issue.<br>
+							<code>102</code> = Invalid or not implemented API action.<br>
+							<code>103</code> = No messages were sent in the 'send' request.<br>
+							<code>104</code> = The number of messages inserted in the DB did not match the number of messages that were sent in the request.
+						</li>
+						<li>
+							Then it is serialised as:<br>
+							<i>Serialised Response</i> = <i>Padding</i> || <i>User Message Packets</i> || <i>Number of Messages</i> || <i>Response Code</i><br>
+							<br>
+							From parsing right to left, the client can first check the <i>Response Code</i> is a success, then with the <i>Number of Messages</i>,
+							it can remove the <i>User Message Packets</i> from the right and thus throw away the <i>Padding</i> at the start.
 						</li>
 					</ul>
+					<p>
+						Next the program generates a fresh 512 bit <i>Nonce</i> for the response, then a keystream using the Skein-512 hash algorithm and the derived
+						group <i>Encryption Key</i> much like in the request and this keystream is then truncated to the exact length of the <i>Serialised Response</i>
+						and XORed with it i.e.<br>
+						<br>
+						<i>Keystream</i> = Skein-512( <i>Encryption Key</i> || <i>Nonce</i> || <i>i</i> ) || Skein-512( <i>Encryption Key</i> || <i>Nonce</i> || <i>i + 1</i> ) || ...<br>
+						<i>Encrypted Serialised Response</i> = <i>Keystream</i> &oplus; <i>Serialised Response</i>
+					</p>
+					<p>
+						Next the response can be authenticated:<br>
+						<br>
+						<i>Response MAC</i> = Skein-512( <i>MAC Key</i> || <i>Request MAC</i> || <i>Nonce</i> || <i>Encrypted Serialised Response</i> )<br>
+						<br>
+						The <i>Request MAC</i> is used in this <i>Response MAC</i> digest calculation to tie this response to the specific request. In
+						this way some attacker that can delay and re-order network packets from the server will be detected and the client will reject
+						the response. In such a case this would indicate a significant Denial of Service on the chat group, however future versions,
+						groups will be able to be set up on multiple servers in different locations for extra reliability.
+					</p>
+					<p>
+						Finally the response can be serialised and encoded to Base64 and sent back to the client:<br>
+						<br>
+						<i>Response Network Payload</i> = Base64( <i>Nonce</i> || <i>Encrypted Serialised Response</i> || <i>Response MAC</i> )<br>
+						<br>
+						On a successful request and response the client will process the data received from the server,
+						decrypt any received messages, escape the plaintext data for XSS attacks and render the messages on the client side.
+					</p>
 
 
 					<h2 id="frustrating-traffic-analysis"><span>9</span> Preventing information leakage and traffic analysis</h2>
@@ -956,7 +1170,7 @@
 
 					<h2 id="using-tls"><span>10</span> Using Transport Layer Security (TLS) / HTTPS</h2>
 					<p>
-						Because of the new server authentication protocol in version 1.3, using TLS is not mandatory anymore.
+						Because of the new server authentication protocol from version 1.3, using TLS is not mandatory anymore.
 						However it can be added as an optional layer of security to help mitigate monitoring from
 						lower level attackers, for example when using the program in a workplace, public WiFi hotspot or
 						home connection where an employer, casual hacker or ISP could monitor the connection.
@@ -1807,7 +2021,7 @@
 							e.g. <i>log<sub>2</sub></i>( <i>10,000</i> ) which is approximately 13~ bits. The full
 							formula for calculating the entropy of the password in bits is as follows:<br>
 							<br>
-							<b>Entropy Bits</b> &#8592; ( <i>Number of Password Characters</i> &otimes; <i>log<sub>2</sub></i>( <i>62</i> )) + <i>log<sub>2</sub></i>( <i>Number of PBKDF Iterations</i> ).
+							<b>Entropy Bits</b> &#8592; ( <i>Number of Password Characters</i> &times; <i>log<sub>2</sub></i>( <i>62</i> )) + <i>log<sub>2</sub></i>( <i>Number of PBKDF Iterations</i> ).
 						</li>
 					</ul>
 
@@ -2382,18 +2596,16 @@
 					</p>
 
 
-					<h2 id="json-rest-api"><span>17</span> REST API using JSON</h2>
+					<h2 id="rest-api"><span>17</span> REST API</h2>
 					<ul>
 						<li>
-							The client browsers communicate to and from the server using JSON and the
+							The client browsers communicate to and from the server using the
 							REST API on the server. The server side code is currently written for the latest version of
-							PHP 5.x using best security practices for protection against
-							<a href="#ref179">SQL injection<sup>[179]</sup></a> and other attacks. This will likely be
-							rewritten in a different language in the next release e.g.
+							PHP 7.x using best security practices for protection against
+							<a href="#ref179">SQL injection<sup>[179]</sup></a> and other attacks. This may be
+							rewritten in a different language in a future release e.g.
 							<a href="#ref178">NodeJS<sup>[179]</sup></a> to have a common cryptographic library base
-							across the client and server. This will allow for a simple integration of the data
-							encryption between the clients and server in order to hide the
-							<a href="#ref180">metadata<sup>[180]</sup></a>.
+							across the client and server.
 						</li>
 						<li>
 							The server sends <a href="#ref177">CORS<sup>[177]</sup></a> HTTP headers so that the client
@@ -2404,51 +2616,16 @@
 							unencrypted messages and they would not be any wiser.
 						</li>
 						<li>
-							For now the browsers use an <a href="#ref181">AJAX<sup>[181]</sup></a>
+							For now the browsers use a <a href="#ref181">Fetch<sup>[181]</sup></a>
 							request to send/receive data to/from the server. The reason for this is that the chat can be delayed
 							like email (encrypted messages remain on the server until they are received), or real-time if users
 							are connected at the same time. If a user is connected it will check for new messages from the server
 							every 3 seconds which is fast enough to appear as real-time and does not stress the server too much.
 						</li>
 					</ul>
-					<p>
-						A summary of the request/response protocols are shown below:
-					</p>
 
-					<h3 id="api-send-message"><span>17.1</span> Send message</h3>
-					<p>
-						This is the request the client makes when sending a message.
-					</p>
-					<p>
-						<img class="listImage" src="img/api-send-message-json.png">
-					</p>
 
-					<h3 id="api-send-message-response"><span>17.2</span> Send message server response</h3>
-					<p>
-						This is the response the server makes after it has received a request to send a message.
-					</p>
-					<p>
-						<img class="listImage" src="img/api-send-message-server-response-json.png">
-					</p>
-
-					<h3 id="api-receive-messages"><span>17.3</span> Receive messages request</h3>
-					<p>
-						This is the request each client makes every 3 seconds. This will get any new messages from the server
-						for the user making the request.
-					</p>
-					<p>
-						<img class="listImage" src="img/api-receive-messages-json.png">
-					</p>
-
-					<h3 id="api-receive-messages-response"><span>17.4</span> Receive messages response</h3>
-					<p>
-						This is the response the server will make after receiving a request from a client for retrieving new messages.
-					</p>
-					<p>
-						<img class="listImage" src="img/api-receive-messages-response-json.png">
-					</p>
-
-					<h3 id="api-auto-nuke"><span>17.5</span> Initiate self destruct request</h3>
+					<h3 id="api-auto-nuke"><span>17.1</span> Initiate self destruct request</h3>
 					<p>
 						This is the request a client makes if they want to wipe the all the other chat group user's
 						local one-time pad databases. It is very disruptive and designed for use only in an emergency.
@@ -2465,7 +2642,7 @@
 						database of one-time pads will then be wiped and their screen cleared.
 					</p>
 
-					<h3 id="api-auto-nuke-response"><span>17.6</span> Self destruct initiated response</h3>
+					<h3 id="api-auto-nuke-response"><span>17.2</span> Self destruct initiated response</h3>
 					<p>
 						If a chat group user is checking for new messages and an authentic message comes through with the
 						code <code>init auto nuke</code>, instead of continuing to receive and process new messages, the
@@ -2504,17 +2681,6 @@
 					</p>
 					<ul>
 						<li>
-							At the moment the program only supports messages typed using the
-							<a href="#ref182">ASCII printable character set<sup>[182]</sup></a>.
-							This is all the characters that can be seen on a standard US keyboard. In practicality
-							this limits the languages that can be used to English and ones that use the
-							<a href="#ref183">basic Latin alphabet<sup>[183]</sup></a> e.g. Dutch, German, French,
-							Indonesian, Portuguese and Spanish but without the
-							<a href="#ref184">diacritical marks<sup>[184]</sup></a>. This is for ease of development at
-							the moment and the program will support other languages with proper
-							<a href="#ref185">UTF-8<sup>[185]</sup></a> encoding and decoding in the future.
-						</li>
-						<li>
 							All messages that are sent/received are encoded to hexadecimal format first which is just stored
 							in a normal JavaScript string. This is to make transport using JSON easier rather than trying to
 							send UTF-8 encoded data over the wire. A hexadecimal symbol
@@ -2535,8 +2701,12 @@
 							because generating enough random data takes a long time. Making a message length longer than that,
 							where the one-time pad may or may not be fully used is wasteful. If users need more than 115
 							characters they can simply send a second message. In future a new feature will be added to allow
-							a message to be spread over multiple one-time pads.<br>
-							<br>
+							a message to be spread over multiple one-time pads.
+						</li>
+						<li>
+							UTF-8 international language support has been added for sending/receiving messages including correct counting of bytes when sending messages. An encoding process converts these UTF-8 characters to bytes before encryption and the reverse decoding is done after decryption.
+						</li>
+						<li>
 							If a message is less than 115 bytes in length it is padded to the right (up to the maximum 115 bytes)
 							with random bits generated from the Web Crypto API. This hides the actual length of the message to
 							frustrate any cryptanalysis. For example if no padding was added and the message was simply "hi" then
@@ -3309,10 +3479,7 @@
 							90. Wikipedia - LAPP (software bundle)<br>
 							<a href="https://en.wikipedia.org/wiki/LAMP_(software_bundle)#Variants">https://en.wikipedia.org/wiki/LAMP_(software_bundle)#Variants</a>
 						</li>
-						<li id="ref91">
-							91. Ubuntu Server - Release notes for Ubuntu 18.04.3 LTS (Bionic Beaver)<br>
-							<a href="https://wiki.ubuntu.com/BionicBeaver/ReleaseNotes">https://wiki.ubuntu.com/BionicBeaver/ReleaseNotes</a>
-						</li>
+						<!-- ref91 Ubuntu Server removed -->
 						<li id="ref92">
 							92. Jericho Comms - Server Installation Guide<br>
 							<a href="https://joshua-m-david.github.io/jerichoencryption/installation-server.html">https://joshua-m-david.github.io/jerichoencryption/installation-server.html</a>
@@ -3670,8 +3837,8 @@
 							<a href="https://en.wikipedia.org/wiki/Metadata#Telecommunications">https://en.wikipedia.org/wiki/Metadata#Telecommunications</a>
 						</li>
 						<li id="ref181">
-							181. Wikipedia - Ajax (programming)<br>
-							<a href="">https://en.wikipedia.org/wiki/Ajax_(programming)</a>
+							181. MDN Web Docs - Fetch API<br>
+							<a href="">https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API</a>
 						</li>
 						<li id="ref182">
 							182. Wikipedia - ASCII - ASCII printable characters<br>
@@ -3935,7 +4102,7 @@
 						</li>
 						<li id="ref247">
 							247. PhoneGap<br>
-							<a href="http://phonegap.com">http://phonegap.com</a>
+							<a href="https://en.wikipedia.org/wiki/Apache_Cordova">https://en.wikipedia.org/wiki/Apache_Cordova</a>
 						</li>
 						<li id="ref248">
 							248. National Institute of Standards and Technology - Special Publication 800-22 - Revision 1a - A Statistical Test Suite for Random and Pseudorandom Number Generators for Cryptographic Applications<br>

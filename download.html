@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2019  Joshua M. David
+	Copyright (c) 2013-2024  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -92,6 +92,128 @@
 						release using the same GnuPG signature listed below.
 					</p>
 					<br>
+
+
+					<h2 id="release2.0.0">Jericho Comms version 2.0.0 downloads (for Firefox or Chromium based browsers)</h2>
+					<p>
+						This is a major update to add encryption to the client-server network traffic so it looks entirely like random noise.
+					</p>
+					<b>Changes in v2.0.0</b><br>
+					<ul class="changeLog">
+						<li>
+							New client-server protocol with zero meta-data, all traffic is entirely encrypted and authenticated to look
+							like random data is being sent in varying sizes. See the network protocol for changes here.
+						</li>
+						<li>
+							Initial preparation done at the network protocol level for handling multi-part/multi-pad messages (next release
+							will work on client side logic for that).
+						</li>
+						<li>
+							Changed the server installation scripts to be built for Debian (this was tested to be working fine on Debian 11).
+							It should still also work on Ubuntu server as it's similar commands (but currently untested). The reason for this
+							was mainly that Debian is a pure open source effort, whereas Ubuntu is more commercially based and run by a company.
+						</li>
+						<li>Reworked the PHP code to be more structured and organised.</li>
+						<li>
+							NB: For future releases, the plan is to release things in smaller chunks as they are ready, so maybe
+							not so many big changes at once, then hopefully there is not a large amount of time between releases.
+						</li>
+					</ul>
+					<table class="downloadLinks">
+						<tr>
+							<th>Mirror</th>
+							<th>Program download</th>
+							<th>Signature</th>
+						</tr>
+						<tr>
+							<td>Mega</td>
+							<td><a href="https://mega.nz/file/QMUggYDQ#RZpXZRDzEnyKJzrpLWJ8_am5pkFWKoqMvMf5kJkeXHU">jericho-comms-v2.0.0.tar.xz</a></td>
+							<td><a href="https://mega.nz/file/ENtHXa7R#ATkxGzxIqcf4a8w3phnp34GqA46cfq8UV34daKdmHzo">jericho-comms-v2.0.0.tar.xz.asc</a></td>
+						</tr>
+						<tr>
+							<td>This site</td>
+							<td><a href="files/jericho-comms-v2.0.0.tar.xz">jericho-comms-v2.0.0.tar.xz</a></td>
+							<td><a href="files/jericho-comms-v2.0.0.tar.xz.asc">jericho-comms-v2.0.0.tar.xz.asc</a></td>
+						</tr>
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th>Mirror</th>
+							<th>White paper</th>
+							<th>Signature</th>
+						</tr>
+						<tr>
+							<td>Mega</td>
+							<td><a href="https://mega.nz/file/1Z8AWDwZ#fYH9U0PEvjawj6hdT6ZJM82xKzyMbKxYIY43nel5-M0">jericho-comms-v2.0.0.pdf</a></td>
+							<td><a href="https://mega.nz/file/kEUwRbCB#oUI9Q_3z1NZufC_3EscHKqYwcEqBjxtgygzj0Kk23EA">jericho-comms-v2.0.0.pdf.asc</a></td>
+						</tr>
+						<tr>
+							<td>This site</td>
+							<td><a href="files/jericho-comms-v2.0.0.pdf">jericho-comms-v2.0.0.pdf</a></td>
+							<td><a href="files/jericho-comms-v2.0.0.pdf.asc">jericho-comms-v2.0.0.pdf.asc</a></td>
+						</tr>
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th>Mirror</th>
+							<th>Warrant canary</th>
+							<th>Signature</th>
+						</tr>
+						<tr>
+							<td>MEGA</td>
+							<td><a href="https://mega.nz/file/oQk1SRqA#yCDPKimCrKm1InNKx-6Xh6rELZoYo_3LyKgKsbB-O-0">warrant-canary.txt</a></td>
+							<td><a href="https://mega.nz/file/lZ8W1aDY#arwwyt-cxGC993LD4BhzXXhk0oYuzrAqCh7AYVm1M4M">warrant-canary.txt.asc</a></td>
+						</tr>
+						<tr>
+							<td>This site</td>
+							<td><a href="files/warrant-canary.txt">warrant-canary.txt</a></td>
+							<td><a href="files/warrant-canary.txt.asc">warrant-canary.txt.asc</a></td>
+						</tr>
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th colspan="2">GnuPG signing key details for authenticity verification</th>
+						</tr>
+						<tr>
+							<td>Key server 1</td>
+							<td>https://keys.openpgp.org/search?q=CF3F79EE011459BA0A599E9CDC768471C467B6D0</td>
+						</tr>
+						<tr>
+							<td>Key server 2</td>
+							<td>https://keyserver.ubuntu.com/pks/lookup?search=0xdc768471c467b6d0&fingerprint=on&hash=on&op=get</td>
+						</tr>
+						<tr>
+							<td>Key ID</td>
+							<td>DC768471C467B6D0</td>
+						</tr>
+						<tr>
+							<td>Fingerprint</td>
+							<td>CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0</td>
+						</tr>
+						<tr>
+							<td>Public key from this site</td>
+							<td><a href="files/pubkey.txt">pubkey.txt</a></td>
+						</tr>
+						<!--
+						<tr>
+							<td>Public key on blockchain at onename.com</td>
+							<td><a href="https://onename.com/joshua_m_david">https://onename.com/joshua_m_david</a></td>
+						</tr>
+						<tr>
+							<td>Public key on blockchain at keybase.io</td>
+							<td><a href="https://keybase.io/joshua_m_david">https://keybase.io/joshua_m_david</a></td>
+						</tr>
+						-->
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th colspan="2">File hash of jericho-comms-v2.0.0.tar.xz for integrity verification</th>
+						</tr>
+						<tr>
+							<td>SHA2-384 digest</td>
+							<td class="hash">fcdffeb7bbe63db0889b14557084441cf0b1ef34df04db8ad25c529cfbb7392b221847fd2bc0f63ef96a10405f8e07ce</td>
+						</tr>
+					</table>
 
 
 					<h2 id="release1.5.4">Jericho Comms version 1.5.4 downloads (for Firefox or Chromium based browsers)</h2>

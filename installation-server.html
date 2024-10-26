@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2019  Joshua M. David
+	Copyright (c) 2013-2024  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -54,10 +54,10 @@
 					<p>
 						This page explains in an easy step by step guide how to fully setup your
 						<a href="https://en.wikipedia.org/wiki/Virtual_private_server">VPS</a> or server and get the software running for
-						Jericho Comms on <a href="http://www.ubuntu.com/download/server">Ubuntu Server 18.04.x</a> Long Term Support (LTS).
+						Jericho Comms on Debian 11.
 						Open source is the best way as it's auditable and less likely to contain backdoors. Compiling your
-						own from source code is even safer if you know how to do that. If you do not like Ubuntu, you
-						can use whatever Linux or Unix distribution you want, it is really just setting up a Linux,
+						own from source code is even safer if you know how to do that. If you do not like Debian, you
+						can use whatever Linux or Unix distribution you want e.g. Ubuntu server, it is really just setting up a Linux,
 						Apache, PostgreSQL & PHP (LAPP) stack and configuring it to serve the API code.<br>
 						<br>
 						You need approximately 15 minutes of time and some basic computer skills. Be sure to read each step
@@ -70,7 +70,7 @@
 					<h2>Table of Contents</h2>
 					<ol class="tableOfContents">
 						<li><a href="#vps-sign-up">Sign up for a Virtual Private Server</a></li>
-						<li><a href="#install-ubuntu">Download and install Ubuntu Server</a></li>
+						<li><a href="#install-debian">Download and install Debian</a></li>
 						<li><a href="#connect-to-server">Connect to your server</a></li>
 						<li><a href="#upload-program-to-server">Uploading the program onto the server</a></li>
 						<li><a href="#verify-signature">Verifying the integrity and authenticity of the file</a></li>
@@ -121,21 +121,20 @@
 					</p>
 
 
-					<h2 id="install-ubuntu">Download and install Ubuntu Server</h2>
+					<h2 id="install-debian">Download and install Debian</h2>
 					<p>
-						If using a VPS, select one of the pre-made Ubuntu Server 18.04.x LTS images. The online provider will
-						do all the installation automatically for you and initialise your VPS. The current minor version at the time of
-						writing is Ubuntu Server 18.04.3 but later versions such as 18.04.4 etc should still work fine with this guide.<br>
+						If using a VPS, select one of the pre-made Debian 11 images. The online provider will
+						do all the installation automatically for you and initialise your VPS. Newer versions should still
+						hopefully work fine with this guide.<br>
 						<br>
-						Otherwise if you're setting up your own server, <a href="http://cdimage.ubuntu.com/releases/18.04.3/release/">download the latest</a> version
-						of Ubuntu Server 18.04.x LTS. Write the image to a CD/DVD/USB drive, then boot from the install image on CD/DVD/USB drive and run
-						through the installation. This should be pretty self explanatory but there is a step-by-step guide with screenshots
-						<a href="https://www.fosslinux.com/6406/how-to-install-ubuntu-server-18-04-lts.htm">here</a>
-						if you need them. Make sure your server has a public, static IP address so your group's users
-						can connect to it reliably over the internet.<br>
+						Otherwise if you're setting up your own server, download the latest version of Debian. Write the
+						image to a CD/DVD/USB drive, then boot from the install image on CD/DVD/USB drive and run
+						through the installation. This should be pretty self explanatory but there are step-by-step guides
+						with screenshots if you Google for them. Make sure your server has a public, static IP address
+						so your group's users can connect to it reliably over the internet.<br>
 						<br>
-						At the software selection screen be sure to select <b>OpenSSH server</b> so it gets installed and you can log into your server
-						remotely with SSH. SSH will likely be enabled by default on a VPS.
+						At the software selection screen be sure to select <b>OpenSSH server</b> so it gets installed
+						and you can log into your server remotely with SSH. SSH will likely be enabled by default on a VPS.
 						<br>
 						<img class="listImage" src="img/server-install-openssh.png" alt="">
 					</p>
@@ -161,10 +160,10 @@
 					<p>
 						Now it's time to install get the server code running. The easiest way to get it
 						onto the server would be to use the command line:<br>
-						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-comms-v1.5.4.tar.xz</code><br>
+						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-comms-v2.0.0.tar.xz</code><br>
 						<br>
 						You also need to download the signature file to verify that the download is authentic:<br>
-						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-comms-v1.5.4.tar.xz.asc</code><br>
+						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-comms-v2.0.0.tar.xz.asc</code><br>
 						<br>
 						This will download the two files and put them inside your current working directory. You can list them with <code>ls -l</code>.
 						If the files are there you can skip to the next step.<br>
@@ -177,7 +176,7 @@
 						earlier with PuTTY. Then it's a basic drag and drop operation.<br>
 						<br>
 						If wanting to transfer the files from your Linux machine to the server you can use the following command:<br>
-						<code>scp /path/on/local/machine/jericho-comms-v1.5.4.tar.xz username@ipaddress:~</code><br>
+						<code>scp /path/on/local/machine/jericho-comms-v2.0.0.tar.xz username@ipaddress:~</code><br>
 						<br>
 						Be sure to swap out <code>username</code> for the username on the server and swap out <code>ipaddress</code> for the IP address
 						of the server. It should prompt you for the password. The <code>~</code> character will put the file in the home directory for
@@ -195,10 +194,10 @@
 					<h3>Verifying by file hashes</h3>
 					<p>
 						First verify that the file was downloaded correctly using the hashes found on the <a href="download.html">download page</a>:<br>
-						<code>sha384sum jericho-comms-v1.5.4.tar.xz | grep "ddb904257ca106110d8cdbc8bbcbbb2a54d14266c3c4e39dc5a4c7dd6850d58309645e17cb6b382a5f0c21b27ea72c54"</code><br>
+						<code>sha384sum jericho-comms-v2.0.0.tar.xz | grep "fcdffeb7bbe63db0889b14557084441cf0b1ef34df04db8ad25c529cfbb7392b221847fd2bc0f63ef96a10405f8e07ce"</code><br>
 						<br>
 						If the checksum matches it will display the matching hash output on a line on the command line, for example:<br>
-						<code>ddb904257ca106110d8cdbc8bbcbbb2a54d14266c3c4e39dc5a4c7dd6850d58309645e17cb6b382a5f0c21b27ea72c54 &nbsp;jericho-comms-v1.5.4.tar.xz</code><br>
+						<code>fcdffeb7bbe63db0889b14557084441cf0b1ef34df04db8ad25c529cfbb7392b221847fd2bc0f63ef96a10405f8e07ce &nbsp;jericho-comms-v2.0.0.tar.xz</code><br>
 						<br>
 						If nothing is returned on the command line, then the file is a mismatch and you will have to re-download it.
 						You can try downloading it from another source such as FreeNet as well (see the
@@ -218,25 +217,24 @@
 						<code>gpg --fingerprint 0xDC768471C467B6D0</code>. You should see:<br>
 						<br>
 						<code>
-							pub &nbsp;&nbsp;4096R/0xDC768471C467B6D0 2013-09-25 [expires: 2024-12-27]<br>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Key fingerprint = CF3F 79EE 0114 59BA 0A59  9E9C DC76 8471 C467 B6D0<br>
-							uid &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Joshua M. David (Jericho Comms) &lt;joshua.m.david@tutanota...&gt;<br>
-							uid &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Joshua M. David (Jericho Encryption) &lt;jerichoencryption@rediffmail...&gt;<br>
-							sub &nbsp;&nbsp;4096R/0xA5A2DFDDBE456DA7 2013-09-25 [expires: 2024-12-27]
+							pub   rsa4096/0xDC768471C467B6D0 2013-09-25 [SC] [expires: 2027-04-15]<br>
+							Key fingerprint = CF3F 79EE 0114 59BA 0A59  9E9C DC76 8471 C467 B6D0<br>
+							uid                   [ unknown] Joshua M. David (Jericho Comms 2022+) &lt;joshua [.] m [.] david [at] protonmail [.] com&gt;<br>
+							sub   rsa4096/0xA5A2DFDDBE456DA7 2013-09-25 [E] [expires: 2027-04-15]<br>
+							Key fingerprint = 6401 CF98 4D37 0AB5 0997  3748 A5A2 DFDD BE45 6DA7<br>
 						</code><br>
 						<br>
-						NB: The email addresses have had the TLD replaced with ... to reduce spam mail. Now
-						run <code>gpg --verify jericho-comms-v1.5.4.tar.xz.asc jericho-comms-v1.5.4.tar.xz</code> to verify the
+						NB: The email addresses have had the parts encased with [] to reduce spam mail. Now
+						run <code>gpg --verify jericho-comms-v2.0.0.tar.xz.asc jericho-comms-v2.0.0.tar.xz</code> to verify the
 						signature. This should give you a message saying <b>Good signature</b> similar to the following:<br>
 						<br>
 						<code>
-							gpg: Signature made Mon 30 Dec 2019 {time}<br>
-							gpg: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;using RSA key CF3F79EE011459BA0A599E9CDC768471C467B6D0<br>
-							gpg: Good signature from "Joshua M. David (Jericho Comms) &lt;joshua.m.david@tutanota...&gt;"<br>
-							gpg: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aka "Joshua M. David (Jericho Encryption) &lt;jerichoencryption@rediffmail...&gt;"<br>
+							gpg: Signature made Fri 25 Oct 2024 {time}<br>
+							gpg:                using RSA key CF3F79EE011459BA0A599E9CDC768471C467B6D0<br>
+							gpg: Good signature from "Joshua M. David (Jericho Comms 2022+) &lt;joshua [.] m [.] david [at] protonmail [.] com&gt;" [unknown]<br>
 							gpg: WARNING: This key is not certified with a trusted signature!<br>
-							gpg: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There is no indication that the signature belongs to the owner.<br>
-							Primary key fingerprint: CF3F 79EE 0114 59BA 0A59  9E9C DC76 8471 C467 B6D0
+							gpg:          There is no indication that the signature belongs to the owner.<br>
+							Primary key fingerprint: CF3F 79EE 0114 59BA 0A59  9E9C DC76 8471 C467 B6D0<br>
 						</code><br>
 						<br>
 						NB: the time has been replaced with {time} as it may appear relative to your timezone. It will also likely show a
@@ -255,10 +253,10 @@
 
 					<h2 id="extracting-server-files">Extracting the server files</h2>
 					<p>
-						Now you need to extract files from inside the jericho-comms-v1.5.4.tar.xz archive file. This can be done using:<br>
-						<code>tar -xvf jericho-comms-v1.5.4.tar.xz</code><br>
+						Now you need to extract files from inside the jericho-comms-v2.0.0.tar.xz archive file. This can be done using:<br>
+						<code>tar -xvf jericho-comms-v2.0.0.tar.xz</code><br>
 						<br>
-						That will extract the files into a directory called <code>jericho-comms-v1.5.4</code> which is in your current
+						That will extract the files into a directory called <code>jericho-comms-v2.0.0</code> which is in your current
 						working directory.
 					</p>
 
@@ -266,7 +264,7 @@
 					<h2 id="running-installation-script">Running the server installation script</h2>
 					<p>
 						Run the server API software installation script using:<br>
-						<code>sudo ./jericho-comms-v1.5.4/server/setup.sh</code><br>
+						<code>sudo ./jericho-comms-v2.0.0/server/setup.sh</code><br>
 						<br>
 						This script is designed to be run on a clean install of the Linux server. It will prompt you a number of
 						simple questions and automate the installation of Apache, PostgreSQL, PHP and the Jericho Comms server API software. It
