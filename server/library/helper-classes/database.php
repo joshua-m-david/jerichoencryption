@@ -1,7 +1,7 @@
 <?php
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,23 +23,48 @@ use \PDOException;
  * the database, prepared insert, update and select queries and transactions.
  *
  * For debugging database results these can be used from the calling code:
- * getErrorMsg('lastErrorMsg')
- * getException()
+ * db->getErrorMsg('lastErrorMsg')
+ * db->getErrorMsg('all')
+ * db->getException()
  */
 class Database
 {
-	private $config;				# Database connection config
-	private $conn;					# Database connection handler
-	private $statement;				# Statement for prepared queries
-	private $numRows;				# Number of rows affected/returned
-	private $errors = array();		# Errors generated
-	private $exception;				# Exception object for full stack trace
+	/**
+	 * @var object Database connection config
+	 */
+	private $config;
+
+	/**
+	 * @var object Database connection handler
+	 */
+	private $conn;
+
+	/**
+	 * @var object Statement for prepared queries
+	 */
+	private $statement;
+
+	/**
+	 * @var int Number of rows affected/returned
+	 */
+	private $numRows;
+
+	/**
+	 * @var array Errors generated
+	 */
+	private $errors = [];
+
+	/**
+	 * @var object Exception object for full stack trace
+	 */
+	private $exception;
+
 
 	/**
 	 * Constructor
-	 * @param array &$config Pass in the config array from config.php
+	 * @param array $config The database configuration array
 	 */
-	public function __construct(&$config)
+	public function __construct($config)
 	{
 		$this->config = $config;
 	}
@@ -54,20 +79,32 @@ class Database
 
 	/**
 	 * Connect to the database with persistent connection
-	 * @param array $config
 	 * @return boolean Whether the database connected successfully or not
 	 */
 	public function connect()
 	{
+		// If already connected, re-use the connection and return success
+		if ($this->conn !== null)
+		{
+			return true;
+		}
+
 		// Create connection string
 		$connectionString = 'pgsql:'
-		                  . 'host=' . $this->config['hostname'] . ';'
-		                  . 'port=' . $this->config['port'] . ';'
-		                  . 'dbname=' . $this->config['database'];
+		                  . 'host=' . $this->config['databaseHostname'] . ';'
+		                  . 'port=' . $this->config['databasePort'] . ';'
+		                  . 'dbname=' . $this->config['databaseName'];
 
 		try {
 			// Connect to the database
-			$this->conn = new PDO($connectionString, $this->config['username'], $this->config['password'], array(PDO::ATTR_PERSISTENT => false));
+			$this->conn = new PDO(
+				$connectionString,
+				$this->config['databaseUsername'],
+				$this->config['databasePassword'],
+				[
+					PDO::ATTR_PERSISTENT => false
+				]
+			);
 			$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		}
 		catch (PDOException $exception)
@@ -90,14 +127,24 @@ class Database
 	}
 
 	/**
+	 * Update the database name in the config once it's known. This is needed because we don't connect to the
+	 * database until the group is known and each group has its own database and own set of tables (for now).
+	 * @param string $databaseName The database name
+	 */
+	public function updateConfigDatabaseName($databaseName)
+	{
+		$this->config['databaseName'] = $databaseName;
+	}
+
+	/**
 	 * Prepares a query and binds parameter values to the statement before executing the query. This is used
 	 * especially for cases where user input is being added to the query to protect against SQL injection.
 	 * @param string $query A query e.g. 'SELECT test_connection FROM settings WHERE test_connection = :test_connection'
 	 * @param array|null $params The optional parameters to be bound to the query e.g. array('test_connection' => true)
 	 * @return array|false Returns an associative array if successful, an empty array if no rows were returned and
-	 *                    false on error.
+	 *                     false on error.
 	 */
-	public function preparedSelect($query, $params = array())
+	public function preparedSelect($query, $params = [])
 	{
 		try {
 			// Prepare the query
@@ -140,7 +187,7 @@ class Database
 			$rows = array();
 
 			// Add each row into the array
-			foreach($this->statement as $row)
+			foreach ($this->statement as $row)
 			{
 				$rows[] = $row;
 				$this->numRows++;
@@ -168,7 +215,7 @@ class Database
 	 * @param array|null $params The parameters to be bound to the query e.g. array('nonce' => $nonce)
 	 * @return int|false Returns the number of affected rows on success, or false on error
 	 */
-	public function preparedUpdate($query, $params = array())
+	public function preparedUpdate($query, $params = [])
 	{
 		try {
 			// Prepare the query
@@ -225,8 +272,8 @@ class Database
 	}
 
 	/**
-	 * Takes in an array of transaction Query objects to run them all in a batch transaction.
-	 * @param array $transactionQueries An array of Query objects to be run in the transaction
+	 * Takes in an array of TransactionQuery objects to run them all in a batch transaction.
+	 * @param array<TransactionQuery> $transactionQueries An array of TransactionQuery objects to be run in the transaction
 	 * @return int|false Returns the number of rows affected or rolls back transaction and returns false on any error
 	 */
 	public function preparedTransaction($transactionQueries)
@@ -248,6 +295,7 @@ class Database
 					$success = false;
 					$this->statement = null;
 					$this->handleDatabaseError('Error preparing query in transaction. Query: ' .$transactionQuery->query);
+					break;
 				}
 
 				// If there are query parameters to be bound, bind them
@@ -260,7 +308,7 @@ class Database
 					$this->statement->closeCursor();
 					$this->statement = null;
 					$this->handleDatabaseError('Error binding parameters in transaction. Query: ' .$transactionQuery->query);
-
+					break;
 				}
 
 				// Execute query
@@ -273,6 +321,7 @@ class Database
 					$this->statement->closeCursor();
 					$this->statement = null;
 					$this->handleDatabaseError('Error while executing query in transaction. Query: ' .$transactionQuery->query);
+					break;
 				}
 
 				// Increment number of affected rows and close statement
@@ -325,7 +374,7 @@ class Database
 			$nulledParams = $this->setEmptyValuesToNull($params);
 
 			// Loop through array of params and bind them to the statement
-			foreach($nulledParams as $key => $val)
+			foreach ($nulledParams as $key => $val)
 			{
 				$dataType = $this->getConstantType($val);
 				$bindResult = $this->statement->bindValue(":$key", $val, $dataType);
@@ -348,13 +397,24 @@ class Database
 	/**
 	 * Returns the PDO constant data type for use in prepared statement while reading data in
 	 * @param string|bool|int|null $var Pass in a variable and it checks the variable's type
-	 * @return string PDO param type
+	 * @return int PDO param type i.e. PDO::PARAM_BOOL, PDO::PARAM_INT, PDO::PARAM_NULL, PDO::PARAM_STR
 	 */
 	private function getConstantType($var)
 	{
-		if (is_bool($var)) { return PDO::PARAM_BOOL; }
-		if (is_int($var)) {	return PDO::PARAM_INT; }
-		if (is_null($var)) { return PDO::PARAM_NULL; }
+		if (is_bool($var))
+		{
+			return PDO::PARAM_BOOL;
+		}
+
+		if (is_int($var))
+		{
+			return PDO::PARAM_INT;
+		}
+
+		if (is_null($var))
+		{
+			return PDO::PARAM_NULL;
+		}
 
 		return PDO::PARAM_STR;			# Default
 	}
@@ -366,7 +426,7 @@ class Database
 	 */
 	private function setEmptyValuesToNull($params)
 	{
-		foreach($params as $key => $val)
+		foreach ($params as $key => $val)
 		{
 			$val = ($val === '') ? null : $val;
 			$newParams[$key] = $val;
@@ -376,7 +436,7 @@ class Database
 	}
 
 	/**
-	 * Returns the ID of the last row inserted into the table
+	 * Returns the primary key ID of the last row inserted into the table
 	 * @return int
 	 */
 	public function getLastInsertedId()
@@ -394,7 +454,7 @@ class Database
 	}
 
 	/**
-	 * Gets the PDO exception error info, updates array of db errors
+	 * Gets the PDO exception error info, updates array of DB errors
 	 * @param string $customErrorMessage
 	 * @param Exception $exception
 	 */
@@ -418,29 +478,33 @@ class Database
 
 	/**
 	 * Gets database error messages
-	 * @param string $message What error messages to get
-	 * @return array|string|false
+	 * @param string $message What error messages to get e.g. 'lastErrorMsg' (default) or 'all'
+	 * @return array|string|false Returns an array of error messages if 'all' passed, or the last error message if
+	 *                            'lastErrorMsg' is passed or false if there were no errors in the last DB query
 	 */
 	public function getErrorMsg($message = 'lastErrorMsg')
 	{
+		// Returns false if no errors
 		if (empty($this->errors))
 		{
-			return false;						# Returns false if no errors
+			return false;
 		}
 
+		// Return all error messages in array
 		if ($message === 'all')
 		{
-			return $this->errors;				# Return all error messages in array
+			return $this->errors;
 		}
 
+		// Return last error message
 		if ($message === 'lastErrorMsg')
 		{
-			return end($this->errors);			# Return last error message
+			return end($this->errors);
 		}
 	}
 
 	/**
-	 * Returns the full exception object for stack trace or false if no errors
+	 * Returns the full exception object for stack trace, or false if no errors
 	 * @return array|false
 	 */
 	public function getException()

@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Jericho Comms - Information-theoretically secure communications
-# Copyright (c) 2013-2019  Joshua M. David
+# Copyright (c) 2013-2024  Joshua M. David
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,8 +20,7 @@ clearBashHistoryAndConsole()
 	# Ask the user if they wish to clear the bash history
 	echo
 	echo -e "${blueColour}For security you should clear the output of this script from the bash${defaultColour}"
-	echo -e "${blueColour}shell once you have copied the server database password and group${defaultColour}"
-	echo -e "${blueColour}configuration to a safe place e.g. a local password manager.${defaultColour}"
+	echo -e "${blueColour}shell once you have copied the group configuration.${defaultColour}"
 	echo
 	echo -e "${yellowColour}Do you wish to clear now? (y or n)${defaultColour}"
 	read clearBashShellUserResponse

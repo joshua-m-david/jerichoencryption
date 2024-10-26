@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@ var chatPage = {
 			// Make sure they've entered in some data
 			if (plaintextMessage === '')
 			{
-				app.showStatus('error', 'Message empty, non ASCII printable characters are not supported and removed.');
+				app.showStatus('error', 'Enter a message to send.');
 				return false;
 			}
 
@@ -121,60 +121,42 @@ var chatPage = {
 			var ciphertextMessageAndMac = common.encryptAndAuthenticateMessage(plaintextMessage, pad);
 			var padIdentifier = common.getPadIdentifierFromCiphertext(ciphertextMessageAndMac);
 
-			// Get the server address and key
-			var serverAddressAndPort = db.padData.info.serverAddressAndPort;
-			var serverKey = db.padData.info.serverKey;
-
 			// Package the data to be sent to the server
-			var data = {
-				'user': db.padData.info.user,
-				'apiAction': 'sendMessage',
-				'msg': ciphertextMessageAndMac
+			const requestData = {
+				fromUser: db.padData.info.user,
+				apiAction: networkCrypto.apiActionSend,
+				serverAddressAndPort: db.padData.info.serverAddressAndPort,
+				serverGroupIdentifier: db.padData.info.serverGroupIdentifier,
+				serverGroupKey: db.padData.info.serverGroupKey,
+				messagePackets: [ciphertextMessageAndMac]	// ToDo: split long messages into separate message packets
 			};
 
 			// Send the message off to the server
-			common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseData)
+			common.sendRequestToServer(requestData, function(validResponse, responseCode)
 			{
-				// If the server response is authentic
-				if (validResponse)
+				// If the server response is authentic and message/s were stored successfully on the server
+				if (validResponse && responseCode === networkCrypto.RESPONSE_SUCCESS)
 				{
-					// Get message
-					var statusMessage = responseData.statusMessage;
+					// Find the message in the chat window with that identifier and update the status to 'Sent'
+					query.get('.jsMessage[data-pad-identifier=' + padIdentifier + '] .jsMessageStatus')
+							.text('Sent')
+							.addClass('isSendSuccess');
 
-					// If it saved to the database
-					if (responseData.success)
-					{
-						// Find the message in the chat window with that identifier and update the status to 'Sent'
-						query.get('.jsMessage[data-pad-identifier=' + padIdentifier + '] .jsMessageStatus')
-								.text(statusMessage)
-								.addClass('isSendSuccess');
-
-						// If the user initiated the auto nuke from typing into the chat,
-						// process it now since it's already sent to the other users
-						if (plaintextMessage.indexOf('init auto nuke') > -1) {
-							chatPage.processAutoNuke(db.padData.info.user);
-						}
-
-						// Succeeded so can return early
-						return true;
+					// If the user initiated the auto nuke from typing into the chat,
+					// process it now since it's already sent to the other users
+					if (plaintextMessage.indexOf('init auto nuke') > -1) {
+						chatPage.processAutoNuke(db.padData.info.user);
 					}
-					else {
-						// Otherwise show error from the server
-						app.showStatus('error', statusMessage);
-					}
+
+					// Succeeded so can return early
+					return true;
 				}
 
-				// If response check failed it means there was probably interference from attacker altering data or MAC
-				else if (validResponse === false)
-				{
-					app.showStatus('error', 'Unauthentic response from server detected.');
-				}
-
-				else {
-					// Most likely cause is user has incorrect server url or key entered.
-					// Another alternative is the attacker modified their request while en route to the server
-					app.showStatus('error', 'Error sending message to server. Check: 1) you are connected to the network, 2) the client/server configurations are correct, and 3) client/server system clocks are up to date. If everything is correct, the data may have been tampered with by an attacker.');
-				}
+				// Otherwise show a status message and add additional troubleshooting information for the user.
+				// Most likely cause is user has incorrect server url/key entered. Another alternative is the
+				// attacker modified their request while en route to the server.
+				app.showStatus('error', 'Error sending message to server. ' + networkCrypto.getStatusMessage(responseCode) + ' '
+				                      + networkCrypto.getNetworkTroubleshootingText());
 
 				// Add send failure to the message status
 				query.get('.jsMessage[data-pad-identifier=' + padIdentifier + '] .jsMessageStatus')
@@ -249,8 +231,8 @@ var chatPage = {
 		// Add a handler for when the user is typing in the chat window
 		query.getCached('.jsChatInput').on('keyup', function(event)
 		{
-			// If the Enter key is pressed
-			if (event.keyCode === 13)
+			// If the Enter key is pressed (but not Shift + Enter, which we want for inputting new lines / line breaks)
+			if (event.keyCode === 13 && !event.shiftKey)
 			{
 				// Activate the click event on the button to send the message
 				query.getCached('.jsSendMessageButton').trigger('click');
@@ -493,50 +475,36 @@ var chatPage = {
 			return false;
 		}
 
-		// Get the server address and key
-		var serverAddressAndPort = db.padData.info.serverAddressAndPort;
-		var serverKey = db.padData.info.serverKey;
-
-		// Package the data to be sent to the server
-		var data = {
-			user: db.padData.info.user,
-			apiAction: 'receiveMessages'
-		};
-
-		// Currently processing a request to the server
+		// Set flag to say we are currently processing a request to the server
 		chatPage.processingReceiveMessagesRequest = true;
 
-		// Check the server for messages using an asynchronous request
-		common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseData)
-		{
-			// If the server response is authentic
-			if (validResponse)
-			{
-				// Get message back from server, and protect against XSS
-				var status = responseData.success;
-				var statusMessage = common.htmlEncodeEntities(responseData.statusMessage);
+		// Package the data to be sent to the server
+		const requestData = {
+			fromUser: db.padData.info.user,
+			apiAction: networkCrypto.apiActionReceive,
+			serverAddressAndPort: db.padData.info.serverAddressAndPort,
+			serverGroupIdentifier: db.padData.info.serverGroupIdentifier,
+			serverGroupKey: db.padData.info.serverGroupKey
+		};
 
+		// Check the server for messages using an asynchronous request
+		common.sendRequestToServer(requestData, function(validResponse, responseCode, userMessagePackets)
+		{
+			// Either of these means a successful receive messages request
+			const successCodes = [networkCrypto.RESPONSE_SUCCESS, networkCrypto.RESPONSE_SUCCESS_NO_MESSAGES];
+
+			// If the server response is authentic and it successfully checked for messages
+			if (validResponse && successCodes.includes(responseCode))
+			{
 				// If there are messages
-				if (status)
+				if (responseCode === networkCrypto.RESPONSE_SUCCESS)
 				{
 					// Decrypt and display them
-					chatPage.processReceivedMessages(responseData.messages);
+					chatPage.processReceivedMessages(userMessagePackets);
 				}
-
-				// If some other error occurred
-				else if ((status === false) && (responseData.statusMessage !== 'No messages in database.'))
+				else if (responseCode === networkCrypto.RESPONSE_SUCCESS_NO_MESSAGES)
 				{
-					// Otherwise show error from the server and update status
-					app.showStatus('error', statusMessage);
-					query.getCached('.jsMessagesLastCheckedStatus').text('');
-					query.getCached('.jsMessagesLastCheckedTime').text('');
-
-					// Stop automatic checking of messages
-					chatPage.stopIntervalReceivingMessages();
-				}
-
-				else {
-					// Otherwise if there are no messages, just display last checked status message
+					// Otherwise if there are no messages, just display last checked status & time message
 					query.getCached('.jsMessagesLastCheckedStatus').text('No messages since:');
 					query.getCached('.jsMessagesLastCheckedTime').text(common.getCurrentLocalTime());
 				}
@@ -565,25 +533,16 @@ var chatPage = {
 				// Calculate how many milliseconds and seconds until next retry
 				var nextRetryMilliseconds = chatPage.checkForMessagesRetryIntervalTime * 2;
 				var nextRetrySeconds = nextRetryMilliseconds / 1000;
-				var statusMessage = '';
 
-				// If response check failed it means there was probably interference from attacker altering data or MAC
-				if (validResponse === false)
-				{
-					statusMessage = 'Unauthentic response from server detected. Retrying in ' + nextRetrySeconds + ' seconds.';
-				}
-				else {
-					// Otherwise the most likely cause is user has incorrect server URL or key entered. Another
-					// alternative is the attacker modified their request while en route to the server
-					statusMessage = 'Error contacting server. Retrying in ' + nextRetrySeconds + ' seconds. Check: ' +
-				                    '1) you are connected to the network, ' +
-					                '2) the client/server configurations are correct, and ' +
-					                '3) client/server system clocks are up to date. If everything is correct, ' +
-					                'the data may have been tampered with by an attacker.';
-				}
+				// Show an error message. The most likely cause is user has incorrect server URL or key entered. Another
+				// alternative is the attacker modified their request while en route to the server.
+				app.showStatus('error', 'Error checking for new messages. Retrying in ' + nextRetrySeconds + ' seconds. '
+				                      + networkCrypto.getStatusMessage(responseCode) + ' '
+				                      + networkCrypto.getNetworkTroubleshootingText());
 
-				// Show status message
-				app.showStatus('error', statusMessage);
+				// Hide last checked successfully status and time
+				query.getCached('.jsMessagesLastCheckedStatus').text('');
+				query.getCached('.jsMessagesLastCheckedTime').text('');
 
 				// Update the retry interval
 				chatPage.checkForMessagesRetryIntervalTime = nextRetryMilliseconds;
@@ -603,22 +562,24 @@ var chatPage = {
 
 	/**
 	 * Process each message, by verifying, decrypting and displaying to the screen
-	 * @param {Array} messages An array of messages received from the server
+	 * @param {Array} userMessagePackets An array of User Message Packets received from the server. Each array element
+	 *                                   contains an object with keys 'fromUser' and 'messagePacket' which is the
+	 *                                   encrypted message packet.
 	 */
-	processReceivedMessages: function(messages)
+	processReceivedMessages: function(userMessagePackets)
 	{
 		// Variable initialisations
 		var decryptedMessages = [];
 		var htmlMessages = '';
-		var numOfMessages = messages.length;
+		var numOfMessages = userMessagePackets.length;
 		var padIndexesToErase = [];
 
 		// For each message returned
 		for (var i = 0; i < numOfMessages; i++)
 		{
 			// Get details necessary to decrypt and verify
-			var fromUser = messages[i].from;
-			var ciphertext = messages[i].msg;
+			var fromUser = userMessagePackets[i].fromUser;
+			var ciphertext = userMessagePackets[i].messagePacket;
 
 			// If the username who sent the message is not in the whitelist of users, then the message cannot
 			// be decrypted because it's not known which pad to decrypt with (the pads are drawn from the pads assigned
@@ -924,7 +885,9 @@ var chatPage = {
 		db.nukeDatabase();
 
 		// Show warning message
-		app.showStatus('error', 'The local database was nuked successfully. However encrypted server messages remain and the one-time pads still exist on the other users\' machines.', true);
+		app.showStatus('warning', 'Your local database was nuked successfully. However encrypted messages remain on '
+			                    + 'the server and the one-time pads still exist on the other users\' machines. You '
+			                    + 'will need to tell them to clear their local databases themselves.');
 	},
 
 	/**

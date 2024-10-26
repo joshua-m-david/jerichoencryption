@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -184,9 +184,8 @@ var trngConcatCombinerPage = {
 		// Enable the export button and save the file when clicked
 		query.getCached('.jsExportFileButton').on('click', function()
 		{
-			// Convert to hexadecimal then WordArray objects for CryptoJS to use
-			var words = CryptoJS.enc.Hex.parse(trngConcatCombinerPage.allDataHex);
-			var outputBase64 = CryptoJS.enc.Base64.stringify(words);
+			// Convert to Base64
+			var outputBase64 = common.convertHexadecimalToBase64(trngConcatCombinerPage.allDataHex);
 
 			// Update hidden anchor tag with the Base64 data
 			query.getCached('.jsExportFileLink').attr('href', 'data:application/octet-stream;base64,' + outputBase64);

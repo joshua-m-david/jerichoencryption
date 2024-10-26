@@ -1,5 +1,5 @@
 # Jericho Comms - Information-theoretically secure communications
-# Copyright (c) 2013-2019  Joshua M. David
+# Copyright (c) 2013-2024  Joshua M. David
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -9,11 +9,14 @@
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 
 
-# This crontab will be located in /etc/cron.d/jericho to
-# force synchronise the server time to an NTP server.
+# This crontab will be located in /etc/cron.d/jericho.
 
+# This script force synchronise the server time to an NTP server.
 # Sync at e.g. 03:30 and 15:30 every day (randomised by setup script)
-:minutes: :firsthour:,:secondhour: * * * root /var/www/timesync.sh
+:minutes: :firsthour:,:secondhour: * * * root /var/www/html/scripts/timesync.sh
 
-# Sync on reboots
-@reboot root /var/www/timesync.sh
+# This script cleans up the messages and nonces on the server hourly.
+0 * * * * root /var/www/html/scripts/clean-database.php
+
+# Sync time also on reboots
+@reboot root /var/www/html/scripts/timesync.sh

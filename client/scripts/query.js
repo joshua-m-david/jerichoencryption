@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,8 @@
 
 /**
  * Functions for caching jQuery selectors and returning cached selectors to save re-querying the DOM each time and give
- * better performance.
+ * better performance. At some point it will be time to remove jQuery and just rely on the DOM and vanilla JS which is
+ * much more powerful now. At that point it will be simple to just rewrite parts of this file to use native selectors.
  *
  * Basic usage:
  * 1) To get a jQuery element call query.getCached('.somePageElementClassName'); which will return the element in the
@@ -78,8 +79,8 @@ var query = {
 	},
 
 	/**
-	 * Finds the jQuery selector in the current page and caches it.
-	 * If the selector has already been requested before it will get it from cache.
+	 * Finds the jQuery selector in the current page and caches it. Getting from the current page likely has a quicker
+	 * lookup and performance benefit. If the selector has already been requested before it will get it from cache.
 	 * @param {String} jQuerySelector A jQuery selector string e.g. '.jsSomeClass' etc
 	 * @returns {Object} Returns the jQuery object for that selector and caches it in case it is used later on
 	 */

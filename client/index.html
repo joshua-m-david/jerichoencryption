@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2019  Joshua M. David
+	Copyright (c) 2013-2024  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@
 			importScripts(baseUrl + '/scripts/workers/import-worker.js');
 
 			// Get data from the process which started the worker thread
-			this.addEventListener('message', function(event)
+			self.addEventListener('message', function(event)
 			{
 				// Derive the master key from the passphrase, keyfile and number of iterations. Then derive the 4 sub keys
 				var workerData = importPadsWorker.deriveSubKeys(event.data.passphrase, event.data.keyfile, event.data.pbkdfKeccakIterations, event.data.pbkdfSkeinIterations);
@@ -106,7 +106,7 @@
 			importScripts(baseUrl + '/scripts/workers/import-worker.js');
 
 			// Get data from the process which started the worker thread
-			this.addEventListener('message', function(event)
+			self.addEventListener('message', function(event)
 			{
 				// Verify the pad indexes, verify the pads, then decrypt them
 				var workerData = importPadsWorker.verifyAndDecryptPads(event.data.dbAesKey, event.data.dbSalsaKey, event.data.dbKeccakMacKey, event.data.dbSkeinMacKey, event.data.padData);
@@ -127,13 +127,13 @@
 			importScripts(baseUrl + '/scripts/workers/trng-worker.js');
 
 			// Get data from the process which started the worker thread
-			this.addEventListener('message', function(event)
+			self.addEventListener('message', function(event)
 			{
 				// Run the extractor on the entropy (inside web worker)
 				var randomData = trngWorker.process(event.data.dataImageA, event.data.dataImageB);
 
 				// Send it back to the main thread
-				this.postMessage(randomData);
+				self.postMessage(randomData);
 
 			}, false);
 		</script>
@@ -147,7 +147,7 @@
 			importScripts(baseUrl + '/scripts/tests-trng.js');
 
 			// Get data from the process which started the worker thread
-			this.addEventListener('message', function(e)
+			self.addEventListener('message', function(e)
 			{
 				// Run the tests on all the random data (inside web worker)
 				var overallResults = trngTests.runTests(e.data.randomData);
@@ -185,7 +185,7 @@
 			importScripts(baseUrl + '/scripts/workers/export-worker.js');
 
 			// Get data from the process which started the worker thread
-			this.addEventListener('message', function(event)
+			self.addEventListener('message', function(event)
 			{
 				// Create the keys, derive keys from password, encrypt and MAC the one-time pads (inside web worker)
 				var workerData = exportPadsWorker.createAndEncryptPads(event.data.options, event.data.extractedRandomDataHex);
@@ -221,6 +221,7 @@
 		<script src="scripts/database-crypto.js"></script>
 		<script src="scripts/query.js"></script>
 		<script src="scripts/common.js"></script>
+		<script src="scripts/network-crypto.js"></script>
 		<script src="scripts/application.js"></script>
 		<script src="scripts/notification.js"></script>
 		<script src="scripts/decoy.js"></script>
@@ -478,16 +479,19 @@
 			<h2>Test server connection</h2>
 			<div class="information">
 				This will test the connection from the client to the server using the API. Using HTTPS is not necessary as all data to and
-				from the server is cryptographically authenticated with a MAC. However if you want to use self-signed certificates,
+				from the server is end-to-end encrypted and authenticated. If however you want to use self-signed certificates,
 				remember to load/accept the server's certificate as trusted into your browser's certificate store first or the connection
 				will fail.
 			</div>
 			<div class="connectionDetails">
-				<label>Server address and port</label>
-				<input class="jsServerAddressAndPort serverInfoTextBox" type="text" placeholder="http://ip-or-domain.com:80/group-name/"><br>
+				<label>Server address (and optional port)</label>
+				<input class="jsServerAddressAndPort serverInfoTextBox" type="text" placeholder="http://ip-or-domain.com:80"><br>
 
-				<label>Server key</label>
-				<input class="jsServerKey serverInfoTextBox" type="text">
+				<label>Server group identifier (hexadecimal 64 bits)</label>
+				<input class="jsServerGroupIdentifier serverInfoTextBox" type="text" placeholder="0123456789abcdef">
+
+				<label>Server group key (hexadecimal 512 bits)</label>
+				<input class="jsServerGroupKey serverInfoTextBox" type="text" placeholder="4a6f686e20333a3136...">
 
 				<div class="buttons">
 					<input class="jsTestServerConnectionButton blueButton" type="button" value="Test server connection">
@@ -514,8 +518,8 @@
 			<div class="instructions">
 				This will let you save the current pads in this device or computer's local storage to another location.<br>
 				<br>
-				<b>Warning:</b> the pads being backed up will not be encrypted (until v2.0). Please save the pads in an
-				encrypted TrueCrypt 7.1a container file instead or use destructable media e.g. CD/DVD.<br>
+				<b>Warning:</b> the pads being backed up will not be encrypted (until a future version). Please save the
+				pads in an encrypted TrueCrypt 7.1a container file instead or use destructable media e.g. CD/DVD.<br>
 				<br>
 				Once saved from here you must clear this device's storage so that you don't have the same pads on two
 				different devices. Doing that could allow duplicate use of a pad and allow for cryptanalysis.
@@ -1270,20 +1274,26 @@
 				<legend>Server details</legend>
 				<table>
 					<tr>
-						<th>Server address and port</th>
+						<th>Server address (and optional port)</th>
 						<td>
-							<input class="jsExportServerAddressAndPort" type="text" placeholder="http://ip-or-domain.com:8080/group-name/">
+							<input class="jsExportServerAddressAndPort" type="text" placeholder="http://ip-or-domain.com:80">
 						</td>
 					</tr>
 					<tr>
-						<th>Server API key (512 bits)</th>
+						<th>Server group identifier (hexadecimal 64 bits)</th>
 						<td>
-							<input class="jsExportServerKey" type="text">
+							<input class="jsExportServerGroupIdentifier" type="text" placeholder="0123456789abcdef">
+						</td>
+					</tr>
+					<tr>
+						<th>Server group key (hexadecimal 512 bits)</th>
+						<td>
+							<input class="jsExportServerGroupKey" type="text" placeholder="4a6f686e20333a3136...">
 						</td>
 					</tr>
 				</table>
 				<div class="buttons">
-					<input class="jsExportCreateServerKeyButton blueButton" type="button" value="1. Create server key">
+					<input class="jsExportCreateServerGroupKeyButton blueButton" type="button" value="1. Create server group key">
 					<input class="jsExportTestServerButton blueButton" type="button" value="2. Test server connection">
 				</div>
 			</fieldset>
@@ -1307,13 +1317,15 @@
 					<tr>
 						<th class="nicknamesHeading">Custom user nicknames</th>
 						<td class="jsExportNicknames nicknames">
-							<div class="isExportNicknameTemplate jsExportNickname">
-								<label>Callsign</label> <input class="jsExportNicknameInput-callsign" type="text" maxlength="12" value="Callsign">
-							</div>
-							<div class="jsExportNickname">
+							<template class="isExportNicknameTemplate">
+								<div class="jsExportNickname nicknameBlock">
+									<label>Callsign</label> <input class="jsExportNicknameInput-callsign" type="text" maxlength="12" value="Callsign">
+								</div>
+							</template>
+							<div class="jsExportNickname nicknameBlock">
 								<label>Alpha</label> <input class="jsExportNicknameInput-alpha" type="text" maxlength="12" value="Alpha">
 							</div>
-							<div class="jsExportNickname">
+							<div class="jsExportNickname nicknameBlock">
 								<label>Bravo</label> <input class="jsExportNicknameInput-bravo" type="text" maxlength="12" value="Bravo">
 							</div>
 						</td>

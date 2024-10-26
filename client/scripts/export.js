@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,9 +68,10 @@ var exportPads = {
 				$(event.target).parent().css('position', 'fixed');
 			},
 			draggable: true,
+			minHeight: 700,
+			minWidth: 615,
 			modal: true,
-			resizable: false,
-			width: 500
+			resizable: true
 		});
 
 		// Initialise other functionality within the dialog
@@ -116,10 +117,9 @@ var exportPads = {
 			// Build list of users so the user can edit the user nicknames
 			for (var i = 0; i < numOfUsers; i++)
 			{
-				// Clone the template and remove the template class so it is visible
-				var $nicknameTemplate = query.getCachedGlobal('.isExportNicknameTemplate')
-				                             .clone()
-				                             .removeClass('isExportNicknameTemplate');
+				// Clone the template HTML
+				const nicknameTemplateHtml = query.getCachedGlobal('.isExportNicknameTemplate').clone().html();
+				const $nicknameTemplate = $(nicknameTemplateHtml);
 
 				// Capitalise the nickname
 				var nicknameCapitalised = common.capitaliseFirstLetter(common.userList[i]);
@@ -189,7 +189,7 @@ var exportPads = {
 	 */
 	initCreateServerKeyButton: function()
 	{
-		query.getCachedGlobal('.jsExportCreateServerKeyButton').on('click', function()
+		query.getCachedGlobal('.jsExportCreateServerGroupKeyButton').on('click', function()
 		{
 			// Check there is enough data to create a 512 bit key (128 hexadecimal symbols)
 			if (exportPads.randomBitsExtractedHex.length < 128)
@@ -198,13 +198,13 @@ var exportPads = {
 			}
 			else {
 				// Take the first 512 bits of the extracted data and convert it to hexadecimal
-				var serverKeyHex = exportPads.randomBitsExtractedHex.slice(0, 128);
+				var serverGroupKeyHex = exportPads.randomBitsExtractedHex.slice(0, 128);
 
 				// After removing the first 512 bits, use the remainder of the bits for the one-time pads
 				exportPads.randomBitsExtractedHex = exportPads.randomBitsExtractedHex.slice(128);
 
 				// Put the server key in the text field
-				query.getCachedGlobal('.jsExportServerKey').val(serverKeyHex);
+				query.getCachedGlobal('.jsExportServerGroupKey').val(serverGroupKeyHex);
 			}
 		});
 	},
@@ -353,9 +353,8 @@ var exportPads = {
 		// Export to binary file. This format can be used by the NIST SP 800-22 tool.
 		if (exportMethod.indexOf('BinaryFile') !== -1)
 		{
-			// Convert to hexadecimal then WordArray objects for CryptoJS to use
-			var words = CryptoJS.enc.Hex.parse(entropyHexTruncatedForBase64);
-			var outputBase64 = CryptoJS.enc.Base64.stringify(words);
+			// Convert to Base64
+			var outputBase64 = common.convertHexadecimalToBase64(entropyHexTruncatedForBase64);
 
 			// Update hidden anchor tag with the Base64 data
 			query.getCachedGlobal('.jsExportPadsFileLink').attr('href', 'data:application/octet-stream;base64,' + outputBase64);
@@ -373,9 +372,8 @@ var exportPads = {
 		// Export to Base 64 string
 		else if (exportMethod.indexOf('Base64') !== -1)
 		{
-			// Convert to WordArray objects for CryptoJS to use
-			var words = CryptoJS.enc.Hex.parse(entropyHexTruncatedForBase64);
-			var outputBase64 = CryptoJS.enc.Base64.stringify(words);
+			// Convert to Base64
+			var outputBase64 = common.convertHexadecimalToBase64(entropyHexTruncatedForBase64);
 
 			// Set the filename and encode to Base64
 			filename = 'ascii-base64.txt';
@@ -420,7 +418,8 @@ var exportPads = {
 
 			// Server details
 			serverAddressAndPort: query.getCachedGlobal('.jsExportServerAddressAndPort').val(),
-			serverKey: query.getCachedGlobal('.jsExportServerKey').val().toLowerCase(),
+			serverGroupIdentifier: query.getCachedGlobal('.jsExportServerGroupIdentifier').val(),
+			serverGroupKey: query.getCachedGlobal('.jsExportServerGroupKey').val(),
 
 			// Chat group details
 			numOfUsers: parseInt(query.getCachedGlobal('.jsExportNumOfGroupUsersSelect').val()),
@@ -437,36 +436,47 @@ var exportPads = {
 			pbkdfSkeinIterations: query.getCachedGlobal('.jsExportPbkdfSkeinIterationsTextInput').val()
 		};
 
-		// Validate the server key is hex and correct length (in case they entered it themselves)
-		if ((/^[0-9A-F]{128}$/i.test(options.serverKey) === false))
+		// Convert possible uppercase chars from user input to lowercase hex symbols
+		options.serverGroupIdentifier = options.serverGroupIdentifier.toLowerCase();
+		options.serverGroupKey = options.serverGroupKey.toLowerCase();
+
+		// Validate the server group identifier is hex and the correct length (in case they entered it themselves)
+		if ((/^[0-9A-F]{16}$/i.test(options.serverGroupIdentifier) === false))
 		{
-			app.showStatus('error', 'Server key must be a hex string of 512 bits (128 hex symbols).', true);
+			app.showStatus('error', 'The server group identifier  must be a hex string of 64 bits (16 hex symbols).', true);
+			return false;
+		}
+
+		// Validate the server key is hex and the correct length (in case they entered it themselves)
+		if ((/^[0-9A-F]{128}$/i.test(options.serverGroupKey) === false))
+		{
+			app.showStatus('error', 'The server group key must be a hex string of 512 bits (128 hex symbols).', true);
 			return false;
 		}
 
 		// Validate that they entered something for the the passphrase
-		else if (!options.passphrase || !options.passphraseRepeat)
+		if (!options.passphrase || !options.passphraseRepeat)
 		{
 			app.showStatus('error', 'The OTP database must be encrypted, please enter a passphrase.', true);
 			return false;
 		}
 
 		// Validate that the passphrases match
-		else if (options.passphrase !== options.passphraseRepeat)
+		if (options.passphrase !== options.passphraseRepeat)
 		{
 			app.showStatus('error', 'Passwords do not match, please re-enter.', true);
 			return false;
 		}
 
 		// Check that the number of iterations is a valid integer and at least 1 iteration each
-		else if ((/^[1-9]\d*$/.test(options.pbkdfKeccakIterations) === false) || (/^[1-9]\d*$/.test(options.pbkdfSkeinIterations) === false))
+		if ((/^[1-9]\d*$/.test(options.pbkdfKeccakIterations) === false) || (/^[1-9]\d*$/.test(options.pbkdfSkeinIterations) === false))
 		{
 			app.showStatus('error', 'The number of iterations must be an integer of at least 1.', true);
 			return false;
 		}
 
 		// Check that the random data generated has enough for the salt and at least 1 message
-		else if (exportPads.randomBitsExtractedHex.length < (common.saltLengthHex + common.totalPadSizeHex))
+		if (exportPads.randomBitsExtractedHex.length < (common.saltLengthHex + common.totalPadSizeHex))
 		{
 			app.showStatus('error', 'Not enough random data generated.', true);
 			return false;
@@ -504,11 +514,16 @@ var exportPads = {
 		query.getCachedGlobal('.jsExportTestServerButton').on('click', function()
 		{
 			// Get values from text inputs
-			var serverAddressAndPort = query.getCachedGlobal('.jsExportServerAddressAndPort').val();
-			var serverKey = query.getCachedGlobal('.jsExportServerKey').val();
+			const serverAddressAndPort = query.getCachedGlobal('.jsExportServerAddressAndPort').val();
+			let serverGroupIdentifier = query.getCachedGlobal('.jsExportServerGroupIdentifier').val();
+			let serverGroupKey = query.getCachedGlobal('.jsExportServerGroupKey').val();
+
+			// Convert possible uppercase chars from user input to lowercase hex symbols
+			serverGroupIdentifier = serverGroupIdentifier.toLowerCase();
+			serverGroupKey = serverGroupKey.toLowerCase();
 
 			// Check connection and show success or failure message on screen
-			common.testServerConnection(serverAddressAndPort, serverKey, function()
+			common.testServerConnection(serverAddressAndPort, serverGroupIdentifier, serverGroupKey, function()
 			{
 				// Reposition the dialog to center of screen if there is a long error message
 				exportPads.repositionDialogToCenter();
@@ -737,7 +752,8 @@ var exportPads = {
 
 		// Set more database values
 		padData.info.serverAddressAndPort = options.serverAddressAndPort;
-		padData.info.serverKey = options.serverKey;
+		padData.info.serverGroupIdentifier = options.serverGroupIdentifier;
+		padData.info.serverGroupKey = options.serverGroupKey;
 		padData.info.userNicknames = options.userNicknames;
 		padData.pads = encryptedPads;
 
@@ -948,7 +964,8 @@ var exportPads = {
 
 		// Clear sensitive text fields
 		query.getCachedGlobal('.jsExportServerAddressAndPort').val('');
-		query.getCachedGlobal('.jsExportServerKey').val('');
+		query.getCachedGlobal('.jsExportServerGroupIdentifier').val('');
+		query.getCachedGlobal('.jsExportServerGroupKey').val('');
 		query.getCachedGlobal('.jsExportPassphraseTextInput').val('');
 		query.getCachedGlobal('.jsExportPassphraseRepeatTextInput').val('');
 

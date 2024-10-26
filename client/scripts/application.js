@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ var app = {
 	programName: 'Jericho Comms',
 
 	/** Current program version as an indicator to the user and to help with automatic importing from old versions later */
-	programVersion: '1.5.4',
+	programVersion: '2.0.0',
 
 	/** Date object for when the application first started */
 	startTime: null,

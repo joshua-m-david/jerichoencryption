@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -385,7 +385,7 @@ var importPage = {
 			$(this).addClass('isDisabled');
 
 			// Show log
-			app.showStatus('processing', 'Running PBKDF to generate master key from the passphrase and keyfile.', true);
+			app.showStatus('processing', 'Running PBKDF to generate master key from the passphrase and keyfile...', true);
 
 			// Setup the import PBKDF worker
 			var worker = common.startWebWorker('import-pads-pbkdf-worker');

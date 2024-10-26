@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,18 +53,32 @@ var common = {
 	/** Hash and MAC algorithms to be used */
 	macAlgorithms: ['skein-512', 'keccak-512'],
 
-	/** Allowed printable ASCII chars from hexadecimal 21 - 7E (decimal 32 - 126) */
-	allPossibleChars: [
-		' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-		':', ';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-		'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
-		'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~'
-	],
-
 	/** List of possible users */
 	userList: ['alpha', 'bravo', 'charlie', 'delta', 'echo', 'foxtrot', 'golf'],
 
-	/** The key codes that can be used */
+	/** Listed of possible users with the shorthand single letter callsign as key */
+	userListKeyedShort: {
+		a: 'alpha',
+		b: 'bravo',
+		c: 'charlie',
+		d: 'delta',
+		e: 'echo',
+		f: 'foxtrot',
+		g: 'golf'
+	},
+
+	/** Listed of possible users with the full callsign as key */
+	userListKeyedLong: {
+		alpha: 'alpha',
+		bravo: 'bravo',
+		charlie: 'charlie',
+		delta: 'delta',
+		echo: 'echo',
+		foxtrot: 'foxtrot',
+		golf: 'golf'
+	},
+
+	/** The keyboard key codes that can be used */
 	keyCodes: {
 		enter: 13,
 		esc: 27
@@ -130,7 +144,7 @@ var common = {
 		var currentTimestampSeconds = currentTimestampMilliseconds / 1000;
 
 		// Remove any numbers after the decimal point
-		return Math.floor(currentTimestampSeconds);
+		return Math.round(currentTimestampSeconds);
 	},
 
 	/**
@@ -190,7 +204,7 @@ var common = {
 	/**
 	 * Formats the current local date from a date object
 	 * @param {date} date A JavaScript date object
-	 *  @returns {String} Returns the string in format: 21 JUL 14
+	 * @returns {String} Returns the string in format: 21 JUL 14
 	 */
 	formatDateFromDateObject: function(date)
 	{
@@ -206,11 +220,13 @@ var common = {
 	/**
 	 * Gets the current local time from a date object passed in
 	 * @param {date} date A JavaScript date object
-	 * @returns {String} Returns the string in format: 19:37:21
+	 * @returns {String} Returns the string in format: 19:07:01
 	 */
 	formatTimeFromDateObject: function(date)
 	{
-		return this.leftPadding(date.getHours(), '0', 2) + ':' + this.leftPadding(date.getMinutes(), '0', 2) + ':' + this.leftPadding(date.getSeconds(), '0', 2);
+		return this.leftPadding(date.getHours(), '0', 2) + ':'
+		     + this.leftPadding(date.getMinutes(), '0', 2) + ':'
+		     + this.leftPadding(date.getSeconds(), '0', 2);
 	},
 
 	/**
@@ -515,6 +531,73 @@ var common = {
 	},
 
 	/**
+	 * Converts the number of bits to the number of hexadecimal symbols those bits represent.
+	 * E.g. the number of bits in the string '0101111100001010' is 16 and the number in hex symbols this represents is 4.
+	 * NB: The number of bits must be cleanly divisible into full hexadecimal symbols.
+	 * @param {Number} numOfBits The number of bits e.g. 16
+	 * @returns {Number} Returns the number of hex symbols if it was converted e.g. 4
+	 */
+	convertNumOfBitsToNumOfHexSymbols: function(numOfBits)
+	{
+		return numOfBits / 4;
+	},
+
+	/**
+	 * Converts the number of bits to the number of bytes those bits represent.
+	 * E.g. the number of bits in the string '0101111100001010' is 16 and the number in bytes this represents is 2.
+	 * NB: The number of bits must be cleanly divisible into full bytes.
+	 * @param {Number} numOfBits The length of the bit string e.g. 16
+	 * @returns {Number} Returns the length of the string if it was converted to bytes e.g. 2
+	 */
+	convertNumOfBitsToNumOfBytes: function(numOfBits)
+	{
+		return numOfBits / 8;
+	},
+
+	/**
+	 * Converts the number of hex symbols to the number of bits those symbols represent.
+	 * E.g. the number of hex symbols in the string '5f0a' is 4 and the number in bits this represents is 16.
+	 * @param {Number} numOfHexSymbols The number of hexadecimal symbols e.g. 4
+	 * @returns {Number} Returns the number of bits those symbols represent e.g. 16
+	 */
+	convertNumOfHexSymbolsToNumOfBits: function(numOfHexSymbols)
+	{
+		return numOfHexSymbols * 4;
+	},
+
+	/**
+	 * Converts the number of hexadecimal symbols to the number of bytes those hex symbols represent.
+	 * E.g. the number of hex symbols in the string '5f0a' is 4 and the number in bytes this represents is 2.
+	 * NB: The number of hex symbols must be cleanly divisible into full bytes.
+	 * @param {Number} numOfHexSymbols The length of the string in hexadecimal symbols e.g. 4
+	 * @returns {Number} Returns the number of bytes if it was converted e.g. 2
+	 */
+	convertNumOfHexSymbolsToNumOfBytes: function(numOfHexSymbols)
+	{
+		return numOfHexSymbols / 2;
+	},
+
+	/**
+	 * Converts the number of bytes e.g. 2 to the number in bits e.g. 16.
+	 * @param {Number} numOfBytes The number of bytes e.g. 2
+	 * @returns {Number} Returns the number of bits in those bytes e.g. 16
+	 */
+	convertNumOfBytesToNumOfBits: function(numOfBytes)
+	{
+		return numOfBytes * 8;
+	},
+
+	/**
+	 * Converts the number of bytes to the number of hex symbols those bytes represent.
+	 * @param {Number} numOfBytes The number of bytes e.g. 2
+	 * @returns {Number} Returns the number of hex symbols those bytes represent e.g. 4
+	 */
+	convertNumOfBytesToNumOfHexSymbols: function(numOfBytes)
+	{
+		return numOfBytes * 2;
+	},
+
+	/**
 	 * Takes a string of binary code and converts it to UTF-8 text
 	 * @param {String} binaryText The binary numbers to be converted e.g. 10010001
 	 * @returns {String} A string of ASCII or UTF-8 characters
@@ -560,7 +643,7 @@ var common = {
 	},
 
 	/**
-	 * Converts text to binary string (one character at a time)
+	 * Converts ASCII or UTF-8 text to binary string (one character at a time)
 	 * @param {String} inputText The text to be converted
 	 * @returns {String} A string of binary numbers e.g. 10010010...
 	 */
@@ -577,10 +660,37 @@ var common = {
 			// Convert each byte integer to a byte represented as a binary string e.g. 10110000
 			var byteInteger = byteArray[i];
 			var byteBinary = byteInteger.toString(2);
-			var byteBinaryPadded = this.leftPadding(byteBinary, '0', 8);
+			var byteBinaryPadded = common.leftPadding(byteBinary, '0', 8);
 
 			// Append to output
 			output += byteBinaryPadded;
+		}
+
+		return output;
+	},
+
+	/**
+	 * Converts ASCII or UTF-8 text to a hexadecimal string (one character at a time)
+	 * @param {String} inputText The text to be converted
+	 * @returns {String} A string containing the hexadecimal numbers e.g. ab0d3f...
+	 */
+	convertTextToHexadecimal: function(inputText)
+	{
+		// Convert the text to a stream of UTF-8 bytes
+		var encoder = new TextEncoder();
+		var byteArray = encoder.encode(inputText);
+		var output = '';
+
+		// For each byte (represented as an integer in range of 0 - 255)
+		for (var i = 0; i < byteArray.length; i++)
+		{
+			// Convert each byte integer to a byte represented as a hexadecimal string e.g. a0
+			var byteInteger = byteArray[i];
+			var byteHex = byteInteger.toString(16);
+			var byteHexPadded = common.leftPadding(byteHex, '0', 2);
+
+			// Append to output
+			output += byteHexPadded;
 		}
 
 		return output;
@@ -638,6 +748,20 @@ var common = {
 	},
 
 	/**
+	 * Converts a Base64 string (including padding etc) to a hexadecimal string
+	 * @param {String} base64String The Base64 string to be converted
+	 * @returns {String} The converted string as hexadecimal
+	 */
+	convertBase64ToHexadecimal: function(base64String)
+	{
+		// Decode from Base64 to hex
+		const words = CryptoJS.enc.Base64.parse(base64String);
+		const hexString = CryptoJS.enc.Hex.stringify(words);
+
+		return hexString;
+	},
+
+	/**
 	 * Converts binary code to hexadecimal string. All hexadecimal is lowercase for consistency with the hash functions
 	 * These are used as the export format and compatibility before sending via JSON or storing in the database
 	 * @param {String} binaryString A string containing binary numbers e.g. '01001101'
@@ -671,7 +795,7 @@ var common = {
 	 */
 	convertHexadecimalToBinary: function(hexString)
 	{
-		var output = '';
+		var outputBinary = '';
 
 		// For each hexadecimal character
 		for (var i = 0; i < hexString.length; i++)
@@ -683,40 +807,68 @@ var common = {
 			var binary = this.leftPadding(decimal.toString(2), '0', 4);
 
 			// Append to string
-			output += binary;
+			outputBinary += binary;
 		}
 
-		return output;
+		return outputBinary;
+	},
+
+	/**
+	 * Converts hexadecimal code to Base64 string
+	 * @param {String} hexString A string containing single digit hexadecimal numbers
+	 * @returns {String} The string represented as Base64 (can include padding chars i.e. =)
+	 */
+	convertHexadecimalToBase64: function(hexString)
+	{
+		// Convert to hexadecimal to WordArray objects for CryptoJS to use then to Base64
+		const words = CryptoJS.enc.Hex.parse(hexString);
+		const outputBase64 = CryptoJS.enc.Base64.stringify(words);
+
+		return outputBase64;
+	},
+
+	/**
+	 * Converts hexadecimal code to UTF-8 string
+	 * @param {String} hexString A string containing single digit hexadecimal numbers e.g. ab0d3f...
+	 * @returns {String} Returns ASCII or UTF-8 text
+	 */
+	convertHexadecimalToText: function(hexString)
+	{
+		const convertedBytes = [];
+
+		// For each 2 hex characters, convert to an array of bytes
+		for (let i = 0; i < hexString.length; i += 2)
+		{
+			// Get 2 chars from the string
+			const hexSymbols = hexString.slice(i, i + 2);
+
+			// Convert 2 hex symbols to decimal
+			const byteInteger = parseInt(hexSymbols, 16);
+
+			// Append to array
+			convertedBytes.push(byteInteger);
+		}
+
+		// Convert the regular array to a Uint8Array for the TextDecoder
+		const convertedByteArray = Uint8Array.from(convertedBytes);
+
+		// Convert to regular text
+		const utf8decoder = new TextDecoder();
+		const outputText = utf8decoder.decode(convertedByteArray);
+
+		return outputText;
 	},
 
 	/**
 	 * Left pad a string with a certain character to a total number of characters
-	 * @param {String} inputString The string to be padded
+	 * @param {String|Number} inputString The string or number to be padded
 	 * @param {String} padCharacter The character/s that the string should be padded with
 	 * @param {Number} totalCharacters The length of string that's required
 	 * @returns {String} A string with characters appended to the front of it
 	 */
 	leftPadding: function(inputString, padCharacter, totalCharacters)
 	{
-		// Convert to string first, or it starts adding numbers instead of concatenating
-		inputString = inputString.toString();
-
-		// If the string is already the right length, just return it
-		if (!padCharacter || (inputString.length >= totalCharacters))
-		{
-			return inputString;
-		}
-
-		// Work out how many extra characters we need to add to the string
-		var charsToAdd = (totalCharacters - inputString.length) / padCharacter.length;
-
-		// Add padding onto the string
-		for (var i = 0; i < charsToAdd; i++)
-		{
-			inputString = padCharacter + inputString;
-		}
-
-		return inputString;
+		return inputString.toString().padStart(totalCharacters, padCharacter);
 	},
 
 	/**
@@ -1226,244 +1378,239 @@ var common = {
 	/**
 	 * Test that the server and database connection is working from the client
 	 * @param {String} serverAddressAndPort The server address and port e.g. http://myserver.net:8080/jericho/
-	 * @param {String} serverKey The 512 bit server key in hexadecimal
+	 * @param {String} serverGroupIdentifier The 64 bit server group identifier in hexadecimal
+	 * @param {String} serverGroupKey The 512 bit server group key in hexadecimal
 	 * @param {String} callbackFunction Optional callback function to execute after server response is complete
 	 */
-	testServerConnection: function(serverAddressAndPort, serverKey, callbackFunction)
+	testServerConnection: function(serverAddressAndPort, serverGroupIdentifier, serverGroupKey, callbackFunction)
 	{
 		// If there's no failsafe CSPRNG key set, e.g. user is using the program for the first time and wants to test
 		// the connection. This will get overwritten with a key from the TRNG if a user loads a database of one-time pads.
 		if ((db.padData.info.failsafeRngKey === null) || (db.padData.info.failsafeRngNonce === null))
 		{
 			// Get 256 bits (32 bytes) from the Web Crypto API
-			var randomBytes = new Uint8Array(32);
+			const randomBytes = new Uint8Array(32);
 			window.crypto.getRandomValues(randomBytes);
 
 			// Convert the random bytes to hexadecimal
-			var randomDataHex = Salsa20.core.util.bytesToHex(randomBytes);
+			const randomDataHex = Salsa20.core.util.bytesToHex(randomBytes);
 
 			// Update the failsafe CSPRNG key and nonce and persist the change in localStorage
 			db.padData.info.failsafeRngKey = randomDataHex;
 			db.padData.info.failsafeRngNonce = 0;
 			db.savePadDataToDatabase();
 
+			// Add an information log
 			console.info('Generated a temporary failsafe CSPRNG key using the Web Crypto API.');
 		}
 
-		// If they didn't enter the server address show error
+		// If they didn't enter a valid server address/port, group identifier, or key show an error
 		if (serverAddressAndPort === '')
 		{
 			app.showStatus('error', 'Enter the server address and port.');
+			return false;
 		}
-		else if (serverKey === '')
-		{
-			app.showStatus('error', 'You need to have a user and key or anyone can access the server messaging API.');
-		}
-		else {
-			// Package the data to be sent to the server
-			var data = {
-				'user': 'alpha',
-				'apiAction': 'testConnection'
-			};
 
-			// Send a request off to the server to check the connection
-			common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseData)
+		// Validate the server group identifier is hex and the correct length (in case they entered it themselves)
+		if ((/^[0-9A-F]{16}$/i.test(serverGroupIdentifier) === false))
+		{
+			app.showStatus('error', 'The server group identifier  must be a hex string of 64 bits (16 hex symbols).', true);
+			return false;
+		}
+
+		// Validate the server key is hex and the correct length (in case they entered it themselves)
+		if ((/^[0-9A-F]{128}$/i.test(serverGroupKey) === false))
+		{
+			app.showStatus('error', 'The server group key must be a hex string of 512 bits (128 hex symbols).', true);
+			return false;
+		}
+
+		// Package the data to be sent to the server. The From User is hard coded as alpha because we are just
+		// testing the network connection. Any valid group user would work here and pass the request validation,
+		// but alpha and bravo are guaranteed to be in every group (because you need at least 2 in a group). The
+		// From User is required for sending actual (or decoy) messages, because messages from a user are stored
+		// under that user in the DB, so when that user goes to retrieve messages from the server they don't refetch
+		// the messages they sent.
+		const requestData = {
+			fromUser: common.userListKeyedLong.alpha,
+			apiAction: networkCrypto.apiActionTest,
+			serverAddressAndPort: serverAddressAndPort,
+			serverGroupIdentifier: serverGroupIdentifier,
+			serverGroupKey: serverGroupKey
+		};
+
+		// Send a request off to the server to check the connection
+		common.sendRequestToServer(requestData, function(validResponse, responseCode)
+		{
+			// Get a status message
+			let statusMessage = networkCrypto.getStatusMessage(responseCode);
+
+			// Default to error style status message
+			let status = 'error';
+
+			// If the server response is authentic and it connected successfully, show success style message
+			if (validResponse && responseCode === networkCrypto.RESPONSE_SUCCESS)
 			{
-				// If the server response is authentic
-				if (validResponse)
-				{
-					// If it connected successfully show success message or error on failure
-					var status = (responseData.success) ? 'success' : 'error';
-					app.showStatus(status, responseData.statusMessage);
-				}
+				status = 'success';
+			}
+			else {
+				// If not a valid response, add additional information for the user.
+				// Most likely cause is user has incorrect server url/key entered. Another alternative is the
+				// attacker modified their request while en route to the server.
+				statusMessage += ' ' + networkCrypto.getNetworkTroubleshootingText();
+			}
 
-				// If response check failed it means there was probably interference from attacker altering data or MAC
-				else if (validResponse === false)
-				{
-					app.showStatus('error', 'Unauthentic response from server detected.');
-				}
+			// Show the status message
+			app.showStatus(status, statusMessage);
 
-				else {
-					// Most likely cause is user has incorrect server url or key entered.
-					// Another alternative is the attacker modified their request while en route to the server
-					app.showStatus('error', 'Error contacting server. Check: 1) you are connected to the network, 2) the client/server configurations are correct, and 3) client/server system clocks are up to date. If everything is correct, the data may have been tampered with by an attacker.');
-				}
-
-				// Execute the callback function (used to reposition Export Pads dialog if long error message)
-				if (typeof callbackFunction === 'function')
-				{
-					callbackFunction();
-				}
-			});
-		}
-	},
-
-	/**
-	 * Sends a request to the server and performs a specific API action on the server
-	 * @param {Object} requestData The data to be sent to the server
-	 * @param {String} serverAddressAndPort The server address and port
-	 * @param {String} serverKey The 512 bit hexadecimal server key
-	 * @param {Function} callbackFunction The anonymous callback function to run when complete. The first parameter to
-	 *                                    the function will say whether the request succeeded and the MAC was valid
-	 *                                    (true), or if it failed because of an invalid MAC (false) or if it failed
-	 *                                    because of other problem e.g. server connection issue (null). The second
-	 *                                    parameter to the function will include the data response from the server if
-	 *                                    applicable e.g. messages received.
-	 */
-	sendRequestToServer: function(requestData, serverAddressAndPort, serverKey, callbackFunction)
-	{
-		// Fix the URL for any excess slashes
-		var fullServerAddress = common.normaliseUrl(serverAddressAndPort);
-
-		// Add a random nonce and the current timestamp to the data to be sent
-		requestData.nonce = common.getRandomBits(512, 'hexadecimal');
-		requestData.timestamp = common.getCurrentUtcTimestamp();
-
-		// Convert to JSON and MAC the request data
-		var requestDataJson = JSON.stringify(requestData);
-		var requestMac = common.authenticateRequest(requestDataJson, serverKey);
-
-		// Base64 encode to obfuscate the meta data somewhat (future versions will encrypt the request data)
-		var requestDataAndMacBase64 = btoa(requestDataJson + requestMac);
-
-		// Create AJAX request to chat server
-		$.ajax(
-		{
-			data: { data: requestDataAndMacBase64 },	// Use 'data' as the POST key which is as generic as possible to hinder traffic fingerprinting
-			jsonp: false,								// Prevent insecure JSONP from being used and use CORS instead
-			timeout: 14000,								// Timeout at 14 seconds
-			type: 'POST',								// API accepts POST requests only
-			url: fullServerAddress						// The API URL
-		})
-		.done(function(responseData)
-		{
-			// Check if the response was really from the server
-			var validation = common.decodeAndValidateServerResponse(serverKey, responseData, requestMac);
-
-			// Return back to the calling function so it can process the response
-			callbackFunction(validation.valid, validation.responseData);
-		})
-		.fail(function()
-		{
-			// Return back to the calling function so it can process the error
-			callbackFunction(null, null);
+			// Execute the outer test server connection callback function if it was passed.
+			// This is used to reposition Export Pads dialog if it has a long error message.
+			if (typeof callbackFunction === 'function')
+			{
+				callbackFunction();
+			}
 		});
 	},
 
 	/**
-	 * Function will use Skein-512 as a MAC to authenticate data being sent to the server.
-	 * On the server side the key and data is input into the hash as binary so this means
-	 * the MAC from JavaScript and MAC from PHP will match.
-	 * @param {String} dataJson The JSON data to be sent to the server
-	 * @param {String} serverKey The server key as a hexadecimal string
-	 * @returns {String} Returns the MAC as a hexadecimal string
+	 * Sends a request to the server and performs a specific API action on the server
+	 * @param {Object} requestData The data to be sent to the server, with keys:
+	 *     'fromUser'
+	 *     'apiAction'
+	 *     'serverAddressAndPort'
+	 *     'serverGroupIdentifier'
+	 *     'serverGroupKey'
+	 *     'messagePackets' (optional - not required for test & receive requests)
+	 * @param {Function} callbackFunction The anonymous callback function to run when complete. The first parameter to
+	 *                                    the function will say whether the request succeeded and the MAC was valid
+	 *                                    (true), or if it failed because of an invalid MAC or other problem (false).
+	 *                                    The second parameter to the function will be the response/error code
+	 *                                    (referencing numeric codes/constants in the network crypto class). The third
+	 *                                    parameter will be an array of User Message Packets from the server (if the
+	 *                                    response code says there were messages).
 	 */
-	authenticateRequest: function(dataJson, serverKey)
+	sendRequestToServer: function(requestData, callbackFunction)
 	{
-		// Convert the data to hexadecimal so it's in the same format as the key
-		var dataJsonBinary = common.convertTextToBinary(dataJson);
-		var dataJsonHex = common.convertBinaryToHexadecimal(dataJsonBinary);
+		// Get the From User, API Action and message packets (for send request) or default to empty array
+		const fromUser = requestData.fromUser;
+		const apiAction = requestData.apiAction;
+		const serverAddressAndPort = requestData.serverAddressAndPort;
+		const groupIdentifierHex = requestData.serverGroupIdentifier;
+		const serverGroupKeyHex = requestData.serverGroupKey;
+		const messagePackets = requestData.messagePackets || [];
 
-		// MAC the response by doing Hash(K | data)
-		var dataToMac = serverKey + dataJsonHex;
-		var mac = common.secureHash('skein-512', dataToMac);
+		// Prepare request data
+		const nonceHex = common.getRandomBits(512, 'hexadecimal');
+		const paddingHex = networkCrypto.getPaddingBytes();
+		const currentTimestamp = common.getCurrentUtcTimestamp();
 
-		return mac;
-	},
+		// Derive encryption and MAC keys
+		const derivedKeys = networkCrypto.deriveEncryptionAndMacKeys(serverGroupKeyHex);
+		const encryptionKeyHex = derivedKeys.encryptionKey;
+		const macKeyHex = derivedKeys.macKey;
 
-	/**
-	 * Validates the server response to make sure it came back from the real server. It also checks
-	 * that the response it sent was a direct response to the request it was sent. It does this by
-	 * performing a MAC using the Skein-512 hash algorithm on the request data and the response data
-	 * with the server key then comparing that with the MAC sent back from the server.
-	 * @param {String} serverKey The hexadecimal server key
-	 * @param {Object} response The data from the response which should be the Base64 encoded JSON data and the MAC
-	 * @param {String} requestMac The MAC of the data sent to the server
-	 * @returns {Boolean} Whether the response was valid or not
-	 */
-	decodeAndValidateServerResponse: function(serverKey, response, requestMac)
-	{
-		// Default is invalid result
-		var result = {
-			valid: false,
-			responseData: {}
-		};
+		// Serialise, encrypt, authenticate and encode the data for the network request
+		const requestDataBase64 = networkCrypto.encryptAndAuthenticateRequest(
+			encryptionKeyHex, macKeyHex, groupIdentifierHex, nonceHex, paddingHex,
+			fromUser, apiAction, currentTimestamp, messagePackets
+		);
 
-		// Check the data actually came back from the request
-		if (typeof response !== 'undefined')
+		// Fix the URL for any excess slashes
+		const fullServerAddress = common.normaliseUrl(serverAddressAndPort);
+
+		// Send request using the Fetch API
+		fetch(fullServerAddress, {
+			method: 'POST',
+			mode: 'cors',
+			cache: 'no-cache',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			redirect: 'follow',
+			referrer: 'no-referrer',
+			body: requestDataBase64
+		})
+		.then(response =>
 		{
-			try {
-				// Filter invalid Base64 characters
-				var filteredResponseData = response.replace(/[^A-Za-z0-9+\/=]/g, '');
-
-				// Decode from Base64
-				var responseString = atob(filteredResponseData);
-
-				// Take off the last 128 hex chars of the response which is the MAC
-				var macStartPos = responseString.length - 128;
-				var responseMac = responseString.substring(macStartPos);
-
-				// Get the string up to the start of the MAC, which is the data then parse the JSON
-				var responseDataJson = responseString.substring(0, macStartPos);
-
-				// Validate the response from the server
-				var validResponse = common.validateResponseMac(serverKey, responseDataJson, requestMac, responseMac);
-
-				// Check if it is an authentic response from the server first before decoding the JSON in case an
-				// attacker has modified the response and it executes some 0-day exploit in the browser's JSON parser
-				if (validResponse)
-				{
-					// Decode the JSON to a regular JavaScript object, invalid JSON will throw an exception
-					var responseData = JSON.parse(responseDataJson);
-
-					// Successful result
-					result.valid = true;
-					result.responseData = responseData;
-				}
-			}
-			catch (exception)
+			// Check if the response code not 200
+			if (response.status !== 200)
 			{
-				// If Base64 decoding or JSON parsing fails, e.g. malformed data was sent back, then return failure
-				return result;
+				// Log error to console
+				console.error('Network Fetch API response was not 200.', response);
+
+				// Throw exception (caught in catch block below)
+				throw new Error(`Network Fetch API response was not 200 (code ${response.status}).`);
 			}
-		}
 
-		// Return result
-		return result;
+			return response.text();
+		})
+		.then(responseDataBase64 =>
+		{
+			// Get the Request MAC from the Base64 Request Data which is used in the Response MAC calculation
+			const requestDataHex = common.convertBase64ToHexadecimal(requestDataBase64);
+			const requestMacHex = networkCrypto.parseMacFromHex(requestDataHex);
+
+			// Decode and verify the server response
+			const verificationResult = networkCrypto.verifyResponse(macKeyHex, responseDataBase64, requestMacHex);
+
+			// If there was an error in MAC validation
+			if (!verificationResult.valid)
+			{
+				// Return the specific error
+				callbackFunction(false, verificationResult.errorCode);
+			}
+			else {
+				// Decrypt and deserialise the response
+				const decryptedResponseHex = networkCrypto.decryptResponse(encryptionKeyHex, verificationResult.responseDataHex);
+				const deserialisedResponse = networkCrypto.deserialiseDecryptedData(decryptedResponseHex);
+
+				// If this is a receive messages API request
+				if (apiAction === networkCrypto.apiActionReceive)
+				{
+					// If there were messages and the were successfully deserialised
+					if (deserialisedResponse.responseCode === networkCrypto.RESPONSE_SUCCESS)
+					{
+						// Return the message packets
+						callbackFunction(true, deserialisedResponse.responseCode, deserialisedResponse.messagePackets);
+					}
+
+					// Otherwise if the request/response was successful but there were no messages
+					else if (deserialisedResponse.responseCode === networkCrypto.RESPONSE_SUCCESS_NO_MESSAGES)
+					{
+						// Return the success code and an empty array
+						callbackFunction(true, deserialisedResponse.responseCode, []);
+					}
+				}
+				else {
+					// Otherwise return the success or error in the response code
+					callbackFunction(true, deserialisedResponse.responseCode);
+				}
+
+				// ToDo 2022-05-07:  Fetch abort controller to timeout after 21secs https://dmitripavlutin.com/timeout-fetch-request/
+			}
+		})
+		.catch(error =>
+		{
+			// Log exception to console
+			console.error('Network Fetch API caught exception.', error);
+
+			// Return back to the calling function so it can process the error
+			callbackFunction(false, networkCrypto.RESPONSE_ERROR_NETWORK_FETCH_EXCEPTION);
+		});
 	},
 
 	/**
-	 * Function to validate the response from the server
-	 * @param {String} serverKey The server key
-	 * @param {String} responseDataJson The server response JSON data
-	 * @param {String} requestMac The MAC that was sent to the server
-	 * @param {String} responseMac The server response MAC
-	 * @returns {Boolean} Returns whether the server response is valid or not
-	 */
-	validateResponseMac: function(serverKey, responseDataJson, requestMac, responseMac)
-	{
-		// Convert the response data to hexadecimal
-		var responseDataJsonBinary = common.convertTextToBinary(responseDataJson);
-		var responseDataJsonHex = common.convertBinaryToHexadecimal(responseDataJsonBinary);
-
-		// Perform the MAC - the order should match the PHP code
-		var dataToMac = serverKey + responseDataJsonHex + requestMac;
-		var macToCheck = common.secureHash('skein-512', dataToMac);
-
-		// Check the calculated MAC matches the one from the server
-		return (macToCheck === responseMac) ? true : false;
-	},
-
-	/**
-	 * Saves just the server connection details to local storage
+	 * Saves just the server connection details to the local storage database
 	 * @param {String} serverAddressAndPort
-	 * @param {String} serverKey
+	 * @param {String} serverGroupIdentifier
+	 * @param {String} serverGroupKey
 	 */
-	saveServerConnectionDetails: function(serverAddressAndPort, serverKey)
+	saveServerConnectionDetails: function(serverAddressAndPort, serverGroupIdentifier, serverGroupKey)
 	{
 		// Set the values to null if not set
 		db.padData.info.serverAddressAndPort = (serverAddressAndPort !== '') ? serverAddressAndPort : null;
-		db.padData.info.serverKey = (serverKey !== '') ? serverKey : null;
+		db.padData.info.serverGroupIdentifier = (serverGroupIdentifier !== '') ? serverGroupIdentifier : null;
+		db.padData.info.serverGroupKey = (serverGroupKey !== '') ? serverGroupKey : null;
 
 		// Save to local storage
 		db.savePadDataToDatabase();
@@ -1525,15 +1672,6 @@ var common = {
 		{
 			return false;
 		}
-	},
-
-	/**
-	 * Checks if HTML5 Offline Web Application Cache is supported
-	 * @returns {Boolean}
-	 */
-	checkOfflineWebApplicationSupported: function()
-	{
-		return !!window.applicationCache;
 	},
 
 	/**

@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Jericho Comms - Information-theoretically secure communications
-# Copyright (c) 2013-2019  Joshua M. David
+# Copyright (c) 2013-2024  Joshua M. David
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,16 +26,16 @@ redColour="\033[0;31m"
 yellowColour="\033[1;33m"
 
 
-#------------------------------------------------------------------------
-# Initialise global variables for default group and output to the console
+#------------------------------------------------------------------------------------
+# Initialise global variables. These are also available in the sourced scripts below.
+groupId=""
 groupApiKey=""
-groupDatabaseName="jerichodb"
-groupInstallDir="/var/www/html"
-groupName="default"
+groupDatabaseName=""
 groupNumUsers=2
-groupPort=80
+scriptPath=""
 serverDatabasePassword=""
 serverIpAddress=""
+webDir="/var/www/html"
 
 
 #------------------------------------------------
@@ -43,7 +43,7 @@ serverIpAddress=""
 if [ "$(id -u)" != "0" ]; then
 	echo
 	echo -e "${redColour}This script must be run as the root user account to install dependency"
-	echo -e "${redColour}packages, configure the firewall and initialise the server API."
+	echo -e "${redColour}packages, configure the applications and initialise the server API."
 	echo
 	echo -e "${defaultColour}For example: sudo ./setup.sh"
 	echo
@@ -67,16 +67,16 @@ scriptPath=$(dirname "$script")
 cd "$scriptPath"
 
 
+#------------------------
 # Load additional scripts
 source "$scriptPath/scripts/setup-dependency-install.sh"
-source "$scriptPath/scripts/setup-group-add.sh"
+source "$scriptPath/scripts/setup-group-modifications.sh"
 source "$scriptPath/scripts/setup-security-cleanup.sh"
 source "$scriptPath/scripts/setup-uninstall.sh"
 
 
 #----------------
 # Setup main menu
-#----------------
 while true
 do
 	#------------------------------------
@@ -92,14 +92,16 @@ do
 	echo "  ####  ##### #   # #  ###  #   #  ###      ####   ###  #    # #    #  ###  ";
 	echo "                                                                            ";
 	echo "               Server installation and configuration main menu              ";
-	echo "                                  v1.5.4                                    ";
+	echo "                                  v2.0.0                                    ";
 	echo
 	echo
 	echo -e "${blueColour}Choose from the list of options below:${defaultColour}"
 	echo
 	echo -e "${yellowColour}1${defaultColour} - Perform full installation of the server dependencies and chat API."
-	echo -e "${yellowColour}2${defaultColour} - Add an additional chat group"
+	echo -e "${yellowColour}2${defaultColour} - Add a chat group"
 	echo
+	echo -e "${yellowColour}L${defaultColour} - List chat groups"
+	echo -e "${yellowColour}R${defaultColour} - Remove a chat group"
 	echo -e "${yellowColour}C${defaultColour} - Clear any sensitive data from the bash history and console."
 	echo -e "${yellowColour}U${defaultColour} - Uninstall and revert server to its original state."
 	echo -e "${yellowColour}Q${defaultColour} - Quit menu back to console."
@@ -123,7 +125,9 @@ do
 	# Run the function corresponding to the option that was chosen
 	case "$userSelectionLowercase" in
 		1) mainInstall ;;
-		2) configureAdditionalChatGroup ;;
+		2) addChatGroup ;;
+		l) listChatGroups ;;
+		r) removeChatGroup ;;
 		c) clearBashHistoryAndConsole ;;
 		u) uninstall ;;
 		q) exit ;;

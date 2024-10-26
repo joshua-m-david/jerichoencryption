@@ -1,5 +1,5 @@
 ### Jericho Comms - Information-theoretically secure communications
-#### Copyright (c) 2013-2019  Joshua M. David
+#### Copyright (c) 2013-2024  Joshua M. David
 
 
 This directory contains files to run the unit tests. You can run the PHPUnit tests by doing:

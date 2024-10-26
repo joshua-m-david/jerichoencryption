@@ -1,6 +1,6 @@
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -145,13 +145,14 @@
 	font-weight: bold;
 }
 
-/* Text style for the message */
+/* Text style for the message (making sure to render any line breaks with the pre-line declaration) */
 .chatPage .mainChat .message .messageText {
 	font-size: 12px;
-	padding-top: 10px;
 	font-weight: bold;
-	word-break: keep-all;
 	overflow: auto;
+	padding-top: 10px;
+	white-space: pre-line;
+	word-break: keep-all;
 }
 
 /* Message MAC authentication status */

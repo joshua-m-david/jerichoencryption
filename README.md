@@ -1,5 +1,5 @@
 ### Jericho Comms - Information-theoretically secure communications
-#### Copyright (c) 2013-2019  Joshua M. David
+#### Copyright (c) 2013-2024  Joshua M. David
 
 
 Jericho Comms is an encrypted communications program built on the principles of information-theoretic security using true random number generation and one-time pads. The goal is to deliver a free, open source, encrypted communications program for journalists, lawyers, activists and citizens of the world that need high assurances that their communications are free of censorship, control, oppression, totalitarian governments and eavesdropping from the world's most powerful intelligence agencies. To defeat the world's best intelligence agencies, you need to lift your game to their level. That means using encryption that they can never break, regardless of advances in computing power, mathematics, cryptanalysis or quantum physics.
@@ -20,20 +20,20 @@ Other ways to help:
 - Security code audits.
 - Maintaining the main website and whitepaper (see gh-pages branch).
 - Improvements to UX, UI design and icons.
-- Documentation.
+- Documentation improvements.
 - User testing and bug reporting.
 - Marketing and spreading the word about the program.
 - User technical support.
-- Donations to fund security reviews, code audits and future development.
+- Donations to fund cryptography/security reviews, code audits and future development.
 
 Road map / To do list:
 
-- Completely hide traffic meta data between clients and the server e.g. by serializing all network data and encrypting it. (next release)
+- Allow long messages to be automatically split into multiple OTP encrypted messages on the client then recombined on the receiving end. (next release)
+- Fix file permissions for all files in client and server dirs, only read/write for current user ref: https://serverfault.com/a/357109 (next release)
 - Allow sending/receiving to multiple servers to to prevent DDOS, prevent message routing issues e.g. censorship, interference and provide high availability. (future)
 - Poly1305 One-time MAC with unique one-time keys per message as the natural information-theoretically secure MAC pairing for the one-time pad with integrity guarantee. (future)
 - Encrypt the one-time pad database at all times inside the local database, password required if session closed or page refreshed. (future)
 - Add backtracking protection for Salsa20 fallback RNG i.e. Fast Key Erasure RNG https://blog.cr.yp.to/20170723-random.html. (future)
-- Allow long messages to be automatically split into multiple OTP encrypted messages then recombined on the receiving end. (future
 - Record voice snippets with microphone, convert to binary and split into multiple OTP encrypted messages then recombined on the receiving end. (future)
 - Randomise order of installing dependencies for the server code to prevent potential fingerprinting. (future)
 - Increase font sizes to at least 14px to make it more legible. (future)
@@ -44,7 +44,7 @@ Road map / To do list:
 - Allow different groups to communicate in the chat interface rather than separate tabs & folder locations. (future)
 - Use IndexedDB for larger local storage and capacity to handle multiple groups in one app. (future)
 - Optimise code so all CPU intensive processing is done inside HTML5 web workers and parallelised if they have more than 2 cores. (future)
-- Use ES6+ language syntax with const/let, async/await etc. (future)
+- Convert existing code to use ES6+ language syntax with const/let, async/await etc. (future)
 - Remove jQuery reliance and just use vanilla JS. (future)
 - Add sources / links to libraries (if necessary host myself). (future)
 - Move or clone code base to GitLab or other provider (after Microsoft takeover of GitHub). (future)
@@ -52,11 +52,12 @@ Road map / To do list:
 - Build into Android/iOS app with Progressive Web App or desktop app with Electron or similar application. (future)
 - Dark theme for night operation. (future)
 - Interface translated into most common languages. (future)
+- Remove usages of substr() and use substring() - considered a legacy feature in ECMAScript and could be removed from future versions (future)
 - Add information about bug bounty e.g. paid in cryptocurrency. (future)
 
 Some tips for developers:
 
-- Download the original source code from the website or Freenet and verify the file using the GPG signature (Key ID 0xDC768471C467B6D0 and Fingerprint CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0).
+- Download the original source code from the website and verify the file using the GPG signature (Key ID 0xDC768471C467B6D0 and Fingerprint CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0).
 - Verify the fingerprint on https://onename.com/joshua_m_david and https://keybase.io/joshua_m_david.
 - Read Clean Code by Robert C. Martin.
 - Keep code in the same style throughout the project.

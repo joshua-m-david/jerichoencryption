@@ -1,7 +1,7 @@
 <?php
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,12 +16,19 @@ namespace Jericho;
 
 
 /**
- * Object to store data about a prepared transaction. Includes the query that will be executed
- * and the parameters to be bound.
+ * Object to store data about a prepared transaction. Includes the
+ * query that will be executed and the parameters to be bound.
  */
-class Query
+class TransactionQuery
 {
+	/**
+	 * @var string $query The query to run in a transaction
+	 */
 	public $query;
+
+	/**
+	 * @var array $params An associative array of named parameters for the query
+	 */
 	public $params;
 
 	/**

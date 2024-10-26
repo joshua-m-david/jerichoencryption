@@ -1,11 +1,11 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
- * 
+ * Copyright (c) 2013-2024  Joshua M. David
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation in version 3 of the License.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see [http://www.gnu.org/licenses/].
  */
@@ -20,7 +20,7 @@
 
 // On page load, initialise the DB
 $(function()
-{	
+{
 	db.initialiseLocalDatabase();
 });
 
@@ -28,41 +28,42 @@ $(function()
  * Database object
  */
 var db = {
-	
+
 	// Name of the database used as the key for local storage
 	databaseName: 'padData',
-	
-	// Schema for the data to store all the pad information, server connection information, 
+
+	// Schema for the data to store all the pad information, server connection information,
 	// contact list and nicknames, crypto keys, one-time pads and any custom user settings
 	padDataSchema: {
 		info: {
 			custom: {
-				enableSounds: true,				// Enables sounds when a message is received
-				enableVibration: true,			// Enables device vibration for incoming messages
-				enableWebNotifications: true	// Enables HTML5 desktop notifications
+				enableSounds: true,             // Enables sounds when a message is received
+				enableVibration: true,          // Enables device vibration for incoming messages
+				enableWebNotifications: true    // Enables HTML5 desktop notifications
 			},
-			failsafeRngKey: null,				// The failsafe key for the Salsa20 CSPRNG in case the Web Crypto API fails
-			failsafeRngNonce: null,				// The next nonce to use for the failsafe Salsa20 CSPRNG
-			serverAddressAndPort: null,			// The server address and port
-			serverKey: null,					// The server API key
-			user: null,							// The user callsign
-			userNicknames: {}					// The custom group user nicknames matching the callsigns			
+			failsafeRngKey: null,               // The failsafe key for the Salsa20 CSPRNG in case the Web Crypto API fails
+			failsafeRngNonce: null,             // The next nonce to use for the failsafe Salsa20 CSPRNG
+			serverAddressAndPort: null,         // The server address and port
+			serverGroupIdentifier: null,        // The server group identifier
+			serverGroupKey: null,               // The server group key
+			user: null,                         // The user callsign
+			userNicknames: {}                   // The custom group user nicknames matching the callsigns
 		},
 		crypto: {
-			keys: null,							// The encrypted database keys concatenated together
-			keysMac: null,						// The MAC of the encrypted database keys for authentication
-			padIndexMacs: {},					// The MAC of the pad index numbers for each user's list of one-time pads
-			pbkdfKeccakIterations: null,		// The number of Keccak PBKDF iterations used to generate the master key for the database
-			pbkdfSkeinIterations: null,			// The number of Skein PBKDF iterations used to generate the master key for the database
-			pbkdfSalt: null						// The PBKDF salt / keyfile used to generate the master key for the database
+			keys: null,                         // The encrypted database keys concatenated together
+			keysMac: null,                      // The MAC of the encrypted database keys for authentication
+			padIndexMacs: {},                   // The MAC of the pad index numbers for each user's list of one-time pads
+			pbkdfKeccakIterations: null,        // The number of Keccak PBKDF iterations used to generate the master key for the database
+			pbkdfSkeinIterations: null,         // The number of Skein PBKDF iterations used to generate the master key for the database
+			pbkdfSalt: null                     // The PBKDF salt / keyfile used to generate the master key for the database
 		},
-		pads: [],								// The one-time pads
-		programVersion: null					// The program version that created this database (can be used for upgrading later if the format changes)
+		pads: [],                               // The one-time pads
+		programVersion: null                    // The program version that created this database (can be used for upgrading later if the format changes)
 	},
-		
+
 	// In memory storage for all the pad information and pads (has same structure as schema above)
 	padData: null,
-	
+
 	/**
 	 * Initialise the database on the machine using the HTML5 local storage library
 	 */
@@ -70,7 +71,7 @@ var db = {
 	{
 		try {
 			// Get the existing database from localStorage if it exists
-			var padDataFromLocalStorage = localStorage.getObject(this.databaseName);		
+			var padDataFromLocalStorage = localStorage.getObject(this.databaseName);
 
 			// If it already exists, use the existing one
 			if (padDataFromLocalStorage !== null)
@@ -88,7 +89,7 @@ var db = {
 			console.error('HTML localStorage is not available. Make sure it is enabled or try a different browser.');
 		}
 	},
-	
+
 	/**
 	 * Initialise to a blank in memory database schema by cloning the schema
 	 */
@@ -96,7 +97,7 @@ var db = {
 	{
 		this.padData = this.clone(this.padDataSchema);
 	},
-	
+
 	/**
 	 * Saves the pad information and pads from memory into the local storage database
 	 */
@@ -104,20 +105,22 @@ var db = {
 	{
 		localStorage.setObject(this.databaseName, this.padData);
 	},
-		
+
 	/**
 	 * Clear the database
 	 */
 	nukeDatabase: function()
 	{
-		// Remove the existing data from memory and local storage
+		// Remove the existing data from memory
 		this.padData = null;
+
+		// Remove the database from local storage
 		localStorage.removeItem(this.databaseName);
-		
-		// Reset the pad database to clean schema
+
+		// Reset the pad database to the clean schema
 		this.resetInMemoryPadData();
 	},
-	
+
 	/**
 	 * Clone an object so when assigning an object to a variable we're not using the reference of that object
 	 * See http://stackoverflow.com/a/728694

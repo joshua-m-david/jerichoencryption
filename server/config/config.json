@@ -1,0 +1,12 @@
+{
+	"databaseConfig": {
+		"databaseHostname": "127.0.0.1",
+		"databaseUsername": "jerichouser",
+		"databasePassword": "jerichopassword",
+		"databasePort": 5432
+	},
+	"applicationConfig": {
+		"testResponseHeaders": false
+	},
+	"groupConfigs": []
+}

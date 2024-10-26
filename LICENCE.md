@@ -618,4 +618,14 @@ an absolute waiver of all civil liability in connection with the
 Program, unless a warranty or assumption of liability accompanies a
 copy of the Program in return for a fee.
 
+  18. Machine Learning Algorithms and Artificial Intelligence.
+
+  The source code and the binary form, and any modifications made to
+them may not be used for the purpose of training or improving machine
+learning algorithms, including but not limited to artificial intelligence,
+natural language processing, or data mining. This condition applies to any
+derivatives, modifications, or updates based on the Software code. Any
+usage of the source code or the binary form in an AI-training dataset is
+considered a breach of this License.
+
                      END OF TERMS AND CONDITIONS

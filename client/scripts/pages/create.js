@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 var createPage = {
 
 	/**
-	 * There is no additional initialisation required for now, the main buttons is initialised in app.initPageLoadButtons()
+	 * There is no additional initialisation required for now, the main buttons are initialised in app.initPageLoadButtons()
 	 */
 	init: function()
 	{

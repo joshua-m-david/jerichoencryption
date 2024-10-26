@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2019  Joshua M. David
+ * Copyright (c) 2013-2024  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,9 @@ var nukePage = {
 			db.nukeDatabase();
 
 			// Show message
-			app.showStatus('success', 'The local database was nuked successfully. However encrypted server messages remain and the one-time pads still exist on the other users\' machines.');
+			app.showStatus('warning', 'Your local database was nuked successfully. However encrypted messages remain on '
+			                        + 'the server and the one-time pads still exist on the other users\' machines. You '
+			                        + 'will need to tell them to clear their local databases themselves.');
 		});
 	},
 
@@ -72,7 +74,7 @@ var nukePage = {
 		}
 
 		// Get the next pad from the local database and use it to encrypt the auto nuke command
-		var pad = common.getPadToEncryptMessage();
+		const pad = common.getPadToEncryptMessage();
 
 		// If there's no pads available to encrypt the message, don't let them send it
 		if (pad === false)
@@ -82,60 +84,42 @@ var nukePage = {
 		}
 
 		// Encrypt the auto nuke command and create the MAC
-		var autoNukeCommand = 'init auto nuke';
-		var ciphertextMessageAndMac = common.encryptAndAuthenticateMessage(autoNukeCommand, pad);
-
-		// Get the server address and key
-		var serverAddressAndPort = db.padData.info.serverAddressAndPort;
-		var serverKey = db.padData.info.serverKey;
+		const autoNukeCommand = 'init auto nuke';
+		const ciphertextMessageAndMac = common.encryptAndAuthenticateMessage(autoNukeCommand, pad);
 
 		// Package the data to be sent to the server
-		var data = {
-			'user': db.padData.info.user,
-			'apiAction': 'sendMessage',
-			'msg': ciphertextMessageAndMac
+		const requestData = {
+			fromUser: db.padData.info.user,
+			apiAction: networkCrypto.apiActionSend,
+			serverAddressAndPort: db.padData.info.serverAddressAndPort,
+			serverGroupIdentifier: db.padData.info.serverGroupIdentifier,
+			serverGroupKey: db.padData.info.serverGroupKey,
+			messagePackets: [ciphertextMessageAndMac]
 		};
 
 		// Fire the nuke
-		common.sendRequestToServer(data, serverAddressAndPort, serverKey, function(validResponse, responseData)
+		common.sendRequestToServer(requestData, function(validResponse, responseCode)
 		{
-			// If the server response is authentic
-			if (validResponse)
+			// If the server response is authentic and it saved the message on the server
+			if (validResponse && responseCode === networkCrypto.RESPONSE_SUCCESS)
 			{
-				// If it saved the message on the server
-				if (responseData.success)
-				{
-					// Clear the local database
-					db.nukeDatabase();
+				// Clear the local database
+				db.nukeDatabase();
 
-					// Show message
-					app.showStatus('success', 'Your contacts will be nuked when they are online. The local database was also nuked successfully.');
+				// Show message
+				app.showStatus('success', 'Your contacts will be nuked when they are online. The local database was '
+				                        + 'also nuked successfully.');
 
-					// Return early here so they are not shown the option to
-					// clear the local database manually as it is already done
-					return true;
-				}
-				else {
-					// Failed to send
-					app.showStatus('error', responseData.statusMessage);
-				}
+				// Return early here so they are not shown the option to
+				// clear the local database manually as it is already done
+				return true;
 			}
 
-			// If response check failed it means there was probably interference from attacker altering data or MAC
-			else if (validResponse === false)
-			{
-				app.showStatus('error', 'An unauthentic response from server was detected. Try again.');
-			}
-
-			else {
-				// Most likely cause is user has incorrect server url or key entered.
-				// Another alternative is the attacker modified their request while en route to the server
-				app.showStatus('error', 'There was an error contacting the server. Check: 1) you are connected to the network, '
-				                      + '2) the client/server configurations are correct, and 3) client/server system clocks are '
-				                      + 'up to date. If everything is correct, the data may have been tampered with by an attacker. '
-				                      + 'Double check you are connected to the network and that the client and server configurations '
-				                      + 'are correct.');
-			}
+			// If not a valid response, show a status message and add additional troubleshooting information for the user.
+			// Most likely cause is the user has incorrect server url/key entered. Another alternative is the attacker
+			// modified their request while en route to the server.
+			app.showStatus('error', 'Error sending nuke. ' + networkCrypto.getStatusMessage(responseCode) + ' '
+			                      + networkCrypto.getNetworkTroubleshootingText());
 
 			// The emergency message to nuke the other users failed so perhaps the lines have
 			// been cut already, give the user the option to clear their local database manually

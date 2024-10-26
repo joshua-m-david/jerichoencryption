@@ -1,0 +1,19 @@
+{
+	"databaseConfig": {
+		"databaseHostname": "127.0.0.1",
+		"databaseUsername": "jerichouser",
+		"databasePassword": "jerichopassword",
+		"databasePort": 5432
+	},
+	"applicationConfig": {
+		"testResponseHeaders": true
+	},
+	"groupConfigs": [
+		{
+			"groupId": "aabbccddeeff0011",
+			"groupDatabaseName": "jerichotestdb",
+			"groupServerKey": "68f7d8675928635867086720617a56174101bf2ea5d3dd9449769e717638e17341e67df0efc5d9b851ec5a72493b7df1846a9901e8758cd1b132c6afacb3ebe9",
+			"groupNumberOfUsers": 3
+		}
+	]
+}
