@@ -11,9 +11,17 @@
 
 #define SKEIN_DEFAULT_BITS_LENGTH 512
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_skein_hash, 0, 0, 1)
+    ZEND_ARG_INFO(0, data)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_skein_hash_hex, 0, 0, 1)
+    ZEND_ARG_INFO(0, data)
+ZEND_END_ARG_INFO()
+
 zend_function_entry skein_functions[] = {
-	PHP_FE(skein_hash, NULL)
-	PHP_FE(skein_hash_hex, NULL)    
+	PHP_FE(skein_hash, arginfo_skein_hash)
+	PHP_FE(skein_hash_hex, arginfo_skein_hash_hex)    
 #ifdef PHP_FE_END
 	PHP_FE_END
 #else

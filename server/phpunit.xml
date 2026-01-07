@@ -1,8 +1,13 @@
-<phpunit
-	bootstrap="tests/bootstrap.php"
-	cacheResult="false"
-	colors="true">
-	<testsuite name="Jericho test suite">
-		<directory suffix="test.php">tests/</directory>
-	</testsuite>
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/8.4/phpunit.xsd"
+		 bootstrap="tests/bootstrap.php"
+		 cacheResult="false"
+		 colors="true"
+		 displayDetailsOnTestsThatTriggerDeprecations="true">
+	<testsuites>
+		<testsuite name="Jericho test suite">
+			<directory suffix="Test.php">tests/</directory>
+		</testsuite>
+	</testsuites>
 </phpunit>

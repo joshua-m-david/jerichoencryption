@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Jericho Comms - Information-theoretically secure communications
-# Copyright (c) 2013-2024  Joshua M. David
+# Copyright (c) 2013-2026  Joshua M. David
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ do
 	echo "  ####  ##### #   # #  ###  #   #  ###      ####   ###  #    # #    #  ###  ";
 	echo "                                                                            ";
 	echo "               Server installation and configuration main menu              ";
-	echo "                                  v2.0.0                                    ";
+	echo "                                  v2.1.0                                    ";
 	echo
 	echo
 	echo -e "${blueColour}Choose from the list of options below:${defaultColour}"

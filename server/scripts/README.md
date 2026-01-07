@@ -1,5 +1,5 @@
 ### Jericho Comms - Information-theoretically secure communications
-#### Copyright (c) 2013-2024  Joshua M. David
+#### Copyright (c) 2013-2026  Joshua M. David
 
 
 This directory contains some additional script files which are used during the automated setup/install process.

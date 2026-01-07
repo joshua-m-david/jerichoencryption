@@ -1,5 +1,5 @@
 ### Jericho Comms - Information-theoretically secure communications
-#### Copyright (c) 2013-2024  Joshua M. David
+#### Copyright (c) 2013-2026  Joshua M. David
 
 
 This directory is the root of the server API code. It contains these files:

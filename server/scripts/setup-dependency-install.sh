@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Jericho Comms - Information-theoretically secure communications
-# Copyright (c) 2013-2024  Joshua M. David
+# Copyright (c) 2013-2026  Joshua M. David
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -489,9 +489,10 @@ configureDatabase()
 
 	# Update local authentication method so we can run scripts locally without prompting for password
 	#------------------------------------------------------------------------------------------------
+	confFileLocation=$(sudo -i -u postgres psql -t -P format=unaligned -c 'show hba_file')
 	search="local   all             postgres                                peer"
 	replace="local   all             postgres                                trust"
-	sudo sed -i -e "s/$search/$replace/g" /etc/postgresql/13/main/pg_hba.conf
+	sudo sed -i -e "s/$search/$replace/g" $confFileLocation
 	sudo systemctl restart postgresql
 
 
@@ -536,12 +537,22 @@ configureSkeinPhpExtension()
 	#----------------------------------------------
 	# Build and install the Skein-512 PHP extension
 	cd /var/www/skein
-	phpize
-	./configure --enable-skein
-	make clean
-	make
-	make install
-	make test
+	sudo phpize
+	sudo ./configure --enable-skein
+	sudo make clean
+	sudo make
+
+	# Add check for if the command failed (can happen with major PHP upgrades)
+	if [[ $? > 0 ]]
+	then
+		echo
+		echo -e "${redColour}Failed compiling Skein library...${defaultColour}"
+		echo
+		exit 1
+	fi
+
+	sudo make test
+	sudo make install
 
 
 	#--------------------------------------------------

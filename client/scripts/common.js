@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2024  Joshua M. David
+ * Copyright (c) 2013-2026  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,9 @@ var common = {
 	macSizeBinary: 512,
 	totalMessagePartsSizeBinary: 968,
 	totalPadSizeBinary: 1536,
+
+	// Base64 representation for specific variables
+	padIdentifierSizeBase64: 12,
 
 	// Salt length
 	saltLength: 192,
@@ -481,6 +484,25 @@ var common = {
 	},
 
 	/**
+	 * Combines two Uint8Arrays together (more efficiently than spread operator)
+	 * @param {Uint8Array} arrayA The first array
+	 * @param {Uint8Array} arrayB The second array
+	 * @returns {Uint8Array} The combined array i.e. [...arrayA, ...ArrayB]
+	 */
+	combineUint8Arrays: function(arrayA, arrayB)
+	{
+		let combinedArray = new Uint8Array(arrayA.length + arrayB.length);
+
+		// Copy the header array into the new array at the start (offset 0)
+		combinedArray.set(arrayA);
+
+		// Copy the message array into the new array, starting after the first array's length
+		combinedArray.set(arrayB, arrayA.length);
+
+		return combinedArray;
+	},
+
+	/**
 	 * Get the separate message parts (plaintext with padding, the actual message length and the message timestamp)
 	 * @param {String} decryptedUnreversedMessagePartsBinary The plaintext message parts joined together
 	 * @returns {Array} Returns the message parts separated out into an array with keys 'messagePlaintextWithPaddingBinary', 'messageLength', 'messageTimestamp'
@@ -643,6 +665,37 @@ var common = {
 	},
 
 	/**
+	 * Takes a string of binary code and converts it to a Uint8Array i.e. array of bytes (0-255)
+	 * @param {String} binaryText The binary numbers to be converted e.g. 10010001...11110000
+	 * @returns {Uint8Array} Returns a Uint8Array i.e. array of bytes (0-255)
+	 */
+	convertBinaryToBytes: function(binaryText)
+	{
+		let convertedBytes = [];
+
+		// For each 8 binary characters convert to an array of bytes
+		for (let i = 0, j = 0; i < binaryText.length; i = j)
+		{
+			// Get the end point of the byte
+			j += 8;
+
+			// Get 8 chars from the string
+			let binaryCharacters = binaryText.slice(i, j);
+
+			// Convert binary to decimal
+			let byteInteger = parseInt(binaryCharacters, 2);
+
+			// Append to array
+			convertedBytes.push(byteInteger);
+		}
+
+		// Convert the regular array to a Uint8Array
+		let convertedByteArray = Uint8Array.from(convertedBytes);
+
+		return convertedByteArray;
+	},
+
+	/**
 	 * Converts ASCII or UTF-8 text to binary string (one character at a time)
 	 * @param {String} inputText The text to be converted
 	 * @returns {String} A string of binary numbers e.g. 10010010...
@@ -652,6 +705,30 @@ var common = {
 		// Convert the text to a stream of UTF-8 bytes
 		var encoder = new TextEncoder();
 		var byteArray = encoder.encode(inputText);
+		var output = '';
+
+		// For each byte (represented as an integer in range of 0 - 255)
+		for (var i = 0; i < byteArray.length; i++)
+		{
+			// Convert each byte integer to a byte represented as a binary string e.g. 10110000
+			var byteInteger = byteArray[i];
+			var byteBinary = byteInteger.toString(2);
+			var byteBinaryPadded = common.leftPadding(byteBinary, '0', 8);
+
+			// Append to output
+			output += byteBinaryPadded;
+		}
+
+		return output;
+	},
+
+	/**
+	 * Converts an array of bytes to binary string (e.g. 10110000)
+	 * @param {Array|Uint8Array} byteArray The array of bytes
+	 * @returns {String} The binary string representation
+	 */
+	convertBytesToBinary: function(byteArray)
+	{
 		var output = '';
 
 		// For each byte (represented as an integer in range of 0 - 255)
@@ -860,6 +937,34 @@ var common = {
 	},
 
 	/**
+	 * Converts ASCII/UTF-8 string to bytes
+	 * @param {String} text The ASCII or UTF-8 text to be converted
+	 * @returns {Uint8Array} Returns a Uint8Array of bytes
+	 */
+	convertTextToBytes: function(text)
+	{
+		// Convert the text which possibly contains UTF-8 characters to bytes
+		const encoder = new TextEncoder();
+		const byteArray = encoder.encode(text);
+
+		return byteArray;
+	},
+
+	/**
+	 * Converts bytes to UTF-8 string
+	 * @param {Uint8Array} bytes A Uint8Array of bytes which can be converted to a string
+	 * @returns {String} Returns ASCII or UTF-8 text
+	 */
+	convertBytesToText: function(bytes)
+	{
+		// Convert to regular text
+		const utf8decoder = new TextDecoder();
+		const outputText = utf8decoder.decode(bytes);
+
+		return outputText;
+	},
+
+	/**
 	 * Left pad a string with a certain character to a total number of characters
 	 * @param {String|Number} inputString The string or number to be padded
 	 * @param {String} padCharacter The character/s that the string should be padded with
@@ -887,14 +992,25 @@ var common = {
 	/**
 	 * Wrapper function to do all the work necessary to encrypt the message for sending. Also returns the encrypted
 	 * MAC as well. This will use random padding, get the current timestamp for the message and random MAC algorithm as well.
-	 * @param {String} plaintextMessage The actual plaintext written by the user
+	 * @param {String|Array|Uint8Array} plaintextMessage The actual plaintext written by the user (as a
+	 *                                  string) or as an array of bytes for multi-part message.
 	 * @param {String} pad The one-time pad as a hexadecimal string
 	 * @returns {Array} Returns the ciphertext and MAC concatenated together ready to be sent
 	 */
 	encryptAndAuthenticateMessage: function(plaintextMessage, pad)
 	{
-		// Convert the text to binary
-		var plaintextMessageBinary = common.convertTextToBinary(plaintextMessage);
+		let plaintextMessageBinary = '';
+
+		// If single part message
+		if (typeof plaintextMessage === 'string')
+		{
+			// Convert the UTF-8 text to binary
+			plaintextMessageBinary = common.convertTextToBinary(plaintextMessage);
+		}
+		else {
+			// Otherwise if it is a multi-part message, convert the bytes to binary
+			plaintextMessageBinary = common.convertBytesToBinary(plaintextMessage);
+		}
 
 		// Get the message with random variable length padding
 		var paddingInfo = common.padMessage(plaintextMessageBinary);
@@ -928,6 +1044,17 @@ var common = {
 
 		// Return ciphertext and encrypted MAC concatenated together
 		return ciphertextHex + ciphertextMac;
+	},
+
+	/**
+	 * Get the pad identifier from the one-time pad in hexadecimal
+	 * We can use this to quickly get the pad identifier of the pad (first 7 bytes)
+	 * @param {String} padHex The one-time pad as a hexadecimal string
+	 * @returns {String} Returns the portion of the pad that is the pad identifier
+	 */
+	getPadIdentifierFromPadHex: function(padHex)
+	{
+		return padHex.substr(0, this.padIdentifierSizeHex);
 	},
 
 	/**
@@ -1011,13 +1138,15 @@ var common = {
 
 		// Remove padding from plaintext and convert back to readable text
 		var plaintextMessageBinary = common.removePaddingFromMessage(messagePlaintextWithPaddingBinary, messageLength);
-		var plaintextMessage = common.convertBinaryToText(plaintextMessageBinary);
+		let plaintextMessageBytes = common.convertBinaryToBytes(plaintextMessageBinary);
+		var plaintextMessageText = common.convertBinaryToText(plaintextMessageBinary);
 
 		// Return all important parts back
 		return {
-			'plaintext': plaintextMessage,		// The decrypted message
-			'timestamp': messageTimestamp,		// Time the message was sent
-			'valid': macValidation				// Whether the message is valid (MAC matched or not)
+			'plaintextBytes': plaintextMessageBytes, // The raw bytes (if multi-part message we need the raw bytes)
+			'plaintext': plaintextMessageText,       // The decrypted message as ASCII/UTF-8
+			'timestamp': messageTimestamp,           // Time the message was sent
+			'valid': macValidation                   // Whether the message is valid (MAC matched or not)
 		};
 	},
 
@@ -1226,7 +1355,7 @@ var common = {
 	},
 
 	/**
-	 * A wrapper function to get the required number of random bits.
+	 * A wrapper function to get the required number of random bits. NB: used for less important things, like padding.
 	 * @param {Number} numOfBits The desired number of random bits as an integer.
 	 * @param {String} returnFormat Pass in 'binary' or 'hexadecimal' to return the random bits in that format.
 	 * @returns {String} Returns the random bits as a string of 1s and 0s. If the returnFormat is 'hexadecimal', then the

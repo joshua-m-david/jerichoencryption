@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2024  Joshua M. David
+ * Copyright (c) 2013-2026  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -596,6 +596,402 @@ $(document).ready(function()
 
 	/*
 	 * ---------------------------------------------------------------------------------
+	 * Multi message parts encoding/decoding - Convert text with UTF-8 special characters to bytes and back again to UTF-8 text
+	 * ---------------------------------------------------------------------------------
+	 */
+	QUnit.test("Multi message parts encoding/decoding - Convert text with UTF-8 special characters to bytes and back again to UTF-8 text", function(assert)
+	{
+		const textCantonese = `埋 – "maàih" is placed after a verb to indicate an expansion of the target of action, or that the action is an addition to the one(s) previously mentioned, e.g., 我食埋啲嘢就去。 I'll go after I finish eating the rest. ("eating the rest" is an expansion of the target of action from the food eaten to the food not yet eaten); 你可以去先，我食埋嘢先去。 You can go first. I'll eat before going. (The action "eating" is an addition to the action "going" which is previously mentioned or mutually known.)`;
+		const textPortuguese = 'Portuguese makes use of five diacritics: the cedilha (ç), acute accent (á, é, í, ó, ú), circumflex accent (â, ê, ô), tilde (ã, õ), and grave accent (à, and rarely è, ì, ò, and ù).';
+		const textSpanish = 'Spanish uses only the acute accent, over any vowel: ⟨á é í ó ú⟩. This accent is used to mark the tonic (stressed) syllable, though it may also be used occasionally to distinguish homophones such as si (if) and sí (yes). The only other diacritics used are the tilde on the letter ⟨ñ⟩, which is considered a separate letter from ⟨n⟩, and the diaeresis used in the sequences ⟨güe⟩ and ⟨güi⟩—as in bilingüe (bilingual)—to indicate that the ⟨u⟩ is pronounced, [w], rather than having the usual silent role that it plays in unmarked ⟨gue⟩ and ⟨gui⟩.';
+
+		const bytesCantonese = common.convertTextToBytes(textCantonese);
+		const bytesPortuguese = common.convertTextToBytes(textPortuguese);
+		const bytesSpanish = common.convertTextToBytes(textSpanish);
+		
+		const textCantoneseConvertedBack = common.convertBytesToText(bytesCantonese);
+		const textPortugueseConvertedBack = common.convertBytesToText(bytesPortuguese);
+		const textSpanishConvertedBack = common.convertBytesToText(bytesSpanish);
+
+		assert.ok(textCantonese === textCantoneseConvertedBack, textCantonese + ' should equal ' + textCantoneseConvertedBack);
+		assert.ok(textPortuguese === textPortugueseConvertedBack, textPortuguese + ' should equal ' + textPortugueseConvertedBack);
+		assert.ok(textSpanish === textSpanishConvertedBack, textSpanish + ' should equal ' + textSpanishConvertedBack);
+	});
+	
+	
+	/*
+	 * ------------------------------------------------------------------
+	 * Multi message parts encoding/decoding - Convert byteArray to binary bits
+	 * ------------------------------------------------------------------
+	 */
+	QUnit.test("Multi message parts encoding/decoding - Convert byte array or Uint8Array to binary bits", function(assert)
+	{
+		const bytes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255];
+		const bits = common.convertBytesToBinary(bytes);
+		
+		// Try Uint8Array as well
+		const bytesInUint8Array = new Uint8Array(bytes);
+		const bitsFromUint8Array = common.convertBytesToBinary(bytes);
+		
+		// Converted individually and joined into single string
+		const expectedOutput = ['00000000', '00000001', '00000010', '00000011', '00000100', '00000101', '00000110', '00000111', '00001000', '00001001', '00001010', '00001011', '00001100', '00001101', '00001110', '00001111', '00010000', '00010001', '00010010', '00010011', '00010100', '00010101', '00010110', '00010111', '00011000', '00011001', '00011010', '00011011', '00011100', '00011101', '00011110', '00011111', '00100000', '00100001', '00100010', '00100011', '00100100', '00100101', '00100110', '00100111', '00101000', '00101001', '00101010', '00101011', '00101100', '00101101', '00101110', '00101111', '00110000', '00110001', '00110010', '00110011', '00110100', '00110101', '00110110', '00110111', '00111000', '00111001', '00111010', '00111011', '00111100', '00111101', '00111110', '00111111', '01000000', '01000001', '01000010', '01000011', '01000100', '01000101', '01000110', '01000111', '01001000', '01001001', '01001010', '01001011', '01001100', '01001101', '01001110', '01001111', '01010000', '01010001', '01010010', '01010011', '01010100', '01010101', '01010110', '01010111', '01011000', '01011001', '01011010', '01011011', '01011100', '01011101', '01011110', '01011111', '01100000', '01100001', '01100010', '01100011', '01100100', '01100101', '01100110', '01100111', '01101000', '01101001', '01101010', '01101011', '01101100', '01101101', '01101110', '01101111', '01110000', '01110001', '01110010', '01110011', '01110100', '01110101', '01110110', '01110111', '01111000', '01111001', '01111010', '01111011', '01111100', '01111101', '01111110', '01111111', '10000000', '10000001', '10000010', '10000011', '10000100', '10000101', '10000110', '10000111', '10001000', '10001001', '10001010', '10001011', '10001100', '10001101', '10001110', '10001111', '10010000', '10010001', '10010010', '10010011', '10010100', '10010101', '10010110', '10010111', '10011000', '10011001', '10011010', '10011011', '10011100', '10011101', '10011110', '10011111', '10100000', '10100001', '10100010', '10100011', '10100100', '10100101', '10100110', '10100111', '10101000', '10101001', '10101010', '10101011', '10101100', '10101101', '10101110', '10101111', '10110000', '10110001', '10110010', '10110011', '10110100', '10110101', '10110110', '10110111', '10111000', '10111001', '10111010', '10111011', '10111100', '10111101', '10111110', '10111111', '11000000', '11000001', '11000010', '11000011', '11000100', '11000101', '11000110', '11000111', '11001000', '11001001', '11001010', '11001011', '11001100', '11001101', '11001110', '11001111', '11010000', '11010001', '11010010', '11010011', '11010100', '11010101', '11010110', '11010111', '11011000', '11011001', '11011010', '11011011', '11011100', '11011101', '11011110', '11011111', '11100000', '11100001', '11100010', '11100011', '11100100', '11100101', '11100110', '11100111', '11101000', '11101001', '11101010', '11101011', '11101100', '11101101', '11101110', '11101111', '11110000', '11110001', '11110010', '11110011', '11110100', '11110101', '11110110', '11110111', '11111000', '11111001', '11111010', '11111011', '11111100', '11111101', '11111110', '11111111'].join('');
+		
+		assert.ok(bits.length === (256 * 8), 'Length should equal 256 bytes x 8 = ' + bits.length);
+		assert.ok(bitsFromUint8Array.length === (256 * 8), 'Length should equal 256 bytes x 8 = ' + bitsFromUint8Array.length);
+		assert.ok(bits === expectedOutput, 'Bits ' + bits + ' should equal ' + expectedOutput);
+		assert.ok(bitsFromUint8Array === expectedOutput, 'Bits ' + bits + ' should equal ' + expectedOutput);
+	});
+	
+	
+	/*
+	 * ---------------------------------------------------------------------------------
+	 * Multi message parts encoding/decoding - Convert multi part text with UTF-8 special character to bytes and combine back again to UTF-8 text
+	 * ---------------------------------------------------------------------------------
+	 */
+	QUnit.test("Multi message parts encoding/decoding - Convert multi part text with UTF-8 special character to bytes and combine back again to UTF-8 text", function(assert)
+	{
+		// NB: The euro symbol is intentional here at the end of message 1 as this is actually 3 bytes length
+		const plaintextMessage = "Yeah good idea let's do that soon, that sounds awesome. We could use this to send more than one message at once as€" // 115+
+		                       + "a multi-part message. The receiving end then decodes the 3 messages and displays as a single mess"
+		                       + "age. I am sure this could be really useful and extendable.";
+		
+		const plaintextMessageTrueLength = common.getUtf8TextLengthInBytes(plaintextMessage);
+		
+		// Should give us an array of message parts (UTF-8 bytes may be split into multiple messages)
+		const messagePartBytes = chatPage.getMessageParts(plaintextMessage);
+		
+		// Prepare decoding array to hold all the bytes of the message
+		const messagePartsCombinedBytes = [];
+		
+		// Attempt joining (for receiver end)
+		for (let i = 0; i < messagePartBytes.length; i++)
+		{			
+			Array.prototype.push.apply(messagePartsCombinedBytes, messagePartBytes[i]);		
+		}
+		
+		// Convert into Uint8Array for TextDecoder
+		const partsBytesUint8Array = new Uint8Array(messagePartsCombinedBytes);
+		
+		// Convert back (should recombine the split € character successfully)
+		const joinedBackMessageParts = common.convertBytesToText(partsBytesUint8Array);
+		
+		assert.ok(plaintextMessage === joinedBackMessageParts, plaintextMessage + ' should equal ' + joinedBackMessageParts);
+	});
+
+
+	/*
+	 * ------------------------------------------------------------------------------
+	 * Multi message parts encoding/decoding - Combine two Uint8Arrays together efficiently
+	 * ------------------------------------------------------------------------------
+	 */
+	QUnit.test("Multi message parts encoding/decoding - Combine two Uint8Arrays together efficiently", function(assert)
+	{
+		// Convert into Uint8Array for TextDecoder
+		const arrayA = new Uint8Array([0, 1, 2, 3]);
+		const arrayB = new Uint8Array([4, 5, 6, 7]);
+		const combinedArray = common.combineUint8Arrays(arrayA, arrayB);
+		const expectedArray = new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]);
+		const combinedArrayJoined = combinedArray.join(', ');
+		const expectedArrayJoined = expectedArray.join(', ');
+				
+		assert.ok(combinedArrayJoined === expectedArrayJoined, combinedArrayJoined + ' should equal ' + expectedArrayJoined);
+	});
+	
+	
+	/*
+	 * ---------------------------------------------------------------------------------
+	 * Multi message parts encoding/decoding - Combine received multi part messages back to UTF-8 text
+	 * ---------------------------------------------------------------------------------
+	 */
+	QUnit.test("Multi message parts encoding/decoding - Combine received multi part messages back to UTF-8 text", function(assert)
+	{
+		// Decrypted messages after sorting the messages by timestamp
+		let decryptedMessages = [
+			{
+				"plaintextBytes": new Uint8Array(Object.values({"0":49,"1":10})),
+				"plaintext": "1\n",
+				"timestamp": 1767691341,
+				"valid": true,
+				"padIdentifier": "885f142238c0f5",
+				"fromUser": "bravo"
+			},
+			{
+				"plaintextBytes": new Uint8Array(Object.values({"0":89,"1":101,"2":97,"3":104,"4":32,"5":103,"6":111,"7":111,"8":100,"9":32,"10":105,"11":100,"12":101,"13":97,"14":32,"15":108,"16":101,"17":116,"18":39,"19":115,"20":32,"21":100,"22":111,"23":32,"24":116,"25":104,"26":97,"27":116,"28":32,"29":115,"30":111,"31":111,"32":110,"33":44,"34":32,"35":116,"36":104,"37":97,"38":116,"39":32,"40":115,"41":111,"42":117,"43":110,"44":100,"45":115,"46":32,"47":97,"48":119,"49":101,"50":115,"51":111,"52":109,"53":101,"54":46,"55":32,"56":87,"57":101,"58":32,"59":99,"60":111,"61":117,"62":108,"63":100,"64":32,"65":117,"66":115,"67":101,"68":32,"69":116,"70":104,"71":105,"72":115,"73":32,"74":116,"75":111,"76":32,"77":115,"78":101,"79":110,"80":100,"81":32,"82":109,"83":111,"84":114,"85":101,"86":32,"87":116,"88":104,"89":97,"90":110,"91":32,"92":111,"93":110,"94":101,"95":32,"96":109,"97":101,"98":115,"99":115,"100":97,"101":103,"102":101,"103":32,"104":97,"105":116,"106":32,"107":111,"108":110,"109":99,"110":101,"111":32,"112":97,"113":115,"114":226})),
+				"plaintext": "Yeah good idea let's do that soon, that sounds awesome. We could use this to send more than one message at once as�",
+				"timestamp": 1767691354,
+				"valid": true,
+				"padIdentifier": "b3df59fc83e3ea",
+				"fromUser": "bravo"},
+			{
+				"plaintextBytes": new Uint8Array(Object.values({"0":124,"1":179,"2":223,"3":89,"4":252,"5":131,"6":227,"7":234,"8":124,"9":1,"10":124,"11":130,"12":172,"13":97,"14":32,"15":109,"16":117,"17":108,"18":116,"19":105,"20":45,"21":112,"22":97,"23":114,"24":116,"25":32,"26":109,"27":101,"28":115,"29":115,"30":97,"31":103,"32":101,"33":46,"34":32,"35":84,"36":104,"37":101,"38":32,"39":114,"40":101,"41":99,"42":101,"43":105,"44":118,"45":105,"46":110,"47":103,"48":32,"49":101,"50":110,"51":100,"52":32,"53":116,"54":104,"55":101,"56":110,"57":32,"58":100,"59":101,"60":99,"61":111,"62":100,"63":101,"64":115,"65":32,"66":116,"67":104,"68":101,"69":32,"70":51,"71":32,"72":109,"73":101,"74":115,"75":115,"76":97,"77":103,"78":101,"79":115,"80":32,"81":97,"82":110,"83":100,"84":32,"85":100,"86":105,"87":115,"88":112,"89":108,"90":97,"91":121,"92":115,"93":32,"94":97,"95":115,"96":32,"97":97,"98":32,"99":115,"100":105,"101":110,"102":103,"103":108,"104":101,"105":32,"106":109,"107":101,"108":115,"109":115,"110":97,"111":103,"112":101,"113":46,"114":32})),
+				"plaintext": "|��Y����|\u0001|��a multi-part message. The receiving end then decodes the 3 messages and displays as a single message. ",
+				"timestamp": 1767691354,
+				"valid": true,
+				"padIdentifier": "86d53a7a45cd9f",
+				"fromUser": "bravo"
+			},
+			{
+				"plaintextBytes": new Uint8Array(Object.values({"0":124,"1":179,"2":223,"3":89,"4":252,"5":131,"6":227,"7":234,"8":124,"9":2,"10":124,"11":73,"12":32,"13":97,"14":109,"15":32,"16":115,"17":117,"18":114,"19":101,"20":32,"21":116,"22":104,"23":105,"24":115,"25":32,"26":99,"27":111,"28":117,"29":108,"30":100,"31":32,"32":98,"33":101,"34":32,"35":114,"36":101,"37":97,"38":108,"39":108,"40":121,"41":32,"42":117,"43":115,"44":101,"45":102,"46":117,"47":108,"48":32,"49":97,"50":110,"51":100,"52":32,"53":101,"54":120,"55":116,"56":101,"57":110,"58":100,"59":97,"60":98,"61":108,"62":101,"63":46})),
+				"plaintext": "|��Y����|\u0002|I am sure this could be really useful and extendable.",
+				"timestamp": 1767691354,
+				"valid": true,
+				"padIdentifier": "0849bbdafd5a55",
+				"fromUser": "bravo"
+			},
+			{
+				"plaintextBytes": new Uint8Array(Object.values({"0":53})),
+				"plaintext": "5",
+				"timestamp": 1767691357,
+				"valid": true,
+				"padIdentifier": "4aed91357daa71",
+				"fromUser": "bravo"
+			}
+		];
+		
+		// Organise and combine any multi-part messages back together under a root pad identifier
+		let organisedMessages = chatPage.organiseReceivedMultiPartMessages(decryptedMessages);
+		let expectedOrganisedMessages = {
+			"885f142238c0f5": [
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":49,"1":10})),
+					"plaintext": "1\n",
+					"timestamp": 1767691341,
+					"valid": true,
+					"padIdentifier": "885f142238c0f5",
+					"fromUser": "bravo"
+				}
+			],
+			"b3df59fc83e3ea": [
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":89,"1":101,"2":97,"3":104,"4":32,"5":103,"6":111,"7":111,"8":100,"9":32,"10":105,"11":100,"12":101,"13":97,"14":32,"15":108,"16":101,"17":116,"18":39,"19":115,"20":32,"21":100,"22":111,"23":32,"24":116,"25":104,"26":97,"27":116,"28":32,"29":115,"30":111,"31":111,"32":110,"33":44,"34":32,"35":116,"36":104,"37":97,"38":116,"39":32,"40":115,"41":111,"42":117,"43":110,"44":100,"45":115,"46":32,"47":97,"48":119,"49":101,"50":115,"51":111,"52":109,"53":101,"54":46,"55":32,"56":87,"57":101,"58":32,"59":99,"60":111,"61":117,"62":108,"63":100,"64":32,"65":117,"66":115,"67":101,"68":32,"69":116,"70":104,"71":105,"72":115,"73":32,"74":116,"75":111,"76":32,"77":115,"78":101,"79":110,"80":100,"81":32,"82":109,"83":111,"84":114,"85":101,"86":32,"87":116,"88":104,"89":97,"90":110,"91":32,"92":111,"93":110,"94":101,"95":32,"96":109,"97":101,"98":115,"99":115,"100":97,"101":103,"102":101,"103":32,"104":97,"105":116,"106":32,"107":111,"108":110,"109":99,"110":101,"111":32,"112":97,"113":115,"114":226})),
+					"plaintext": "Yeah good idea let's do that soon, that sounds awesome. We could use this to send more than one message at once as�",  // NB: At this point this plaintext is not valid, it just serves as visual reminder what this message part is. We actually combine the bytes of all the messages together, _then_ convert to ASCII/UTF-8 plaintext. That happens in the step after
+					"timestamp": 1767691354,
+					"valid": true,
+					"padIdentifier": "b3df59fc83e3ea",
+					"fromUser": "bravo"
+				},
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":130,"1":172,"2":97,"3":32,"4":109,"5":117,"6":108,"7":116,"8":105,"9":45,"10":112,"11":97,"12":114,"13":116,"14":32,"15":109,"16":101,"17":115,"18":115,"19":97,"20":103,"21":101,"22":46,"23":32,"24":84,"25":104,"26":101,"27":32,"28":114,"29":101,"30":99,"31":101,"32":105,"33":118,"34":105,"35":110,"36":103,"37":32,"38":101,"39":110,"40":100,"41":32,"42":116,"43":104,"44":101,"45":110,"46":32,"47":100,"48":101,"49":99,"50":111,"51":100,"52":101,"53":115,"54":32,"55":116,"56":104,"57":101,"58":32,"59":51,"60":32,"61":109,"62":101,"63":115,"64":115,"65":97,"66":103,"67":101,"68":115,"69":32,"70":97,"71":110,"72":100,"73":32,"74":100,"75":105,"76":115,"77":112,"78":108,"79":97,"80":121,"81":115,"82":32,"83":97,"84":115,"85":32,"86":97,"87":32,"88":115,"89":105,"90":110,"91":103,"92":108,"93":101,"94":32,"95":109,"96":101,"97":115,"98":115,"99":97,"100":103,"101":101,"102":46,"103":32})),
+					"plaintext": "|��Y����|\u0001|��a multi-part message. The receiving end then decodes the 3 messages and displays as a single message. ",
+					"timestamp": 1767691354,
+					"valid": true,
+					"padIdentifier": "86d53a7a45cd9f",
+					"fromUser": "bravo"
+				},
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":73,"1":32,"2":97,"3":109,"4":32,"5":115,"6":117,"7":114,"8":101,"9":32,"10":116,"11":104,"12":105,"13":115,"14":32,"15":99,"16":111,"17":117,"18":108,"19":100,"20":32,"21":98,"22":101,"23":32,"24":114,"25":101,"26":97,"27":108,"28":108,"29":121,"30":32,"31":117,"32":115,"33":101,"34":102,"35":117,"36":108,"37":32,"38":97,"39":110,"40":100,"41":32,"42":101,"43":120,"44":116,"45":101,"46":110,"47":100,"48":97,"49":98,"50":108,"51":101,"52":46})),
+					"plaintext": "|��Y����|\u0002|I am sure this could be really useful and extendable.",
+					"timestamp": 1767691354,
+					"valid": true,
+					"padIdentifier": "0849bbdafd5a55",
+					"fromUser": "bravo"
+				}
+			],
+			"4aed91357daa71": [
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":53})),
+					"plaintext": "5",
+					"timestamp": 1767691357,
+					"valid": true,
+					"padIdentifier": "4aed91357daa71",
+					"fromUser": "bravo"
+				}
+			]
+		};
+		
+		let organisedMessagesJson = JSON.stringify(organisedMessages);
+		let expectedOrganisedMessagesJson = JSON.stringify(expectedOrganisedMessages);
+				
+		assert.ok(organisedMessagesJson === expectedOrganisedMessagesJson, organisedMessagesJson + ' should equal ' + expectedOrganisedMessagesJson);
+	});
+	
+	
+	/*
+	 * ---------------------------------------------------------------------------------
+	 * Multi message parts encoding/decoding - Do a final consolidation of the received multi message parts into a single plaintext
+	 * ---------------------------------------------------------------------------------
+	 */
+	QUnit.test("Multi message parts encoding/decoding - Do a final consolidation of the received multi message parts into a single plaintext", function(assert)
+	{
+		let organisedMessages = {
+			"885f142238c0f5": [
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":49,"1":10})),
+					"plaintext": "1\n",
+					"timestamp": 1767691341,
+					"valid": true,
+					"padIdentifier": "885f142238c0f5",
+					"fromUser": "bravo"
+				}
+			],
+			"b3df59fc83e3ea": [
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":89,"1":101,"2":97,"3":104,"4":32,"5":103,"6":111,"7":111,"8":100,"9":32,"10":105,"11":100,"12":101,"13":97,"14":32,"15":108,"16":101,"17":116,"18":39,"19":115,"20":32,"21":100,"22":111,"23":32,"24":116,"25":104,"26":97,"27":116,"28":32,"29":115,"30":111,"31":111,"32":110,"33":44,"34":32,"35":116,"36":104,"37":97,"38":116,"39":32,"40":115,"41":111,"42":117,"43":110,"44":100,"45":115,"46":32,"47":97,"48":119,"49":101,"50":115,"51":111,"52":109,"53":101,"54":46,"55":32,"56":87,"57":101,"58":32,"59":99,"60":111,"61":117,"62":108,"63":100,"64":32,"65":117,"66":115,"67":101,"68":32,"69":116,"70":104,"71":105,"72":115,"73":32,"74":116,"75":111,"76":32,"77":115,"78":101,"79":110,"80":100,"81":32,"82":109,"83":111,"84":114,"85":101,"86":32,"87":116,"88":104,"89":97,"90":110,"91":32,"92":111,"93":110,"94":101,"95":32,"96":109,"97":101,"98":115,"99":115,"100":97,"101":103,"102":101,"103":32,"104":97,"105":116,"106":32,"107":111,"108":110,"109":99,"110":101,"111":32,"112":97,"113":115,"114":226})),
+					"plaintext": "Yeah good idea let's do that soon, that sounds awesome. We could use this to send more than one message at once as�",  // NB: At this point this plaintext is not valid, it just serves as visual reminder what this message part is. We actually combine the bytes of all the messages together, _then_ convert to ASCII/UTF-8 plaintext. That happens in the step after
+					"timestamp": 1767691354,
+					"valid": true,
+					"padIdentifier": "b3df59fc83e3ea",
+					"fromUser": "bravo"
+				},
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":130,"1":172,"2":97,"3":32,"4":109,"5":117,"6":108,"7":116,"8":105,"9":45,"10":112,"11":97,"12":114,"13":116,"14":32,"15":109,"16":101,"17":115,"18":115,"19":97,"20":103,"21":101,"22":46,"23":32,"24":84,"25":104,"26":101,"27":32,"28":114,"29":101,"30":99,"31":101,"32":105,"33":118,"34":105,"35":110,"36":103,"37":32,"38":101,"39":110,"40":100,"41":32,"42":116,"43":104,"44":101,"45":110,"46":32,"47":100,"48":101,"49":99,"50":111,"51":100,"52":101,"53":115,"54":32,"55":116,"56":104,"57":101,"58":32,"59":51,"60":32,"61":109,"62":101,"63":115,"64":115,"65":97,"66":103,"67":101,"68":115,"69":32,"70":97,"71":110,"72":100,"73":32,"74":100,"75":105,"76":115,"77":112,"78":108,"79":97,"80":121,"81":115,"82":32,"83":97,"84":115,"85":32,"86":97,"87":32,"88":115,"89":105,"90":110,"91":103,"92":108,"93":101,"94":32,"95":109,"96":101,"97":115,"98":115,"99":97,"100":103,"101":101,"102":46,"103":32})),
+					"plaintext": "|��Y����|\u0001|��a multi-part message. The receiving end then decodes the 3 messages and displays as a single message. ",
+					"timestamp": 1767691354,
+					"valid": true,
+					"padIdentifier": "86d53a7a45cd9f",
+					"fromUser": "bravo"
+				},
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":73,"1":32,"2":97,"3":109,"4":32,"5":115,"6":117,"7":114,"8":101,"9":32,"10":116,"11":104,"12":105,"13":115,"14":32,"15":99,"16":111,"17":117,"18":108,"19":100,"20":32,"21":98,"22":101,"23":32,"24":114,"25":101,"26":97,"27":108,"28":108,"29":121,"30":32,"31":117,"32":115,"33":101,"34":102,"35":117,"36":108,"37":32,"38":97,"39":110,"40":100,"41":32,"42":101,"43":120,"44":116,"45":101,"46":110,"47":100,"48":97,"49":98,"50":108,"51":101,"52":46})),
+					"plaintext": "|��Y����|\u0002|I am sure this could be really useful and extendable.",
+					"timestamp": 1767691354,
+					"valid": true,
+					"padIdentifier": "0849bbdafd5a55",
+					"fromUser": "bravo"
+				}
+			],
+			"4aed91357daa71": [
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":53})),
+					"plaintext": "5",
+					"timestamp": 1767691357,
+					"valid": true,
+					"padIdentifier": "4aed91357daa71",
+					"fromUser": "bravo"
+				}
+			]
+		};
+		
+		// Consolidate and combine the plaintext of any multi-part messages back into one
+		let consolidatedMessages = chatPage.consolidateReceivedMultiPartMessages(organisedMessages);
+		let expectedConsolidatedMessages = [
+			{
+				"plaintextBytes": new Uint8Array(Object.values({"0":49,"1":10})),
+				"plaintext": "1\n",
+				"timestamp": 1767691341,
+				"valid": true,
+				"padIdentifier": "885f142238c0f5",
+				"fromUser": "bravo"
+			},
+			{
+				"fromUser": "bravo",
+				"padIdentifier": "b3df59fc83e3ea, 86d53a7a45cd9f, 0849bbdafd5a55",
+				"plaintextBytes": new Uint8Array(Object.values({"0":89,"1":101,"2":97,"3":104,"4":32,"5":103,"6":111,"7":111,"8":100,"9":32,"10":105,"11":100,"12":101,"13":97,"14":32,"15":108,"16":101,"17":116,"18":39,"19":115,"20":32,"21":100,"22":111,"23":32,"24":116,"25":104,"26":97,"27":116,"28":32,"29":115,"30":111,"31":111,"32":110,"33":44,"34":32,"35":116,"36":104,"37":97,"38":116,"39":32,"40":115,"41":111,"42":117,"43":110,"44":100,"45":115,"46":32,"47":97,"48":119,"49":101,"50":115,"51":111,"52":109,"53":101,"54":46,"55":32,"56":87,"57":101,"58":32,"59":99,"60":111,"61":117,"62":108,"63":100,"64":32,"65":117,"66":115,"67":101,"68":32,"69":116,"70":104,"71":105,"72":115,"73":32,"74":116,"75":111,"76":32,"77":115,"78":101,"79":110,"80":100,"81":32,"82":109,"83":111,"84":114,"85":101,"86":32,"87":116,"88":104,"89":97,"90":110,"91":32,"92":111,"93":110,"94":101,"95":32,"96":109,"97":101,"98":115,"99":115,"100":97,"101":103,"102":101,"103":32,"104":97,"105":116,"106":32,"107":111,"108":110,"109":99,"110":101,"111":32,"112":97,"113":115,"114":226,"115":130,"116":172,"117":97,"118":32,"119":109,"120":117,"121":108,"122":116,"123":105,"124":45,"125":112,"126":97,"127":114,"128":116,"129":32,"130":109,"131":101,"132":115,"133":115,"134":97,"135":103,"136":101,"137":46,"138":32,"139":84,"140":104,"141":101,"142":32,"143":114,"144":101,"145":99,"146":101,"147":105,"148":118,"149":105,"150":110,"151":103,"152":32,"153":101,"154":110,"155":100,"156":32,"157":116,"158":104,"159":101,"160":110,"161":32,"162":100,"163":101,"164":99,"165":111,"166":100,"167":101,"168":115,"169":32,"170":116,"171":104,"172":101,"173":32,"174":51,"175":32,"176":109,"177":101,"178":115,"179":115,"180":97,"181":103,"182":101,"183":115,"184":32,"185":97,"186":110,"187":100,"188":32,"189":100,"190":105,"191":115,"192":112,"193":108,"194":97,"195":121,"196":115,"197":32,"198":97,"199":115,"200":32,"201":97,"202":32,"203":115,"204":105,"205":110,"206":103,"207":108,"208":101,"209":32,"210":109,"211":101,"212":115,"213":115,"214":97,"215":103,"216":101,"217":46,"218":32,"219":73,"220":32,"221":97,"222":109,"223":32,"224":115,"225":117,"226":114,"227":101,"228":32,"229":116,"230":104,"231":105,"232":115,"233":32,"234":99,"235":111,"236":117,"237":108,"238":100,"239":32,"240":98,"241":101,"242":32,"243":114,"244":101,"245":97,"246":108,"247":108,"248":121,"249":32,"250":117,"251":115,"252":101,"253":102,"254":117,"255":108,"256":32,"257":97,"258":110,"259":100,"260":32,"261":101,"262":120,"263":116,"264":101,"265":110,"266":100,"267":97,"268":98,"269":108,"270":101,"271":46})),
+				"timestamp": 1767691354,
+				"valid": true,
+				"plaintext": "Yeah good idea let's do that soon, that sounds awesome. We could use this to send more than one message at once as€a multi-part message. The receiving end then decodes the 3 messages and displays as a single message. I am sure this could be really useful and extendable." // NB: Now is the full plaintext of a multi-part message. Note the € multi-byte UTF-8 character on the message/pad boundary of 115 bytes is encoded & decoded correctly across messages
+			},
+			{
+				"plaintextBytes": new Uint8Array(Object.values({"0":53})),
+				"plaintext": "5",
+				"timestamp": 1767691357,
+				"valid": true,
+				"padIdentifier": "4aed91357daa71",
+				"fromUser": "bravo"
+			}
+		];
+		
+		let consolidatedMessagesJson = JSON.stringify(consolidatedMessages);
+		let expectedConsolidatedMessagesJson = JSON.stringify(expectedConsolidatedMessages);
+		
+		assert.ok(consolidatedMessagesJson === expectedConsolidatedMessagesJson, consolidatedMessagesJson + ' should equal ' + expectedConsolidatedMessagesJson);
+	});
+	
+	
+	/*
+	 * ----------------------------------------------------------------
+	 * Multi message parts encoding/decoding - Test misordered messages
+	 * ----------------------------------------------------------------
+	 */
+	QUnit.test("Multi message parts encoding/decoding - Test misordered messages", function(assert)
+	{
+		let organisedMessages = {
+			"b3df59fc83e3ea": [
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":89,"1":101,"2":97,"3":104,"4":32,"5":103,"6":111,"7":111,"8":100,"9":32,"10":105,"11":100,"12":101,"13":97,"14":32,"15":108,"16":101,"17":116,"18":39,"19":115,"20":32,"21":100,"22":111,"23":32,"24":116,"25":104,"26":97,"27":116,"28":32,"29":115,"30":111,"31":111,"32":110,"33":44,"34":32,"35":116,"36":104,"37":97,"38":116,"39":32,"40":115,"41":111,"42":117,"43":110,"44":100,"45":115,"46":32,"47":97,"48":119,"49":101,"50":115,"51":111,"52":109,"53":101,"54":46,"55":32,"56":87,"57":101,"58":32,"59":99,"60":111,"61":117,"62":108,"63":100,"64":32,"65":117,"66":115,"67":101,"68":32,"69":116,"70":104,"71":105,"72":115,"73":32,"74":116,"75":111,"76":32,"77":115,"78":101,"79":110,"80":100,"81":32,"82":109,"83":111,"84":114,"85":101,"86":32,"87":116,"88":104,"89":97,"90":110,"91":32,"92":111,"93":110,"94":101,"95":32,"96":109,"97":101,"98":115,"99":115,"100":97,"101":103,"102":101,"103":32,"104":97,"105":116,"106":32,"107":111,"108":110,"109":99,"110":101,"111":32,"112":97,"113":115,"114":226})),
+					"plaintext": "Yeah good idea let's do that soon, that sounds awesome. We could use this to send more than one message at once as�",  // NB: At this point this plaintext is not valid, it just serves as visual reminder what this message part is. We actually combine the bytes of all the messages together, _then_ convert to ASCII/UTF-8 plaintext. That happens in the step after
+					"timestamp": 1767691354,
+					"valid": true,
+					"padIdentifier": "b3df59fc83e3ea",
+					"fromUser": "bravo"
+				},
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":130,"1":172,"2":97,"3":32,"4":109,"5":117,"6":108,"7":116,"8":105,"9":45,"10":112,"11":97,"12":114,"13":116,"14":32,"15":109,"16":101,"17":115,"18":115,"19":97,"20":103,"21":101,"22":46,"23":32,"24":84,"25":104,"26":101,"27":32,"28":114,"29":101,"30":99,"31":101,"32":105,"33":118,"34":105,"35":110,"36":103,"37":32,"38":101,"39":110,"40":100,"41":32,"42":116,"43":104,"44":101,"45":110,"46":32,"47":100,"48":101,"49":99,"50":111,"51":100,"52":101,"53":115,"54":32,"55":116,"56":104,"57":101,"58":32,"59":51,"60":32,"61":109,"62":101,"63":115,"64":115,"65":97,"66":103,"67":101,"68":115,"69":32,"70":97,"71":110,"72":100,"73":32,"74":100,"75":105,"76":115,"77":112,"78":108,"79":97,"80":121,"81":115,"82":32,"83":97,"84":115,"85":32,"86":97,"87":32,"88":115,"89":105,"90":110,"91":103,"92":108,"93":101,"94":32,"95":109,"96":101,"97":115,"98":115,"99":97,"100":103,"101":101,"102":46,"103":32})),
+					"plaintext": "|��Y����|\u0001|��a multi-part message. The receiving end then decodes the 3 messages and displays as a single message. ",
+					"timestamp": 1767691354,
+					"valid": true,
+					"padIdentifier": "86d53a7a45cd9f",
+					"fromUser": "bravo"
+				},
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":73,"1":32,"2":97,"3":109,"4":32,"5":115,"6":117,"7":114,"8":101,"9":32,"10":116,"11":104,"12":105,"13":115,"14":32,"15":99,"16":111,"17":117,"18":108,"19":100,"20":32,"21":98,"22":101,"23":32,"24":114,"25":101,"26":97,"27":108,"28":108,"29":121,"30":32,"31":117,"32":115,"33":101,"34":102,"35":117,"36":108,"37":32,"38":97,"39":110,"40":100,"41":32,"42":101,"43":120,"44":116,"45":101,"46":110,"47":100,"48":97,"49":98,"50":108,"51":101,"52":46})),
+					"plaintext": "|��Y����|\u0002|I am sure this could be really useful and extendable.",
+					"timestamp": 1767691354,
+					"valid": true,
+					"padIdentifier": "0849bbdafd5a55",
+					"fromUser": "bravo"
+				}
+			],
+			"4aed91357daa71": [
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":53})),
+					"plaintext": "5",
+					"timestamp": 1767691357,
+					"valid": true,
+					"padIdentifier": "4aed91357daa71",
+					"fromUser": "bravo"
+				}
+			],
+			"885f142238c0f5": [
+				{
+					"plaintextBytes": new Uint8Array(Object.values({"0":49,"1":10})),
+					"plaintext": "1\n",
+					"timestamp": 1767691341,
+					"valid": true,
+					"padIdentifier": "885f142238c0f5",
+					"fromUser": "bravo"
+				}
+			]
+		};
+		
+		// Consolidate and combine the plaintext of any multi-part messages back into one
+		let consolidatedMessages = chatPage.consolidateReceivedMultiPartMessages(organisedMessages);
+		let expectedConsolidatedMessages = [
+			{
+				"plaintextBytes": new Uint8Array(Object.values({"0":49,"1":10})),
+				"plaintext": "1\n",
+				"timestamp": 1767691341,
+				"valid": true,
+				"padIdentifier": "885f142238c0f5",
+				"fromUser": "bravo"
+			},
+			{
+				"fromUser": "bravo",
+				"padIdentifier": "b3df59fc83e3ea, 86d53a7a45cd9f, 0849bbdafd5a55",
+				"plaintextBytes": new Uint8Array(Object.values({"0":89,"1":101,"2":97,"3":104,"4":32,"5":103,"6":111,"7":111,"8":100,"9":32,"10":105,"11":100,"12":101,"13":97,"14":32,"15":108,"16":101,"17":116,"18":39,"19":115,"20":32,"21":100,"22":111,"23":32,"24":116,"25":104,"26":97,"27":116,"28":32,"29":115,"30":111,"31":111,"32":110,"33":44,"34":32,"35":116,"36":104,"37":97,"38":116,"39":32,"40":115,"41":111,"42":117,"43":110,"44":100,"45":115,"46":32,"47":97,"48":119,"49":101,"50":115,"51":111,"52":109,"53":101,"54":46,"55":32,"56":87,"57":101,"58":32,"59":99,"60":111,"61":117,"62":108,"63":100,"64":32,"65":117,"66":115,"67":101,"68":32,"69":116,"70":104,"71":105,"72":115,"73":32,"74":116,"75":111,"76":32,"77":115,"78":101,"79":110,"80":100,"81":32,"82":109,"83":111,"84":114,"85":101,"86":32,"87":116,"88":104,"89":97,"90":110,"91":32,"92":111,"93":110,"94":101,"95":32,"96":109,"97":101,"98":115,"99":115,"100":97,"101":103,"102":101,"103":32,"104":97,"105":116,"106":32,"107":111,"108":110,"109":99,"110":101,"111":32,"112":97,"113":115,"114":226,"115":130,"116":172,"117":97,"118":32,"119":109,"120":117,"121":108,"122":116,"123":105,"124":45,"125":112,"126":97,"127":114,"128":116,"129":32,"130":109,"131":101,"132":115,"133":115,"134":97,"135":103,"136":101,"137":46,"138":32,"139":84,"140":104,"141":101,"142":32,"143":114,"144":101,"145":99,"146":101,"147":105,"148":118,"149":105,"150":110,"151":103,"152":32,"153":101,"154":110,"155":100,"156":32,"157":116,"158":104,"159":101,"160":110,"161":32,"162":100,"163":101,"164":99,"165":111,"166":100,"167":101,"168":115,"169":32,"170":116,"171":104,"172":101,"173":32,"174":51,"175":32,"176":109,"177":101,"178":115,"179":115,"180":97,"181":103,"182":101,"183":115,"184":32,"185":97,"186":110,"187":100,"188":32,"189":100,"190":105,"191":115,"192":112,"193":108,"194":97,"195":121,"196":115,"197":32,"198":97,"199":115,"200":32,"201":97,"202":32,"203":115,"204":105,"205":110,"206":103,"207":108,"208":101,"209":32,"210":109,"211":101,"212":115,"213":115,"214":97,"215":103,"216":101,"217":46,"218":32,"219":73,"220":32,"221":97,"222":109,"223":32,"224":115,"225":117,"226":114,"227":101,"228":32,"229":116,"230":104,"231":105,"232":115,"233":32,"234":99,"235":111,"236":117,"237":108,"238":100,"239":32,"240":98,"241":101,"242":32,"243":114,"244":101,"245":97,"246":108,"247":108,"248":121,"249":32,"250":117,"251":115,"252":101,"253":102,"254":117,"255":108,"256":32,"257":97,"258":110,"259":100,"260":32,"261":101,"262":120,"263":116,"264":101,"265":110,"266":100,"267":97,"268":98,"269":108,"270":101,"271":46})),
+				"timestamp": 1767691354,
+				"valid": true,
+				"plaintext": "Yeah good idea let's do that soon, that sounds awesome. We could use this to send more than one message at once as€a multi-part message. The receiving end then decodes the 3 messages and displays as a single message. I am sure this could be really useful and extendable." // NB: Now is the full plaintext of a multi-part message. Note the € multi-byte UTF-8 character on the message/pad boundary of 115 bytes is encoded & decoded correctly across messages
+			},
+			{
+				"plaintextBytes": new Uint8Array(Object.values({"0":53})),
+				"plaintext": "5",
+				"timestamp": 1767691357,
+				"valid": true,
+				"padIdentifier": "4aed91357daa71",
+				"fromUser": "bravo"
+			}
+		];
+		
+		let consolidatedMessagesJson = JSON.stringify(consolidatedMessages);
+		let expectedConsolidatedMessagesJson = JSON.stringify(expectedConsolidatedMessages);
+		
+		assert.ok(consolidatedMessagesJson === expectedConsolidatedMessagesJson, consolidatedMessagesJson + ' should equal ' + expectedConsolidatedMessagesJson);
+	});
+	
+
+	/*
+	 * ---------------------------------------------------------------------------------
 	 * Message encryption/decryption - Convert text with UTF-8 special characters to binary and back again to UTF-8 text
 	 * ---------------------------------------------------------------------------------
 	 */
@@ -725,6 +1121,23 @@ $(document).ready(function()
 		var convertedFromBinaryTimestamp = common.convertBinaryToInteger(timestampBinary);
 
 		assert.ok(convertedFromBinaryTimestamp === plaintextMessageTimestamp, convertedFromBinaryTimestamp);
+	});
+
+
+	/*
+	 * -------------------------------------------------------------------------------------
+	 * Message encryption/decryption - Convert the binary plaintext without padding to bytes
+	 * -------------------------------------------------------------------------------------
+	 */
+	QUnit.test("Message encryption/decryption - Convert the binary plaintext without padding to bytes", function(assert)
+	{
+		const bytes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255];
+		const bits = common.convertBytesToBinary(bytes);		
+		
+		let bytesAfterConversion = common.convertBinaryToBytes(bits).join(',');
+		let expectedBytesAfterConversion = Uint8Array.from(bytes).join(',');
+
+		assert.ok(bytesAfterConversion === expectedBytesAfterConversion, bytesAfterConversion + ' should equal ' + expectedBytesAfterConversion);
 	});
 
 

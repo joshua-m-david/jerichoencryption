@@ -1,5 +1,5 @@
 ### Jericho Comms - Information-theoretically secure communications
-#### Copyright (c) 2013-2024  Joshua M. David
+#### Copyright (c) 2013-2026  Joshua M. David
 
 
 Jericho Comms is an encrypted communications program built on the principles of information-theoretic security using true random number generation and one-time pads. The goal is to deliver a free, open source, encrypted communications program for journalists, lawyers, activists and citizens of the world that need high assurances that their communications are free of censorship, control, oppression, totalitarian governments and eavesdropping from the world's most powerful intelligence agencies. To defeat the world's best intelligence agencies, you need to lift your game to their level. That means using encryption that they can never break, regardless of advances in computing power, mathematics, cryptanalysis or quantum physics.
@@ -28,9 +28,9 @@ Other ways to help:
 
 Road map / To do list:
 
-- Allow long messages to be automatically split into multiple OTP encrypted messages on the client then recombined on the receiving end. (next release)
 - Fix file permissions for all files in client and server dirs, only read/write for current user ref: https://serverfault.com/a/357109 (next release)
-- Allow sending/receiving to multiple servers to to prevent DDOS, prevent message routing issues e.g. censorship, interference and provide high availability. (future)
+- Allow sending/receiving to multiple servers to to prevent DDOS, prevent message routing issues e.g. censorship, interference and provide high availability. (next release)
+- Move or clone code base to GitLab or other provider (after Microsoft takeover of GitHub). (next release)
 - Poly1305 One-time MAC with unique one-time keys per message as the natural information-theoretically secure MAC pairing for the one-time pad with integrity guarantee. (future)
 - Encrypt the one-time pad database at all times inside the local database, password required if session closed or page refreshed. (future)
 - Add backtracking protection for Salsa20 fallback RNG i.e. Fast Key Erasure RNG https://blog.cr.yp.to/20170723-random.html. (future)
@@ -47,7 +47,6 @@ Road map / To do list:
 - Convert existing code to use ES6+ language syntax with const/let, async/await etc. (future)
 - Remove jQuery reliance and just use vanilla JS. (future)
 - Add sources / links to libraries (if necessary host myself). (future)
-- Move or clone code base to GitLab or other provider (after Microsoft takeover of GitHub). (future)
 - Build into Firefox and/or Chromium WebExtension. (future)
 - Build into Android/iOS app with Progressive Web App or desktop app with Electron or similar application. (future)
 - Dark theme for night operation. (future)

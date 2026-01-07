@@ -1,7 +1,7 @@
 <?php
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2024  Joshua M. David
+ * Copyright (c) 2013-2026  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -323,6 +323,12 @@ class RequestAuth
 	{
 		// Use try/catch block to fail on any unexpected or malformed data
 		try {
+			// Make sure it is a string
+			if (!is_string($rawDataBase64))
+			{
+				return false;
+			}
+			
 			// Checks for any characters that are not valid Base64 characters
 			$containsValidBase64Chars = (bool) preg_match('/^[a-zA-Z0-9\/+]*={0,2}$/', $rawDataBase64);
 

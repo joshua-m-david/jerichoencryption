@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Jericho Comms - Information-theoretically secure communications
-# Copyright (c) 2013-2024  Joshua M. David
+# Copyright (c) 2013-2026  Joshua M. David
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@ runPhpUnitTests()
 	#--------------------------------------
 	# Change to web directory and run tests
 	echo
-	echo -e "${greenColour}Running unit tests...${defaultColour}"
+	echo -e "${greenColour}Running unit tests in $webDir...${defaultColour}"
 	echo
 	cd "$webDir" && phpunit
 

@@ -1,6 +1,6 @@
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2024  Joshua M. David
+ * Copyright (c) 2013-2026  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,15 +121,17 @@
 	clear: both;
 	max-width: 90%;
 	margin: 5px;
-	min-width: 225px;
+	min-width: 259px;
 	padding: 7px;
 	position: relative;
 }
 
-/* The pad identifier */
+/* The pad identifier (including space for listing all multi-message pad identifiers) */
 .chatPage .mainChat .message .padIdentifier {
-	font-size: 10px;
 	color: #373737;
+	font-family: monospace;
+	font-size: 10px;
+	max-width: 80%;
 }
 .chatPage .mainChat .message .padIdentifier span {
 	font-weight: bold;
@@ -138,8 +140,9 @@
 
 /* From which user and the date time for the message */
 .chatPage .mainChat .message .fromUserAndDateTime {
-	font-size: 10px;
 	color: #373737;
+	font-family: monospace;
+	font-size: 10px;
 }
 .chatPage .mainChat .message .fromUserAndDateTime span {
 	font-weight: bold;
@@ -157,12 +160,13 @@
 
 /* Message MAC authentication status */
 .chatPage .mainChat .message .messageStatus {
+	color: #373737;
+	font-family: monospace;
 	font-size: 10px;
 	font-weight: bold;
 	position: absolute;
-	top: 7px;
 	right: 7px;
-	color: #373737;
+	top: 7px;
 }
 .chatPage .mainChat .message .messageStatus.isSendSuccess,
 .chatPage .mainChat .message .messageStatus.isMessageValid {

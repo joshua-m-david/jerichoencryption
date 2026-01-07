@@ -1,6 +1,6 @@
 /*!
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2024  Joshua M. David
+ * Copyright (c) 2013-2026  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,11 @@
 
 /**
  * Functionality for the chat page
+ * 
+ * Dependencies:
+ * `common` namespace functions
+ * `decoy` messaging functions
+ * `Salsa20` hex encoding/decoding functions
  */
 var chatPage = {
 
@@ -48,6 +53,30 @@ var chatPage = {
 		echo: null,
 		foxtrot: null,
 		golf: null
+	},
+
+	/**
+	 * The maximum number of pads that will be used in a multi-part message. NB: This is
+	 * arbitrary at the moment, but if changed we need to also update the server code to match.
+	 */
+	MAX_PADS_PER_MULTI_PART_MESSAGE: 7,
+
+	/**
+	 * The Byte length of the header in a multi-part message e.g. |Pad ID|Message Count{Int}|
+	 * should be something like: |Pad ID|0| so 11 Bytes total
+	 */
+	get multiPartHeaderLength() {
+		return (1 + common.padIdentifierSize + 1 +
+		        this.MAX_PADS_PER_MULTI_PART_MESSAGE.toString().length + 1);
+	},
+
+	/**
+	 * The max message length (able to be typed) will be (7 x 115) - (6 x 11) = 323 Bytes because
+	 * the first message of a multi-part message does not have a header but the other 2 will.
+	 */
+	get maxMultiPartMessageLength() {
+		return ((this.MAX_PADS_PER_MULTI_PART_MESSAGE * common.messageSize) -
+			((this.MAX_PADS_PER_MULTI_PART_MESSAGE - 1) * this.multiPartHeaderLength));
 	},
 
 	/**
@@ -94,9 +123,9 @@ var chatPage = {
 			var plaintextLengthInBytes = common.getUtf8TextLengthInBytes(plaintextMessage);
 
 			// Make sure they've entered in some data
-			if (plaintextLengthInBytes > common.messageSize)
+			if (plaintextLengthInBytes > chatPage.maxMultiPartMessageLength)
 			{
-				app.showStatus('error', 'Message length exceeds allowed limit of ' + common.messageSize + ' bytes.');
+				app.showStatus('error', 'Message length exceeds allowed limit of ' + chatPage.maxMultiPartMessageLength + ' bytes.');
 				return false;
 			}
 
@@ -107,8 +136,325 @@ var chatPage = {
 				return false;
 			}
 
+			// Send multi-part message if the message is longer than one pad
+			if (plaintextLengthInBytes > common.messageSize) {
+				chatPage.sendMultiPartMessage(plaintextMessage);
+			}
+			else {
+				// Send single message if the message is just one pad
+				chatPage.sendSingleMessage(plaintextMessage);
+			}
+		});
+	},
+
+	/**
+	 * Sends a single message
+	 * @param {String} plaintextMessage The plaintext message as written by the user
+	 */
+	sendSingleMessage: function(plaintextMessage)
+	{
+		// Get the next pad from the local database and use it to encrypt the message
+		var pad = common.getPadToEncryptMessage();
+
+		// If there's no pads available to encrypt the message, don't let them send it
+		if (pad === false)
+		{
+			app.showStatus('error', 'No available pads. Please generate more pads and exchange them with your chat partner.');
+			return false;
+		}
+
+		// Encrypt the message and create the MAC
+		var ciphertextMessageAndMac = common.encryptAndAuthenticateMessage(plaintextMessage, pad);
+		var padIdentifier = common.getPadIdentifierFromCiphertext(ciphertextMessageAndMac);
+
+		// Package the data to be sent to the server
+		const requestData = {
+			fromUser: db.padData.info.user,
+			apiAction: networkCrypto.apiActionSend,
+			serverAddressAndPort: db.padData.info.serverAddressAndPort,
+			serverGroupIdentifier: db.padData.info.serverGroupIdentifier,
+			serverGroupKey: db.padData.info.serverGroupKey,
+			messagePackets: [ciphertextMessageAndMac]		// Single message
+		};
+
+		// Send the message off to the server
+		common.sendRequestToServer(requestData, function(validResponse, responseCode)
+		{
+			// If the server response is authentic and message/s were stored successfully on the server
+			if (validResponse && responseCode === networkCrypto.RESPONSE_SUCCESS)
+			{
+				// Find the message in the chat window with that identifier and update the status to 'Sent'
+				query.get('.jsMessage[data-pad-identifier=' + padIdentifier + '] .jsMessageStatus')
+						.text('Sent')
+						.addClass('isSendSuccess');
+
+				// If the user initiated the auto nuke from typing into the chat,
+				// process it now since it's already sent to the other users
+				if (plaintextMessage.indexOf('init auto nuke') > -1) {
+					chatPage.processAutoNuke(db.padData.info.user);
+				}
+
+				// Succeeded so can return early
+				return true;
+			}
+
+			// Otherwise show a status message and add additional troubleshooting information for the user.
+			// Most likely cause is user has incorrect server url/key entered. Another alternative is the
+			// attacker modified their request while en route to the server.
+			app.showStatus('error', 'Error sending message to server. ' + networkCrypto.getStatusMessage(responseCode) + ' '
+								  + networkCrypto.getNetworkTroubleshootingText());
+
+			// Add send failure to the message status
+			query.get('.jsMessage[data-pad-identifier=' + padIdentifier + '] .jsMessageStatus')
+					.text('Send failure')
+					.addClass('isSendError');
+
+			// If the user initiated the auto nuke from typing into the chat
+			if (plaintextMessage.indexOf('init auto nuke') > -1)
+			{
+				// There's a bad network connection, so check if the user wants to just wipe the local database
+				// instead ASAP e.g. agents cut the hard line and are about to breach so they can't wait
+				var wipeLocalDatabase = confirm('Auto nuke not sent. Do you want to wipe your local ' +
+												'database and inform your contacts another way?');
+
+				// If they want to wipe the local database, do it immediately
+				if (wipeLocalDatabase)
+				{
+					chatPage.processLocalAutoNuke();
+				}
+			}
+		});
+
+		// Copy the template message into a new message
+		var $messageHtml = query.getCached('.isMessageTemplate').clone().removeClass('isMessageTemplate');
+
+		// Convert links in text to URLs and escape the message for XSS before outputting it to screen
+		var plaintextMessageEscaped = chatPage.convertLinksAndEscapeForXSS(plaintextMessage);
+
+		// Get the user nickname and the current date time
+		var userNickname = chatPage.getUserNickname(db.padData.info.user);
+		var dateData = common.getCurrentLocalDateTime();
+
+		// Set params on the template
+		$messageHtml.addClass('isMessageSent');									// Show style for sent message
+		$messageHtml.attr('data-pad-identifier', padIdentifier);				// Add pad id to the div, so the status can be updated after
+		$messageHtml.find('.jsPadIdentifierText').text(padIdentifier);			// Show the id for the message
+		$messageHtml.find('.jsFromUser').text(userNickname);					// Show who the message came from
+		$messageHtml.find('.jsDate').text(dateData.date);						// Show current local date
+		$messageHtml.find('.jsTime').text(dateData.time);						// Show current local time
+		$messageHtml.find('.jsMessageText').append(plaintextMessageEscaped);	// Show the sent message in chat
+		$messageHtml.find('.jsMessageStatus').text('Sending...');				// Show current status
+
+		// Populate the new message into the chat window
+		$messageHtml.appendTo('.jsMainChat').fadeIn('fast');
+
+		// Remove the text from the text box
+		query.getCached('.jsChatInput').val('');
+
+		// Scroll to bottom of window to show new message and update the number of pads remaining for the current user
+		chatPage.scrollChatWindowToBottom();
+		chatPage.updateNumOfPadsRemaining(db.padData.info.user);
+		chatPage.calculateNumOfMessageCharsRemaining();
+	},
+
+	/**
+	 * Sends a multi-part message (which requires multiple encrypted messages) as a group of Message Packets
+	 * @param {String} plaintextMessage The plaintext message as written by the user
+	 */
+	sendMultiPartMessage: function(plaintextMessage) {
+
+		// Split the message into parts for sending
+		let multiMessageParts = chatPage.getMessageParts(plaintextMessage);
+
+		// Prepare the message parts with headers (remembering that subsequent parts require a header)
+		let multiMessageHeadersAndParts = chatPage.joinMultiMessageHeadersAndParts(multiMessageParts);
+
+		// Variable to store the encrypted message packets
+		let messagePackets = [];
+		
+		// Variable to store the padIdentifiers for this multi-part message
+		let padIdentifiers = [];
+
+		// For each split part of the message
+		for (let i = 0; i < multiMessageHeadersAndParts.length; i++)
+		{
+			// Encrypt the message and create the MAC
+			let pad = multiMessageHeadersAndParts[i].pad;
+			let padIdentifier = common.getPadIdentifierFromPadHex(pad);
+			let plaintextMessageBytes = multiMessageHeadersAndParts[i].message;
+			let ciphertextMessageAndMac = common.encryptAndAuthenticateMessage(plaintextMessageBytes, pad);
+
+			// Update message packets
+			messagePackets.push(ciphertextMessageAndMac);
+			
+			// Update pad identifiers
+			padIdentifiers.push(padIdentifier);
+		}
+
+		// Package the data to be sent to the server
+		const requestData = {
+			fromUser: db.padData.info.user,
+			apiAction: networkCrypto.apiActionSend,
+			serverAddressAndPort: db.padData.info.serverAddressAndPort,
+			serverGroupIdentifier: db.padData.info.serverGroupIdentifier,
+			serverGroupKey: db.padData.info.serverGroupKey,
+			messagePackets: messagePackets
+		};
+
+		// Get the root pad identifier of the multi-message
+		let rootMessagePadIdentifierHex = padIdentifiers[0];
+
+		// Send the message off to the server
+		common.sendRequestToServer(requestData, function(validResponse, responseCode)
+		{
+			// If the server response is authentic and message/s were stored successfully on the server
+			if (validResponse && responseCode === networkCrypto.RESPONSE_SUCCESS)
+			{
+				// Find the message in the chat window with that identifier and update the status to 'Sent'
+				query.get('.jsMessage[data-pad-identifier=' + rootMessagePadIdentifierHex + '] .jsMessageStatus')
+				     .text('Sent')
+				     .addClass('isSendSuccess');
+
+				// If the user initiated the auto nuke from typing into the chat,
+				// process it now since it's already sent to the other users
+				if (plaintextMessage.indexOf('init auto nuke') > -1) {
+					chatPage.processAutoNuke(db.padData.info.user);
+				}
+
+				// Succeeded so can return early
+				return true;
+			}
+
+			// Otherwise show a status message and add additional troubleshooting information for the user.
+			// Most likely cause is user has incorrect server url/key entered. Another alternative is the
+			// attacker modified their request while en route to the server.
+			app.showStatus('error', 'Error sending message to server. ' + networkCrypto.getStatusMessage(responseCode) + ' '
+								  + networkCrypto.getNetworkTroubleshootingText());
+
+			// Add send failure to the message status
+			query.get('.jsMessage[data-pad-identifier=' + rootMessagePadIdentifierHex + '] .jsMessageStatus')
+					.text('Send failure')
+					.addClass('isSendError');
+
+			// If the user initiated the auto nuke from typing into the chat
+			if (plaintextMessage.indexOf('init auto nuke') > -1)
+			{
+				// There's a bad network connection, so check if the user wants to just wipe the local database
+				// instead ASAP e.g. agents cut the hard line and are about to breach so they can't wait
+				var wipeLocalDatabase = confirm('Auto nuke not sent. Do you want to wipe your local ' +
+												'database and inform your contacts another way?');
+
+				// If they want to wipe the local database, do it immediately
+				if (wipeLocalDatabase)
+				{
+					chatPage.processLocalAutoNuke();
+				}
+			}
+		});
+
+		// Copy the template message into a new message
+		var $messageHtml = query.getCached('.isMessageTemplate').clone().removeClass('isMessageTemplate');
+
+		// Convert links in text to URLs and escape the message for XSS before outputting it to screen
+		var plaintextMessageEscaped = chatPage.convertLinksAndEscapeForXSS(plaintextMessage);
+
+		// Get the user nickname and the current date time
+		var userNickname = chatPage.getUserNickname(db.padData.info.user);
+		var dateData = common.getCurrentLocalDateTime();
+		
+		// Combine the padIdentifiers for this message into a single string (the root is the first one)
+		let padIdentifiersCombined = padIdentifiers.join(', ');
+
+		// Set params on the template
+		$messageHtml.addClass('isMessageSent');                                  // Show style for sent message
+		$messageHtml.attr('data-pad-identifier', rootMessagePadIdentifierHex);   // Add pad id to the div, so the status can be updated after
+		$messageHtml.find('.jsPadIdentifierText').text(padIdentifiersCombined);  // Show the id for the message
+		$messageHtml.find('.jsFromUser').text(userNickname);                     // Show who the message came from
+		$messageHtml.find('.jsDate').text(dateData.date);                        // Show current local date
+		$messageHtml.find('.jsTime').text(dateData.time);                        // Show current local time
+		$messageHtml.find('.jsMessageText').append(plaintextMessageEscaped);     // Show the sent message in chat
+		$messageHtml.find('.jsMessageStatus').text('Sending...');                // Show current status
+
+		// Populate the new message into the chat window
+		$messageHtml.appendTo('.jsMainChat').fadeIn('fast');
+
+		// Remove the text from the text box
+		query.getCached('.jsChatInput').val('');
+
+		// Scroll to bottom of window to show new message and update the number of pads remaining for the current user
+		chatPage.scrollChatWindowToBottom();
+		chatPage.updateNumOfPadsRemaining(db.padData.info.user);
+		chatPage.calculateNumOfMessageCharsRemaining();
+	},
+
+	/**
+	 * Gets the message parts for a longer (more than one pad) plaintext message so they can be encrypted separately
+	 * @param {String} plaintextMessage
+	 * @returns {Array} Returns an array of Uint8Arrays containing the plaintext message split into parts
+	 */
+	getMessageParts: function(plaintextMessage)
+	{
+		// Convert the text which possibly contains UTF-8 characters to bytes
+		const plaintextByteArray = common.convertTextToBytes(plaintextMessage);
+
+		// Get the first message part (115 bytes)
+		const firstMessagePartBytes = plaintextByteArray.slice(0, common.messageSize);
+
+		// Add the first message part e.g. [Uint8Array, Uint8Array, ...]
+		let messageParts = [firstMessagePartBytes];
+
+		// Calculate the length of subsequent message parts (99 bytes each)
+		const subsequentMessagePartsLength = common.messageSize - chatPage.multiPartHeaderLength;
+
+		// Set the start and end index to get the next message parts
+		let startIndex = common.messageSize;
+		let endIndex = startIndex + subsequentMessagePartsLength;
+
+		// Collect up the message parts
+		for (let i = 1; i < chatPage.MAX_PADS_PER_MULTI_PART_MESSAGE; i++) {
+
+			// Get the next message part in bytes
+			let nextMessagePartBytes = plaintextByteArray.slice(startIndex, endIndex);
+
+			// If there was no more text for another message part, skip adding more
+			if (nextMessagePartBytes.length === 0)
+			{
+				break;
+			}
+
+			// Update array with next message part
+			messageParts.push(nextMessagePartBytes);
+
+			// If this message part has less than a full message we can break early
+			if (nextMessagePartBytes.length < subsequentMessagePartsLength) {
+				break;
+			}
+
+			// Set start and end indexes for the substring in the next iteration
+			startIndex = endIndex;
+			endIndex = startIndex + subsequentMessagePartsLength;
+		}
+
+		return messageParts;
+	},
+
+	/**
+	 * Formats the messages to be encrypted some more by adding a header to subsequent messages,
+	 * so that rejoining for the receiver is easier and error-free
+	 * @param {Array} multiMessageParts An array of Uint8Arrays with the message parts
+	 * @returns {Array} Returns an array of objects, containing keys 'pad' and 'message', the message
+	 *                  will contain the Uint8Array of header + message for subsequent messages
+	 */
+	joinMultiMessageHeadersAndParts: function(multiMessageParts)
+	{
+		let messagesToBeEncrypted = [];
+		let rootMessagePadIdentifierHex = '';
+
+		// For each split part of the message
+		for (let i = 0; i < multiMessageParts.length; i++)
+		{
 			// Get the next pad from the local database and use it to encrypt the message
-			var pad = common.getPadToEncryptMessage();
+			let pad = common.getPadToEncryptMessage();
 
 			// If there's no pads available to encrypt the message, don't let them send it
 			if (pad === false)
@@ -117,99 +463,45 @@ var chatPage = {
 				return false;
 			}
 
-			// Encrypt the message and create the MAC
-			var ciphertextMessageAndMac = common.encryptAndAuthenticateMessage(plaintextMessage, pad);
-			var padIdentifier = common.getPadIdentifierFromCiphertext(ciphertextMessageAndMac);
+			// Variable to hold the bytes of the plaintext message to be encrypted
+			let plaintextMessageBytes = [];
 
-			// Package the data to be sent to the server
-			const requestData = {
-				fromUser: db.padData.info.user,
-				apiAction: networkCrypto.apiActionSend,
-				serverAddressAndPort: db.padData.info.serverAddressAndPort,
-				serverGroupIdentifier: db.padData.info.serverGroupIdentifier,
-				serverGroupKey: db.padData.info.serverGroupKey,
-				messagePackets: [ciphertextMessageAndMac]	// ToDo: split long messages into separate message packets
-			};
-
-			// Send the message off to the server
-			common.sendRequestToServer(requestData, function(validResponse, responseCode)
+			// If this is the first message part (the root message part)
+			if (i === 0)
 			{
-				// If the server response is authentic and message/s were stored successfully on the server
-				if (validResponse && responseCode === networkCrypto.RESPONSE_SUCCESS)
-				{
-					// Find the message in the chat window with that identifier and update the status to 'Sent'
-					query.get('.jsMessage[data-pad-identifier=' + padIdentifier + '] .jsMessageStatus')
-							.text('Sent')
-							.addClass('isSendSuccess');
+				// Get the first plaintext message part
+				plaintextMessageBytes = multiMessageParts[0];
 
-					// If the user initiated the auto nuke from typing into the chat,
-					// process it now since it's already sent to the other users
-					if (plaintextMessage.indexOf('init auto nuke') > -1) {
-						chatPage.processAutoNuke(db.padData.info.user);
-					}
+				// Get the pad identifier for this root message part
+				rootMessagePadIdentifierHex = common.getPadIdentifierFromPadHex(pad);
+			}
+			else {
+				// Add the header to the plaintext message (using the first message part's pad
+				// identifier). NB: after the first message (root or index 0), the index starts
+				// at 1 which helps in recombining later.
+				let headerIndex = i;
+				let headerIndexHex = common.convertIntegerToHex(headerIndex);
+				let separatorHex = common.convertTextToHexadecimal('|');
 
-					// Succeeded so can return early
-					return true;
-				}
+				// Add the header to the plaintext message e.g. |Root Pad ID|1|Plaintext or |Root Pad ID|2| etc
+				let subsequentMessageHeader = separatorHex + rootMessagePadIdentifierHex + separatorHex
+				                             + headerIndexHex + separatorHex;
+				let subsequentMessageHeaderBytes = Salsa20.core.util.hexToBytes(subsequentMessageHeader);
+				let subsequentMessagePartBytes = multiMessageParts[i];
+				let subsequentMessageHeaderAndPartBytes = common.combineUint8Arrays(subsequentMessageHeaderBytes, subsequentMessagePartBytes);
 
-				// Otherwise show a status message and add additional troubleshooting information for the user.
-				// Most likely cause is user has incorrect server url/key entered. Another alternative is the
-				// attacker modified their request while en route to the server.
-				app.showStatus('error', 'Error sending message to server. ' + networkCrypto.getStatusMessage(responseCode) + ' '
-				                      + networkCrypto.getNetworkTroubleshootingText());
+				// Update header and message part to be encrypted
+				plaintextMessageBytes = subsequentMessageHeaderAndPartBytes;
+			}
 
-				// Add send failure to the message status
-				query.get('.jsMessage[data-pad-identifier=' + padIdentifier + '] .jsMessageStatus')
-						.text('Send failure')
-						.addClass('isSendError');
-
-				// If the user initiated the auto nuke from typing into the chat
-				if (plaintextMessage.indexOf('init auto nuke') > -1)
-				{
-					// There's a bad network connection, so check if the user wants to just wipe the local database
-					// instead ASAP e.g. agents cut the hard line and are about to breach so they can't wait
-					var wipeLocalDatabase = confirm('Auto nuke not sent. Do you want to wipe your local ' +
-					                                'database and inform your contacts another way?');
-
-					// If they want to wipe the local database, do it immediately
-					if (wipeLocalDatabase)
-					{
-						chatPage.processLocalAutoNuke();
-					}
-				}
+			// Update messages to be encrypted
+			messagesToBeEncrypted.push({
+				pad: pad,
+				message: plaintextMessageBytes
 			});
+		}
 
-			// Copy the template message into a new message
-			var $messageHtml = query.getCached('.isMessageTemplate').clone().removeClass('isMessageTemplate');
-
-			// Convert links in text to URLs and escape the message for XSS before outputting it to screen
-			var plaintextMessageEscaped = chatPage.convertLinksAndEscapeForXSS(plaintextMessage);
-
-			// Get the user nickname and the current date time
-			var userNickname = chatPage.getUserNickname(db.padData.info.user);
-			var dateData = common.getCurrentLocalDateTime();
-
-			// Set params on the template
-			$messageHtml.addClass('isMessageSent');									// Show style for sent message
-			$messageHtml.attr('data-pad-identifier', padIdentifier);				// Add pad id to the div, so the status can be updated after
-			$messageHtml.find('.jsPadIdentifierText').text(padIdentifier);			// Show the id for the message
-			$messageHtml.find('.jsFromUser').text(userNickname);					// Show who the message came from
-			$messageHtml.find('.jsDate').text(dateData.date);						// Show current local date
-			$messageHtml.find('.jsTime').text(dateData.time);						// Show current local time
-			$messageHtml.find('.jsMessageText').append(plaintextMessageEscaped);	// Show the sent message in chat
-			$messageHtml.find('.jsMessageStatus').text('Sending...');				// Show current status
-
-			// Populate the new message into the chat window
-			$messageHtml.appendTo('.jsMainChat').fadeIn('fast');
-
-			// Remove the text from the text box
-			query.getCached('.jsChatInput').val('');
-
-			// Scroll to bottom of window to show new message and update the number of pads remaining for the current user
-			chatPage.scrollChatWindowToBottom();
-			chatPage.updateNumOfPadsRemaining(db.padData.info.user);
-			chatPage.calculateNumOfMessageCharsRemaining();
-		});
+		return messagesToBeEncrypted;
 	},
 
 	/**
@@ -289,17 +581,39 @@ var chatPage = {
 	 */
 	calculateNumOfMessageCharsRemaining: function()
 	{
-		// Get the current number of chars entered and the maximum message size
-		var maxMessageLength = common.messageSize;
-		var currentMessage = query.getCached('.jsChatInput').val();
-		var currentMessageLength = common.getUtf8TextLengthInBytes(currentMessage);
+		// Get the current number of chars entered
+		const currentMessage = query.getCached('.jsChatInput').val();
+		const currentMessageLength = common.getUtf8TextLengthInBytes(currentMessage);
 
 		// Calculate how many characters remaining
-		var numOfCharsRemaining = maxMessageLength - currentMessageLength;
+		const numOfCharsRemaining = this.maxMultiPartMessageLength - currentMessageLength;
+
+		// Initialise counter for how many pads will be used by the current message
+		let numOfPadsUsed = 0;
+
+		// If the current message is less than the size of one pad, then put 1
+		if (currentMessageLength > 0 && currentMessageLength <= common.messageSize) {
+			numOfPadsUsed = 1;
+		}
+		else if (currentMessageLength > common.messageSize) {
+
+			// Calculate how many pads will be used using formula
+			const firstMessageLength = common.messageSize;
+			const subsequentMessagesLength = common.messageSize - this.multiPartHeaderLength;
+			const lengthOfRemainingMessages = currentMessageLength - firstMessageLength;
+			const howManyPadsInRemainingText = lengthOfRemainingMessages / subsequentMessagesLength;
+
+			// Add the first pad (1), then calculate how many more are used
+			numOfPadsUsed = 1 + Math.ceil(howManyPadsInRemainingText);
+		}
+
+		// Pluralise wording for number of pads/messages used in the message
+		let usingNumPadsText = (numOfPadsUsed === 1) ? `(using ${numOfPadsUsed} pad)`
+		                                             : `(using ${numOfPadsUsed} pads)`;
 
 		// Show the number of characters remaining
-		query.getCached('.jsMessageCharsRemaining').text(numOfCharsRemaining + '/' + maxMessageLength);
-		query.getCached('.jsMessageCharsRemainingText').text('bytes remaining');
+		query.getCached('.jsMessageCharsRemaining').text(numOfCharsRemaining + '/' + this.maxMultiPartMessageLength);
+		query.getCached('.jsMessageCharsRemainingText').text(`bytes remaining ${usingNumPadsText}`);
 	},
 
 	/**
@@ -671,8 +985,14 @@ var chatPage = {
 		// Sort the messages by timestamp
 		decryptedMessages = chatPage.sortDecryptedMessagesByTimestamp(decryptedMessages);
 
+		// Organise and combine any multi-part messages back together under a root pad identifier
+		let organisedMessages = chatPage.organiseReceivedMultiPartMessages(decryptedMessages);
+		
+		// Consolidate and combine the plaintext of any multi-part messages back into one
+		let consolidatedMessages = chatPage.consolidateReceivedMultiPartMessages(organisedMessages);
+		
 		// Loop through the messages and build the HTML to be rendered
-		htmlMessages = chatPage.generateHtmlForReceivedMessages(decryptedMessages);
+		htmlMessages = chatPage.generateHtmlForReceivedMessages(consolidatedMessages);
 
 		// Add the html messages to the chat window and scroll to the end so the user can see the messages
 		$(htmlMessages).appendTo(query.getCached('.jsMainChat'));
@@ -724,7 +1044,7 @@ var chatPage = {
 
 	/**
 	 * Sort the messages by earliest timestamp first, in case messages were reordered by an attacker on the server
-	 * @param {Object} decryptedMessages
+	 * @param {Object} decryptedMessages An array of decrypted messages and metadata
 	 * @returns {Object} Returns the messages sorted by earliest sent timestamp first
 	 */
 	sortDecryptedMessagesByTimestamp: function(decryptedMessages)
@@ -736,6 +1056,134 @@ var chatPage = {
 		});
 
 		return decryptedMessages;
+	},
+
+	/**
+	 * Combines any multi-part messages back together under the appropriate root pad identifier
+	 * @param {Array} decryptedMessages An array of decrypted messages and metadata
+	 * @returns {Object}
+	 */
+	organiseReceivedMultiPartMessages: function(decryptedMessages)
+	{
+		let organisedMessages = {};
+
+		// For each decrypted message, group multi-messages under the same root pad identifier
+		for (let i = 0; i < decryptedMessages.length; i++)
+		{
+			// Get the decrypted message and metadata
+			let decryptedMessage = decryptedMessages[i];
+
+			// Get the first byte of the message and the separator used in the header to compare
+			let firstByte = decryptedMessage.plaintextBytes[0];
+			let headerSeparator = common.convertTextToBytes('|')[0];
+
+			// If the first byte is a | then we're dealing with a multi-part message
+			if (firstByte === headerSeparator)
+			{
+				// Get the header e.g. |Root Pad ID|0|Plaintext
+				let headerBytes = decryptedMessage.plaintextBytes.slice(0, chatPage.multiPartHeaderLength);
+				let headerHex = Salsa20.core.util.bytesToHex(headerBytes);
+
+				// Get the root pad identifier from the header
+				let indexStart = 2;
+				let indexEnd = 2 + common.padIdentifierSizeHex;
+				let rootPadIdentifier = headerHex.slice(indexStart, indexEnd);
+
+				// Get the index number of the message e.g. 0-5 after the root multi-message (so can join in right order)
+				let msgIndexStart = 2 + common.padIdentifierSizeHex + 2;
+				let msgIndexEnd = msgIndexStart + 2;
+				let multiMessageIndexHex = headerHex.slice(msgIndexStart, msgIndexEnd);
+				let multiMessageIndexInt = Salsa20.core.util.hexToDec(multiMessageIndexHex);
+
+				// Remove header from the plaintext bytes
+				let plaintextWithoutHeaderBytes = decryptedMessage.plaintextBytes.slice(chatPage.multiPartHeaderLength);
+				decryptedMessage.plaintextBytes = plaintextWithoutHeaderBytes;
+
+				// Make sure the root pad identifier property exists first initialised to an empty array
+				if (!(rootPadIdentifier in organisedMessages))
+				{
+					organisedMessages[rootPadIdentifier] = [];
+				}
+
+				// Store in the exact index e.g. 0, 3, 5 (so in the right order then can combine correctly)
+				organisedMessages[rootPadIdentifier][multiMessageIndexInt] = decryptedMessage;
+			}
+			else {
+				// Otherwise this is a single message, or the root of a multi-message
+				// Make sure the root pad identifier property exists first initialised to an empty array
+				if (!(decryptedMessage.padIdentifier in organisedMessages))
+				{
+					organisedMessages[decryptedMessage.padIdentifier] = [];
+				}
+
+				// Store as the first entry in the array
+				organisedMessages[decryptedMessage.padIdentifier].push(decryptedMessage);
+			}
+		}
+		
+		return organisedMessages;
+	},
+	
+	/**
+	 * Combine any multi-part messages back together into a single plaintext
+	 * @param {Array} organisedMessages An array of decrypted messages and metadata
+	 * @returns {Array} Returns an array of message objects which has consolidated multi-part messages into 1 plaintext
+	 */
+	consolidateReceivedMultiPartMessages: function(organisedMessages)
+	{
+		// These are decrypyed, sorted and consolidated messages (joined multi-message parts into single message)
+		let consolidatedMessages = [];
+
+		// Once we have the sorted messages, we need a final consolidation
+		Object.entries(organisedMessages).forEach(([key, sortedMessageParts]) =>
+		{
+			// Get all the message parts in this group under the root pad identifier
+			const numOfMessageParts = sortedMessageParts.length;
+
+			// If there is only one message part, it's just a single message so add it
+			if (numOfMessageParts === 1)
+			{
+				// Add the object to be rendered, keys: (fromUser, padIdentifier, plaintextBytes, timestamp, valid)
+				consolidatedMessages.push(sortedMessageParts[0]);
+			}
+			else {
+				// Consolidate the message parts
+				const consolidatedMessage = {};
+
+				// Loop through the multi-message parts
+				for (let i = 0; i < sortedMessageParts.length; i++)
+				{
+					const sortedMessagePart = sortedMessageParts[i];
+
+					// Get the static details from the root message (which will remain the same for the others)
+					if (i === 0) {
+						consolidatedMessage.fromUser = sortedMessagePart.fromUser;
+						consolidatedMessage.padIdentifier = sortedMessagePart.padIdentifier;
+						consolidatedMessage.plaintextBytes = sortedMessagePart.plaintextBytes;
+						consolidatedMessage.timestamp = sortedMessagePart.timestamp;
+						consolidatedMessage.valid = sortedMessagePart.valid;
+					}
+					else {
+						// Append the pad identifiers in a string to be rendered
+						consolidatedMessage.padIdentifier += ', ' + sortedMessagePart.padIdentifier;
+
+						// Append the plaintext message bytes to the previous message bytes
+						consolidatedMessage.plaintextBytes = common.combineUint8Arrays(consolidatedMessage.plaintextBytes, sortedMessagePart.plaintextBytes);
+					}
+				}
+
+				// One final conversion to plaintext (of the joint message parts)
+				consolidatedMessage.plaintext = common.convertBytesToText(consolidatedMessage.plaintextBytes);
+
+				// Add to the array, ready to be rendered
+				consolidatedMessages.push(consolidatedMessage);
+			}
+		});
+		
+		// One final sort of the messages by timestamp just in case object ordering didn't work
+		consolidatedMessages = chatPage.sortDecryptedMessagesByTimestamp(consolidatedMessages);
+
+		return consolidatedMessages;
 	},
 
 	/**
@@ -774,7 +1222,7 @@ var chatPage = {
 
 		// Get the message date/time, status, validity and who sent it
 		var dateData = common.getCurrentLocalDateTimeFromUtcTimestamp(message.timestamp);
-		var messageStatus = (message.valid) ? 'Authentic' : 'Unauthentic';
+		var messageStatus = (message.valid) ? 'Authenticated' : 'Unauthentic';
 		var messageValidity = (message.valid) ? 'isMessageValid' : 'isMessageInvalid';
 		var userNickname = chatPage.getUserNickname(message.fromUser);
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2024  Joshua M. David
+ * Copyright (c) 2013-2026  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ class CommonConstants
 	/**
 	 * @var int The maximum number of messages that can be sent per client per request
 	 */
-	const REQUEST_MAX_MESSAGE_PACKETS = 3;
+	const REQUEST_MAX_MESSAGE_PACKETS = 7;
 
 	/**
 	 * @var int The minimum bit length of the request padding portion, set at the size of 1 Message Packet (384 bytes)
@@ -137,8 +137,8 @@ class CommonConstants
 	const REQUEST_MIN_PADDING_BITS_LENGTH = self::MESSAGE_PACKET_BITS_LENGTH;
 
 	/**
-	 * @var int The maximum bit length of the request padding portion, set at the size of 3 Message Packets (384
-	 *          bytes each) so they think at least 1 - 3 messages are always being sent.
+	 * @var int The maximum bit length of the request padding portion, set at the size of 7 Message Packets (1344
+	 *          bytes each) so they think at least 1 - 7 messages are always being sent.
 	 */
 	const REQUEST_MAX_PADDING_BITS_LENGTH = self::MESSAGE_PACKET_BITS_LENGTH * self::REQUEST_MAX_MESSAGE_PACKETS;
 
@@ -149,7 +149,7 @@ class CommonConstants
 	const REQUEST_MIN_MESSAGE_PACKETS_BITS_LENGTH = 0;
 
 	/**
-	 * @var int The maximum bit length of the Message Packets portion of the request, set at 3 because 3 Message Packets
+	 * @var int The maximum bit length of the Message Packets portion of the request, set at 7 because 7 Message Packets
 	 *          can be sent per request
 	 */
 	const MAX_REQUEST_MESSAGE_PACKETS_BITS_LENGTH = self::MESSAGE_PACKET_BITS_LENGTH * self::REQUEST_MAX_MESSAGE_PACKETS;
@@ -175,8 +175,8 @@ class CommonConstants
 	 * @var int The maximum length of the ciphertext portion of the request in bits. Calculated as:
 	 *
 	 *          Padding length identifier (2 bytes) +
-	 *          Maximum request padding (576 bytes or 3 message packets) +
-	 *          3 encrypted message packets (576 bytes or 3 message packets) +
+	 *          Maximum request padding (1344 bytes or 7 message packets) +
+	 *          7 encrypted message packets (1344 bytes or 7 message packets) +
 	 *          UNIX Timestamp (5 bytes) +
 	 *          From User (1 byte) +
 	 *          API Action length (1 byte)
@@ -239,10 +239,10 @@ class CommonConstants
 	const RESPONSE_MIN_PADDING_BITS = self::RESPONSE_USER_MESSAGE_PACKET_BITS_LENGTH;
 
 	/**
-	 * @var int The maximum padding size in bits for the response packet. This is the size of 3 User Message Packets
+	 * @var int The maximum padding size in bits for the response packet. This is the size of 7 User Message Packets
 	 *          which is an estimated upper limit of messages that might get returned on average if the user is online.
 	 */
-	const RESPONSE_MAX_PADDING_BITS = self::RESPONSE_USER_MESSAGE_PACKET_BITS_LENGTH * 3;
+	const RESPONSE_MAX_PADDING_BITS = self::RESPONSE_USER_MESSAGE_PACKET_BITS_LENGTH * self::REQUEST_MAX_MESSAGE_PACKETS;
 
 	/**
 	 * @var int The minimum User Message Packets length that could be returned in the response. Set at 0 bytes because
@@ -274,7 +274,7 @@ class CommonConstants
 	 *
 	 * Nonce (64 bytes) ||
 	 * Padding - Estimating max padding size of 3 User Message Packets (385 bytes each) ||
-	 * User Message Packets - Estimating max average of 3 User Message Packets (385 bytes each) ||
+	 * User Message Packets - Estimating max average of 4 User Message Packets (385 bytes each) ||
 	 * Number of Messages (2 bytes) ||
 	 * Response Code (1 byte) ||
 	 * MAC (64 bytes)

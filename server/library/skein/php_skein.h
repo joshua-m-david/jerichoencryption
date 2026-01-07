@@ -14,6 +14,18 @@ extern zend_module_entry skein_module_entry;
 #  include "TSRM.h"
 # endif
 
+#if PHP_VERSION_ID >= 70000
+# ifndef TSRMLS_CC
+#  define TSRMLS_CC
+# endif
+# ifndef TSRMLS_DC
+#  define TSRMLS_DC
+# endif
+# ifndef TSRMLS_FETCH
+#  define TSRMLS_FETCH()
+# endif
+#endif
+
 PHP_MINIT_FUNCTION(skein);
 PHP_MSHUTDOWN_FUNCTION(skein);
 PHP_RINIT_FUNCTION(skein);

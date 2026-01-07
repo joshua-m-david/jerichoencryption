@@ -1,7 +1,7 @@
 <?php
 /**
  * Jericho Comms - Information-theoretically secure communications
- * Copyright (c) 2013-2024  Joshua M. David
+ * Copyright (c) 2013-2026  Joshua M. David
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,11 @@ use PHPUnit\Framework\TestCase;
  */
 class CleanupTest extends TestCase
 {
+	/** 
+	 * @var Converter $converter The Converter object for common helper functions
+	 */
+	protected $converter;
+	
 	/**
 	 * @var Database $db The Database class object
 	 */
