@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2024  Joshua M. David
+	Copyright (c) 2013-2026  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -160,23 +160,23 @@
 					<p>
 						Now it's time to install get the server code running. The easiest way to get it
 						onto the server would be to use the command line:<br>
-						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-comms-v2.0.0.tar.xz</code><br>
+						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-comms-v2.1.0.tar.xz</code><br>
 						<br>
 						You also need to download the signature file to verify that the download is authentic:<br>
-						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-comms-v2.0.0.tar.xz.asc</code><br>
+						<code>wget https://joshua-m-david.github.io/jerichoencryption/files/jericho-comms-v2.1.0.tar.xz.asc</code><br>
 						<br>
 						This will download the two files and put them inside your current working directory. You can list them with <code>ls -l</code>.
 						If the files are there you can skip to the next step.<br>
 						<br>
 						If for some reason you are unable to download the files from the website you can always download
-						them from <a href="https://freenetproject.org/">Freenet</a> using the links on the
-						<a href="download.html">Download page</a>, then copying the files manually to the server. If
-						you want to copy them to the server from your Windows machine you can use
-						<a href="http://winscp.net/eng/download.php">WinSCP</a> and connect to your server using the same credentials like you did
-						earlier with PuTTY. Then it's a basic drag and drop operation.<br>
+						them from using the links on the <a href="download.html">Download page</a>, then copying the 
+						files manually to the server. If you want to copy them to the server from your Windows machine 
+						you can use <a href="http://winscp.net/eng/download.php">WinSCP</a> and connect to your server 
+						using the same credentials like you did	earlier with PuTTY. Then it's a basic drag and drop 
+						operation.<br>
 						<br>
 						If wanting to transfer the files from your Linux machine to the server you can use the following command:<br>
-						<code>scp /path/on/local/machine/jericho-comms-v2.0.0.tar.xz username@ipaddress:~</code><br>
+						<code>scp /path/on/local/machine/jericho-comms-v2.1.0.tar.xz username@ipaddress:~</code><br>
 						<br>
 						Be sure to swap out <code>username</code> for the username on the server and swap out <code>ipaddress</code> for the IP address
 						of the server. It should prompt you for the password. The <code>~</code> character will put the file in the home directory for
@@ -194,10 +194,10 @@
 					<h3>Verifying by file hashes</h3>
 					<p>
 						First verify that the file was downloaded correctly using the hashes found on the <a href="download.html">download page</a>:<br>
-						<code>sha384sum jericho-comms-v2.0.0.tar.xz | grep "fcdffeb7bbe63db0889b14557084441cf0b1ef34df04db8ad25c529cfbb7392b221847fd2bc0f63ef96a10405f8e07ce"</code><br>
+						<code>sha384sum jericho-comms-v2.1.0.tar.xz | grep "1c719646cc048e767ac6b2d55e412328f2fed108bb27eb8551ec5c8c84663fbf8f362ae4377bdb708ab813a759f68de4"</code><br>
 						<br>
 						If the checksum matches it will display the matching hash output on a line on the command line, for example:<br>
-						<code>fcdffeb7bbe63db0889b14557084441cf0b1ef34df04db8ad25c529cfbb7392b221847fd2bc0f63ef96a10405f8e07ce &nbsp;jericho-comms-v2.0.0.tar.xz</code><br>
+						<code>1c719646cc048e767ac6b2d55e412328f2fed108bb27eb8551ec5c8c84663fbf8f362ae4377bdb708ab813a759f68de4 &nbsp;jericho-comms-v2.1.0.tar.xz</code><br>
 						<br>
 						If nothing is returned on the command line, then the file is a mismatch and you will have to re-download it.
 						You can try downloading it from another source such as FreeNet as well (see the
@@ -224,12 +224,12 @@
 							Key fingerprint = 6401 CF98 4D37 0AB5 0997  3748 A5A2 DFDD BE45 6DA7<br>
 						</code><br>
 						<br>
-						NB: The email addresses have had the parts encased with [] to reduce spam mail. Now
-						run <code>gpg --verify jericho-comms-v2.0.0.tar.xz.asc jericho-comms-v2.0.0.tar.xz</code> to verify the
+						NB: The email addresses have had the parts encased with [] and spaces to reduce spam mail. Now
+						run <code>gpg --verify jericho-comms-v2.1.0.tar.xz.asc jericho-comms-v2.1.0.tar.xz</code> to verify the
 						signature. This should give you a message saying <b>Good signature</b> similar to the following:<br>
 						<br>
 						<code>
-							gpg: Signature made Fri 25 Oct 2024 {time}<br>
+							gpg: Signature made Wed 07 Jan 2026 {time}<br>
 							gpg:                using RSA key CF3F79EE011459BA0A599E9CDC768471C467B6D0<br>
 							gpg: Good signature from "Joshua M. David (Jericho Comms 2022+) &lt;joshua [.] m [.] david [at] protonmail [.] com&gt;" [unknown]<br>
 							gpg: WARNING: This key is not certified with a trusted signature!<br>

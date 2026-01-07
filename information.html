@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2024  Joshua M. David
+	Copyright (c) 2013-2026  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -53,14 +53,14 @@
 					<h1 class="nonPrintable">Technical design</h1>
 					<p class="nonPrintable">
 						This page is printable and can be downloaded as a
-						<a href="files/jericho-comms-v2.0.0.pdf">PDF white paper</a><sup><a href="files/jericho-comms-v2.0.0.pdf.asc">[sig]</a></sup>.
+						<a href="files/jericho-comms-v2.1.0.pdf">PDF white paper</a><sup><a href="files/jericho-comms-v2.1.0.pdf.asc">[sig]</a></sup>.
 					</p>
 
 
 					<div class="printableHeader printable">
 						<div class="title">Jericho Comms&trade;</div>
-						<div class="version">Version 2.0.0</div>
-						<div class="date">26 October 2024</div>
+						<div class="version">Version 2.1.0</div>
+						<div class="date">7 January 2026</div>
 						<div class="author">Joshua M. David</div>
                         <div class="email">joshua [.] m [.] david [at] protonmail [.] com</div>
 					</div>
@@ -558,7 +558,7 @@
 						</li>
 						<li>
 							Once the one-time pads are generated, the program can export them for each user to encrypted
-							text files. These should be saved directly onto removable flash media such as MicroSD card,
+							text files. These should be saved directly onto removable media such as floppy disk, MicroSD card,
 							SD card, USB thumbdrive, CD, DVD, Blu-Ray Disc or portable hard drive. The program requires
 							the one-time pad database to be encrypted and protected with a password.
 
@@ -865,11 +865,23 @@
 						<li>
 							The <i>Message Packets</i> are each individual (one-time pad encrypted and authenticated) <i>Message Packet</i>
 							concatenated together. The number of <i>Message Packets</i> that can be sent at one time depends on the program
-							configuration. In version 2.0 due to client configuration, just one <i>Message Packet</i> can be sent at a time,
-							however in a future version it will be possible to write longer plaintext messages and split the message into
+							configuration. In version 2.1, up to 7 <i>Message Packets</i> can be sent at a time,
+							so it is possible to write longer plaintext messages and split the message into
 							multiple <i>Message Packets</i> then have it reconstructed at the receiving end. Multiple <i>Message Packets</i>
-							are supported in the protocol at the moment, as implemented, however the deconstruction and reconstruction of
-							messages in the client is not yet. These <i>Message Packets</i> are in hexadecimal format ready for serialisation.
+							are supported in the protocol at the moment, as implemented. These <i>Message Packets</i> are in hexadecimal format 
+							ready for serialisation.<br>
+							<br>
+							In version 2.1, the client and server allows for longer messages to be sent by the clients.
+							Under the hood this allows the user to write a message up to 7 pads in length (739 bytes) 
+							now (previously only 115 bytes for one message) and it splits the long message into separate message parts 
+							and encrypts them separately. On the receiving end, a header embedded within the plaintext 
+							of each sent message part indicates the root message and the order of the subsequent 
+							message parts which helps recombine the original long message correctly. This longer message
+							can contain UTF-8 characters and splits messages and recombines them safely.<br>
+							<br>
+							The header bytes at the start of the plaintext for each subsequent message of a multi-part message 
+							contains separators with | characters like so: |<i>Root Pad Identifier</i>|<i>Message Count</i>|.
+							This header takes up 11 bytes of space for each subsequent message part.
 						</li>
 						<li>
 							A <i>Current Timestamp</i> is included to indicate when the request was sent. This is a
@@ -1989,21 +2001,26 @@
 							filesystem or portable storage media.
 						</li>
 						<li>
-							Saving to removable media such as a CD, DVD, MicroSD, SD card or USB drive will be convenient and
+							Saving to removable media such as a floppy disk, CD, DVD, MicroSD, SD card or USB drive will be convenient and
 							portable. Flash memory is at least small and compact which means the user can conceal, destroy or
-							get rid of it quickly and easily. The most secure option may be to use CDs/DVDs which can be
-							written once, transferred to each user, then destroyed. The most convenient option is to get
+							get rid of it quickly and easily. The most secure option would be to use CD-Rs/DVD-Rs which can be
+							written once, transferred to each user, then destroyed. But the user needs to be careful to 
+							<a href="#ref254">disable Autorun/Autoplay<sup>[254]</sup></a> to prevent any malware inadvertently 
+							running automatically.<br>
+							<br>
+							The most convenient option is to get
 							a USB thumbdrive, with a portable version of <a href="#ref79">Firefox<sup>[79]</sup></a>
 							loaded on it. Then save the one-time pads in there as well. Load up Firefox and then load
 							the one-time pads from inside it. Now the program is portable and the user can take it with
 							them on a keyring, run it from any trusted computer (e.g. home or work) and stay in contact
-							wherever they are.
+							wherever they are. However it is a good idea to use a new (clean) USB thumbdrive to avoid
+							<a href="#ref255">BadUSB<sup>[255]</sup></a> type attacks.
 						</li>
 						<li>
 							Hard drives and flash memory <a href="#ref131">are difficult<sup>[131]</sup></a> to remove
 							data from quickly and securely. It is best if sensitive data like encryption keys do not get
 							written to the disk in the first place. The program allows for the one-time pad database to be
-							encrypted and authenticated before transport. This is detailed in full in the next section.
+                                                        encrypted and authenticated <i>before</i> transport. This is detailed in full in the next section.
 						</li>
 						<li class="formulas">
 							The password/passphrase used should have at least 256 bits of entropy for transport which is
@@ -4127,6 +4144,14 @@
 						<li id="ref253">
 							253. HTML5 Rocks - Capturing Audio and Video in HTML5<br>
 							<a href="http://www.html5rocks.com/en/tutorials/getusermedia/intro/">http://www.html5rocks.com/en/tutorials/getusermedia/intro/</a>
+						</li>
+						<li id="ref254">
+							254. Wikipedia - AutoRun - Attack vectors<br>
+							<a href="https://en.wikipedia.org/wiki/AutoRun#Attack_vectors">https://en.wikipedia.org/wiki/AutoRun#Attack_vectors</a>
+						</li>
+						<li id="ref255">
+							255. Wikipedia - BadUSB<br>
+							<a href="https://en.wikipedia.org/wiki/BadUSB">https://en.wikipedia.org/wiki/BadUSB</a>
 						</li>
 					</ul>
 				</div>

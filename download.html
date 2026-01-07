@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 	Jericho Comms - Information-theoretically secure communications
-	Copyright (c) 2013-2024  Joshua M. David
+	Copyright (c) 2013-2026  Joshua M. David
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -94,6 +94,112 @@
 					<br>
 
 
+					<h2 id="release2.1.0">Jericho Comms version 2.1.0 downloads (for Firefox or Chromium based browsers)</h2>
+					<p>
+						This is a minor update to allow for longer multi-part messages for the clients.
+					</p>
+					<b>Changes in v2.1.0</b><br>
+					<ul class="changeLog">
+						<li>
+							The client and server is updated to allow for longer messages to be sent by the clients.
+							Under the hood this allows the user to write a message up to 7 pads in length (739 bytes) 
+							now (previously only 115 bytes) and it splits the long message into separate message parts 
+							and encrypts them separately.
+						</li>
+						<li>
+							Updated the server code to work with Debian 13, PHP 8.4, PHPUnit 11.5 and Apache 2.4.
+						</li>
+						<li>
+							Updated the QUnit client unit testing suite to version 2.25.0.
+						</li>
+					</ul>
+					<table class="downloadLinks">
+						<tr>
+							<th>Location</th>
+							<th>Program download</th>
+							<th>Signature</th>
+						</tr>
+						<tr>
+							<td>This site</td>
+							<td><a href="files/jericho-comms-v2.1.0.tar.xz">jericho-comms-v2.1.0.tar.xz</a></td>
+							<td><a href="files/jericho-comms-v2.1.0.tar.xz.asc">jericho-comms-v2.1.0.tar.xz.asc</a></td>
+						</tr>
+						<tr>
+							<td>MEGA cloud storage (mirror)</td>
+							<td><a href="https://mega.nz/file/lBUCFb6S#V8kSumA__oL5VSe9Dhij2j-kleNiAA4xVkvgywp1YPA">jericho-comms-v2.1.0.tar.xz</a></td>
+							<td><a href="https://mega.nz/file/pAcDAAoK#Bwvn3gZhWcZd4VhNOT4XEbkMYe6NuGfL5ziVV7GqTIY">jericho-comms-v2.1.0.tar.xz.asc</a></td>
+						</tr>						
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th>Location</th>
+							<th>White paper</th>
+							<th>Signature</th>
+						</tr>
+						<tr>
+							<td>This site</td>
+							<td><a href="files/jericho-comms-v2.1.0.pdf">jericho-comms-v2.1.0.pdf</a></td>
+							<td><a href="files/jericho-comms-v2.1.0.pdf.asc">jericho-comms-v2.1.0.pdf.asc</a></td>
+						</tr>
+						<tr>
+							<td>MEGA cloud storage (mirror)</td>
+							<td><a href="https://mega.nz/file/VEdFUIII#_5OgmU2mIeIjgp2HVMOtjQJIaKoO4BN_PnIxfXYrcTQ">jericho-comms-v2.1.0.pdf</a></td>
+							<td><a href="https://mega.nz/file/NJ9FSTKZ#4FcBRSDL3uFIeH_OUmJMEzkZ8ZoADoNxc9jxbQvsCGc">jericho-comms-v2.1.0.pdf.asc</a></td>
+						</tr>						
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th>Location</th>
+							<th>Warrant canary</th>
+							<th>Signature</th>
+						</tr>
+						<tr>
+							<td>This site</td>
+							<td><a href="files/warrant-canary.txt">warrant-canary.txt</a></td>
+							<td><a href="files/warrant-canary.txt.asc">warrant-canary.txt.asc</a></td>
+						</tr>
+						<tr>
+							<td>MEGA cloud storage (mirror)</td>
+							<td><a href="https://mega.nz/file/sBUmiKwa#OZfGcCRndHA3H2WDQbQtSqoLl_k2yjreXZvnbeRTuqg">warrant-canary.txt</a></td>
+							<td><a href="https://mega.nz/file/sEVkGayT#oPCc58clcCcuELkpfpBBaoD-HFxTraGf_-Li1Q0soPU">warrant-canary.txt.asc</a></td>
+						</tr>						
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th colspan="2">GnuPG signing key details for authenticity verification</th>
+						</tr>
+						<tr>
+							<td>Key server 1</td>
+							<td>https://keys.openpgp.org/search?q=CF3F79EE011459BA0A599E9CDC768471C467B6D0</td>
+						</tr>
+						<tr>
+							<td>Key server 2</td>
+							<td>https://keyserver.ubuntu.com/pks/lookup?search=0xdc768471c467b6d0&fingerprint=on&hash=on&op=get</td>
+						</tr>
+						<tr>
+							<td>Key ID</td>
+							<td>DC768471C467B6D0</td>
+						</tr>
+						<tr>
+							<td>Fingerprint</td>
+							<td>CF3F 79EE 0114 59BA 0A59 9E9C DC76 8471 C467 B6D0</td>
+						</tr>
+						<tr>
+							<td>Public key from this site</td>
+							<td><a href="files/pubkey.txt">pubkey.txt</a></td>
+						</tr>
+					</table>
+					<table class="downloadLinks">
+						<tr>
+							<th colspan="2">File hash of jericho-comms-v2.1.0.tar.xz for integrity verification</th>
+						</tr>
+						<tr>
+							<td>SHA2-384 digest</td>
+							<td class="hash">1c719646cc048e767ac6b2d55e412328f2fed108bb27eb8551ec5c8c84663fbf8f362ae4377bdb708ab813a759f68de4</td>
+						</tr>
+					</table>					
+					
+					
 					<h2 id="release2.0.0">Jericho Comms version 2.0.0 downloads (for Firefox or Chromium based browsers)</h2>
 					<p>
 						This is a major update to add encryption to the client-server network traffic so it looks entirely like random noise.
